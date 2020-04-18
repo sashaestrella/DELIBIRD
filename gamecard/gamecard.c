@@ -78,14 +78,14 @@ int main(void)
 //TODO
 t_log* iniciar_logger(void)
 {
-	return log_create("gamecard.log", "Game Watch" , 1, LOG_LEVEL_INFO);
+	return log_create("gamecard.log", "Log de Game Card" , 1, LOG_LEVEL_INFO);
 
 }
 
 //TODO
 t_config* leer_config(void)
 {
-	return config_create("/home/utnso/workspace/tp-2020-1c-BOMP/gamecard/gamecard.config");
+	return config_create("gamecard.config");
 
 }
 
