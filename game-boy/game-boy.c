@@ -71,14 +71,14 @@ int main(void)
 //TODO
 t_log* iniciar_logger(void)
 {
-	return log_create("tp0.log", "Game Watch" , 1, LOG_LEVEL_INFO);
+	return log_create("game-boy.log", "Game Boy" , 1, LOG_LEVEL_INFO);
 
 }
 
 //TODO
 t_config* leer_config(void)
 {
-	return config_create("/home/utnso/workspace/Game-watch-client/tp0.config");
+	return config_create("game-boy.config");
 
 }
 
