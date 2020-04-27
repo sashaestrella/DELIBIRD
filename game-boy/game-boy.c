@@ -2,7 +2,6 @@
 
 int main(void)
 {
-	/*---------------------------------------------------PARTE 2-------------------------------------------------------------*/
 	int conexion;
 	char* ip;
 	char* puerto;
@@ -13,11 +12,11 @@ int main(void)
 
 	logger = iniciar_logger();
 
+	//Loggear "soy un log"
 	char* primerLog = "Soy game-boy";
 
 	log_info(logger, primerLog);
 
-	//Loggear "soy un log"
 
 	config = leer_config();
 
@@ -26,13 +25,7 @@ int main(void)
 	config_save(config);
 
 
-	/*---------------------------------------------------PARTE 3-------------------------------------------------------------*/
-
-	//antes de continuar, tenemos que asegurarnos que el servidor esté corriendo porque lo necesitaremos para lo que sigue.
-
-	//crear conexion
-
-
+	//Crear conexion
 	ip = config_get_string_value(config, "IP");
 	puerto = config_get_string_value(config, "PUERTO");
 
@@ -40,11 +33,20 @@ int main(void)
 
 	printf( "\nSe creo la conexion con el valor %d \n", conexion);
 
-	//enviar mensaje
+	//Enviar mensaje
 
 	int tamanio_maximo_mensaje = 256;
 
 	char* mensajeAEnviar = malloc(tamanio_maximo_mensaje);
+	/*
+	 * #include <newPokemon.h>
+	 *
+	 * struct newPokemon NewPokemon = malloc(sizeof(struct newPokemon NewPokemon));
+	 * printf("\nIngrese el mensaje:");
+	 * fgets(NewPokemon,sizeof(NewPokemon));
+	 * printf("Se va a enviar el mensaje %s",NewPokemon.pokemon);
+	 * enviar_mensaje(NewPokemon, conexion);
+	 */
 
 	printf("\nIngrese el mensaje:");
 
@@ -54,14 +56,14 @@ int main(void)
 
 	enviar_mensaje(mensajeAEnviar, conexion); //Envia el mensaje
 
-	//recibir mensaje
+	//Recibir mensaje
 
 	char* mensajeRecibido;
 
 	mensajeRecibido=recibir_mensaje(conexion);
 
 
-	//loguear mensaje recibido
+	//Loguear mensaje recibido
 
 	log_info(logger, "Se recibio el mensaje: %s " ,mensajeRecibido);
 
