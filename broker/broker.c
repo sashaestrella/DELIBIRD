@@ -23,7 +23,10 @@ int main(void)
 	if(iret1 != 0){
 		printf("Fallo la creacion del hilo: %d",iret1);
 	}
-	iret2 = pthread_create( &hilo2, NULL, crearColaNewPokemon ,(void*) message2);
+
+	//Falta mandar mensaje a la cola
+
+	//iret2 = pthread_create( &hilo2, NULL, crearColaNewPokemon ,(void*) message2);
 
 	pthread_join( hilo1, NULL);
 	//pthread_join( hilo2, NULL);

@@ -11,7 +11,7 @@
 
 typedef enum
 {
-	MENSAJE = 1,
+	MENSAJE = 1
 }op_code;
 
 typedef struct

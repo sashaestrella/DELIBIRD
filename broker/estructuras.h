@@ -8,48 +8,47 @@
 #include<sys/socket.h>
 #include<netdb.h>
 #include<string.h>
-#include<list.h>
-
-
-typedef struct newPokemon{
-	NombrePokemon nombreP;
-	CoordenadasXY coordenadas;
-	uint32_t cantidad;
-}NewPokemon;
-
-typedef struct nombrePokemon{
-	char* nombre;
-	uint32_t tamanioNombre;
-}NombrePokemon;
-
-typedef struct coordenadas{
-	uint32_t posicionX;
-	uint32_t posicionY;
-}CoordenadasXY;
-
-
-typedef struct localizedPokemon{
-	NombrePokemon nombreP;
-	ParesOrdenados pares;
-}LocalizedPokemon;
+#include<commons/collections/list.h>
 
 typedef struct paresOrdenados{
 	uint32_t cantidad;
 	t_list* listaParesLocalized;
 }ParesOrdenados;
 
+typedef struct coordenadas{
+	uint32_t posicionX;
+	uint32_t posicionY;
+}CoordenadasXY;
+
+typedef struct newPokemon{
+	char* nombre;
+	uint32_t tamanioNombre;
+	CoordenadasXY coordenadas;
+	uint32_t cantidad;
+}NewPokemon;
+
+
+typedef struct localizedPokemon{
+	char* nombre;
+	uint32_t tamanioNombre;
+	ParesOrdenados pares;
+}LocalizedPokemon;
+
 typedef struct getPokemon{
-	NombrePokemon nombreP;
+	char* nombre;
+	uint32_t tamanioNombre;
 }GetPokemon;
 
 
 typedef struct appearedPokemon{
-	NombrePokemon nombreP;
+	char* nombre;
+	uint32_t tamanioNombre;
 	CoordenadasXY coordenadas;
 }AppearedPokemon;
 
 typedef struct catchPokemon{
-	NombrePokemon nombreP;
+	char* nombre;
+	uint32_t tamanioNombre;
 	CoordenadasXY coordenadas;
 }CatchPokemon;
 

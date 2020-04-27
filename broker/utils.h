@@ -10,13 +10,15 @@
 #include<commons/collections/list.h>
 #include<string.h>
 #include<pthread.h>
+#include"estructuras.h"
 
 #define IP "127.0.0.1"
 #define PUERTO "4444"
 
 typedef enum
 {
-	MENSAJE=1
+	MENSAJE=1,
+	NEW_POKEMON=2
 }op_code;
 
 typedef struct
@@ -38,6 +40,7 @@ void* recibir_buffer(int*, int);
 void iniciar_servidor(void);
 void esperar_cliente(int);
 void* recibir_mensaje(int socket_cliente, int* size);
+void* recibir_NEW_POKEMON(int cliente_fd,int* size);
 int recibir_operacion(int);
 void process_request(int cod_op, int cliente_fd);
 void serve_client(int *socket);
