@@ -1,6 +1,7 @@
 
 #include"utils.h"
 
+
 void iniciar_servidor(void)
 {
 	int socket_servidor;
@@ -57,30 +58,48 @@ void serve_client(int* socket)
 
 void process_request(int cod_op, int cliente_fd) {
 	int size;
-	void* msg;
+	void* algoARecibir;
 		switch (cod_op) {
 		case MENSAJE:
-			msg = recibir_mensaje(cliente_fd, &size);
-			devolver_mensaje(msg, size, cliente_fd);
-			free(msg);
+			algoARecibir = recibir_mensaje(cliente_fd, &size);
+			devolver_mensaje(algoARecibir, size, cliente_fd);
+			free(algoARecibir);
 			break;
 		case 0:
 			pthread_exit(NULL);
 		case -1:
 			pthread_exit(NULL);
+		case NEW_POKEMON:
+			algoARecibir = recibir_NEW_POKEMON(cliente_fd,&size);
+			free(algoARecibir);
+			break;
 		}
+}
+
+void* recibir_NEW_POKEMON(int cliente_fd,int* size){
+	int tamanioNombrePokemon;
+
+	recv(cliente_fd,&tamanioNombrePokemon, sizeof(int),0);
+	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
+	char* nombrePokemon = malloc(sizeof(tamanioNombrePokemon));
+	unNewPokemon->nombre = nombrePokemon;
+	recv(cliente_fd,&(unNewPokemon->coordenadas.posicionX),sizeof(uint32_t),0);
+	recv(cliente_fd,&(unNewPokemon->coordenadas.posicionY),sizeof(uint32_t),0);
+	recv(cliente_fd,&(unNewPokemon->cantidad),sizeof(uint32_t),0);
+
+	return unNewPokemon;
 }
 
 void* recibir_mensaje(int socket_cliente, int* size)
 {
 	void * buffer;
-
-	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
-	buffer = malloc(*size);
-	recv(socket_cliente, buffer, *size, MSG_WAITALL);
+		recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+		buffer = malloc(*size);
+		recv(socket_cliente, buffer, *size, MSG_WAITALL);
 
 	return buffer;
 }
+
 
 void* serializar_paquete(t_paquete* paquete, int bytes)
 {
@@ -118,3 +137,6 @@ void devolver_mensaje(void* payload, int size, int socket_cliente)
 	free(paquete->buffer);
 	free(paquete);
 }
+
+
+
