@@ -1,4 +1,6 @@
-#include "game-boy.h";
+#include "game-boy.h"
+
+#include "estructuras.h"
 
 int main(void)
 {
@@ -38,16 +40,14 @@ int main(void)
 	int tamanio_maximo_mensaje = 256;
 
 	char* mensajeAEnviar = malloc(tamanio_maximo_mensaje);
-	/*
-	 * #include <newPokemon.h>
-	 *
-	 * struct newPokemon NewPokemon = malloc(sizeof(struct newPokemon NewPokemon));
-	 * printf("\nIngrese el mensaje:");
-	 * fgets(NewPokemon,sizeof(NewPokemon));
-	 * printf("Se va a enviar el mensaje %s",NewPokemon.pokemon);
-	 * enviar_mensaje(NewPokemon, conexion);
-	 */
 
+	/*
+
+	 NewPokemon* newPokemon = malloc(sizeof(newPokemon));
+	 printf("\nIngrese el mensaje:");
+	 enviar_mensaje(newPokemon, conexion); <- Arreglar enviar mensaje
+
+*/
 	printf("\nIngrese el mensaje:");
 
 	fgets(mensajeAEnviar,tamanio_maximo_mensaje,stdin);
@@ -66,6 +66,8 @@ int main(void)
 	//Loguear mensaje recibido
 
 	log_info(logger, "Se recibio el mensaje: %s " ,mensajeRecibido);
+
+
 
 	terminar_programa(conexion, logger, config);
 }
