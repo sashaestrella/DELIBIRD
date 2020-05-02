@@ -1,6 +1,4 @@
-
 #include"utils.h"
-
 
 void iniciar_servidor(void)
 {
@@ -59,35 +57,113 @@ void serve_client(int* socket)
 void process_request(int cod_op, int cliente_fd) {
 	int size;
 	void* algoARecibir;
+
 		switch (cod_op) {
 		case MENSAJE:
 			algoARecibir = recibir_mensaje(cliente_fd, &size);
 			devolver_mensaje(algoARecibir, size, cliente_fd);
 			free(algoARecibir);
 			break;
+		case NEW_POKEMON:
+			algoARecibir = recibir_NEW_POKEMON(cliente_fd, &size);
+			free(algoARecibir);
+			break;
+		case APPEARED_POKEMON:
+			algoARecibir = recibir_APPEARED_POKEMON(cliente_fd,&size);
+			free(algoARecibir);
+			break;
+		case GET_POKEMON:
+			algoARecibir = recibir_GET_POKEMON(cliente_fd,&size);
+			free(algoARecibir);
+			break;
+		case SUSCRIPTOR_APPEARED_P:
+			algoARecibir = suscriptorAppeared(cliente_fd);
+			break;
 		case 0:
 			pthread_exit(NULL);
 		case -1:
 			pthread_exit(NULL);
-		case NEW_POKEMON:
-			algoARecibir = recibir_NEW_POKEMON(cliente_fd,&size);
-			free(algoARecibir);
-			break;
-		}
+	}
 }
+
 
 void* recibir_NEW_POKEMON(int cliente_fd,int* size){
 	int tamanioNombrePokemon;
 
 	recv(cliente_fd,&tamanioNombrePokemon, sizeof(int),0);
 	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
-	char* nombrePokemon = malloc(sizeof(tamanioNombrePokemon));
+
+	char* nombrePokemon = malloc(tamanioNombrePokemon);
+	recv(cliente_fd,nombrePokemon,tamanioNombrePokemon,0);
 	unNewPokemon->nombre = nombrePokemon;
 	recv(cliente_fd,&(unNewPokemon->coordenadas.posicionX),sizeof(uint32_t),0);
 	recv(cliente_fd,&(unNewPokemon->coordenadas.posicionY),sizeof(uint32_t),0);
 	recv(cliente_fd,&(unNewPokemon->cantidad),sizeof(uint32_t),0);
 
+	list_add(New_Pokemon,unNewPokemon); //Ver si tiene que ir el & o no
+
+
 	return unNewPokemon;
+}
+
+void* recibir_APPEARED_POKEMON(int cliente_fd,int* size){
+	int tamanioNombrePokemon;
+
+	recv(cliente_fd,&tamanioNombrePokemon, sizeof(int),0);
+	AppearedPokemon* unAppearedPokemon = malloc(sizeof(AppearedPokemon));
+	char* nombrePokemon = malloc(tamanioNombrePokemon);
+	recv(cliente_fd,nombrePokemon,tamanioNombrePokemon,0);
+	unAppearedPokemon->nombre = nombrePokemon;
+	recv(cliente_fd,&(unAppearedPokemon->coordenadas.posicionX),sizeof(uint32_t),0);
+	recv(cliente_fd,&(unAppearedPokemon->coordenadas.posicionY),sizeof(uint32_t),0);
+
+	list_add(Appeared_Pokemon,unAppearedPokemon);
+
+	return unAppearedPokemon;
+}
+
+/*
+void* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size){
+	int tamanioNombrePokemon;
+
+	recv(cliente_fd,&tamanioNombrePokemon,sizeof(int),0);
+	LocalizedPokemon* unLocalizedPokemon = malloc(sizeof(LocalizedPokemon));
+	char* nombrePokemon = malloc(tamanioNombrePokemon);
+	unLocalizedPokemon->nombre = nombrePokemon;
+	recv(cliente_fd,&(unLocalizedPokemon->pares), sizeof())
+
+}
+
+*/
+
+void* recibir_GET_POKEMON(int cliente_fd, int* size){
+	int tamanioNombrePokemon;
+
+	recv(cliente_fd,&tamanioNombrePokemon,sizeof(int),0);
+	GetPokemon* unGetPokemon = malloc(sizeof(GetPokemon));
+	char* nombrePokemon = malloc(tamanioNombrePokemon);
+	recv(cliente_fd,nombrePokemon,tamanioNombrePokemon,0);
+	unGetPokemon->nombre = nombrePokemon;
+
+	list_add(Get_Pokemon,unGetPokemon);
+
+	return unGetPokemon;
+}
+
+void conectarSuscriptorAppeared(int socket_suscriptor){
+
+}
+
+
+void* suscriptorAppeared(int socket_suscriptor){
+
+	pthread_t hiloSuscriptorAppeared;
+
+	pthread_create(&hiloSuscriptorAppeared,NULL, (void*)conectarSuscriptorAppeared, NULL);
+	pthread_detach(hiloSuscriptorAppeared);
+
+
+	return 0;
 }
 
 void* recibir_mensaje(int socket_cliente, int* size)
@@ -116,6 +192,7 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
 	return magic;
 }
 
+
 void devolver_mensaje(void* payload, int size, int socket_cliente)
 {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
@@ -130,6 +207,8 @@ void devolver_mensaje(void* payload, int size, int socket_cliente)
 
 	void* a_enviar = serializar_paquete(paquete, bytes);
 
+
+
 	send(socket_cliente, a_enviar, bytes, 0);
 
 	free(a_enviar);
@@ -137,6 +216,3 @@ void devolver_mensaje(void* payload, int size, int socket_cliente)
 	free(paquete->buffer);
 	free(paquete);
 }
-
-
-
