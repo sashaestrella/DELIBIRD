@@ -9,6 +9,7 @@
 #include<netdb.h>
 #include<string.h>
 #include<commons/collections/list.h>
+#include<commons/temporal.h>
 
 
 typedef struct paresOrdenados{
