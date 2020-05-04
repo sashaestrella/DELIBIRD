@@ -7,8 +7,9 @@
 #include<commons/string.h>
 #include<commons/config.h>
 #include<readline/readline.h>
+#include "/home/utnso/workspace/tp-2020-1c-BOMP/Utils/src/utilsGeneral.h"
 
-#include "utils.h"
+
 
 
 t_log* iniciar_logger(void);

@@ -8,6 +8,7 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include src/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -22,19 +23,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: libutils.so
+all: libUtils.so
 
 # Tool invocations
-libutils.so: $(OBJS) $(USER_OBJS)
+libUtils.so: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -shared -o "libutils.so" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -shared -o "libUtils.so" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(LIBRARIES)$(OBJS)$(C_DEPS) libutils.so
+	-$(RM) $(LIBRARIES)$(OBJS)$(C_DEPS) libUtils.so
 	-@echo ' '
 
 .PHONY: all clean dependents
