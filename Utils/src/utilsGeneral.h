@@ -7,6 +7,7 @@
 #include<unistd.h>
 #include<netdb.h>
 #include<commons/log.h>
+#include<commons/config.h>
 #include<string.h>
 #include<pthread.h>
 #include"utilsEstructuras.h"
@@ -70,7 +71,9 @@ void devolver_mensaje(void* payload, int size, int socket_cliente);
 
 void validarMensaje();
 
+//--------------------Clientes--------------
 
+int crear_conexion(char* ip, char* puerto);
 
 
 #endif /* CONEXIONES_H_ */
