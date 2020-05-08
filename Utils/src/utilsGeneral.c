@@ -247,3 +247,41 @@ void liberar_conexion(int socket_cliente)
 	close(socket_cliente);
 }
 
+NewPokemon* parsearNewPokemon(char* unMensaje)
+{
+	NewPokemon* newPokemon = malloc(sizeof(newPokemon));
+	char* tok = unMensaje;
+	char* proceso = NULL;
+	char* tipoMensaje = NULL;
+	char* pokemon = NULL;
+	char* posicionX = NULL;
+	char* posicionY = NULL;
+	char* cantidad = NULL;
+
+	proceso = strtok(tok, " ");
+	tipoMensaje = strtok(NULL, " ");
+
+	pokemon = strtok(NULL, " ");
+	newPokemon->nombre = pokemon;
+	newPokemon->tamanioNombre = strlen(pokemon);
+
+	posicionX = strtok(NULL," ");
+	newPokemon->coordenadas.posicionX = atoi(posicionX);
+
+	posicionY = strtok(NULL," ");
+	newPokemon->coordenadas.posicionY = atoi(posicionY);
+
+	cantidad = strtok(NULL," ");
+	newPokemon->cantidad = atoi(cantidad);
+
+	return newPokemon;
+}
+
+void enviarNewPokemon(NewPokemon* newPokemon, int conexion)
+{
+	uint32_t codigo = NEW_POKEMON;
+	send(conexion, &codigo, sizeof(uint32_t), 0);
+
+	send()
+}
+

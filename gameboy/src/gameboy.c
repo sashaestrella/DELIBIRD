@@ -1,12 +1,9 @@
-
-
 #include "game-boy.h"
+#include <src/utilsGeneral.h>
 
 int main(void)
 {
-
-	/*---------------------------------------------------PARTE 2-------------------------------------------------------------*/
-	/*int conexion;
+	int conexion;
 	char* ip;
 	char* puerto;
 
@@ -16,74 +13,75 @@ int main(void)
 
 	logger = iniciar_logger();
 
-	char* primerLog = "Soy un log";
+	//Loggear "soy un log"
+	char* primerLog = "Soy game-boy";
 
 	log_info(logger, primerLog);
 
-	//Loggear "soy un log"
 
 	config = leer_config();
 
 	config_set_value(config, "IP", "127.0.0.1");
 	config_set_value(config, "PUERTO", "4444");
-	config_save(config);*/
+	config_save(config);
 
 
-	/*---------------------------------------------------PARTE 3-------------------------------------------------------------*/
-
-	//antes de continuar, tenemos que asegurarnos que el servidor esté corriendo porque lo necesitaremos para lo que sigue.
-
-	//crear conexion
-
-
-	/*ip = config_get_string_value(config, "IP");
+	//Crear conexion
+	ip = config_get_string_value(config, "IP");
 	puerto = config_get_string_value(config, "PUERTO");
 
 	conexion = crear_conexion(ip, puerto);
 
 	printf( "\nSe creo la conexion con el valor %d \n", conexion);
 
-	//enviar mensaje
+	//Enviar mensaje
 
 	int tamanio_maximo_mensaje = 256;
 
 	char* mensajeAEnviar = malloc(tamanio_maximo_mensaje);
 
+	NewPokemon* newPokemon = malloc(sizeof(newPokemon));
+
 	printf("\nIngrese el mensaje:");
 
 	fgets(mensajeAEnviar,tamanio_maximo_mensaje,stdin);
 
-	printf("Se va a enviar el mensaje %s", mensajeAEnviar);
+	newPokemon = parsearNewPokemon(mensajeAEnviar);
 
-	enviar_mensaje(mensajeAEnviar, conexion); //Envia el mensaje
+	//	BROKER NEWPOKEMON PIKACHU 3 2 1
 
-	//recibir mensaje
+	printf("Se va a enviar el pokemon %s", newPokemon->nombre);
 
+	enviarNewPokemon(newPokemon, conexion);
+	//enviar_mensaje(mensajeAEnviar, conexion);
+
+	//Recibir mensaje
+/*
 	char* mensajeRecibido;
 
 	mensajeRecibido=recibir_mensaje(conexion);
-
-
-	//loguear mensaje recibido
-
+*/
+	//Loguear mensaje recibido
+/*
 	log_info(logger, "Se recibio el mensaje: %s " ,mensajeRecibido);
-
+*/
 	terminar_programa(conexion, logger, config);
 }
 
 //TODO
 t_log* iniciar_logger(void)
 {
-	return log_create("gameboy.log", "Log de GameBoy" , 1, LOG_LEVEL_INFO);
+	return log_create("game-boy.log", "Game Boy" , 1, LOG_LEVEL_INFO);
 
 }
 
 //TODO
 t_config* leer_config(void)
 {
-	return config_create("gameboy.config");
+	return config_create("game-boy.config");
 
 }
+
 
 //TODO
 void terminar_programa(int conexion, t_log* logger, t_config* config)
@@ -93,4 +91,4 @@ void terminar_programa(int conexion, t_log* logger, t_config* config)
 	liberar_conexion(conexion);
 
 	//Y por ultimo, para cerrar, hay que liberar lo que utilizamos (conexion, log y config) con las funciones de las commons y del TP mencionadas en el enunciado
-*/}
+}
