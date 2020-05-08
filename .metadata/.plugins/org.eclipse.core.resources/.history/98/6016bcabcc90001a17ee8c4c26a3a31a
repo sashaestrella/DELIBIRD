@@ -20,11 +20,11 @@ int main(void)
 
 
 	config = leer_config();
-	puts("aca anda");
 
 	config_set_value(config, "IP", "127.0.0.1");
 	config_set_value(config, "PUERTO", "4444");
 	config_save(config);
+
 
 	//Crear conexion
 	ip = config_get_string_value(config, "IP");
@@ -40,17 +40,17 @@ int main(void)
 
 	char* mensajeAEnviar = malloc(tamanio_maximo_mensaje);
 
-	NewPokemon* newPokemon = malloc(sizeof(NewPokemon));
+	NewPokemon* newPokemon = malloc(sizeof(newPokemon));
 
 	printf("\nIngrese el mensaje:");
 
-	//fgets(mensajeAEnviar,tamanio_maximo_mensaje,stdin);
+	fgets(mensajeAEnviar,tamanio_maximo_mensaje,stdin);
 
-	//newPokemon = parsearNewPokemon(mensajeAEnviar);
+	newPokemon = parsearNewPokemon(mensajeAEnviar);
 
 	//	BROKER NEWPOKEMON PIKACHU 3 2 1
 
-	//printf("Se va a enviar el pokemon %s", newPokemon->nombre);
+	printf("Se va a enviar el pokemon %s", newPokemon->nombre);
 
 	enviarNewPokemon(newPokemon, conexion);
 	//enviar_mensaje(mensajeAEnviar, conexion);

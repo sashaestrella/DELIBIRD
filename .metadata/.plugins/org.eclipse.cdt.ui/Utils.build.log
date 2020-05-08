@@ -1,0 +1,31 @@
+23:21:14 **** Incremental Build of configuration Debug for project Utils ****
+make all 
+Building file: ../src/utilsGeneral.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -fPIC -MMD -MP -MF"src/utilsGeneral.d" -MT"src/utilsGeneral.o" -o "src/utilsGeneral.o" "../src/utilsGeneral.c"
+../src/utilsGeneral.c: In function ‘esperar_cliente’:
+../src/utilsGeneral.c:44:69: warning: pointer targets in passing argument 3 of ‘accept’ differ in signedness [-Wpointer-sign]
+  int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
+                                                                     ^
+In file included from ../src/utilsGeneral.h:7:0,
+                 from ../src/utilsGeneral.c:1:
+/usr/include/i386-linux-gnu/sys/socket.h:243:12: note: expected ‘socklen_t * restrict {aka unsigned int * restrict}’ but argument is of type ‘int *’
+ extern int accept (int __fd, __SOCKADDR_ARG __addr,
+            ^
+../src/utilsGeneral.c: In function ‘parsearNewPokemon’:
+../src/utilsGeneral.c:269:8: warning: variable ‘tipoMensaje’ set but not used [-Wunused-but-set-variable]
+  char* tipoMensaje = NULL;
+        ^
+../src/utilsGeneral.c:268:8: warning: variable ‘proceso’ set but not used [-Wunused-but-set-variable]
+  char* proceso = NULL;
+        ^
+Finished building: ../src/utilsGeneral.c
+ 
+Building target: libUtils.so
+Invoking: GCC C Linker
+gcc -shared -o "libUtils.so"  ./src/utilsGeneral.o   -lcommons -lpthread
+Finished building target: libUtils.so
+ 
+
+23:21:15 Build Finished (took 724ms)
+

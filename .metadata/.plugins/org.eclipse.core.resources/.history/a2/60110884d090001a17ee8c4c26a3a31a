@@ -113,29 +113,17 @@ void process_request(int cod_op, int cliente_fd) {
 
 
 void* recibir_NEW_POKEMON(int cliente_fd,int* size){
-	uint32_t tamanioNombrePokemon;
+	int tamanioNombrePokemon;
 	puts("entre a recibir new pokemon");
-	recv(cliente_fd,&tamanioNombrePokemon, sizeof(uint32_t),0);
+	recv(cliente_fd,&tamanioNombrePokemon, sizeof(int),0);
 	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
-	if(tamanioNombrePokemon == 8){
-		puts("envia re piola el pikachu (o al menos su tamaño)");
-	}
-	printf("recibi el tamaño: %d", sizeof(uint32_t));
 
 	char* nombrePokemon = malloc(tamanioNombrePokemon);
 	recv(cliente_fd,nombrePokemon,tamanioNombrePokemon,0);
 	unNewPokemon->nombre = nombrePokemon;
-	printf("recibi el nombre: %s", unNewPokemon->nombre);
-
 	recv(cliente_fd,&(unNewPokemon->coordenadas.posicionX),sizeof(uint32_t),0);
-	printf("recibi el posX: %d", unNewPokemon->coordenadas.posicionX);
-
 	recv(cliente_fd,&(unNewPokemon->coordenadas.posicionY),sizeof(uint32_t),0);
-	printf("recibi el posY: %d", unNewPokemon->coordenadas.posicionY);
-
 	recv(cliente_fd,&(unNewPokemon->cantidad),sizeof(uint32_t),0);
-	printf("recibi la cantidad: %d", unNewPokemon->cantidad);
-
 
 	list_add(New_Pokemon,unNewPokemon); //Ver si tiene que ir el & o no
 
@@ -176,7 +164,7 @@ void* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size){
 void* recibir_GET_POKEMON(int cliente_fd, int* size){
 	int tamanioNombrePokemon;
 
-	recv(cliente_fd,&tamanioNombrePokemon,sizeof(uint32_t),0);
+	recv(cliente_fd,&tamanioNombrePokemon,sizeof(int),0);
 	GetPokemon* unGetPokemon = malloc(sizeof(GetPokemon));
 	char* nombrePokemon = malloc(tamanioNombrePokemon);
 	recv(cliente_fd,nombrePokemon,tamanioNombrePokemon,0);
@@ -295,18 +283,6 @@ void enviarNewPokemon(NewPokemon* newPokemon, int conexion)
 	uint32_t codigo = NEW_POKEMON;
 	send(conexion, &codigo, sizeof(uint32_t), 0);
 	puts("te envie el codop");
-	char* pikachu = "pikachu";
-	uint32_t lenPikachu = strlen(pikachu)+1;
-	uint32_t posX = 2;
-	uint32_t posY = 3;
-	uint32_t cant = 2;
-	send(conexion,&lenPikachu,sizeof(uint32_t),0);
-	send(conexion,pikachu,lenPikachu,0);
-	send(conexion,&posX,sizeof(uint32_t),0);
-	send(conexion,&posY,sizeof(uint32_t),0);
-	send(conexion,&cant,sizeof(uint32_t),0);
-
-
 	//send() de todo new pokemon
 }
 

@@ -1,0 +1,30 @@
+22:54:36 **** Build of configuration Debug for project gameboy ****
+make all 
+Building file: ../src/gameboy.c
+Invoking: GCC C Compiler
+gcc -I"/home/utnso/tp-2020-1c-BOMP/Utils" -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/gameboy.d" -MT"src/gameboy.o" -o "src/gameboy.o" "../src/gameboy.c"
+In file included from ../src/gameboy.c:1:0:
+../src/game-boy.h:1:13: warning: extra tokens at end of #ifndef directive
+ #ifndef GAME-BOY_H_
+             ^
+../src/game-boy.h:2:13: warning: ISO C99 requires whitespace after the macro name
+ #define GAME-BOY_H_
+             ^
+../src/gameboy.c: In function ‘main’:
+../src/gameboy.c:41:8: warning: unused variable ‘mensajeAEnviar’ [-Wunused-variable]
+  char* mensajeAEnviar = malloc(tamanio_maximo_mensaje);
+        ^
+../src/gameboy.c: In function ‘terminar_programa’:
+../src/gameboy.c:91:2: warning: implicit declaration of function ‘liberar_conexion’ [-Wimplicit-function-declaration]
+  liberar_conexion(conexion);
+  ^
+Finished building: ../src/gameboy.c
+ 
+Building target: gameboy
+Invoking: GCC C Linker
+gcc -L"/home/utnso/tp-2020-1c-BOMP/Utils/Debug" -o "gameboy"  ./src/gameboy.o   -lUtils -lcommons -lpthread
+Finished building target: gameboy
+ 
+
+22:54:37 Build Finished (took 657ms)
+

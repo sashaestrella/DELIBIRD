@@ -116,9 +116,10 @@ void* recibir_NEW_POKEMON(int cliente_fd,int* size){
 	uint32_t tamanioNombrePokemon;
 	puts("entre a recibir new pokemon");
 	recv(cliente_fd,&tamanioNombrePokemon, sizeof(uint32_t),0);
+	puts("linea 118");
 	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
-	if(tamanioNombrePokemon == 8){
-		puts("envia re piola el pikachu (o al menos su tamaño)");
+	if(sizeof(tamanioNombrePokemon) == 4){
+		puts("ahre");
 	}
 	printf("recibi el tamaño: %d", sizeof(uint32_t));
 
