@@ -26,13 +26,13 @@ endif
 all: gamecard
 
 dependents:
-	-cd /home/utnso/workspace/tpBOMP/Utils/Debug && $(MAKE) all
+	-cd /home/utnso/Documentos/TP/tp-2020-1c-BOMP/Utils/Debug && $(MAKE) clean all
 
 # Tool invocations
-gamecard: $(OBJS) $(USER_OBJS) /home/utnso/workspace/tpBOMP/Utils/Debug/libUtils.so
+gamecard: $(OBJS) $(USER_OBJS) /home/utnso/Documentos/TP/tp-2020-1c-BOMP/Utils/Debug/libUtils.so
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L"/home/utnso/workspace/tpBOMP/Utils/Debug" -o "gamecard" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L"/home/utnso/Documentos/TP/tp-2020-1c-BOMP/Utils/Debug" -o "gamecard" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -42,6 +42,6 @@ clean:
 	-@echo ' '
 
 .PHONY: all clean dependents
-/home/utnso/workspace/tpBOMP/Utils/Debug/libUtils.so:
+/home/utnso/Documentos/TP/tp-2020-1c-BOMP/Utils/Debug/libUtils.so:
 
 -include ../makefile.targets

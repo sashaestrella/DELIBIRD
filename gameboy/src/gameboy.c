@@ -1,13 +1,11 @@
 #include "game-boy.h"
 #include <src/utilsGeneral.h>
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	int conexion;
 	char* ip;
 	char* puerto;
-
-
 	t_log* logger;
 	t_config* config;
 
@@ -20,7 +18,6 @@ int main(void)
 
 
 	config = leer_config();
-	puts("aca anda");
 
 	config_set_value(config, "IP", "127.0.0.1");
 	config_set_value(config, "PUERTO", "4444");
@@ -29,32 +26,16 @@ int main(void)
 	//Crear conexion
 	ip = config_get_string_value(config, "IP");
 	puerto = config_get_string_value(config, "PUERTO");
-
 	conexion = crear_conexion(ip, puerto);
 
 	printf( "\nSe creo la conexion con el valor %d \n", conexion);
 
 	//Enviar mensaje
 
-	int tamanio_maximo_mensaje = 256;
-
-	char* mensajeAEnviar = malloc(tamanio_maximo_mensaje);
-
 	NewPokemon* newPokemon = malloc(sizeof(NewPokemon));
-
-	printf("\nIngrese el mensaje:");
-
-	//fgets(mensajeAEnviar,tamanio_maximo_mensaje,stdin);
-
-	//newPokemon = parsearNewPokemon(mensajeAEnviar);
-
-	//	BROKER NEWPOKEMON PIKACHU 3 2 1
-
-	//printf("Se va a enviar el pokemon %s", newPokemon->nombre);
+	newPokemon = parsearNewPokemon(argv[3], argv[4], argv[5], argv[6]);
 
 	enviarNewPokemon(newPokemon, conexion);
-	//enviar_mensaje(mensajeAEnviar, conexion);
-
 	//Recibir mensaje
 /*
 	char* mensajeRecibido;

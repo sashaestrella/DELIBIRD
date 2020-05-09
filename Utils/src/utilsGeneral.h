@@ -69,7 +69,7 @@ void process_request(int cod_op, int cliente_fd);
 void serve_client(int *socket);
 void* serializar_paquete(t_paquete* paquete, int bytes);
 void devolver_mensaje(void* payload, int size, int socket_cliente);
-NewPokemon* parsearNewPokemon(char* unMensaje);
+NewPokemon* parsearNewPokemon(char* pokemon, char* posicionX, char* posicionY, char* cantidad);
 void enviarNewPokemon(NewPokemon* newPokemon, int conexion);
 void validarMensaje();
 

@@ -116,11 +116,12 @@ void* recibir_NEW_POKEMON(int cliente_fd,int* size){
 	uint32_t tamanioNombrePokemon;
 	puts("entre a recibir new pokemon");
 	recv(cliente_fd,&tamanioNombrePokemon, sizeof(uint32_t),0);
+
 	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
 	if(tamanioNombrePokemon == 8){
 		puts("envia re piola el pikachu (o al menos su tamaño)");
 	}
-	printf("recibi el tamaño: %d", sizeof(uint32_t));
+	printf("recibi el tamaño: %d", tamanioNombrePokemon);
 
 	char* nombrePokemon = malloc(tamanioNombrePokemon);
 	recv(cliente_fd,nombrePokemon,tamanioNombrePokemon,0);
@@ -260,31 +261,17 @@ void liberar_conexion(int socket_cliente)
 	close(socket_cliente);
 }
 
-NewPokemon* parsearNewPokemon(char* unMensaje)
+NewPokemon* parsearNewPokemon(char* pokemon
+							, char* posicionX
+							, char* posicionY
+							, char* cantidad)
 {
-	NewPokemon* newPokemon = malloc(sizeof(newPokemon));
-	char* tok = unMensaje;
-	char* proceso = NULL;
-	char* tipoMensaje = NULL;
-	char* pokemon = NULL;
-	char* posicionX = NULL;
-	char* posicionY = NULL;
-	char* cantidad = NULL;
+	NewPokemon* newPokemon = malloc(sizeof(NewPokemon));
 
-	proceso = strtok(tok, " ");
-	tipoMensaje = strtok(NULL, " ");
-
-	pokemon = strtok(NULL, " ");
 	newPokemon->nombre = pokemon;
 	newPokemon->tamanioNombre = strlen(pokemon);
-
-	posicionX = strtok(NULL," ");
 	newPokemon->coordenadas.posicionX = atoi(posicionX);
-
-	posicionY = strtok(NULL," ");
 	newPokemon->coordenadas.posicionY = atoi(posicionY);
-
-	cantidad = strtok(NULL," ");
 	newPokemon->cantidad = atoi(cantidad);
 
 	return newPokemon;
@@ -294,19 +281,18 @@ void enviarNewPokemon(NewPokemon* newPokemon, int conexion)
 {
 	uint32_t codigo = NEW_POKEMON;
 	send(conexion, &codigo, sizeof(uint32_t), 0);
-	puts("te envie el codop");
-	char* pikachu = "pikachu";
-	uint32_t lenPikachu = strlen(pikachu)+1;
-	uint32_t posX = 2;
-	uint32_t posY = 3;
-	uint32_t cant = 2;
-	send(conexion,&lenPikachu,sizeof(uint32_t),0);
-	send(conexion,pikachu,lenPikachu,0);
+	puts("te envie el codopeee");
+	char* nombrePokemon = newPokemon->nombre;
+	uint32_t tamanioNombre= strlen(newPokemon->tamanioNombre)+1;
+	uint32_t posX = newPokemon->coordenadas.posicionX;
+	uint32_t posY = newPokemon->coordenadas.posicionY;
+	uint32_t cant = newPokemon->cantidad;;
+
+	send(conexion,&tamanioNombre,sizeof(uint32_t),0);
+	send(conexion,nombrePokemon,tamanioNombre,0);
 	send(conexion,&posX,sizeof(uint32_t),0);
 	send(conexion,&posY,sizeof(uint32_t),0);
 	send(conexion,&cant,sizeof(uint32_t),0);
-
-
 	//send() de todo new pokemon
 }
 
