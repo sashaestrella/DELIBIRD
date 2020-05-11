@@ -160,6 +160,15 @@ void process_request(int cod_op, int cliente_fd) {
 	}
 }
 
+void* recibir_mensaje(int socket_cliente, int* size)
+{
+	void * buffer;
+		recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+		buffer = malloc(*size);
+		recv(socket_cliente, buffer, *size, MSG_WAITALL);
+
+	return buffer;
+}
 
 void* recibir_NEW_POKEMON(int cliente_fd,int* size){
 	int tamanioNombrePokemon;
@@ -176,6 +185,15 @@ void* recibir_NEW_POKEMON(int cliente_fd,int* size){
 
 	list_add(New_Pokemon,unNewPokemon); //Ver si tiene que ir el & o no
 
+	/*
+	NewPokemon* newPokemon;
+	size = sizeof(NewPokemon);
+	recv(cliente_fd,size,sizeof(int),MSG_WAITALL);
+	newPokemon = malloc(*size);
+	recv(cliente_fd,newPokemon,*size,MSG_WAITALL);
+
+	return newPokemon;
+	*/
 
 	return unNewPokemon;
 }
@@ -314,15 +332,7 @@ void* solicMensajeCaughtPokemon(int socket_suscriptor){
 
 */
 
-void* recibir_mensaje(int socket_cliente, int* size)
-{
-	void * buffer;
-		recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
-		buffer = malloc(*size);
-		recv(socket_cliente, buffer, *size, MSG_WAITALL);
 
-	return buffer;
-}
 
 
 void* serializar_paquete(t_paquete* paquete, int bytes)
@@ -345,6 +355,16 @@ void* serializarNewPokemon(NewPokemon* newPokemon,int bytes){
 	void* buffer = malloc(bytes);
 	int tamanioNombre = strlen(newPokemon->nombre) + 1;
 	int desplazamiento = 0;
+/*
+ 	int bytesNP = 2* sizeof(int)+strlen(newPokemon->nombre)+sizeof(newPokemon->coordenadas.posicionX)+sizeof(newPokemon->coordenadas.posicionY)+sizeof(newPokemon->cantidad);
+	memcpy(buffer + desplazamiento, NEW_POKEMON,sizeof(int));
+	desplazamiento+= sizeof(int);
+	memcpy(buffer + desplazamiento,&(sizeof(NewPokemon)),bytesNP);
+	desplazamiento+= bytesNP;
+	memcpy(buffer + desplazamiento,newPokemon,sizeof(NewPokemon));
+	desplazamiento+= sizeof(NewPokemon);
+
+	*/
 
 	memcpy(buffer + desplazamiento,&tamanioNombre,sizeof(int));
 	desplazamiento+= sizeof(int);
