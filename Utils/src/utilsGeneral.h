@@ -1,5 +1,6 @@
 #ifndef CONEXIONES_H_
 #define CONEXIONES_H_
+#define MAX_BUFFER 1024 //tamaño del buffer
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -53,15 +54,30 @@ typedef struct
 } t_paquete;
 
 
+NewPokemon* newPokemon;
+LocalizedPokemon* localizedPokemon;
+GetPokemon* getPokemon;
+AppearedPokemon* appearedPokemon;
+CatchPokemon* catchPokemon;
+CaughtPokemon* caughtPokemon;
+
+pthread_t th1, th2;
+
+pthread_mutex_t mutex; //Mutex de acceso al buffer compartido
+pthread_cond_t no_lleno; //Variable condicional que controla el llenado del buffer
+pthread_cond_t no_vacio; //Variable condicional que  controla el vaciado del buffer
+
 pthread_t thread;
 pthread_t hiloConexionSusc;
 
-//pthread_mutex_t mutex;
 
 void* recibir_buffer(int*, int);
 
 void iniciar_servidor(void);
 void esperar_cliente(int);
+int recibir_operacion(int);
+void process_request(int cod_op, int cliente_fd);
+void serve_client(int *socket);
 void* recibir_mensaje(int socket_cliente, int* size);
 void* recibir_NEW_POKEMON(int cliente_fd,int* size);
 void* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size);
@@ -75,9 +91,13 @@ void* solicMensajeGetPokemon(int cliente_fd);
 void* solicMensajeAppearedPokemon(int cliente_fd);
 void* solicMensajeCatchPokemon(int cliente_fd);
 void* solicMensajeCaughtPokemon(int cliente_fd);
-int recibir_operacion(int);
-void process_request(int cod_op, int cliente_fd);
-void serve_client(int *socket);
+void enviarColaNewPokemon(NewPokemon* newPokemon,int socket_suscriptor);
+void enviarColaLocalizedPokemon(LocalizedPokemon* localizedPokemon,int socket_suscriptor);
+void enviarColaGetPokemon(GetPokemon* getPokemon,int socket_suscriptor);
+void enviarColaAppearedPokemon(AppearedPokemon* appearedPokemon,int socket_suscriptor);
+void enviarColaCatchPokemon(CatchPokemon* catchPokemon,int socket_suscriptor);
+void enviarColaCaughtPokemon(CaughtPokemon* caughtPokemon,int socket_suscriptor);
+
 void* serializar_paquete(t_paquete* paquete, int bytes);
 void* serializarNewPokemon(NewPokemon* newPokemon,int bytes);
 void* serializarLocalizedPokemon(LocalizedPokemon* localizedPokemon,int bytes);
