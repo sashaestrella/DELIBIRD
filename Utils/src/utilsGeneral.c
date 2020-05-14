@@ -163,26 +163,24 @@ void* recibir_mensaje(int socket_cliente, int* size)
 	return buffer;
 }
 
-int elementosBuffer;//numero de elementos en el buffer
-int buffer[MAX_BUFFER]; //buffer comun
+void agregarAColaNewPokemon(){
+	int pos = 0;
+	int cantidadDeNewPokemon = list_size(New_Pokemon);
+		buffer->elements_count = cantidadDeNewPokemon;
+		for(int i=0;i<=cantidadDeNewPokemon;i++){
+			list_add(New_Pokemon,newPokemon);
+			pthread_mutex_lock(&mutex);
+			if(cantidadDeNewPokemon == MAX_BUFFER){
+				pthread_cond_wait(&no_lleno,&mutex);
+				}
+			newPokemon = list_get(buffer,pos);
+			pos = (pos + 1) % MAX_BUFFER;
+			cantidadDeNewPokemon++;
+			pthread_cond_signal(&no_vacio);
+			pthread_mutex_unlock(&mutex);
 
-void brokerProductorNewPokemon() {
-		int pos = 0;
-		int elementosLista = list_size(New_Pokemon);
-		for(int i=0; i<elementosLista; i++){
-		list_add(New_Pokemon,newPokemon);
-
-		pthread_mutex_lock(&mutex); //accedo al buffer
-			while (elementosBuffer == MAX_BUFFER){ //si el buffer lleno se bloquea
-				pthread_cond_wait(&no_lleno, &mutex);
-			}
-		buffer[pos] = i;
-		pos = (pos + 1) % MAX_BUFFER;//posicion del siguiente elemento en el buffer
-		elementosBuffer++;
-		pthread_cond_signal(&no_vacio); //señal de que el buffer no esta vacio
-		pthread_mutex_unlock(&mutex);//libero el mutex
-	}
-	pthread_exit(0);
+		}
+		pthread_exit(0);
 }
 
 void* recibir_NEW_POKEMON(int cliente_fd,int* size){
@@ -195,9 +193,11 @@ void* recibir_NEW_POKEMON(int cliente_fd,int* size){
 		recv(cliente_fd,newPokemon,*size,MSG_WAITALL);
 
 		pthread_mutex_init(&mutex, NULL);
-		pthread_cond_init(&no_lleno,NULL);
-		pthread_cond_init(&no_vacio,NULL);
-		pthread_create(&th1, NULL,(void*)&brokerProductorNewPokemon,NULL);
+		pthread_cond_init(&no_lleno, NULL);
+		pthread_cond_init(&no_vacio, NULL);
+		pthread_create(&th3,NULL,(void*)&agregarAColaNewPokemon,NULL);
+
+		pthread_join(th3,NULL);
 
 
 	/*
@@ -256,6 +256,15 @@ void* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size){
 
 
 void* recibir_GET_POKEMON(int cliente_fd, int* size){
+
+	/*
+	 * GetPokemon* getPokemon = malloc(sizeof(GetPokemon));
+	 	 *size = sizeof(getPokemon->nombre);
+		recv(cliente_fd,size,sizeof(int),MSG_WAITALL);
+
+		recv(cliente_fd,getPokemon,*size,MSG_WAITALL);
+		 */
+
 	int tamanioNombrePokemon;
 
 	recv(cliente_fd,&tamanioNombrePokemon,sizeof(int),0);
@@ -271,6 +280,14 @@ void* recibir_GET_POKEMON(int cliente_fd, int* size){
 
 
 void* recibir_APPEARED_POKEMON(int cliente_fd,int* size){
+
+	/*
+		 * AppearedPokemon* appearedPokemon = malloc(sizeof(AppearedPokemon));
+		 	 *size = sizeof(AppearedPokemon->nombre)+sizeof(appearedPokemon->coordenadas.posicionX)+sizeof(appearedPokemon->coordenadas.posicionY);
+			recv(cliente_fd,size,sizeof(int),MSG_WAITALL);
+
+			recv(cliente_fd,appearedPokemon,*size,MSG_WAITALL);
+			 */
 	int tamanioNombrePokemon;
 
 	recv(cliente_fd,&tamanioNombrePokemon, sizeof(int),0);
@@ -288,6 +305,15 @@ void* recibir_APPEARED_POKEMON(int cliente_fd,int* size){
 
 
 void* recibir_CATCH_POKEMON(int cliente_fd,int*size){
+
+	/*
+	 * CatchPokemon* catchPokemon = malloc(sizeof(CatchPokemon));
+	 	 *size = sizeof(catchPokemon->nombre)+sizeof(catchPokemon->coordenadas.posicionX)+sizeof(catchPokemon->coordenadas.posicionY);
+		recv(cliente_fd,size,sizeof(int),MSG_WAITALL);
+
+		recv(cliente_fd,catchPokemon,*size,MSG_WAITALL);
+				 */
+
 	int tamanioNombrePokemon;
 
 	recv(cliente_fd,&tamanioNombrePokemon, sizeof(int),0);
@@ -304,6 +330,13 @@ void* recibir_CATCH_POKEMON(int cliente_fd,int*size){
 }
 
 void* recibir_CAUGHT_POKEMON(int cliente_fd,int* size){
+	/*
+	 * CaughtPokemon* caughtPokemon = malloc(sizeof(CaughtPokemon));
+		 *size = sizeof(caughtPokemon->atrapar);
+		recv(cliente_fd,size,sizeof(int),MSG_WAITALL);
+
+		recv(cliente_fd,caughtPokemon,*size,MSG_WAITALL);
+	 */
 
 	CaughtPokemon* caughtPokemon = malloc(sizeof(CaughtPokemon));
 	recv(cliente_fd,&(caughtPokemon->atrapar),sizeof(uint32_t),0);
@@ -313,24 +346,75 @@ void* recibir_CAUGHT_POKEMON(int cliente_fd,int* size){
 	return caughtPokemon;
 }
 
-void brokerConsumidorNewPokemon(int socket_suscriptor){
-	int pos = 0;
-	int elementosLista = list_size(New_Pokemon);
-	for(int i=0; i<elementosLista; i++){
-		enviarNewPokemon(newPokemon,sizeof(NewPokemon),socket_suscriptor);
-		pthread_mutex_lock(&mutex);
-			while (elementosBuffer == 0){
-				pthread_cond_wait(&no_vacio, &mutex);
-			}
-		i = buffer[pos];
-		pos = (pos + 1) % MAX_BUFFER;
-		elementosBuffer--;
+void recibirACK1(MensajeEnviado* mensaje,int ack,int socket_suscriptor){
+	recv(socket_suscriptor,&ack,sizeof(int),0);
+	pthread_mutex_lock(&mutex2);
+	while(ack == 1){
+		pthread_cond_wait(&ack_ok,&mutex2);
+	}
 
-		pthread_cond_signal(&no_lleno); //señal de que el buffer no esta lleno
+	pthread_mutex_unlock(&mutex2);
+
+	pthread_exit(0);
+}
+
+void recibirACK2(MensajeEnviado* mensaje,int ack,int socket_suscriptor){
+	pthread_mutex_lock(&mutex2);
+
+	while(ack == 0){
+		list_add(mensaje->suscriptoresACK,&socket_suscriptor);
+	}
+
+	pthread_cond_broadcast(&ack_ok);
+	pthread_mutex_unlock(&mutex2);
+
+	pthread_exit(0);
+}
+
+void registrarMensajeEnviado(NewPokemon* newPokemon,int socket_suscriptor){
+	MensajeEnviado* mensaje = malloc(sizeof(MensajeEnviado));
+	int id = rand() % 999; //resto de dividir rand() entre 1000, el resto puede ir de 0 a 1000
+	mensaje->ID = id;
+	mensaje->mensajeEnv = newPokemon;
+	list_add(mensaje->suscriptoresAtendidos,&socket_suscriptor);
+
+	pthread_mutex_init(&mutex2, NULL);
+	pthread_cond_init(&ack_ok,NULL);
+	pthread_create(&th3,NULL,(void*)recibirACK1,NULL);
+	pthread_create(&th4,NULL,(void*)recibirACK2,NULL);
+
+	pthread_join(th3,NULL);
+	pthread_join(th4,NULL);
+	pthread_mutex_destroy(&mutex2);
+	pthread_cond_destroy(&ack_ok);
+
+	free(mensaje);
+}
+
+void enviarColaNP(int socket_suscriptor){
+	int pos = 0;
+	int cantidadDeNewPokemon = list_size(New_Pokemon);
+	buffer->elements_count = cantidadDeNewPokemon;
+	for(int i=0;i<=cantidadDeNewPokemon;i++){
+		pthread_mutex_lock(&mutex);
+		if(cantidadDeNewPokemon == 0){
+			pthread_cond_wait(&no_vacio,&mutex);
+			}
+		newPokemon = list_get(buffer,pos);
+		pos = (pos + 1) % MAX_BUFFER;
+		cantidadDeNewPokemon--;
+		pthread_cond_signal(&no_lleno);
 		pthread_mutex_unlock(&mutex);
+
+		//falta verificar si el mensaje ya fue enviado anteriormente a ese suscriptor
+		//ya que si es asi no deberia enviarlo nuevamente
+		enviarNewPokemon(newPokemon,sizeof(NewPokemon),socket_suscriptor);
+		registrarMensajeEnviado(newPokemon,socket_suscriptor);
 	}
 	pthread_exit(0);
 }
+
+
 
 void enviarColaNewPokemon(NewPokemon* newPokemon,int socket_suscriptor){
 
@@ -343,14 +427,12 @@ void enviarColaNewPokemon(NewPokemon* newPokemon,int socket_suscriptor){
 	paquete->buffer->stream = malloc(tamanioLista);
 	memcpy(paquete->buffer->stream,New_Pokemon,paquete->buffer->size);
 
-	pthread_create(&th2,NULL,(void*)&brokerConsumidorNewPokemon,NULL);
+	pthread_create(&th2,NULL,(void*)&enviarColaNP,NULL);
 
-	pthread_join(th1,NULL);
 	pthread_join(th2,NULL);
 	pthread_mutex_destroy(&mutex);
 	pthread_cond_destroy(&no_lleno);
 	pthread_cond_destroy(&no_vacio);
-	exit(0);
 
 	free(paquete->buffer->stream);
 	free(paquete->buffer);
@@ -376,6 +458,7 @@ void enviarColaLocalizedPokemon(LocalizedPokemon* localizedPokemon,int socket_su
 	paquete->buffer->stream = malloc(tamanioLista);
 	memcpy(paquete->buffer->stream,Localized_Pokemon,paquete->buffer->size);
 
+	//Falta lo de semaforos como en New
 	for(int i=0;i<=tamanioLista; i++){
 		enviarLocalizedPokemon(localizedPokemon,sizeof(LocalizedPokemon),socket_suscriptor);
 	}
@@ -405,6 +488,7 @@ void enviarColaGetPokemon(GetPokemon* getPokemon,int socket_suscriptor){
 	paquete->buffer->stream = malloc(tamanioLista);
 	memcpy(paquete->buffer->stream,Get_Pokemon,paquete->buffer->size);
 
+	//Falta lo de semaforos como en New
 	for(int i=0;i<=tamanioLista; i++){
 		enviarGetPokemon(getPokemon,sizeof(GetPokemon),socket_suscriptor);
 	}
@@ -434,6 +518,7 @@ void enviarColaAppearedPokemon(AppearedPokemon* appearedPokemon,int socket_suscr
 	paquete->buffer->stream = malloc(tamanioLista);
 	memcpy(paquete->buffer->stream,Appeared_Pokemon,paquete->buffer->size);
 
+	//Falta lo de semaforos como en New
 	for(int i=0;i<=tamanioLista; i++){
 		enviarAppearedPokemon(appearedPokemon,sizeof(AppearedPokemon),socket_suscriptor);
 	}
@@ -463,6 +548,7 @@ void enviarColaCatchPokemon(CatchPokemon* catchPokemon,int socket_suscriptor){
 	paquete->buffer->stream = malloc(tamanioLista);
 	memcpy(paquete->buffer->stream,Catch_Pokemon,paquete->buffer->size);
 
+	//Falta lo de semaforos como en New
 	for(int i=0;i<=tamanioLista; i++){
 		enviarCatchPokemon(catchPokemon,sizeof(CatchPokemon),socket_suscriptor);
 	}
@@ -491,6 +577,7 @@ void enviarColaCaughtPokemon(CaughtPokemon* caughtPokemon,int socket_suscriptor)
 	paquete->buffer->stream = malloc(tamanioLista);
 	memcpy(paquete->buffer->stream,Caught_Pokemon,paquete->buffer->size);
 
+	//Falta lo de semaforos como en New
 	for(int i=0;i<=tamanioLista; i++){
 		enviarCaughtPokemon(caughtPokemon,sizeof(CaughtPokemon),socket_suscriptor);
 	}

@@ -24,6 +24,8 @@ t_list* Catch_Pokemon;
 t_list* Caught_Pokemon;
 t_list* suscriptores;
 
+t_list* buffer;
+
 typedef enum
 {
 	MENSAJE=1,
@@ -53,6 +55,13 @@ typedef struct
 	t_buffer* buffer;
 } t_paquete;
 
+typedef struct mensaje{
+	int ID;
+	void* mensajeEnv;
+	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
+	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
+}MensajeEnviado;
+
 
 NewPokemon* newPokemon;
 LocalizedPokemon* localizedPokemon;
@@ -61,11 +70,14 @@ AppearedPokemon* appearedPokemon;
 CatchPokemon* catchPokemon;
 CaughtPokemon* caughtPokemon;
 
-pthread_t th1, th2;
+pthread_t th1, th2, th3, th4;
 
 pthread_mutex_t mutex; //Mutex de acceso al buffer compartido
-pthread_cond_t no_lleno; //Variable condicional que controla el llenado del buffer
-pthread_cond_t no_vacio; //Variable condicional que  controla el vaciado del buffer
+pthread_mutex_t mutex2;
+
+pthread_cond_t no_lleno; //Variable condicional que controla el llenado del buffer (vacio)
+pthread_cond_t no_vacio; //Variable condicional que  controla el vaciado del buffer (lleno)
+pthread_cond_t ack_ok;
 
 pthread_t thread;
 pthread_t hiloConexionSusc;
