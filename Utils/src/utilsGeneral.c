@@ -185,13 +185,30 @@ void agregarAColaNewPokemon(){
 
 void* recibir_NEW_POKEMON(int cliente_fd,int* size){
 
-		NewPokemon* newPokemon = malloc(sizeof(NewPokemon));
-		*size = sizeof(newPokemon->nombre)+sizeof(newPokemon->coordenadas.posicionX)+sizeof(newPokemon->coordenadas.posicionY)+sizeof(newPokemon->cantidad);
+		NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
+		t_buffer* buffer = malloc(sizeof(t_buffer));
+		int tamanioNombrePokemon;
+		recv(cliente_fd,&(buffer->size),sizeof(int),MSG_WAITALL);
+		void* stream = malloc(buffer->size);
+		buffer->stream = stream;
+		recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
 
-		recv(cliente_fd,size,sizeof(int),MSG_WAITALL);
-
-		recv(cliente_fd,newPokemon,*size,MSG_WAITALL);
-
+		memcpy(&tamanioNombrePokemon,stream,sizeof(int));
+		stream += sizeof(int);
+		unNewPokemon->nombre = malloc(tamanioNombrePokemon);
+		memcpy(unNewPokemon->nombre,stream,tamanioNombrePokemon);
+		stream+=tamanioNombrePokemon;
+		puts(unNewPokemon->nombre);
+		memcpy(&(unNewPokemon->coordenadas.posicionX),stream,sizeof(uint32_t));
+		stream+=sizeof(uint32_t);
+		memcpy(&(unNewPokemon->coordenadas.posicionY),stream,sizeof(uint32_t));
+		stream+=sizeof(uint32_t);
+		memcpy(&(unNewPokemon->cantidad),stream,sizeof(uint32_t));
+		if(unNewPokemon->cantidad==3){
+			puts("y la cantidaaad");
+		}
+		free(buffer->stream);
+		free(buffer);
 		pthread_mutex_init(&mutex, NULL);
 		pthread_cond_init(&no_lleno, NULL);
 		pthread_cond_init(&no_vacio, NULL);
@@ -200,24 +217,12 @@ void* recibir_NEW_POKEMON(int cliente_fd,int* size){
 		pthread_join(th3,NULL);
 
 
-	/*
-	int tamanioNombrePokemon;
 
-	recv(cliente_fd,&tamanioNombrePokemon, sizeof(int),0);
-	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
+		//list_add(New_Pokemon,unNewPokemon); //Ver si tiene que ir el & o no
 
-	char* nombrePokemon = malloc(tamanioNombrePokemon);
-	recv(cliente_fd,nombrePokemon,tamanioNombrePokemon,0);
-	unNewPokemon->nombre = nombrePokemon;
-	recv(cliente_fd,&(unNewPokemon->coordenadas.posicionX),sizeof(uint32_t),0);
-	recv(cliente_fd,&(unNewPokemon->coordenadas.posicionY),sizeof(uint32_t),0);
-	recv(cliente_fd,&(unNewPokemon->cantidad),sizeof(uint32_t),0);
 
-	list_add(New_Pokemon,unNewPokemon); //Ver si tiene que ir el & o no
 
-	*/
-
-	return newPokemon;
+		return newPokemon;
 }
 
 
@@ -408,7 +413,7 @@ void enviarColaNP(int socket_suscriptor){
 
 		//falta verificar si el mensaje ya fue enviado anteriormente a ese suscriptor
 		//ya que si es asi no deberia enviarlo nuevamente
-		enviarNewPokemon(newPokemon,sizeof(NewPokemon),socket_suscriptor);
+		enviarNewPokemon(newPokemon,socket_suscriptor);
 		registrarMensajeEnviado(newPokemon,socket_suscriptor);
 	}
 	pthread_exit(0);
@@ -595,53 +600,43 @@ void* solicMensajeCaughtPokemon(int socket_suscriptor){
 	return 0;
 }
 
-
-
 void* serializar_paquete(t_paquete* paquete, int bytes)
 {
-	void * magic = malloc(bytes);
+
+	void * a_enviar = malloc(bytes);
 	int desplazamiento = 0;
 
-	memcpy(magic + desplazamiento, &(paquete->codigo_operacion), sizeof(int));
+	memcpy(a_enviar + desplazamiento, &(paquete->codigo_operacion), sizeof(op_code));
+	desplazamiento+= sizeof(op_code);
+	memcpy(a_enviar + desplazamiento, &(paquete->buffer->size), sizeof(int));
 	desplazamiento+= sizeof(int);
-	memcpy(magic + desplazamiento, &(paquete->buffer->size), sizeof(int));
-	desplazamiento+= sizeof(int);
-	memcpy(magic + desplazamiento, paquete->buffer->stream, paquete->buffer->size);
+	memcpy(a_enviar + desplazamiento, paquete->buffer->stream, paquete->buffer->size);
 	desplazamiento+= paquete->buffer->size;
-
-	return magic;
+	return a_enviar;
 }
+
 
 void* serializarNewPokemon(NewPokemon* newPokemon,int bytes){
 
-	void* buffer = malloc(bytes);
+	void* stream = malloc(bytes);
 	int tamanioNombre = strlen(newPokemon->nombre) + 1;
 	int desplazamiento = 0;
-/*
-	memcpy(buffer + desplazamiento, NEW_POKEMON,sizeof(int));
-	desplazamiento+= sizeof(int);
-	memcpy(buffer + desplazamiento,&(sizeof(NewPokemon)),sizeof(int));
-	desplazamiento+= sizeof(int);
-	memcpy(buffer + desplazamiento,newPokemon,sizeof(NewPokemon));
-	desplazamiento+= sizeof(NewPokemon);
 
-
-	*/
-
-	memcpy(buffer + desplazamiento,&tamanioNombre,sizeof(int));
+	memcpy(stream + desplazamiento,&tamanioNombre,sizeof(int));
 	desplazamiento+= sizeof(int);
-	memcpy(buffer + desplazamiento,newPokemon->nombre,tamanioNombre);
+	memcpy(stream + desplazamiento,newPokemon->nombre,tamanioNombre);
 	desplazamiento+= tamanioNombre;
-	memcpy(buffer + desplazamiento,&(newPokemon->coordenadas.posicionX),sizeof(uint32_t));
+	memcpy(stream + desplazamiento,&(newPokemon->coordenadas.posicionX),sizeof(uint32_t));
 	desplazamiento+= sizeof(uint32_t);
-	memcpy(buffer + desplazamiento,&(newPokemon->coordenadas.posicionY),sizeof(uint32_t));
+	memcpy(stream + desplazamiento,&(newPokemon->coordenadas.posicionY),sizeof(uint32_t));
 	desplazamiento+= sizeof(uint32_t);
-	memcpy(buffer + desplazamiento,&(newPokemon->cantidad),sizeof(uint32_t));
+	memcpy(stream + desplazamiento,&(newPokemon->cantidad),sizeof(uint32_t));
 	desplazamiento+= sizeof(uint32_t);
 
 
-	return buffer;
+	return stream;
 }
+
 
 void* serializarLocalizedPokemon(LocalizedPokemon* localizedPokemon,int bytes){
 
@@ -723,30 +718,32 @@ void* serializarCaughtPokemon(CaughtPokemon* caughtPokemon,int bytes){
 	return buffer;
 }
 
-
-
-void enviarNewPokemon(NewPokemon* new_pokemon,int size,int socket_suscriptor){
-
+void enviarNewPokemon(NewPokemon* unNewPokemon, int socket_subscriptor){
+	t_buffer* buffer = malloc(sizeof(t_buffer));
+	int tamanioNombrePokemon = strlen(unNewPokemon->nombre) +1;
+	buffer->size = sizeof(uint32_t) * 4 + tamanioNombrePokemon;
+	void* stream = serializarNewPokemon(unNewPokemon,buffer->size);
+	buffer->stream = stream;
 	t_paquete* paquete = malloc(sizeof(t_paquete));
-
 	paquete->codigo_operacion = NEW_POKEMON;
-	paquete->buffer = malloc(sizeof(t_buffer));
-	paquete->buffer->size = size;
-	paquete->buffer->stream = malloc(sizeof(NewPokemon));
-	memcpy(paquete->buffer->stream,new_pokemon,paquete->buffer->size);
+	paquete->buffer = buffer;
+	int bytes = buffer->size + sizeof(int) + sizeof(op_code);
 
-	int bytes = sizeof(new_pokemon->nombre)+sizeof(new_pokemon->coordenadas.posicionX)+sizeof(new_pokemon->coordenadas.posicionY)+sizeof(new_pokemon->cantidad);
+	void* a_enviar = serializar_paquete(paquete,bytes);
 
-	void* a_enviar = serializarNewPokemon(new_pokemon,bytes);
-
-	send(socket_suscriptor,a_enviar,bytes,0);
-
+	send(socket_subscriptor, a_enviar, bytes, 0);
 	free(a_enviar);
-	free(paquete->buffer->stream);
+	free(buffer->stream);
 	free(paquete->buffer);
-	free(new_pokemon);
 	free(paquete);
+
+
+
+
+
 }
+
+
 
 void enviarLocalizedPokemon(LocalizedPokemon* localized_pokemon,int size,int socket_suscriptor){
 

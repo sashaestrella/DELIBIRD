@@ -117,7 +117,7 @@ void* serializarGetPokemon(GetPokemon* getPokemon,int bytes);
 void* serializarAppearedPokemon(AppearedPokemon* appearedPokemon,int bytes);
 void* serializarCatchPokemon(CatchPokemon* catchPokemon,int bytes);
 void* serializarCaughtPokemon(CaughtPokemon* caughtPokemon,int bytes);
-void enviarNewPokemon(NewPokemon* new_pokemon,int size,int socket_suscriptor);
+void enviarNewPokemon(NewPokemon* unNewPokemon, int socket_subscriptor);
 void enviarLocalizedPokemon(LocalizedPokemon* localized_pokemon,int size,int socket_suscriptor);
 void enviarGetPokemon(GetPokemon* get_pokemon,int size,int socket_suscriptor);
 void enviarAppearedPokemon(AppearedPokemon* appeared_pokemon,int size,int socket_suscriptor);
