@@ -12,6 +12,11 @@
 #include<commons/temporal.h>
 
 
+typedef struct suscriptor{
+	int socketSuscriptor;
+	int IDsuscriptor;
+} Suscriptor;
+
 typedef struct coordenadas{
 	uint32_t posicionX;
 	uint32_t posicionY;
@@ -20,6 +25,7 @@ typedef struct coordenadas{
 
 
 typedef struct newPokemon{
+	uint32_t tamanioNombrePokemon;
 	char* nombre;
 	CoordenadasXY coordenadas;
 	uint32_t cantidad;

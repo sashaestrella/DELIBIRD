@@ -18,6 +18,7 @@ int main(void)
 	Appeared_Pokemon = list_create();
 	Catch_Pokemon = list_create();
 	Caught_Pokemon = list_create();
+	suscriptores_new_pokemon = list_create();
 
 	//El sistema tira un error si no se creó correctamente el hilo
 		if(pthread_create(&hiloConexion, NULL,(void*)&iniciar_servidor,NULL) != 0){

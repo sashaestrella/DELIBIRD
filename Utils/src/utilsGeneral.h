@@ -22,9 +22,8 @@ t_list* Get_Pokemon;
 t_list* Appeared_Pokemon;
 t_list* Catch_Pokemon;
 t_list* Caught_Pokemon;
-t_list* suscriptores;
+t_list* suscriptores_new_pokemon;
 
-t_list* buffer;
 
 typedef enum
 {
@@ -57,8 +56,8 @@ typedef struct
 
 pthread_t th1, th2,hiloIDNewPokemon;
 
-pthread_mutex_t mutexID = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutex2;
+pthread_mutex_t mutexGeneradorIDMensaje = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexGeneradorIDSuscriptor = PTHREAD_MUTEX_INITIALIZER;
 
 pthread_cond_t ack_ok;
 
@@ -86,7 +85,7 @@ void* solicMensajeGetPokemon(int cliente_fd);
 void* solicMensajeAppearedPokemon(int cliente_fd);
 void* solicMensajeCatchPokemon(int cliente_fd);
 void* solicMensajeCaughtPokemon(int cliente_fd);
-void enviarColaNewPokemon(int socket_suscriptor);
+void enviarColaNewPokemon(int socket_suscriptor, int IDsuscriptor);
 void enviarColaLocalizedPokemon(LocalizedPokemon* localizedPokemon,int socket_suscriptor);
 void enviarColaGetPokemon(GetPokemon* getPokemon,int socket_suscriptor);
 void enviarColaAppearedPokemon(AppearedPokemon* appearedPokemon,int socket_suscriptor);
@@ -107,7 +106,7 @@ void enviarAppearedPokemon(AppearedPokemon* appeared_pokemon,int socket_suscript
 void enviarCatchPokemon(CatchPokemon* catch_pokemon,int socket_suscriptor);
 void enviarCaughtPokemon(CaughtPokemon* caught_pokemon,int socket_suscriptor);
 void devolver_mensaje(void* payload, int size, int socket_cliente);
-
+int suscribirANewPokemon(int socket_cliente);
 //--------------------Clientes--------------
 
 int crear_conexion(char* ip, char* puerto);

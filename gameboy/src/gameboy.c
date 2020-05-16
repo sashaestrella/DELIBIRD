@@ -52,6 +52,11 @@ int main(void)
 	unNewPokemon.coordenadas.posicionY = 3;
 	unNewPokemon.cantidad = 3;
 	enviarNewPokemon(&unNewPokemon, conexion);
+	int IDmensaje;
+	recv(conexion, &IDmensaje, sizeof(int),0);
+	if(IDmensaje == 1){
+		puts("me llego el id mensaje");
+	}
 	/*int tamanio_maximo_mensaje = 256;
 
 	char* mensajeAEnviar = malloc(tamanio_maximo_mensaje);
