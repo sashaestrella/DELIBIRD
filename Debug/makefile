@@ -8,7 +8,15 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
--include src/subdir.mk
+-include team/src/subdir.mk
+-include team/Debug/src/subdir.mk
+-include gamecard/src/subdir.mk
+-include gamecard/Debug/src/subdir.mk
+-include gameboy/src/subdir.mk
+-include gameboy/Debug/src/subdir.mk
+-include broker/src/subdir.mk
+-include broker/Debug/src/subdir.mk
+-include Utils/src/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -23,25 +31,21 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: gameboy
-
-dependents:
-	-cd /home/utnso/tp-2020-1c-BOMP/Utils/Debug && $(MAKE) clean all
+all: libutils.so
 
 # Tool invocations
-gameboy: $(OBJS) $(USER_OBJS) /home/utnso/tp-2020-1c-BOMP/Utils/Debug/libUtils.so
+libutils.so: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L"/home/utnso/tp-2020-1c-BOMP/Utils/Debug" -o "gameboy" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -shared -o "libutils.so" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) gameboy
+	-$(RM) $(LIBRARIES)$(OBJS)$(C_DEPS) libutils.so
 	-@echo ' '
 
 .PHONY: all clean dependents
-/home/utnso/tp-2020-1c-BOMP/Utils/Debug/libUtils.so:
 
 -include ../makefile.targets
