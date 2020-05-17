@@ -821,6 +821,7 @@ void liberar_conexion(int socket_cliente)
 
 
 int suscribirANewPokemon(int socket_cliente){
+	puts("llegue a la parte de suscribir a un tipo");
 	Suscriptor* unSuscriptor = malloc(sizeof(Suscriptor));
 	unSuscriptor->socketSuscriptor = socket_cliente;
 
@@ -868,7 +869,8 @@ int suscribirAAppearedPokemon(int socket_cliente){
 	unSuscriptor->IDsuscriptor = generadorDeIDsSuscriptor;
 	list_add(suscriptores_appeared_pokemon,unSuscriptor);
 	pthread_mutex_unlock(&mutexGeneradorIDSuscriptor);
-
+	send(socket_cliente,&(unSuscriptor->IDsuscriptor), sizeof(int),0);
+	puts("te acabo de mandar tu ID maxi");
 	return unSuscriptor->IDsuscriptor;
 }
 

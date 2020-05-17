@@ -45,7 +45,7 @@ int main(void)
 
 	//enviar mensaje
 
-	NewPokemon unNewPokemon;
+	/*NewPokemon unNewPokemon;
 	char* nombrePokemon = "PIKACHU";
 	unNewPokemon.nombre = nombrePokemon;
 	unNewPokemon.coordenadas.posicionX = 2;
@@ -56,7 +56,10 @@ int main(void)
 	recv(conexion, &IDmensaje, sizeof(int),0);
 	if(IDmensaje == 1){
 		puts("me llego el id mensaje");
-	}
+	}*/ //CÓDIGO PARA ENVIAR UN NEW POKEMON
+	int subscripcion = 8;
+	send(conexion,&subscripcion,sizeof(int),0);
+
 	/*int tamanio_maximo_mensaje = 256;
 
 	char* mensajeAEnviar = malloc(tamanio_maximo_mensaje);
