@@ -23,6 +23,11 @@ t_list* Appeared_Pokemon;
 t_list* Catch_Pokemon;
 t_list* Caught_Pokemon;
 t_list* suscriptores_new_pokemon;
+t_list* suscriptores_localized_pokemon;
+t_list* suscriptores_get_pokemon;
+t_list* suscriptores_appeared_pokemon;
+t_list* suscriptores_catch_pokemon;
+t_list* suscriptores_caught_pokemon;
 
 
 typedef enum
@@ -58,6 +63,7 @@ pthread_t th1, th2,hiloIDNewPokemon;
 
 pthread_mutex_t mutexGeneradorIDMensaje = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexGeneradorIDSuscriptor = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexGuardarEnviado = PTHREAD_MUTEX_INITIALIZER;
 
 pthread_cond_t ack_ok;
 
@@ -86,11 +92,11 @@ void* solicMensajeAppearedPokemon(int cliente_fd);
 void* solicMensajeCatchPokemon(int cliente_fd);
 void* solicMensajeCaughtPokemon(int cliente_fd);
 void enviarColaNewPokemon(int socket_suscriptor, int IDsuscriptor);
-void enviarColaLocalizedPokemon(LocalizedPokemon* localizedPokemon,int socket_suscriptor);
-void enviarColaGetPokemon(GetPokemon* getPokemon,int socket_suscriptor);
-void enviarColaAppearedPokemon(AppearedPokemon* appearedPokemon,int socket_suscriptor);
-void enviarColaCatchPokemon(CatchPokemon* catchPokemon,int socket_suscriptor);
-void enviarColaCaughtPokemon(CaughtPokemon* caughtPokemon,int socket_suscriptor);
+void enviarColaLocalizedPokemon(int socket_suscriptor, int IDsuscriptor);
+void enviarColaGetPokemon(int socket_suscriptor, int IDsuscriptor);
+void enviarColaAppearedPokemon(int socket_suscriptor, int IDsuscriptor);
+void enviarColaCatchPokemon(int socket_suscriptor, int IDsuscriptor);
+void enviarColaCaughtPokemon(int socket_suscriptor, int IDsuscriptor);
 
 void* serializar_paquete(t_paquete* paquete, int bytes);
 void* serializarNewPokemon(NewPokemon* newPokemon,int bytes);
@@ -107,6 +113,12 @@ void enviarCatchPokemon(CatchPokemon* catch_pokemon,int socket_suscriptor);
 void enviarCaughtPokemon(CaughtPokemon* caught_pokemon,int socket_suscriptor);
 void devolver_mensaje(void* payload, int size, int socket_cliente);
 int suscribirANewPokemon(int socket_cliente);
+int suscribirALocalizedPokemon(int socket_cliente);
+int suscribirAGetPokemon(int socket_cliente);
+int suscribirAAppearedPokemon(int socket_cliente);
+int suscribirACatchPokemon(int socket_cliente);
+int suscribirACaughtPokemon(int socket_cliente);
+
 //--------------------Clientes--------------
 
 int crear_conexion(char* ip, char* puerto);

@@ -15,7 +15,7 @@
 typedef struct suscriptor{
 	int socketSuscriptor;
 	int IDsuscriptor;
-} Suscriptor;
+}Suscriptor;
 
 typedef struct coordenadas{
 	uint32_t posicionX;
@@ -33,22 +33,26 @@ typedef struct newPokemon{
 
 
 typedef struct localizedPokemon{
+	uint32_t tamanioNombrePokemon;
 	char* nombre;
 	uint32_t cantidadParesOrdenados;
 	t_list* paresOrdenados;
 }LocalizedPokemon;
 
 typedef struct getPokemon{
+	uint32_t tamanioNombrePokemon;
 	char* nombre;
 }GetPokemon;
 
 
 typedef struct appearedPokemon{
+	uint32_t tamanioNombrePokemon;
 	char* nombre;
 	CoordenadasXY coordenadas;
 }AppearedPokemon;
 
 typedef struct catchPokemon{
+	uint32_t tamanioNombrePokemon;
 	char* nombre;
 	CoordenadasXY coordenadas;
 }CatchPokemon;
