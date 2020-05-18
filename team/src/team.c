@@ -1,15 +1,43 @@
-
 #include "team.h"
 
-
-int main(void)
+int main(int argc,char* argv[])
 {
 
+	cargarDatosConfig();
+	generarConexiones();
 
-	/*---------------------------------------------------PARTE 2-------------------------------------------------------------*/
-	int conexion;
-	char* ip;
-	char* puerto;
+	entrenadores = list_create();
+
+	leer_config(entrenadores);
+
+	//todo esto es para ver si calculaba bien los objetivos si queres sacalo a la mierda
+
+	int i;
+	Entrenador* entrenador = malloc(sizeof(Entrenador));
+	entrenador = list_get (entrenadores, 0);
+	 printf(" \n Entrenador1 movido (%d, %d)", entrenador->posicion.posicionX, entrenador->posicion.posicionY);
+	 puts("\nMi objetivo: ");
+	for(i=0; i<list_size(entrenador->objetivos);i++){
+		printf("%s,", list_get(entrenador->objetivos, i));
+	}
+	Entrenador* entrenador1 = malloc(sizeof(Entrenador));
+	entrenador1 = list_get (entrenadores, 1);
+	printf(" \n Entrenador2 movido (%d, %d)", entrenador1->posicion.posicionX, entrenador1->posicion.posicionY);
+	puts("\nMi objetivo: ");
+	for(i=0; i<list_size(entrenador1->objetivos);i++){
+	 		printf("%s,", list_get(entrenador1->objetivos, i));
+	}
+	Entrenador* entrenador2 = malloc(sizeof(Entrenador));
+	entrenador2 = list_get (entrenadores, 2);
+	printf(" \n Entrenador3 movido (%d, %d)", entrenador2->posicion.posicionX, entrenador2->posicion.posicionY);
+	puts("\nMi objetivo: ");
+	for(i=0; i<list_size(entrenador2->objetivos);i++){
+	 		printf("%s\n,", list_get(entrenador2->objetivos, i));
+	}
+
+
+	/*-----------------------------------------------PARTE 2-------------------------------------------------------------*/
+
 
 
 	t_log* logger;
@@ -21,13 +49,6 @@ int main(void)
 
 	log_info(logger, primerLog);
 
-	//Loggear "soy un log"
-
-	config = leer_config();
-
-	config_set_value(config, "IP", "127.0.0.1");
-	config_set_value(config, "PUERTO", "4444");
-	config_save(config);
 
 
 	/*---------------------------------------------------PARTE 3-------------------------------------------------------------*/
@@ -37,16 +58,13 @@ int main(void)
 	//crear conexion
 
 
-	/*ip = config_get_string_value(config, "IP");
-	puerto = config_get_string_value(config, "PUERTO");
+	//conexion = crear_conexion(ip, puerto);
 
-	conexion = crear_conexion(ip, puerto);
-
-	printf( "\nSe creo la conexion con el valor %d \n", conexion);
+	//printf( "\nSe creo la conexion con el valor %d \n", conexion);
 
 	//enviar mensaje
 
-	int tamanio_maximo_mensaje = 256;
+	/*int tamanio_maximo_mensaje = 256;
 
 	char* mensajeAEnviar = malloc(tamanio_maximo_mensaje);
 
@@ -62,14 +80,14 @@ int main(void)
 
 	char* mensajeRecibido;
 
-	//mensajeRecibido=recibir_mensaje(conexion);
+	//mensajeRecibido=recibir_mensaje(conexion);*/
 
 
 	//loguear mensaje recibido
 
-	log_info(logger, "Se recibio el mensaje: %s " ,mensajeRecibido);
+	//log_info(logger, "Se recibio el mensaje: %s " ,mensajeRecibido);
 
-	terminar_programa(conexion, logger, config);*/
+	//terminar_programa(conexion, logger, config);
 }
 
 //TODO
@@ -80,11 +98,7 @@ t_log* iniciar_logger(void)
 }
 
 //TODO
-t_config* leer_config(void)
-{
-	return config_create("team.config");
 
-}
 
 //TODO
 void terminar_programa(int conexion, t_log* logger, t_config* config)
