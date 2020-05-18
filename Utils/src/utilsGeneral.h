@@ -61,9 +61,9 @@ typedef struct
 
 pthread_t th1, th2,hiloIDNewPokemon;
 
-pthread_mutex_t mutexGeneradorIDMensaje = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutexGeneradorIDSuscriptor = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutexGuardarEnviado = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexGeneradorIDMensaje;// = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexGeneradorIDSuscriptor;// = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexGuardarEnviado;// = PTHREAD_MUTEX_INITIALIZER;
 
 pthread_cond_t ack_ok;
 
