@@ -80,9 +80,9 @@ int crear_conexion(char *ip, char* puerto)
 
 void process_request(int cod_op, int cliente_fd) {
 	int size;
-	int IDsuscriptor;
+	Suscriptor* elQueSeMeSuscribe;
 	void* algoARecibir;
-
+	NewPokemon* unNewPokemon;
 
 		switch (cod_op) {
 				case MENSAJE:
@@ -95,8 +95,8 @@ void process_request(int cod_op, int cliente_fd) {
 				case -1:
 					pthread_exit(NULL);
 				case NEW_POKEMON:
-					recibir_NEW_POKEMON(cliente_fd, &size);
-
+					unNewPokemon = recibir_NEW_POKEMON(cliente_fd, &size);
+					guardarMensajeNewPokemon(unNewPokemon);
 					break;
 				case LOCALIZED_POKEMON:
 					recibir_LOCALIZED_POKEMON(cliente_fd,&size);
@@ -114,8 +114,8 @@ void process_request(int cod_op, int cliente_fd) {
 					recibir_CAUGHT_POKEMON(cliente_fd,&size);
 					break;
 				case SUSCRIPTOR_NEWPOKEMON:
-					recibirSuscripcionNewPokemon(cliente_fd);
-					enviarColaNewPokemon(cliente_fd,IDsuscriptor);
+					elQueSeMeSuscribe =	recibirSuscripcionNewPokemon(cliente_fd);
+					enviarColaNewPokemon(cliente_fd,elQueSeMeSuscribe);
 					break;
 				/*
 				case SUSCRIPTOR_LOCALIZEDPOKEMON:
@@ -148,37 +148,26 @@ void process_request(int cod_op, int cliente_fd) {
 	}
 }
 
-void* recibirSuscripcionNewPokemon(int socket_suscriptor){
+Suscriptor* recibirSuscripcionNewPokemon(int socket_suscriptor){
 
-			t_buffer* buffer = malloc(sizeof(t_buffer));
 			Suscriptor* unSuscriptor = malloc(sizeof(Suscriptor));
 
-			recv(socket_suscriptor,&(buffer->size),sizeof(int),MSG_WAITALL);
-			void* stream = malloc(buffer->size);
-			buffer->stream = stream;
-			recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
 
-			memcpy(&(unSuscriptor->socketSuscriptor),stream,sizeof(int));
-			stream+=sizeof(int);
-			memcpy(&(unSuscriptor->IDsuscriptor),stream,sizeof(int));
-			stream+=sizeof(int);
-
-			printf("Recibi solicitud de suscripcion de: %d\n",socket_suscriptor);
+			printf("Recibi solicitud de suscripcion de socket: %d\n",socket_suscriptor);
 
 			pthread_mutex_lock(&mutexGeneradorIDSuscriptor);
 			generadorDeIDsSuscriptor++;
 			unSuscriptor->socketSuscriptor = socket_suscriptor;
 			unSuscriptor->IDsuscriptor = generadorDeIDsSuscriptor;
-			list_add(suscriptores_new_pokemon,unSuscriptor);
-			printf("El tamaño de la lista de suscriptores de NP ahora es de: %d\n",list_size(suscriptores_new_pokemon));
 			pthread_mutex_unlock(&mutexGeneradorIDSuscriptor);
+			pthread_mutex_lock(&mutexListaSuscriptores);
+			list_add(suscriptores_new_pokemon,unSuscriptor);
+			pthread_mutex_unlock(&mutexListaSuscriptores);
+			printf("El tamaño de la lista de suscriptores de NP ahora es de: %d\n",list_size(suscriptores_new_pokemon));
 
 			printf("El suscriptor %d con id = %d fue agregago a la lista new pokemon\n",socket_suscriptor,generadorDeIDsSuscriptor);
-
-			enviarIDsuscriptorAsuscriptor(generadorDeIDsSuscriptor,socket_suscriptor);
-
-			free(buffer->stream);
-			free(buffer);
+			send(socket_suscriptor,&(unSuscriptor->IDsuscriptor),sizeof(int),0);
+			//enviarIDsuscriptorAsuscriptor(generadorDeIDsSuscriptor,socket_suscriptor);
 
 			return unSuscriptor;
 }
@@ -196,7 +185,7 @@ void* serializarSuscriptor(Suscriptor* unSuscriptor,int bytes){
 		return buffer;
 }
 
-void enviarSuscripcionNewPokemon(int cod_op,int socket_servidor){
+void enviarSuscripcionNewPokemon(int socket_servidor){
 
 		t_buffer* buffer = malloc(sizeof(t_buffer));
 		Suscriptor* unSuscriptor = malloc(sizeof(Suscriptor));
@@ -232,12 +221,25 @@ void* recibir_mensaje(int socket_cliente, int* size)
 	return buffer;
 }
 
+void guardarMensajeNewPokemon(NewPokemon* unNewPokemon) {
+	MensajeNewPokemon* mensaje = malloc(sizeof(MensajeNewPokemon));
+	pthread_mutex_lock(&mutexGeneradorIDMensaje);
+	generadorDeIDsMensaje++;
+	mensaje->contenidoDelMensaje = unNewPokemon;
+	mensaje->ID = generadorDeIDsMensaje;
+	pthread_mutex_unlock(&mutexGeneradorIDMensaje);
+	list_add(New_Pokemon, mensaje);
+	printf("El tamaño de la lista ahora es de: %d\n", list_size(New_Pokemon));
+	mensaje->suscriptoresAtendidos = list_create();
+	mensaje->suscriptoresACK = list_create();
+	char* nombreDelPokemonQueGuarde = mensaje->contenidoDelMensaje->nombre;
+	printf("Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
+}
 
-void* recibir_NEW_POKEMON(int cliente_fd,int* size){
+NewPokemon* recibir_NEW_POKEMON(int cliente_fd,int* size){
 
 		NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
 		t_buffer* buffer = malloc(sizeof(t_buffer));
-
 		recv(cliente_fd,&(buffer->size),sizeof(int),MSG_WAITALL);
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
@@ -254,24 +256,7 @@ void* recibir_NEW_POKEMON(int cliente_fd,int* size){
 		stream+=sizeof(uint32_t);
 		memcpy(&(unNewPokemon->cantidad),stream,sizeof(uint32_t));
 
-		printf("Me llego el mensaje: %s\n",unNewPokemon->nombre);
-
-		MensajeNewPokemon* mensaje = malloc(sizeof(MensajeNewPokemon));
-
-		pthread_mutex_lock(&mutexGeneradorIDMensaje);
-		generadorDeIDsMensaje++;
-		mensaje->contenidoDelMensaje = unNewPokemon;
-		mensaje->ID = generadorDeIDsMensaje;
-		list_add(New_Pokemon,mensaje);
-		printf("El tamaño de la lista ahora es de: %d\n",list_size(New_Pokemon));
-		pthread_mutex_unlock(&mutexGeneradorIDMensaje);
-
-		mensaje->suscriptoresAtendidos = list_create();
-		mensaje->suscriptoresACK = list_create();
-
-		printf("Guarde el mensaje: %s\n",unNewPokemon->nombre);
-
-		enviarIDNewPokemon(generadorDeIDsMensaje,cliente_fd);
+		printf("\nTe juro que soy la funcion reciribr. Me llego el mensaje: %s\n",unNewPokemon->nombre);
 
 		free(buffer->stream);
 		free(buffer);
@@ -523,34 +508,34 @@ void enviarIDsuscriptorAsuscriptor(int IDsuscriptor,int socket_suscriptor){
 }
 
 
-void enviarColaNewPokemon(int socket_suscriptor, int IDsuscriptor){
+void enviarColaNewPokemon(int socket_suscriptor, Suscriptor* unSuscriptor){
 	puts("Ahora tengo que ver si te puedo mandar los mensajes o no..");
-
-		MensajeNewPokemon* mensaje = malloc(sizeof(mensaje));
-		NewPokemon* unNewPokemon = malloc(sizeof(unNewPokemon));
+		MensajeNewPokemon* mensaje;
+		NewPokemon* unNewPokemon;
 		int cantidadDeNewPokemon = list_size(New_Pokemon);
-		int ack = 1;
-
+		send(socket_suscriptor,&cantidadDeNewPokemon,sizeof(int),0);
+		int ack = 0;
+		int mensajeID;
 		if(cantidadDeNewPokemon == 0){
 			puts("La lista esta vacia,me encuentro esperando a que llegue un mensaje para enviartelo..");
 		} else {
-		for(int i=0;i<=cantidadDeNewPokemon;i++){
-			enviarIDNewPokemon((mensaje->ID),socket_suscriptor);
+		for(int i=0;i<cantidadDeNewPokemon;i++){
 			mensaje = list_get(New_Pokemon,i);
-			pthread_mutex_lock(&mutexGuardarEnviado);
-
-			mensaje->contenidoDelMensaje = unNewPokemon;
+			mensajeID = mensaje->ID;
+			printf("\nVoy a enviar el ID %d :",mensaje->ID);
+			send(socket_suscriptor,&mensajeID,sizeof(int),0);
+			printf("\nEnvie el ID %d :",mensaje->ID);
+			pthread_mutex_lock(&mutexColaNewPokemon);
+			unNewPokemon= mensaje->contenidoDelMensaje;
 			enviarNewPokemon(unNewPokemon,socket_suscriptor);
-			list_add(mensaje->suscriptoresAtendidos,&IDsuscriptor);
+			list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 			recv(socket_suscriptor,&ack,sizeof(int),0);
 			printf("\nEl ack del mensaje es: %d\n",ack);
-			list_add(mensaje->suscriptoresACK,&IDsuscriptor);
+			list_add(mensaje->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
 
-			pthread_mutex_unlock(&mutexGuardarEnviado);
+			pthread_mutex_unlock(&mutexColaNewPokemon);
 			}
 		}
-		free(unNewPokemon);
-		free(mensaje);
 
 }
 
@@ -565,14 +550,14 @@ void enviarColaLocalizedPokemon(int socket_suscriptor,int IDsuscriptor){
 		mensaje = list_get(Localized_Pokemon,0);
 		for(int i=0;i<=cantidadDeLocalizedPokemon;i++){
 			send(socket_suscriptor,&(mensaje->ID),sizeof(int),0);
-			pthread_mutex_lock(&mutexGuardarEnviado);
+			pthread_mutex_lock(&mutexColaNewPokemon);
 
 			mensaje = list_get(Localized_Pokemon,i);
 			unLocalizedPokemon = mensaje->contenidoDelMensaje;
 			enviarLocalizedPokemon(unLocalizedPokemon,socket_suscriptor);
 			list_add(mensaje->suscriptoresAtendidos,&IDsuscriptor);
 
-			pthread_mutex_unlock(&mutexGuardarEnviado);
+			pthread_mutex_unlock(&mutexColaNewPokemon);
 		}
 }
 
@@ -586,14 +571,14 @@ void enviarColaGetPokemon(int socket_suscriptor,int IDsuscriptor){
 		mensaje = list_get(Get_Pokemon,0);
 		for(int i=0;i<=cantidadDeGetPokemon;i++){
 			send(socket_suscriptor,&(mensaje->ID),sizeof(int),0);
-			pthread_mutex_lock(&mutexGuardarEnviado);
+			pthread_mutex_lock(&mutexColaNewPokemon);
 
 			mensaje = list_get(Get_Pokemon,i);
 			unGetPokemon = mensaje->contenidoDelMensaje;
 			enviarGetPokemon(unGetPokemon,socket_suscriptor);
 			list_add(mensaje->suscriptoresAtendidos,&IDsuscriptor);
 
-			pthread_mutex_unlock(&mutexGuardarEnviado);
+			pthread_mutex_unlock(&mutexColaNewPokemon);
 		}
 
 }
@@ -609,14 +594,14 @@ void enviarColaAppearedPokemon(int socket_suscriptor,int IDsuscriptor){
 		mensaje = list_get(Appeared_Pokemon,0);
 		for(int i=0;i<=cantidadDeAppearedPokemon;i++){
 			send(socket_suscriptor,&(mensaje->ID),sizeof(int),0);
-			pthread_mutex_lock(&mutexGuardarEnviado);
+			pthread_mutex_lock(&mutexColaNewPokemon);
 
 			mensaje = list_get(Appeared_Pokemon,i);
 			mensaje->contenidoDelMensaje = &unAppearedPokemon;
 			enviarAppearedPokemon(unAppearedPokemon,socket_suscriptor);
 			list_add(mensaje->suscriptoresAtendidos,&IDsuscriptor);
 
-			pthread_mutex_unlock(&mutexGuardarEnviado);
+			pthread_mutex_unlock(&mutexColaNewPokemon);
 		}
 }
 
@@ -630,14 +615,14 @@ void enviarColaCatchPokemon(int socket_suscriptor,int IDsuscriptor){
 		mensaje = list_get(Catch_Pokemon,0);
 		for(int i=0;i<=cantidadDeCatchPokemon;i++){
 			send(socket_suscriptor,&(mensaje->ID),sizeof(int),0);
-			pthread_mutex_lock(&mutexGuardarEnviado);
+			pthread_mutex_lock(&mutexColaNewPokemon);
 
 			mensaje = list_get(Catch_Pokemon,i);
 			unCatchPokemon = mensaje->contenidoDelMensaje;
 			enviarCatchPokemon(unCatchPokemon,socket_suscriptor);
 			list_add(mensaje->suscriptoresAtendidos,&IDsuscriptor);
 
-			pthread_mutex_unlock(&mutexGuardarEnviado);
+			pthread_mutex_unlock(&mutexColaNewPokemon);
 		}
 }
 
@@ -652,14 +637,14 @@ void enviarColaCaughtPokemon(int socket_suscriptor,int IDsuscriptor){
 		mensaje = list_get(Caught_Pokemon,0);
 		for(int i=0;i<=cantidadDeCaughtPokemon;i++){
 			send(socket_suscriptor,&(mensaje->ID),sizeof(int),0);
-			pthread_mutex_lock(&mutexGuardarEnviado);
+			pthread_mutex_lock(&mutexColaNewPokemon);
 
 			mensaje = list_get(Caught_Pokemon,i);
 			unCaughtPokemon = mensaje->contenidoDelMensaje;
 			enviarCaughtPokemon(unCaughtPokemon,socket_suscriptor);
 			list_add(mensaje->suscriptoresAtendidos,&IDsuscriptor);
 
-			pthread_mutex_unlock(&mutexGuardarEnviado);
+			pthread_mutex_unlock(&mutexColaNewPokemon);
 		}
 }
 
@@ -799,7 +784,9 @@ void enviarNewPokemon(NewPokemon* unNewPokemon, int socket_suscriptor){
 	int bytes = buffer->size + sizeof(int) + sizeof(op_code);
 
 	void* a_enviar = serializar_paquete(paquete,bytes);
-
+	/*]if(IDPokemon>0){
+		enviarID(socket_suscriptor);
+	}*/
 	send(socket_suscriptor, a_enviar, bytes, 0);
 
 	free(a_enviar);

@@ -63,7 +63,8 @@ pthread_t th1, th2,hiloIDNewPokemon;
 
 pthread_mutex_t mutexGeneradorIDMensaje = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexGeneradorIDSuscriptor = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutexGuardarEnviado = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexColaNewPokemon = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexListaSuscriptores = PTHREAD_MUTEX_INITIALIZER;
 
 pthread_cond_t no_vacio = PTHREAD_COND_INITIALIZER;
 
@@ -79,10 +80,10 @@ int recibir_operacion(int);
 void process_request(int cod_op, int cliente_fd);
 void serve_client(int *socket);
 void* recibir_mensaje(int socket_cliente, int* size);
-void enviarSuscripcionNewPokemon(int cod_op,int socket);
-void* recibirSuscripcionNewPokemon(int socket_suscriptor);
+void enviarSuscripcionNewPokemon(int socket);
+Suscriptor* recibirSuscripcionNewPokemon(int socket_suscriptor);
 
-void* recibir_NEW_POKEMON(int cliente_fd,int* size);
+NewPokemon* recibir_NEW_POKEMON(int cliente_fd,int* size);
 void* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size);
 void* recibir_GET_POKEMON(int cliente_fd, int* size);
 void* recibir_APPEARED_POKEMON(int cliente_fd,int* size);
@@ -96,7 +97,7 @@ void* solicMensajeCatchPokemon(int cliente_fd);
 void* solicMensajeCaughtPokemon(int cliente_fd);
 void enviarIDNewPokemon(int IDmensaje,int socket_suscriptor);
 void enviarIDsuscriptorAsuscriptor(int IDsuscriptor,int socket_suscriptor);
-void enviarColaNewPokemon(int socket_suscriptor, int IDsuscriptor);
+void enviarColaNewPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
 void enviarColaLocalizedPokemon(int socket_suscriptor, int IDsuscriptor);
 void enviarColaGetPokemon(int socket_suscriptor, int IDsuscriptor);
 void enviarColaAppearedPokemon(int socket_suscriptor, int IDsuscriptor);

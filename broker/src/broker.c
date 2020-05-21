@@ -20,6 +20,25 @@ int main(void)
 	Caught_Pokemon = list_create();
 	suscriptores_new_pokemon = list_create();
 
+	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
+	char* nombrePokemon = malloc(8);
+	nombrePokemon = "PIKACHU";
+
+	unNewPokemon->nombre = nombrePokemon;
+	unNewPokemon->coordenadas.posicionX = 2;
+	unNewPokemon->coordenadas.posicionY = 3;
+	unNewPokemon->cantidad = 3;
+	guardarMensajeNewPokemon(unNewPokemon);
+	NewPokemon* unNewPokemon2 = malloc(sizeof(NewPokemon));
+	char* nombrePokemon2 = malloc(9);
+	nombrePokemon2= "ALAKAZAM";
+	unNewPokemon->nombre = nombrePokemon2;
+	unNewPokemon->coordenadas.posicionX = 2;
+	unNewPokemon->coordenadas.posicionY = 3;
+	unNewPokemon->cantidad = 3;
+	guardarMensajeNewPokemon(unNewPokemon2);
+
+
 	//El sistema tira un error si no se creó correctamente el hilo
 		if(pthread_create(&hiloConexion, NULL,(void*)&iniciar_servidor,NULL) != 0){
 				errorExit("El hilo no pudo ser creado");
