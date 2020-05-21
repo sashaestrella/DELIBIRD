@@ -15,6 +15,7 @@
 typedef struct suscriptor{
 	int socketSuscriptor;
 	int IDsuscriptor;
+
 }Suscriptor;
 
 typedef struct coordenadas{
