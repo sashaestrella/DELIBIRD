@@ -35,7 +35,6 @@ int main(void)
 
 	//crear conexion
 
-
 	ip = config_get_string_value(config, "IP");
 	puerto = config_get_string_value(config, "PUERTO");
 
@@ -44,23 +43,44 @@ int main(void)
 	printf( "\nSe creo la conexion con el valor %d \n", conexion);
 
 	//enviar mensaje
-
-	/*NewPokemon unNewPokemon;
+/*
+	NewPokemon unNewPokemon;
 	char* nombrePokemon = "PIKACHU";
 	unNewPokemon.nombre = nombrePokemon;
 	unNewPokemon.coordenadas.posicionX = 2;
 	unNewPokemon.coordenadas.posicionY = 3;
 	unNewPokemon.cantidad = 3;
 	enviarNewPokemon(&unNewPokemon, conexion);
-	int IDmensaje;
-	recv(conexion, &IDmensaje, sizeof(int),0);
-	if(IDmensaje == 1){
-		puts("me llego el id mensaje");
-	}*/ //CÓDIGO PARA ENVIAR UN NEW POKEMON
-	int subscripcion = 8;
-	send(conexion,&subscripcion,sizeof(int),0);
 
-	/*int tamanio_maximo_mensaje = 256;
+	int id;
+	recv(conexion,&id,sizeof(int),0);
+	printf("\nRecibi el id del mensaje,es cual es: %d\n",id);
+
+	*/
+	int cod_op = 8;
+
+	enviarSuscripcionNewPokemon(cod_op,conexion);
+
+	puts("\nSuscripcion enviada");
+
+
+	int idSuscriptor;
+	recv(conexion,&idSuscriptor,sizeof(int),0);
+
+	puts("Recibi mi id como suscriptor");
+	printf("\nMi id es: %d\n",idSuscriptor);
+
+/*
+	recibirColaNewPokemon(conexion);
+
+	int ack;
+	send(conexion,&ack,sizeof(int),0);
+
+	printf("\nEl ack fue enviado\n");
+
+*/
+/*
+	int tamanio_maximo_mensaje = 256;
 
 	char* mensajeAEnviar = malloc(tamanio_maximo_mensaje);
 
