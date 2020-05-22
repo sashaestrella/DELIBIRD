@@ -43,49 +43,64 @@ int main(void)
 	printf( "\nSe creo la conexion con el valor %d \n", conexion);
 
 	//enviar mensaje
-
-	/*NewPokemon unNewPokemon;
+/*
+	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
 	char* nombrePokemon = "PIKACHU";
-	unNewPokemon.nombre = nombrePokemon;
-	unNewPokemon.coordenadas.posicionX = 2;
-	unNewPokemon.coordenadas.posicionY = 3;
-	unNewPokemon.cantidad = 3;
-	enviarNewPokemon(&unNewPokemon, conexion);
-*/
+	unNewPokemon->nombre = nombrePokemon;
+	unNewPokemon->coordenadas.posicionX = 2;
+	unNewPokemon->coordenadas.posicionY = 3;
+	unNewPokemon->cantidad = 3;
+	enviarNewPokemon(unNewPokemon, conexion);
 
+	printf("\nEnvie el mensaje: %s\n",unNewPokemon->nombre);
+
+*/
+	LocalizedPokemon* localizedPokemon1 = malloc(sizeof(LocalizedPokemon));
+	localizedPokemon1->nombre = "PIKACHU";
+	localizedPokemon1->cantidadParesOrdenados = 2;
+	int numero = 1;
+		t_list* pares = list_create();
+		list_add(pares,&numero);
+		list_add(pares,&numero);
+		list_add(pares,&numero);
+		list_add(pares,&numero);
+	localizedPokemon1->paresOrdenados = pares;
+	enviarLocalizedPokemon(localizedPokemon1,conexion);
+
+	printf("\nEnvie el mensaje: %s\n",localizedPokemon1->nombre);
+
+/*
 	int cod_op = 8;
 
 	//enviarSuscripcionNewPokemon(conexion);
 	send(conexion,&cod_op,sizeof(int),0);
-	puts("\nSuscripcion enviada");
+	puts("\nSuscripcion a NewPokemon enviada");
 
 
 	int idSuscriptor;
 	recv(conexion,&idSuscriptor,sizeof(int),0);
 
-	puts("Recibi mi id como suscriptor");
-	printf("\nMi id es: %d\n",idSuscriptor);
+	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptor);
 	int ack = 1;
 	int tamanioListaNP;
 	int IDmensajeNP;
 	recv(conexion,&tamanioListaNP,sizeof(int),0);
-	printf("\nEl tamaño de la lista es %d",tamanioListaNP);
+	printf("\nEl tamaño de la lista que voy a recibir es: %d",tamanioListaNP);
 	int size;
 	int variableQueNoUsoxd;
 	NewPokemon* unNewPokemonTemporal;
 	for(int i = 0; i<tamanioListaNP;i++){
-		puts("\nEntre al for");
 		recv(conexion,&IDmensajeNP,sizeof(int),0);
-		printf("\nRecibi el ID de mensaje %d",IDmensajeNP);
+		printf("\nRecibi el ID del mensaje,el cual es: %d",IDmensajeNP);
 		recv(conexion,&variableQueNoUsoxd,sizeof(int),0);
 		unNewPokemonTemporal = recibir_NEW_POKEMON(conexion,&size);
 		printf("\n[gameboy] Recibi un %s",unNewPokemonTemporal->nombre);
 		send(conexion,&ack,sizeof(int),0);
 		printf("\nEl ack fue enviado\n");
-		free(unNewPokemonTemporal);
+
 	}
-
-
+	free(unNewPokemonTemporal);
+*/
 
 /*
 	int tamanio_maximo_mensaje = 256;

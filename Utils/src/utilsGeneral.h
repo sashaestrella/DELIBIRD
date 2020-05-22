@@ -84,7 +84,7 @@ void enviarSuscripcionNewPokemon(int socket);
 Suscriptor* recibirSuscripcionNewPokemon(int socket_suscriptor);
 
 NewPokemon* recibir_NEW_POKEMON(int cliente_fd,int* size);
-void* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size);
+LocalizedPokemon* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size);
 void* recibir_GET_POKEMON(int cliente_fd, int* size);
 void* recibir_APPEARED_POKEMON(int cliente_fd,int* size);
 void* recibir_CATCH_POKEMON(int cliente_fd,int*size);
@@ -95,8 +95,7 @@ void* solicMensajeGetPokemon(int cliente_fd);
 void* solicMensajeAppearedPokemon(int cliente_fd);
 void* solicMensajeCatchPokemon(int cliente_fd);
 void* solicMensajeCaughtPokemon(int cliente_fd);
-void enviarIDNewPokemon(int IDmensaje,int socket_suscriptor);
-void enviarIDsuscriptorAsuscriptor(int IDsuscriptor,int socket_suscriptor);
+
 void enviarColaNewPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
 void enviarColaLocalizedPokemon(int socket_suscriptor, int IDsuscriptor);
 void enviarColaGetPokemon(int socket_suscriptor, int IDsuscriptor);

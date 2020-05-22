@@ -20,23 +20,35 @@ int main(void)
 	Caught_Pokemon = list_create();
 	suscriptores_new_pokemon = list_create();
 
-	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
-	char* nombrePokemon = malloc(8);
-	nombrePokemon = "PIKACHU";
+	NewPokemon* unNewPokemon1 = malloc(sizeof(NewPokemon));
+	unNewPokemon1->nombre = "PIKACHU";
+	unNewPokemon1->coordenadas.posicionX = 2;
+	unNewPokemon1->coordenadas.posicionY = 3;
+	unNewPokemon1->cantidad = 3;
+	guardarMensajeNewPokemon(unNewPokemon1);
 
-	unNewPokemon->nombre = nombrePokemon;
-	unNewPokemon->coordenadas.posicionX = 2;
-	unNewPokemon->coordenadas.posicionY = 3;
-	unNewPokemon->cantidad = 3;
-	guardarMensajeNewPokemon(unNewPokemon);
 	NewPokemon* unNewPokemon2 = malloc(sizeof(NewPokemon));
-	char* nombrePokemon2 = malloc(9);
-	nombrePokemon2= "ALAKAZAM";
-	unNewPokemon->nombre = nombrePokemon2;
-	unNewPokemon->coordenadas.posicionX = 2;
-	unNewPokemon->coordenadas.posicionY = 3;
-	unNewPokemon->cantidad = 3;
+	unNewPokemon2->nombre = "ALAKAZAM";
+	unNewPokemon2->coordenadas.posicionX = 2;
+	unNewPokemon2->coordenadas.posicionY = 3;
+	unNewPokemon2->cantidad = 3;
 	guardarMensajeNewPokemon(unNewPokemon2);
+
+	LocalizedPokemon* localizedPokemon1 = malloc(sizeof(LocalizedPokemon));
+	localizedPokemon1->nombre = "PIKACHU";
+	localizedPokemon1->cantidadParesOrdenados = 2;
+	int numero = 1;
+	t_list* pares = list_create();
+	list_add(pares,&numero);
+	list_add(pares,&numero);
+	list_add(pares,&numero);
+	list_add(pares,&numero);
+	localizedPokemon1->paresOrdenados = pares;
+	int tamanioLista = list_size(localizedPokemon1->paresOrdenados);
+	printf("\nEl tamaño de pares ordenados es: %d\n",tamanioLista);
+	guardarMensajeLocalizedPokemon(localizedPokemon1);
+
+
 
 
 	//El sistema tira un error si no se creó correctamente el hilo
