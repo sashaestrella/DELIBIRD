@@ -59,15 +59,11 @@ typedef struct
 	t_buffer* buffer;
 } t_paquete;
 
-pthread_mutex_t mutexGeneradorIDMensaje,mutexGeneradorIDSuscriptor = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutexColaNewPokemon, mutexColaLocalizedPokemon, mutexColaGetPokemon,mutexColaAppearedPokemon, mutexColaCatchPokemon, mutexColaCaughtPokemon = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutexListaSuscriptores = PTHREAD_MUTEX_INITIALIZER;
-
-pthread_cond_t no_vacio = PTHREAD_COND_INITIALIZER;
+pthread_mutex_t mutexGeneradorIDMensaje,mutexGeneradorIDSuscriptor, mutexListaSuscriptores;
+pthread_mutex_t mutexColaNewPokemon, mutexColaLocalizedPokemon, mutexColaGetPokemon,mutexColaAppearedPokemon, mutexColaCatchPokemon, mutexColaCaughtPokemon;
+pthread_cond_t no_vacio;
 
 pthread_t thread;
-pthread_t hiloConexionSusc;
-
 
 void iniciar_servidor(void);
 void esperar_cliente(int);
