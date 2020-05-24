@@ -42,8 +42,9 @@ int main(void)
 
 	printf( "\nSe creo la conexion con el valor %d \n", conexion);
 
+	/*
 	//enviar mensajes
-/*
+
 	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
 	char* nombrePokemon = "PIKACHU";
 	unNewPokemon->nombre = nombrePokemon;
@@ -53,7 +54,6 @@ int main(void)
 	enviarNewPokemon(unNewPokemon, conexion);
 
 	printf("\nEnvie el mensaje: %s\n",unNewPokemon->nombre);
-
 
 	LocalizedPokemon* localizedPokemon1 = malloc(sizeof(LocalizedPokemon));
 	localizedPokemon1->nombre = "PIKACHU";
@@ -248,7 +248,7 @@ int main(void)
 		free(unLocalizedPokemonTemporal);
 */
 
- /*
+
 	int cod_op = 8;
 
 	//enviarSuscripcionNewPokemon(conexion);
@@ -279,7 +279,7 @@ int main(void)
 
 	}
 	free(unNewPokemonTemporal);
-*/
+
 
 /*
 	int tamanio_maximo_mensaje = 256;

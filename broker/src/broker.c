@@ -107,17 +107,6 @@ int main(void)
 		unCaughtPokemon1->atrapar = 1;
 		guardarMensajeCaughtPokemon(unCaughtPokemon1);
 */
-		pthread_mutex_init(&mutexGeneradorIDMensaje,NULL);
-		pthread_mutex_init(&mutexGeneradorIDSuscriptor,NULL);
-		pthread_mutex_init(&mutexListaSuscriptores,NULL);
-		pthread_mutex_init(&mutexColaNewPokemon,NULL);
-		pthread_mutex_init(&mutexColaLocalizedPokemon,NULL);
-		pthread_mutex_init(&mutexColaGetPokemon,NULL);
-		pthread_mutex_init(&mutexColaAppearedPokemon,NULL);
-		pthread_mutex_init(&mutexColaCatchPokemon,NULL);
-		pthread_mutex_init(&mutexColaCaughtPokemon,NULL);
-		pthread_cond_init(&no_vacio,NULL);
-
 
 	//El sistema tira un error si no se creó correctamente el hilo
 		if(pthread_create(&hiloConexion, NULL,(void*)&iniciar_servidor,NULL) != 0){
@@ -126,16 +115,6 @@ int main(void)
 
 
 	pthread_join(hiloConexion, NULL); //Puede cambiarse por Detach
-			pthread_mutex_destroy(&mutexGeneradorIDMensaje);
-			pthread_mutex_destroy(&mutexGeneradorIDSuscriptor);
-			pthread_mutex_destroy(&mutexListaSuscriptores);
-			pthread_mutex_destroy(&mutexColaNewPokemon);
-			pthread_mutex_destroy(&mutexColaLocalizedPokemon);
-			pthread_mutex_destroy(&mutexColaGetPokemon);
-			pthread_mutex_destroy(&mutexColaAppearedPokemon);
-			pthread_mutex_destroy(&mutexColaCatchPokemon);
-			pthread_mutex_destroy(&mutexColaCaughtPokemon);
-			pthread_cond_destroy(&no_vacio);
 
 	printf("Han finalizado los thread.\n");
 
