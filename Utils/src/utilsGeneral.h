@@ -10,8 +10,9 @@
 #include<commons/config.h>
 #include<string.h>
 #include<pthread.h>
-#include<semaphore.h>
 #include"utilsEstructuras.h"
+#include"utilsBroker.h"
+#include <stdbool.h>
 
 #define IP "127.0.0.1"
 #define PUERTO "4444"
@@ -29,6 +30,7 @@ t_list* suscriptores_appeared_pokemon;
 t_list* suscriptores_catch_pokemon;
 t_list* suscriptores_caught_pokemon;
 
+t_list* listaNewPokemonPorIDCorrelativo;
 
 typedef enum
 {
@@ -77,6 +79,7 @@ void devolver_mensaje(void* payload, int size, int socket_cliente);
 
 Suscriptor* recibirSuscripcionNewPokemon(int socket_suscriptor);
 void enviarColaNewPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
+void* enviarColaNP(t_list* lista,int socket_suscriptor, Suscriptor* unSuscriptor);
 Suscriptor* recibirSuscripcionLocalizedPokemon(int socket_suscriptor);
 void enviarColaLocalizedPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
 Suscriptor* recibirSuscripcionGetPokemon(int socket_suscriptor);

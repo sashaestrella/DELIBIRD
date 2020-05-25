@@ -24,14 +24,16 @@ int main(void)
 	suscriptores_appeared_pokemon = list_create();
 	suscriptores_catch_pokemon = list_create();
 	suscriptores_caught_pokemon = list_create();
-/*
-	NewPokemon* unNewPokemon1 = malloc(sizeof(NewPokemon));
+
+	listaNewPokemonPorIDCorrelativo = list_create();
+
+		NewPokemon* unNewPokemon1 = malloc(sizeof(NewPokemon));
 		unNewPokemon1->nombre = "PIKACHU";
 		unNewPokemon1->coordenadas.posicionX = 2;
 		unNewPokemon1->coordenadas.posicionY = 3;
 		unNewPokemon1->cantidad = 3;
 		guardarMensajeNewPokemon(unNewPokemon1);
-
+		/*
 	NewPokemon* unNewPokemon2 = malloc(sizeof(NewPokemon));
 		unNewPokemon2->nombre = "ALAKAZAM";
 		unNewPokemon2->coordenadas.posicionX = 2;

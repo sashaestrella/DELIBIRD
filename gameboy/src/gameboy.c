@@ -262,9 +262,18 @@ int main(void)
 	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptor);
 	int ack = 1;
 	int tamanioListaNP;
-	int IDmensajeNP;
+	int IDmensajeNP = 1;
+
+	send(conexion,&IDmensajeNP,sizeof(int),MSG_NOSIGNAL);
+	printf("Envie el id correlativo: %d",IDmensajeNP);
+
 	recv(conexion,&tamanioListaNP,sizeof(int),0);
-	printf("\nEl tamaño de la lista que voy a recibir es: %d",tamanioListaNP);
+	if(tamanioListaNP == 0){
+		puts("\nNo puedo recibir la lista porque esta vacia");
+		printf("Tamaño lista: %d",tamanioListaNP);
+	}
+	printf("\nEl tamaño de la lista que voy a recibir es: %d\n",tamanioListaNP);
+
 	int size;
 	int variableQueNoUsoxd;
 	NewPokemon* unNewPokemonTemporal;
