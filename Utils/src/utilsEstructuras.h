@@ -11,6 +11,11 @@
 #include<commons/collections/list.h>
 #include<commons/temporal.h>
 
+typedef struct{
+	int IDCorrelativo;
+	LocalizedPokemon* localizedPokemon;
+}LocalizedPokemonConIDCorrelativo;
+
 
 typedef struct suscriptor{
 	int socketSuscriptor;

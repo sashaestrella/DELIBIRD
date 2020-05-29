@@ -262,12 +262,8 @@ int main(void)
 	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptor);
 	int ack = 1;
 	int tamanioListaNP;
-	int IDmensajeNP = 1;
 
-	send(conexion,&IDmensajeNP,sizeof(int),MSG_NOSIGNAL);
-	printf("Envie el id correlativo: %d",IDmensajeNP);
-
-	recv(conexion,&tamanioListaNP,sizeof(int),0);
+	recv(conexion,&tamanioListaNP,sizeof(int),MSG_WAITALL);
 	if(tamanioListaNP == 0){
 		puts("\nNo puedo recibir la lista porque esta vacia");
 		printf("Tamaño lista: %d",tamanioListaNP);
@@ -278,10 +274,8 @@ int main(void)
 	int variableQueNoUsoxd;
 	NewPokemon* unNewPokemonTemporal;
 	for(int i = 0; i<tamanioListaNP;i++){
-		recv(conexion,&IDmensajeNP,sizeof(int),0);
-		printf("\nRecibi el ID del mensaje,el cual es: %d",IDmensajeNP);
 		recv(conexion,&variableQueNoUsoxd,sizeof(int),0);
-		unNewPokemonTemporal = recibir_NEW_POKEMON(conexion,&size);
+		unNewPokemonTemporal = recibir_NEW_POKEMON(conexion,&size,0);
 		printf("\n[gameboy] Recibi un %s",unNewPokemonTemporal->nombre);
 		send(conexion,&ack,sizeof(int),0);
 		printf("\nEl ack fue enviado\n");

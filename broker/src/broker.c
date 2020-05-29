@@ -28,19 +28,23 @@ int main(void)
 	listaNewPokemonPorIDCorrelativo = list_create();
 
 		NewPokemon* unNewPokemon1 = malloc(sizeof(NewPokemon));
-		unNewPokemon1->nombre = "PIKACHU";
+		char* nombre = malloc(8);
+		nombre = "PIKACHU";
+		unNewPokemon1->nombre = nombre;
 		unNewPokemon1->coordenadas.posicionX = 2;
 		unNewPokemon1->coordenadas.posicionY = 3;
 		unNewPokemon1->cantidad = 3;
 		guardarMensajeNewPokemon(unNewPokemon1);
-		/*
+
 	NewPokemon* unNewPokemon2 = malloc(sizeof(NewPokemon));
-		unNewPokemon2->nombre = "ALAKAZAM";
+		char* nombre2 = malloc(9);
+		nombre2 = "ALAKAZAM";
+		unNewPokemon2->nombre = nombre2;
 		unNewPokemon2->coordenadas.posicionX = 2;
 		unNewPokemon2->coordenadas.posicionY = 3;
 		unNewPokemon2->cantidad = 3;
 		guardarMensajeNewPokemon(unNewPokemon2);
-
+		/*
 	LocalizedPokemon* localizedPokemon1 = malloc(sizeof(LocalizedPokemon));
 		localizedPokemon1->nombre = "LOCALIZED1";
 		localizedPokemon1->cantidadParesOrdenados = 2;

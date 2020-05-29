@@ -30,6 +30,7 @@ typedef struct{
 	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
 }MensajeLocalizedPokemon;
 
+
 typedef struct{
 	int ID;
 	GetPokemon* contenidoDelMensaje;
