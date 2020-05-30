@@ -11,11 +11,6 @@
 #include<commons/collections/list.h>
 #include<commons/temporal.h>
 
-typedef struct{
-	int IDCorrelativo;
-	LocalizedPokemon* localizedPokemon;
-}LocalizedPokemonConIDCorrelativo;
-
 
 typedef struct suscriptor{
 	int socketSuscriptor;
@@ -68,6 +63,16 @@ typedef struct caughtPokemon{
 	uint32_t atrapar;
 }CaughtPokemon;
 
+
+typedef struct{
+	int IDCorrelativo;
+	CaughtPokemon* caughtPokemon;
+}CaughtPokemonConIDCorrelativo;
+
+typedef struct{
+	int IDCorrelativo;
+	LocalizedPokemon* localizedPokemon;
+}LocalizedPokemonConIDCorrelativo;
 
 
 #endif /*ESTRUCTURAS_H_*/

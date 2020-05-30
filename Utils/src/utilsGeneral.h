@@ -89,13 +89,15 @@ void enviarGetPokemonASuscriptores(GetPokemon* unGetPokemon,int id);
 
 Suscriptor* recibirSuscripcionAppearedPokemon(int socket_suscriptor);
 void enviarColaAppearedPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
+void enviarAppearedPokemonASuscriptores(AppearedPokemon* unAppearedPokemon);
 
 Suscriptor* recibirSuscripcionCatchPokemon(int socket_suscriptor);
-void enviarAppearedPokemonASuscriptores(AppearedPokemon* unAppearedPokemon);
 void enviarColaCatchPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
+void enviarCatchPokemonASuscriptores(CatchPokemon* unCatchPokemon,int id);
 
 Suscriptor* recibirSuscripcionCaughtPokemon(int socket_suscriptor);
 void enviarColaCaughtPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
+void enviarCaughtPokemonASuscriptores(CaughtPokemon* unCaughtPokemon,int idCorrelativo);
 
 NewPokemon* recibir_NEW_POKEMON(int cliente_fd,int* size,int reciboID);
 int guardarMensajeNewPokemon(NewPokemon* unNewPokemon);
@@ -110,10 +112,10 @@ void respoderConIDAlTeam(int id,int cliente_fd);
 AppearedPokemon* recibir_APPEARED_POKEMON(int cliente_fd,int* size,int idCorrelativo);
 void guardarMensajeAppearedPokemon(AppearedPokemon* unAppearedPokemon);
 
-CatchPokemon* recibir_CATCH_POKEMON(int cliente_fd,int*size);
-void guardarMensajeCatchPokemon(CatchPokemon* unCatchPokemon);
+CatchPokemon* recibir_CATCH_POKEMON(int cliente_fd,int*size,int reciboID);
+int guardarMensajeCatchPokemon(CatchPokemon* unCatchPokemon);
 
-CaughtPokemon* recibir_CAUGHT_POKEMON(int cliente_fd,int* size);
+CaughtPokemonConIDCorrelativo* recibir_CAUGHT_POKEMON(int cliente_fd,int* size);
 void guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemon);
 
 void* serializarNewPokemon(NewPokemon* newPokemon,int bytes,int id);
@@ -128,11 +130,11 @@ void enviarGetPokemon(GetPokemon* get_pokemon,int socket_suscriptor,int id);
 void* serializarAppearedPokemon(AppearedPokemon* appearedPokemon,int bytes,int idCorrelativo);
 void enviarAppearedPokemon(AppearedPokemon* appeared_pokemon,int socket_suscriptor,int idCorrelativo);
 
-void* serializarCatchPokemon(CatchPokemon* catchPokemon,int bytes);
-void enviarCatchPokemon(CatchPokemon* catch_pokemon,int socket_suscriptor);
+void* serializarCatchPokemon(CatchPokemon* catchPokemon,int bytes,int id);
+void enviarCatchPokemon(CatchPokemon* catch_pokemon,int socket_suscriptor,int id);
 
-void* serializarCaughtPokemon(CaughtPokemon* caughtPokemon,int bytes);
-void enviarCaughtPokemon(CaughtPokemon* caught_pokemon,int socket_suscriptor);
+void* serializarCaughtPokemon(CaughtPokemon* caughtPokemon,int bytes,int id);
+void enviarCaughtPokemon(CaughtPokemon* caught_pokemon,int socket_suscriptor,int id);
 
 void liberar_conexion(int socket_cliente);
 //--------------------Clientes--------------
