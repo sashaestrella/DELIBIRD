@@ -25,7 +25,6 @@ int main(void)
 	suscriptores_catch_pokemon = list_create();
 	suscriptores_caught_pokemon = list_create();
 
-	listaNewPokemonPorIDCorrelativo = list_create();
 
 		NewPokemon* unNewPokemon1 = malloc(sizeof(NewPokemon));
 		char* nombre = malloc(8);

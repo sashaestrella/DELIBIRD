@@ -251,7 +251,6 @@ int main(void)
 
 	int cod_op = 8;
 
-	//enviarSuscripcionNewPokemon(conexion);
 	send(conexion,&cod_op,sizeof(int),0);
 	puts("\nSuscripcion a NewPokemon enviada");
 

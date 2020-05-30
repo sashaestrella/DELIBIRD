@@ -112,7 +112,7 @@ void process_request(int cod_op, int cliente_fd) {
 					unLocalizedPokemon = unLocalizedPokemonConIDCorrelativo->localizedPokemon;
 					idCorrelativo = unLocalizedPokemonConIDCorrelativo->IDCorrelativo;
 					free(unLocalizedPokemonConIDCorrelativo);
-					guardarMensajeLocalizedPokemon(unLocalizedPokemon);
+					guardarMensajeLocalizedPokemon(unLocalizedPokemon,idCorrelativo);
 					enviarLocalizedPokemonASuscriptores(unLocalizedPokemon,idCorrelativo);
 					break;
 				case GET_POKEMON:
@@ -137,7 +137,7 @@ void process_request(int cod_op, int cliente_fd) {
 					unCaughtPokemon = unCaughtPokemonConIDCorrelativo->caughtPokemon;
 					idCorrelativo = unCaughtPokemonConIDCorrelativo->IDCorrelativo;
 					free(unCaughtPokemonConIDCorrelativo);
-					guardarMensajeCaughtPokemon(unCaughtPokemon);
+					guardarMensajeCaughtPokemon(unCaughtPokemon,idCorrelativo);
 					enviarCaughtPokemonASuscriptores(unCaughtPokemon,idCorrelativo);
 					break;
 				case SUSCRIPTOR_NEWPOKEMON:
@@ -437,7 +437,7 @@ NewPokemon* recibir_NEW_POKEMON(int cliente_fd,int* size,int reciboID){
 		return unNewPokemon;
 }
 
-void guardarMensajeLocalizedPokemon(LocalizedPokemon* unLocalizedPokemon){
+void guardarMensajeLocalizedPokemon(LocalizedPokemon* unLocalizedPokemon,int idCorrelativo){
 
 		MensajeLocalizedPokemon* mensaje = malloc(sizeof(MensajeLocalizedPokemon));
 
@@ -445,6 +445,7 @@ void guardarMensajeLocalizedPokemon(LocalizedPokemon* unLocalizedPokemon){
 		generadorDeIDsMensaje++;
 		mensaje->contenidoDelMensaje = unLocalizedPokemon;
 		mensaje->ID = generadorDeIDsMensaje;
+		mensaje->IDCorrelativo = idCorrelativo;
 		pthread_mutex_unlock(&mutexGeneradorIDMensaje);
 
 		pthread_mutex_lock(&mutexColaLocalizedPokemon);
@@ -680,7 +681,7 @@ CatchPokemon* recibir_CATCH_POKEMON(int cliente_fd,int*size,int reciboID){
 		return unCatchPokemon;
 }
 
-void guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemon){
+void guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemon,int idCorrelativo){
 
 		MensajeCaughtPokemon* mensaje = malloc(sizeof(MensajeCaughtPokemon));
 
@@ -688,6 +689,7 @@ void guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemon){
 		generadorDeIDsMensaje++;
 		mensaje->contenidoDelMensaje = unCaughtPokemon;
 		mensaje->ID = generadorDeIDsMensaje;
+		mensaje->IDCorrelativo = idCorrelativo;
 		pthread_mutex_unlock(&mutexGeneradorIDMensaje);
 
 		pthread_mutex_lock(&mutexColaCaughtPokemon);
@@ -792,7 +794,7 @@ void enviarColaLocalizedPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 
 				pthread_mutex_lock(&mutexColaLocalizedPokemon);
 				unLocalizedPokemon = mensaje->contenidoDelMensaje;
-				enviarLocalizedPokemon(unLocalizedPokemon,socket_suscriptor,idCorrelativo);
+				enviarLocalizedPokemon(unLocalizedPokemon,socket_suscriptor,mensaje->IDCorrelativo);
 				printf("\nMensaje enviado: %s",unLocalizedPokemon->nombre);
 
 				list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
@@ -955,7 +957,7 @@ void enviarColaCaughtPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 
 					pthread_mutex_lock(&mutexColaCaughtPokemon);
 					unCaughtPokemon = mensaje->contenidoDelMensaje;
-					enviarCaughtPokemon(unCaughtPokemon,socket_suscriptor,idCorrelativo);
+					enviarCaughtPokemon(unCaughtPokemon,socket_suscriptor,mensaje->IDCorrelativo);
 					printf("\nMensaje enviado: %d",unCaughtPokemon->atrapar);
 
 					list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
