@@ -44,7 +44,8 @@ typedef enum
 	SUSCRIPTOR_GETPOKEMON = 10,
 	SUSCRIPTOR_APPEAREDPOKEMON = 11,
 	SUSCRIPTOR_CATCHPOKEMON = 12,
-	SUSCRIPTOR_CAUGHTPOKEMON = 13
+	SUSCRIPTOR_CAUGHTPOKEMON = 13,
+	ACK = 14
 }op_code;
 
 typedef struct
@@ -74,64 +75,72 @@ void devolver_mensaje(void* payload, int size, int socket_cliente);
 
 Suscriptor* recibirSuscripcionNewPokemon(int socket_suscriptor);
 void enviarColaNewPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
-void enviarNewPokemonASuscriptores(NewPokemon* unNewPokemon,int id);
+void enviarNewPokemonASuscriptores(MensajeNewPokemon* unMensajeNewPokemon);
 
 Suscriptor* recibirSuscripcionLocalizedPokemon(int socket_suscriptor);
 void enviarColaLocalizedPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
-void enviarLocalizedPokemonASuscriptores(LocalizedPokemon* unLocalizedPokemon,int idCorrelativo);
+void enviarLocalizedPokemonASuscriptores(MensajeLocalizedPokemon* unMensajeLocalizedPokemon);
 
 Suscriptor* recibirSuscripcionGetPokemon(int socket_suscriptor);
 void enviarColaGetPokemon(int socket_suscriptor,Suscriptor* unSuscriptor);
-void enviarGetPokemonASuscriptores(GetPokemon* unGetPokemon,int id);
+void enviarGetPokemonASuscriptores(MensajeGetPokemon* unMensajeGetPokemon);
 
 Suscriptor* recibirSuscripcionAppearedPokemon(int socket_suscriptor);
 void enviarColaAppearedPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
-void enviarAppearedPokemonASuscriptores(AppearedPokemon* unAppearedPokemon);
+void enviarAppearedPokemonASuscriptores(MensajeAppearedPokemon* unMensajeAppearedPokemon);
 
 Suscriptor* recibirSuscripcionCatchPokemon(int socket_suscriptor);
 void enviarColaCatchPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
-void enviarCatchPokemonASuscriptores(CatchPokemon* unCatchPokemon,int id);
+void enviarCatchPokemonASuscriptores(MensajeCatchPokemon* unMensajeCatchPokemon);
 
 Suscriptor* recibirSuscripcionCaughtPokemon(int socket_suscriptor);
 void enviarColaCaughtPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
-void enviarCaughtPokemonASuscriptores(CaughtPokemon* unCaughtPokemon,int idCorrelativo);
+void enviarCaughtPokemonASuscriptores(MensajeCaughtPokemon* unMensajeCaughtPokemon);
 
 NewPokemon* recibir_NEW_POKEMON(int cliente_fd,int* size,int reciboID);
-int guardarMensajeNewPokemon(NewPokemon* unNewPokemon);
+MensajeNewPokemon* guardarMensajeNewPokemon(NewPokemon* unNewPokemon);
 
-LocalizedPokemonConIDCorrelativo* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size);
-void guardarMensajeLocalizedPokemon(LocalizedPokemon* unLocalizedPokemon,int idCorrelativo);
+LocalizedPokemonConIDCorrelativo* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size,int reciboID);
+MensajeLocalizedPokemon* guardarMensajeLocalizedPokemon(LocalizedPokemon* unLocalizedPokemon,int idCorrelativo);
 
 GetPokemon* recibir_GET_POKEMON(int cliente_fd, int* size,int reciboID);
-int guardarMensajeGetPokemon(GetPokemon* unGetPokemon);
+MensajeGetPokemon* guardarMensajeGetPokemon(GetPokemon* unGetPokemon);
 void respoderConIDAlTeam(int id,int cliente_fd);
 
-AppearedPokemon* recibir_APPEARED_POKEMON(int cliente_fd,int* size,int idCorrelativo);
-void guardarMensajeAppearedPokemon(AppearedPokemon* unAppearedPokemon);
+AppearedPokemon* recibir_APPEARED_POKEMON(int cliente_fd,int* size,int reciboID,int idCorrelativo);
+MensajeAppearedPokemon* guardarMensajeAppearedPokemon(AppearedPokemon* unAppearedPokemon);
 
 CatchPokemon* recibir_CATCH_POKEMON(int cliente_fd,int*size,int reciboID);
-int guardarMensajeCatchPokemon(CatchPokemon* unCatchPokemon);
+MensajeCatchPokemon* guardarMensajeCatchPokemon(CatchPokemon* unCatchPokemon);
 
-CaughtPokemonConIDCorrelativo* recibir_CAUGHT_POKEMON(int cliente_fd,int* size);
-void guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemon,int idCorrelativo);
+CaughtPokemonConIDCorrelativo* recibir_CAUGHT_POKEMON(int cliente_fd,int* size,int reciboID);
+MensajeCaughtPokemon* guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemon,int idCorrelativo);
 
 void* serializarNewPokemon(NewPokemon* newPokemon,int bytes,int id);
 void enviarNewPokemon(NewPokemon* unNewPokemon, int socket_subscriptor,int id);
 
-void* serializarLocalizedPokemon(LocalizedPokemon* localizedPokemon,int bytes,int idCorrelativo);
-void enviarLocalizedPokemon(LocalizedPokemon* localized_pokemon,int socket_suscriptor,int idCorrelativo);
+void* serializarLocalizedPokemon(LocalizedPokemon* localizedPokemon,int bytes,int id,int idCorrelativo);
+void enviarLocalizedPokemon(LocalizedPokemon* localized_pokemon,int socket_suscriptor,int id,int idCorrelativo);
 
 void* serializarGetPokemon(GetPokemon* getPokemon,int bytes,int id);
 void enviarGetPokemon(GetPokemon* get_pokemon,int socket_suscriptor,int id);
 
-void* serializarAppearedPokemon(AppearedPokemon* appearedPokemon,int bytes,int idCorrelativo);
-void enviarAppearedPokemon(AppearedPokemon* appeared_pokemon,int socket_suscriptor,int idCorrelativo);
+void* serializarAppearedPokemon(AppearedPokemon* appearedPokemon,int bytes,int id,int idCorrelativo);
+void enviarAppearedPokemon(AppearedPokemon* appeared_pokemon,int socket_suscriptor,int id,int idCorrelativo);
 
 void* serializarCatchPokemon(CatchPokemon* catchPokemon,int bytes,int id);
 void enviarCatchPokemon(CatchPokemon* catch_pokemon,int socket_suscriptor,int id);
 
-void* serializarCaughtPokemon(CaughtPokemon* caughtPokemon,int bytes,int id);
-void enviarCaughtPokemon(CaughtPokemon* caught_pokemon,int socket_suscriptor,int id);
+void* serializarCaughtPokemon(CaughtPokemon* caughtPokemon,int bytes,int id,int idCorrelativo);
+void enviarCaughtPokemon(CaughtPokemon* caught_pokemon,int socket_suscriptor,int id,int idCorrelativo);
+
+void recibirACK(int cliente_fd);
+void guardarElACKNewPokemon(int idMensaje,int idSuscriptor);
+void guardarElACKLocalizedPokemon(int idMensaje,int idSuscriptor);
+void guardarElACKGetPokemon(int idMensaje,int idSuscriptor);
+void guardarElACKAppearedPokemon(int idMensaje,int idSuscriptor);
+void guardarElACKCatchPokemon(int idMensaje,int idSuscriptor);
+void guardarElACKCaughtPokemon(int idMensaje,int idSuscriptor);
 
 void liberar_conexion(int socket_cliente);
 //--------------------Clientes--------------
