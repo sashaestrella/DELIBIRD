@@ -66,15 +66,42 @@ typedef struct caughtPokemon{
 }CaughtPokemon;
 
 
+//Mensajes con IDs
 typedef struct{
-	int IDCorrelativo;
-	CaughtPokemon* caughtPokemon;
-}CaughtPokemonConIDCorrelativo;
+	int IDmensaje;
+	//int IDcorrelativo;
+	NewPokemon* newPokemon;
+}NewPokemonConIDs;
 
 typedef struct{
-	int IDCorrelativo;
+	int IDmensaje;
+	int IDcorrelativo;
 	LocalizedPokemon* localizedPokemon;
-}LocalizedPokemonConIDCorrelativo;
+}LocalizedPokemonConIDs;
+
+typedef struct{
+	int IDmensaje;
+	int IDcorrelativo;
+	GetPokemon* getPokemon;
+}GetPokemonConIDs;
+
+typedef struct{
+	int IDmensaje;
+	int IDcorrelativo;
+	AppearedPokemon* appearedPokemon;
+}AppearedPokemonConIDs;
+
+typedef struct{
+	int IDmensaje;
+	int IDcorrelativo;
+	CatchPokemon* catchPokemon;
+}CatchPokemonConIDs;
+
+typedef struct{
+	int IDmensaje;
+	int IDCorrelativo;
+	CaughtPokemon* caughtPokemon;
+}CaughtPokemonConIDs;
 
 
 #endif /*ESTRUCTURAS_H_*/

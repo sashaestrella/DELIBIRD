@@ -28,9 +28,12 @@ typedef struct{
 }MensajeNewPokemon;
 
 typedef struct{
+	LocalizedPokemonConIDs* localizedPokemonConIDs;
+	/*
 	int ID;
 	int IDCorrelativo;
 	LocalizedPokemon* contenidoDelMensaje;
+	*/
 	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
 	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
 }MensajeLocalizedPokemon;
@@ -57,9 +60,12 @@ typedef struct{
 }MensajeCatchPokemon;
 
 typedef struct{
+	CaughtPokemonConIDs* caughtPokemonConIDs;
+	/*
 	int ID;
 	int IDCorrelativo;
 	CaughtPokemon* contenidoDelMensaje;
+	*/
 	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
 	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
 }MensajeCaughtPokemon;

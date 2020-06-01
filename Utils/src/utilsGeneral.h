@@ -100,7 +100,7 @@ void enviarCaughtPokemonASuscriptores(MensajeCaughtPokemon* unMensajeCaughtPokem
 NewPokemon* recibir_NEW_POKEMON(int cliente_fd,int* size,int reciboID);
 MensajeNewPokemon* guardarMensajeNewPokemon(NewPokemon* unNewPokemon);
 
-LocalizedPokemonConIDCorrelativo* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size,int reciboID);
+LocalizedPokemonConIDs* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size,int reciboID);
 MensajeLocalizedPokemon* guardarMensajeLocalizedPokemon(LocalizedPokemon* unLocalizedPokemon,int idCorrelativo);
 
 GetPokemon* recibir_GET_POKEMON(int cliente_fd, int* size,int reciboID);
@@ -113,7 +113,7 @@ MensajeAppearedPokemon* guardarMensajeAppearedPokemon(AppearedPokemon* unAppeare
 CatchPokemon* recibir_CATCH_POKEMON(int cliente_fd,int*size,int reciboID);
 MensajeCatchPokemon* guardarMensajeCatchPokemon(CatchPokemon* unCatchPokemon);
 
-CaughtPokemonConIDCorrelativo* recibir_CAUGHT_POKEMON(int cliente_fd,int* size,int reciboID);
+CaughtPokemonConIDs* recibir_CAUGHT_POKEMON(int cliente_fd,int* size,int reciboID);
 MensajeCaughtPokemon* guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemon,int idCorrelativo);
 
 void* serializarNewPokemon(NewPokemon* newPokemon,int bytes,int id);
