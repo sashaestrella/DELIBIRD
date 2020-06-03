@@ -27,27 +27,34 @@ int main(void)
 
 
 		NewPokemon* unNewPokemon1 = malloc(sizeof(NewPokemon));
+		MensajeNewPokemon* mensaje1;
 		char* nombre = malloc(8);
 		nombre = "PIKACHU";
 		unNewPokemon1->nombre = nombre;
 		unNewPokemon1->coordenadas.posicionX = 2;
 		unNewPokemon1->coordenadas.posicionY = 3;
 		unNewPokemon1->cantidad = 3;
-		guardarMensajeNewPokemon(unNewPokemon1);
+
+		mensaje1 = guardarMensajeNewPokemon(unNewPokemon1);
 
 	NewPokemon* unNewPokemon2 = malloc(sizeof(NewPokemon));
+	MensajeNewPokemon* mensaje2;
 		char* nombre2 = malloc(9);
 		nombre2 = "ALAKAZAM";
 		unNewPokemon2->nombre = nombre2;
 		unNewPokemon2->coordenadas.posicionX = 2;
 		unNewPokemon2->coordenadas.posicionY = 3;
 		unNewPokemon2->cantidad = 3;
-		guardarMensajeNewPokemon(unNewPokemon2);
-		/*
+
+		mensaje2 = guardarMensajeNewPokemon(unNewPokemon2);
+
+
 	LocalizedPokemon* localizedPokemon1 = malloc(sizeof(LocalizedPokemon));
+	MensajeLocalizedPokemon* mensaje3;
 		localizedPokemon1->nombre = "LOCALIZED1";
 		localizedPokemon1->cantidadParesOrdenados = 2;
 		int numero = 1;
+		int idCorrelativo = 1;
 		t_list* pares = list_create();
 		list_add(pares,&numero);
 		list_add(pares,&numero);
@@ -55,63 +62,41 @@ int main(void)
 		list_add(pares,&numero);
 		localizedPokemon1->paresOrdenados = pares;
 		int tamanioLista = list_size(localizedPokemon1->paresOrdenados);
-		printf("\nEl tamaño de pares ordenados es: %d\n",tamanioLista);
-		guardarMensajeLocalizedPokemon(localizedPokemon1);
+		printf("\nEl tamaño de pares ordenados de localized es: %d\n",tamanioLista);
 
-	LocalizedPokemon* localizedPokemon2 = malloc(sizeof(LocalizedPokemon));
-		localizedPokemon2->nombre = "LOCALIZED2";
-		localizedPokemon2->cantidadParesOrdenados = 3;
-		int numero1 = 1;
-		int numero2 = 4;
-		t_list* pares2 = list_create();
-		list_add(pares2,&numero1);
-		list_add(pares2,&numero2);
-		list_add(pares2,&numero1);
-		list_add(pares2,&numero2);
-		list_add(pares2,&numero1);
-		list_add(pares2,&numero2);
-		localizedPokemon2->paresOrdenados = pares2;
-		int tamanioLista2 = list_size(localizedPokemon2->paresOrdenados);
-		printf("\nEl tamaño de pares ordenados es: %d\n",tamanioLista2);
-		guardarMensajeLocalizedPokemon(localizedPokemon2);
+		mensaje3 = guardarMensajeLocalizedPokemon(localizedPokemon1,idCorrelativo);
 
-
-	LocalizedPokemon* localizedPokemon3 = malloc(sizeof(LocalizedPokemon));
-		localizedPokemon3->nombre = "LOCALIZED3";
-		localizedPokemon3->cantidadParesOrdenados = 2;
-		int numero3 = 1;
-		t_list* pares3 = list_create();
-		list_add(pares3,&numero3);
-		list_add(pares3,&numero3);
-		list_add(pares3,&numero3);
-		list_add(pares3,&numero3);
-		localizedPokemon3->paresOrdenados = pares3;
-		int tamanioLista3 = list_size(localizedPokemon3->paresOrdenados);
-		printf("\nEl tamaño de pares ordenados es: %d\n",tamanioLista3);
-		guardarMensajeLocalizedPokemon(localizedPokemon3);
 
 	GetPokemon* unGetPokemon1 = malloc(sizeof(GetPokemon));
+	MensajeGetPokemon* mensaje4;
 		unGetPokemon1->nombre = "GET";
 
-		guardarMensajeGetPokemon(unGetPokemon1);
+		mensaje4 = guardarMensajeGetPokemon(unGetPokemon1);
 
 	AppearedPokemon* unAppearedPokemon1 = malloc(sizeof(AppearedPokemon));
+	MensajeAppearedPokemon* mensaje5;
 		unAppearedPokemon1->nombre = "APPEARED1";
 		unAppearedPokemon1->coordenadas.posicionX = 2;
 		unAppearedPokemon1->coordenadas.posicionY = 4;
-		guardarMensajeAppearedPokemon(unAppearedPokemon1);
+
+		mensaje5 = guardarMensajeAppearedPokemon(unAppearedPokemon1);
 
 	CatchPokemon* unCatchPokemon1 = malloc(sizeof(CatchPokemon));
+	MensajeCatchPokemon* mensaje6;
 		unCatchPokemon1->nombre = "CATCH1";
 		unCatchPokemon1->coordenadas.posicionX = 5;
 		unCatchPokemon1->coordenadas.posicionY = 6;
 		printf("Coordenadas catch: %d %d\n",unCatchPokemon1->coordenadas.posicionX,unCatchPokemon1->coordenadas.posicionY);
-		guardarMensajeCatchPokemon(unCatchPokemon1);
+
+		mensaje6 = guardarMensajeCatchPokemon(unCatchPokemon1);
 
 	CaughtPokemon* unCaughtPokemon1 = malloc(sizeof(CaughtPokemon));
+	MensajeCaughtPokemon* mensaje7;
+		int idCorrelativoCaught = 1;
 		unCaughtPokemon1->atrapar = 1;
-		guardarMensajeCaughtPokemon(unCaughtPokemon1);
-*/
+
+		mensaje7 = guardarMensajeCaughtPokemon(unCaughtPokemon1,idCorrelativoCaught);
+
 
 	//El sistema tira un error si no se creó correctamente el hilo
 		if(pthread_create(&hiloConexion, NULL,(void*)&iniciar_servidor,NULL) != 0){
