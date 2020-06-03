@@ -11,19 +11,21 @@
 #include<commons/collections/list.h>
 #include<commons/temporal.h>
 
+typedef struct ack{
+	int IDsuscriptor;
+	int IDmensaje;
+	int numeroDeColaALaQuePertenece;
+}ACKmensaje;
 
 typedef struct suscriptor{
 	int socketSuscriptor;
 	int IDsuscriptor;
-
 }Suscriptor;
 
 typedef struct coordenadas{
 	uint32_t posicionX;
 	uint32_t posicionY;
 }CoordenadasXY;
-
-
 
 typedef struct newPokemon{
 	uint32_t tamanioNombrePokemon;
@@ -63,6 +65,43 @@ typedef struct caughtPokemon{
 	uint32_t atrapar;
 }CaughtPokemon;
 
+
+//Mensajes con IDs
+typedef struct{
+	int IDmensaje;
+	//int IDcorrelativo;
+	NewPokemon* newPokemon;
+}NewPokemonConIDs;
+
+typedef struct{
+	int IDmensaje;
+	int IDcorrelativo;
+	LocalizedPokemon* localizedPokemon;
+}LocalizedPokemonConIDs;
+
+typedef struct{
+	int IDmensaje;
+	int IDcorrelativo;
+	GetPokemon* getPokemon;
+}GetPokemonConIDs;
+
+typedef struct{
+	int IDmensaje;
+	int IDcorrelativo;
+	AppearedPokemon* appearedPokemon;
+}AppearedPokemonConIDs;
+
+typedef struct{
+	int IDmensaje;
+	int IDcorrelativo;
+	CatchPokemon* catchPokemon;
+}CatchPokemonConIDs;
+
+typedef struct{
+	int IDmensaje;
+	int IDCorrelativo;
+	CaughtPokemon* caughtPokemon;
+}CaughtPokemonConIDs;
 
 
 #endif /*ESTRUCTURAS_H_*/
