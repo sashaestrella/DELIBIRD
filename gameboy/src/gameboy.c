@@ -44,20 +44,20 @@ int main(void)
 
 
 	//enviar mensajes
-	/*
+/*
 	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
 	char* nombrePokemon = malloc(8);
-	int id = 0;
+	int idNewPokemon = 0;
 	nombrePokemon = "PIKACHU";
 	unNewPokemon->nombre = nombrePokemon;
 	unNewPokemon->coordenadas.posicionX = 2;
 	unNewPokemon->coordenadas.posicionY = 3;
 	unNewPokemon->cantidad = 3;
-	enviarNewPokemon(unNewPokemon, conexion,id);
+	enviarNewPokemon(unNewPokemon, conexion,idNewPokemon);
 
-	printf("\nEnvie el mensaje: %s, con id: %d\n",unNewPokemon->nombre,id);
+	printf("\nEnvie el mensaje: %s, con id: %d\n",unNewPokemon->nombre,idNewPokemon);
+*/
 
-	*/
 /*
 	LocalizedPokemon* localizedPokemon1 = malloc(sizeof(LocalizedPokemon));
 	char* nombre = malloc(9);
@@ -66,7 +66,7 @@ int main(void)
 	localizedPokemon1->cantidadParesOrdenados = 2;
 
 	int idmensaje = 0;
-	int idCorrelativo;
+	int idCorrelativo = 2;
 	int numero = 1;
 		t_list* pares = list_create();
 		list_add(pares,&numero);
@@ -116,13 +116,13 @@ int main(void)
 
 		printf("\nEnvie el mensaje: %s\n",catchPokemon1->nombre);
 
-		*/
+*/
 /*
 	CaughtPokemon* caughtPokemon1 = malloc(sizeof(CaughtPokemon));
 		caughtPokemon1->atrapar = 0;
 
 		int id = 0;
-		int idCorrelativo;
+		int idCorrelativo = 3;
 		enviarCaughtPokemon(caughtPokemon1,conexion,id,idCorrelativo);
 
 		printf("\nEnvie el mensaje: %d\n",caughtPokemon1->atrapar);
@@ -283,20 +283,28 @@ int main(void)
 		puts("\nNo puedo recibir la lista porque esta vacia");
 		printf("Tamaño lista: %d",tamanioListaNP);
 	}
-	printf("\nEl tamaño de la lista que voy a recibir es: %d\n",tamanioListaNP);
+	printf("El tamaño de la lista que voy a recibir es: %d\n",tamanioListaNP);
 
 	int size;
-	int id;
+	int id = 1;
+	int idNew;
 	int variableQueNoUsoxd;
+
+	NewPokemonConIDs* newConIDs;
 	NewPokemon* unNewPokemonTemporal;
 
 	for(int i = 0; i<tamanioListaNP;i++){
 		recv(conexion,&variableQueNoUsoxd,sizeof(int),MSG_WAITALL);
-		unNewPokemonTemporal = recibir_NEW_POKEMON(conexion,&size,id);
-		printf("\n[gameboy] Recibi un %s\n",unNewPokemonTemporal->nombre);
+		newConIDs = recibir_NEW_POKEMON(conexion,&size,&id);
+		unNewPokemonTemporal = newConIDs->newPokemon;
+		idNew = newConIDs->IDmensaje;
+		printf("[gameboy] Recibi un %s,con ID: %d\n",unNewPokemonTemporal->nombre,idNew);
 
 	}
-	free(unNewPokemonTemporal);
+
+	free(newConIDs);
+
+
 
 
 /*

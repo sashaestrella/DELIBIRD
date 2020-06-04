@@ -62,7 +62,7 @@ int main(void)
 		list_add(pares,&numero);
 		localizedPokemon1->paresOrdenados = pares;
 		int tamanioLista = list_size(localizedPokemon1->paresOrdenados);
-		printf("\nEl tamaño de pares ordenados de localized es: %d\n",tamanioLista);
+		printf("\nEl tamaño de pares ordenados de localized es: %d",tamanioLista);
 
 		mensaje3 = guardarMensajeLocalizedPokemon(localizedPokemon1,idCorrelativo);
 
