@@ -26,7 +26,7 @@ endif
 all: team
 
 dependents:
-	-cd /home/utnso/Documentos/tp-2020-1c-BOMP/Utils/Debug && $(MAKE) all
+	-cd /home/utnso/Documentos/tp-2020-1c-BOMP/Utils/Debug && $(MAKE) clean all
 
 # Tool invocations
 team: $(OBJS) $(USER_OBJS) /home/utnso/Documentos/tp-2020-1c-BOMP/Utils/Debug/libUtils.so

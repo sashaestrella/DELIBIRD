@@ -1,12 +1,5 @@
 #include "adminMensajes.h"
 
-void noHayBroker(){
-	generarConexion(conexionGameBoy, msgGameBoy);
-	pthread_t hiloGameBoy;
-	pthread_create(&hiloGameBoy, NULL, recibirMensaje, conexionGameBoy);
-	pthread_join(hiloGameBoy,NULL);
-}
-
 void generarConexiones(){
 
 	generarConexion(conexionAppeared, msgAppeared);
@@ -26,39 +19,6 @@ void generarConexiones(){
 	pthread_create(&hiloCaught, NULL, recibirMensaje, conexionCaught);
 	pthread_detach(hiloCaught);*/
 
-}
-
-
-
-void generarConexion(int conexion, char* mensajeAEnviar){
-
-	conexion = crear_conexion(ip, puerto);
-
-	printf( "\nSe creo la conexion con el valor %d \n", conexion);
-
-	int aEnviar = 8;
-	int soyNuevo = 0;
-	send(conexion, &aEnviar, sizeof(int),0);
-	send(conexion, &soyNuevo, sizeof(int),0);
-
-	void* mensajeRecibido = malloc(sizeof(int));
-
-	mensajeRecibido = recv(conexion, mensajeRecibido, sizeof(int), MSG_WAITALL);
-
-	IDnew = (int)mensajeRecibido;
-	printf("Suscriptor numero: %d\n", IDnew);
-}
-
-void* recibirMensaje(int conexion){
-	char* mensajeRecibido;
-	pthread_t admin;
-	int* tamanioMaximo = 264;
-	while(1){
-		mensajeRecibido = recibir_mensaje(conexion,&tamanioMaximo);
-		pthread_create(&admin, NULL, adminMensajes, mensajeRecibido);
-		pthread_join(admin,NULL);
-	}
-	return EXIT_SUCCESS;
 }
 
 void* adminMensajes(char* mensaje){

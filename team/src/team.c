@@ -3,7 +3,7 @@
 int main(int argc,char* argv[])
 {
 
-	cargarDatosConfig();
+	cargarDatosConexionConfig();
 	generarConexiones();
 
 	entrenadores = list_create();

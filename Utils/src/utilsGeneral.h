@@ -64,7 +64,7 @@ pthread_mutex_t mutexGeneradorIDMensaje;// = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexGeneradorIDSuscriptor;// = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexGuardarEnviado;// = PTHREAD_MUTEX_INITIALIZER;
 
-pthread_cond_t no_vacio = PTHREAD_COND_INITIALIZER;
+pthread_cond_t no_vacio;// = PTHREAD_COND_INITIALIZER;
 
 pthread_t thread;
 

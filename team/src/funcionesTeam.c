@@ -1,12 +1,7 @@
 #include "team.h"
 #include "funcionesEntrenador.h"
 
-void cargarDatosConfig(){
-	t_config* archivo_config =  config_create("team.config");
 
-	ip = config_get_string_value(archivo_config,"IP");
-	puerto = config_get_string_value(archivo_config,"PUERTO");
-}
 
 void leer_config(t_list* new_entenadores)
 {
