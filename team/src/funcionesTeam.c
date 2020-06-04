@@ -1,11 +1,6 @@
 #include "funcionesEntrenador.h"
 
-void cargarDatosConfig(){
-	t_config* archivo_config =  config_create("team.config");
 
-	ip = config_get_string_value(archivo_config,"IP");
-	puerto = config_get_string_value(archivo_config,"PUERTO");
-}
 
 void leer_config(t_list* new_entenadores)
 {
@@ -42,24 +37,16 @@ void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos,t_
 
 		char** pokemones_separados = string_split(pokemones[i], "|");
 
-		//entrenador->pokemones = list_create();
-		//int j;
-		//for(j=0; j<cantidad(pokemones_separados); j++)
-		//	list_add(entrenador->pokemones,(void*)pokemones_separados[j]); //llena la lista de pokemones de cada entrenador
-
-
 		char** objetivos_separados = string_split(objetivos[i], "|");
 
 		entrenador->objetivos = list_create();
 
 		obtener_objetivos(pokemones_separados, objetivos_separados, entrenador->objetivos);
 
-		//for(j=0; j<cantidad(objetivos_separados);j++)// llena la lista de objetivos de cada enternador
-			//list_add(entrenador->objetivos, objetivos_separados[j]);
-
 		list_add(entrenadores, entrenador); //mete al entrenador en la lista
+
 		pthread_create(&hilo_entrenador, NULL, planificar, entrenador);
-		pthread_join(hilo_entrenador,NULL);
+		pthread_join(hilo_entrenador,NULL); //los join habria que ponerlos al final del main
 	}
 }
 
@@ -90,6 +77,7 @@ char** obtener_objetivos(char** yaTiene, char** objetivos, t_list* listaObjetivo
 		}
 		}
 }
+
 int cantidad(char** lista){
 
 		int i=0;

@@ -4,14 +4,13 @@
 int main(int argc,char* argv[])
 {
 
-	cargarDatosConfig();
+	cargarDatosConexionConfig();
 	generarConexiones();
 
 	entrenadores = list_create();
 
 	leer_config(entrenadores);
 
-	//todo esto es para ver si calculaba bien los objetivos si queres sacalo a la mierda
 
 	int i;
 	Entrenador* entrenador = malloc(sizeof(Entrenador));
