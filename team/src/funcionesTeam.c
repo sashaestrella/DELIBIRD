@@ -1,4 +1,3 @@
-#include "team.h"
 #include "funcionesEntrenador.h"
 
 void cargarDatosConfig(){

@@ -1,8 +1,6 @@
 #include "funcionesEntrenador.h"
 
 
-
-
 void* planificar(Entrenador* entrenador){
 	// Estado estado = 1;
 	//uint32_t IDproceso = getpid();
