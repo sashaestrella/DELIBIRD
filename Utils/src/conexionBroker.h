@@ -8,8 +8,7 @@
 #include<commons/config.h>
 #include<readline/readline.h>
 #include<sys/syscall.h>
-#include<src/utilsGeneral.h>
-#include<src/utilsEstructuras.h>
+#include"utilsGeneral.h"
 
 struct {
 	uint32_t colaSuscripcion;

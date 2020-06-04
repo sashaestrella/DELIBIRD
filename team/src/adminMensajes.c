@@ -2,7 +2,9 @@
 
 void generarConexiones(){
 
-	generarConexion(conexionAppeared, msgAppeared);
+	//generarConexion es un hilo que genera los otros hilos
+
+	generarConexion(conexionAppeared, 13, 0, IDsuscripcionAppeared);
 	//pthread_t hiloAppeared;
 	//pthread_create(&hiloAppeared, NULL, recibirMensaje, conexionAppeared);
 	//pthread_join(hiloAppeared,NULL);

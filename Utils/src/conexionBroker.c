@@ -13,23 +13,37 @@ void generarConexion(int conexion, int colaSuscripcion, int tipoSuscriptor, int 
 
 	printf( "\nSe creo la conexion con el valor %d \n", conexion);
 
-	send(conexion, colaSuscripcion, sizeof(int),0);
-	//send(conexion, tipoSuscriptor, sizeof(int),0);
+	send(conexion, &colaSuscripcion, sizeof(int),0);
+	//send(conexion, &tipoSuscriptor, sizeof(int),0);
 
-	void* mensajeRecibido = malloc(sizeof(int));
+	recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
 
-	mensajeRecibido = recv(conexion, mensajeRecibido, sizeof(int), MSG_WAITALL);
-
-	IDsuscripcion = (int)mensajeRecibido;
 	printf("Suscriptor numero: %d\n", IDsuscripcion);
+
+	int cantidadCaughtPokemon;
+
+	recv(conexion, &cantidadCaughtPokemon, sizeof(int), MSG_WAITALL);
+
+	printf("Cantidad de Caught Pokemons: %d\n", cantidadCaughtPokemon);
+
+	CaughtPokemonConIDs* nuevoCaughtPokemonConId;
+	for(int i = 0; i<cantidadCaughtPokemon; i++){
+		nuevoCaughtPokemonConId = recibir_CAUGHT_POKEMON(conexion, 0, 1);
+		//VALIDAR SI ME SIRVE Y DELEGAR
+	}
+}
+
+void* adminMensajes(char* mensajeRecibido){
+	printf("Me llego:");
+	return EXIT_SUCCESS;
 }
 
 void* recibirMensaje(int conexion){
-	char* mensajeRecibido;
+	char* mensajeRecibido = "Maxi";
 	pthread_t admin;
 	int* tamanioMaximo = 264;
 	while(1){
-		mensajeRecibido = recibir_mensaje(conexion,&tamanioMaximo);
+		//mensajeRecibido = recibir_mensaje(conexion,&tamanioMaximo);
 
 		pthread_create(&admin, NULL, adminMensajes, mensajeRecibido);
 		pthread_join(admin,NULL);
@@ -42,5 +56,4 @@ void cargarDatosConexionConfig(){
 	ip = config_get_string_value(archivo_config,"IP");
 	puerto = config_get_string_value(archivo_config,"PUERTO");
 }
-
 
