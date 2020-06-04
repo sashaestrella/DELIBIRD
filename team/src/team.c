@@ -5,7 +5,7 @@ int main(int argc,char* argv[])
 {
 
 	cargarDatosConexionConfig();
-	generarConexiones();
+	generarConexiones(0);
 
 	entrenadores = list_create();
 

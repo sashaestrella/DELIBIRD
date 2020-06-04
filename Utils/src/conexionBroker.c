@@ -114,17 +114,25 @@ void* adminMensajes(char* mensajeRecibido){
 }
 
 void* recibirMensaje(int conexion){
-	char* mensajeRecibido = "Maxi";
 	pthread_t admin;
 	int* tamanioMaximo = 264;
 	while(1){
 		//mensajeRecibido = recibir_mensaje(conexion,&tamanioMaximo);
-
+		//Enviar ACK
 		pthread_create(&admin, NULL, adminMensajes, mensajeRecibido);
 		pthread_join(admin,NULL);
 	}
 	return EXIT_SUCCESS;
 }
+
+void enviarACK(int IDsuscriptor, int IDmensaje, int cola, int conexion){
+	ACKmensaje confirmacion;
+	confirmacion->IDmensaje = IDmensaje;
+	confirmacion->IDsuscriptor = IDsuscriptor;
+	confirmacion->numeroDeColaALaQuePertenece = cola;
+	send(conexion, &confirmacion, sizeof(ACKmensaje), 0);
+}
+
 
 void cargarDatosConexionConfig(){
 	t_config* archivo_config =  config_create("team.config");
