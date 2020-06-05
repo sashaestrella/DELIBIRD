@@ -8,6 +8,7 @@ char* msgLocalized;// = "9 0";
 char* msgCaught;// = "13 0";
 
 void generarConexiones();
+void abrirEscuchas();
 
 int IDnew;
 

@@ -7,7 +7,11 @@ int main(int argc,char* argv[])
 
 
 	cargarDatosConexionConfig();
-	//generarConexiones(0);
+	/*generarConexiones(0);
+	abrirEscuchas();
+
+
+	*/
 
 	entrenadores = list_create();
 	objetivoGlobal = list_create();

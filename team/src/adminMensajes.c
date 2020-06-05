@@ -7,7 +7,7 @@ void generarConexiones(int tipoSuscriptor){
 	appeared->conexionCola = conexionAppeared;
 	appeared->colaASuscribirse = SUSCRIPTOR_APPEAREDPOKEMON;
 	appeared->nuevoExistente = tipoSuscriptor;
-	appeared->IDSuscripcion = IDsuscripcionAppeared;
+	appeared->IDSuscripcion = IDsuscripcionAppeared; //Esto hay que sacarlo de aca porque no me actualiza mi ID
 
 	pthread_t hiloAppeared;
 	pthread_create(&hiloAppeared, NULL, suscribirseACola, appeared);
@@ -38,6 +38,20 @@ void generarConexiones(int tipoSuscriptor){
 	//pthread_join(hiloAppeared,NULL);
 	//pthread_join(hiloCaught,NULL);
 	//pthread_join(hiloLocalized,NULL);
+}
+
+void abrirEscuchas(){
+	pthread_t escuchaAppeared;
+	pthread_create(&escuchaAppeared, NULL, recibirMensajesAppeared, conexionAppeared, IDsuscripcionAppeared);
+	pthread_detach(escuchaAppeared);
+
+	pthread_t escuchaLocalized;
+	pthread_create(&escuchaLocalized, NULL, recibirMensajesLocalized, conexionLocalized, IDsuscripcionLocalized);
+	pthread_detach(escuchaLocalized);
+
+	pthread_t escuchaCaught;
+	pthread_create(&escuchaCaught, NULL, recibirMensajesCaught, conexionCaught, IDsuscripcionCaught);
+	pthread_detach(escuchaCaught);
 }
 
 void* adminMensajes(char* mensaje){
