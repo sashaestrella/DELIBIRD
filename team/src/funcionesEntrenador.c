@@ -3,6 +3,8 @@
 
 void* planificar(Entrenador* entrenador){
 
+	printf("\nSoy el entrenador %d y se creo mi hilo.\n", entrenador->ID);
+
 }
 
 

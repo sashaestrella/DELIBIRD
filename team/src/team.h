@@ -2,6 +2,7 @@
 #define TEAM_H_
 
 #include<src/conexionBroker.h>
+#include<semaphore.h>
 
 typedef enum
 {
@@ -24,6 +25,9 @@ typedef struct pokemon{
 	char* nombre;
 	CoordenadasXY posicion;
 }Pokemon;
+
+pthread_t *hiloEntrenador;
+
 
 bool execute;
 t_list* entrenadores;
@@ -54,11 +58,11 @@ int idCaught;
 
 
 t_log* iniciar_logger(void);
-void leer_config(t_list*);
-void armar_entrenadores(char**, char**, char** ,t_list*);
+void leer_config();
+void armar_entrenadores(char**, char**, char**);
 int cantidad(char**);
 char** obtener_objetivos(char**, char**, t_list*);
 void terminar_programa(int, t_log*, t_config*);
-void obtener_objetivo_global(t_list*);
-
+void obtener_objetivo_global();
+void* planificar(Entrenador*);
 #endif

@@ -2,12 +2,12 @@
 
 
 
-void enviarACK(int socket,int idMensaje,int idSuscriptor){
+/*void enviarACK(int socket,int idMensaje,int idSuscriptor){
 		t_buffer* buffer = malloc(sizeof(t_buffer));
 
 
 
-}
+}*/
 
 
 void* recibir_mensaje(int socket_cliente, int* size)

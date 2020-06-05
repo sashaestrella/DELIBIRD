@@ -5,6 +5,6 @@
 
 
 int calcularDistancia(Entrenador*, Pokemon*);
-void* planificar(Entrenador*);
+
 
 #endif /* FUNCIONESENTRENADOR_H_ */

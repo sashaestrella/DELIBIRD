@@ -132,9 +132,9 @@ void* recibirMensaje(int conexion){
 
 void enviarACK(int IDsuscriptor, int IDmensaje, int cola, int conexion){
 	ACKmensaje confirmacion;
-	confirmacion->IDmensaje = IDmensaje;
-	confirmacion->IDsuscriptor = IDsuscriptor;
-	confirmacion->numeroDeColaALaQuePertenece = cola;
+	confirmacion.IDmensaje = IDmensaje;
+	confirmacion.IDsuscriptor = IDsuscriptor;
+	confirmacion.numeroDeColaALaQuePertenece = cola;
 	send(conexion, &confirmacion, sizeof(ACKmensaje), 0);
 }
 

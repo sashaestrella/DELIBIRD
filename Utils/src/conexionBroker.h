@@ -30,7 +30,7 @@ void noHayBroker();
 void* suscribirseACola(ParametrosSuscripcion*);
 void* recibirMensaje(int);
 void cargarDatosConexionConfig();
-void* adminMensajes(char*);
+void* adminMensajes();
 void enviarACK(int, int, int, int);
 
 

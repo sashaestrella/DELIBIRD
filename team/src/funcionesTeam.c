@@ -2,7 +2,7 @@
 
 
 
-void leer_config(t_list* new_entrenadores)
+void leer_config()
 {
 	t_config* archivo_config =  config_create("team.config"); //lee archivo de configuracion
 
@@ -12,12 +12,12 @@ void leer_config(t_list* new_entrenadores)
 
 	char** objetivos_entrenadores =  config_get_array_value(archivo_config, "OBJETIVOS_ENTRENADORES"); // mete a todo en arrays
 
-	armar_entrenadores(posiciones_entrenadores, pokemon_entrenadores, objetivos_entrenadores, new_entrenadores); //les pasas los arrays y la lista
+	armar_entrenadores(posiciones_entrenadores, pokemon_entrenadores, objetivos_entrenadores); //les pasas los arrays y la lista
 
-	obtener_objetivo_global(new_entrenadores);
+	obtener_objetivo_global();
 }
 
-void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos,t_list* new_entrenadores){
+void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
 
 	pthread_t hilo_entrenador;
 	int cantidad_entrenadores = cantidad(posiciones); //calcula cuantos entrenadores hay para el for segun la cantidad de posiciones
@@ -45,8 +45,6 @@ void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos,t_
 
 		list_add(entrenadores, entrenador); //mete al entrenador en la lista
 
-		pthread_create(&hilo_entrenador, NULL, planificar, entrenador);
-		pthread_join(hilo_entrenador,NULL); //los join habria que ponerlos al final del main
 	}
 }
 
@@ -78,7 +76,7 @@ char** obtener_objetivos(char** yaTiene, char** objetivos, t_list* listaObjetivo
 		}
 }
 
-void obtener_objetivo_global(t_list* entrenadores){
+void obtener_objetivo_global(){
 
 	for(int i=0; i<list_size(entrenadores);i++){
 

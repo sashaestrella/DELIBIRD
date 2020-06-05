@@ -4,37 +4,62 @@
 int main(int argc,char* argv[])
 {
 
+
+
 	cargarDatosConexionConfig();
-	generarConexiones(0);
+	//generarConexiones(0);
 
 	entrenadores = list_create();
 	objetivoGlobal = list_create();
 
-	leer_config(entrenadores);
+	leer_config();
+
+	hiloEntrenador = malloc(list_size(entrenadores) * sizeof(pthread_t));
+
+	for(int j=0; j<list_size(entrenadores);j++)
+		pthread_create(&hiloEntrenador[j],NULL, planificar, list_get(entrenadores, j));
 
 
 	int i;
 	Entrenador* entrenador = malloc(sizeof(Entrenador));
 	entrenador = list_get (entrenadores, 0);
-	 printf(" \n Entrenador1 movido (%d, %d)", entrenador->posicion.posicionX, entrenador->posicion.posicionY);
+	 printf(" \n Entrenador1 posicion (%d, %d)", entrenador->posicion.posicionX, entrenador->posicion.posicionY);
 	 puts("\nMi objetivo: ");
 	for(i=0; i<list_size(entrenador->objetivos);i++){
 		printf("%s,", list_get(entrenador->objetivos, i));
 	}
+
+
+
 	Entrenador* entrenador1 = malloc(sizeof(Entrenador));
 	entrenador1 = list_get (entrenadores, 1);
-	printf(" \n Entrenador2 movido (%d, %d)", entrenador1->posicion.posicionX, entrenador1->posicion.posicionY);
+	printf(" \n Entrenador2 posicion (%d, %d)", entrenador1->posicion.posicionX, entrenador1->posicion.posicionY);
 	puts("\nMi objetivo: ");
 	for(i=0; i<list_size(entrenador1->objetivos);i++){
 	 		printf("%s,", list_get(entrenador1->objetivos, i));
 	}
+
+
+
 	Entrenador* entrenador2 = malloc(sizeof(Entrenador));
 	entrenador2 = list_get (entrenadores, 2);
-	printf(" \n Entrenador3 movido (%d, %d)", entrenador2->posicion.posicionX, entrenador2->posicion.posicionY);
+	printf(" \n Entrenador3 posicion (%d, %d)", entrenador2->posicion.posicionX, entrenador2->posicion.posicionY);
 	puts("\nMi objetivo: ");
 	for(i=0; i<list_size(entrenador2->objetivos);i++){
 	 		printf("%s\n,", list_get(entrenador2->objetivos, i));
 	}
+
+
+	puts("\n");
+	for(i=0; i<list_size(objetivoGlobal);i++){
+		 		printf("%s,", list_get(objetivoGlobal, i));
+		}
+
+	puts("\nDios que dificil sincronizar estos hilos de mierda");
+
+	for(int j=0; j<list_size(entrenadores);j++)
+		pthread_join(hiloEntrenador[j],NULL);
+
 
 
 	/*-----------------------------------------------PARTE 2-------------------------------------------------------------*/
