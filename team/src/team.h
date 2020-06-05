@@ -27,6 +27,18 @@ typedef struct pokemon{
 
 bool execute;
 t_list* entrenadores;
+t_list* objetivoGlobal;
+int tiempoDeReconexion;
+char* archivoLog;
+
+//------------Variables para los algoritmos de planificacion
+
+int retardoCicloCPU;
+char* algoritmoPlanificacion;
+int quantum;
+float alpha;
+int estimacionInicial;
+//----------------------------------------------------------
 
 int conexionAppeared;
 int IDsuscripcionAppeared;
@@ -47,6 +59,6 @@ void armar_entrenadores(char**, char**, char** ,t_list*);
 int cantidad(char**);
 char** obtener_objetivos(char**, char**, t_list*);
 void terminar_programa(int, t_log*, t_config*);
-
+void obtener_objetivo_global(t_list*);
 
 #endif

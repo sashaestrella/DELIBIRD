@@ -119,17 +119,19 @@ void* recibirMensaje(int conexion){
 	while(1){
 		//mensajeRecibido = recibir_mensaje(conexion,&tamanioMaximo);
 		//Enviar ACK
-		pthread_create(&admin, NULL, adminMensajes, mensajeRecibido);
-		pthread_join(admin,NULL);
+		//pthread_create(&admin, NULL, adminMensajes, mensajeRecibido);
+		//pthread_join(admin,NULL);
 	}
 	return EXIT_SUCCESS;
 }
 
 void enviarACK(int IDsuscriptor, int IDmensaje, int cola, int conexion){
-	ACKmensaje confirmacion;
+
+	ACKmensaje* confirmacion;
 	confirmacion->IDmensaje = IDmensaje;
 	confirmacion->IDsuscriptor = IDsuscriptor;
 	confirmacion->numeroDeColaALaQuePertenece = cola;
+
 	send(conexion, &confirmacion, sizeof(ACKmensaje), 0);
 }
 

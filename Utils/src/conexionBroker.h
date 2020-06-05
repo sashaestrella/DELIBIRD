@@ -31,7 +31,7 @@ void* suscribirseACola(ParametrosSuscripcion*);
 void* recibirMensaje(int);
 void cargarDatosConexionConfig();
 void* adminMensajes(char*);
-void enviarACK(int, int, int);
+void enviarACK(int, int, int, int);
 
 
 #endif /* SRC_CONEXIONBROKER_H_ */

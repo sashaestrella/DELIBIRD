@@ -2,15 +2,7 @@
 
 
 void* planificar(Entrenador* entrenador){
-	// Estado estado = 1;
-	//uint32_t IDproceso = getpid();
-	//uint32_t padre = getppid();
-	pid_t tid = syscall(SYS_gettid);
-	uint32_t IDentrenador = entrenador->ID;
-	int x=entrenador->posicion.posicionX , y=entrenador->posicion.posicionY;
 
-	entrenador->posicion.posicionX = entrenador->posicion.posicionX + 2; // lo muevo dos en x
-	return EXIT_SUCCESS;
 }
 
 

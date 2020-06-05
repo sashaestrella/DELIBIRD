@@ -8,6 +8,7 @@ int main(int argc,char* argv[])
 	generarConexiones(0);
 
 	entrenadores = list_create();
+	objetivoGlobal = list_create();
 
 	leer_config(entrenadores);
 
