@@ -115,13 +115,13 @@ void process_request(int cod_op, int cliente_fd) {
 				case -1:
 					pthread_exit(NULL);
 				case NEW_POKEMON:
-					newConIDs = recibir_NEW_POKEMON(cliente_fd, &size,&id);
+					newConIDs = recibir_NEW_POKEMON(cliente_fd, &size,0);
 					unNewPokemon = newConIDs->newPokemon;
 					mensajeNewPokemon = guardarMensajeNewPokemon(unNewPokemon);
 					enviarNewPokemonASuscriptores(mensajeNewPokemon);
 					break;
 				case LOCALIZED_POKEMON:
-					unLocalizedPokemonConIDCorrelativo = recibir_LOCALIZED_POKEMON(cliente_fd,&size,&id);
+					unLocalizedPokemonConIDCorrelativo = recibir_LOCALIZED_POKEMON(cliente_fd,&size,0);
 					unLocalizedPokemon = unLocalizedPokemonConIDCorrelativo->localizedPokemon;
 					idCorrelativo = unLocalizedPokemonConIDCorrelativo->IDcorrelativo;
 					//free(unLocalizedPokemonConIDCorrelativo);
@@ -129,25 +129,25 @@ void process_request(int cod_op, int cliente_fd) {
 					enviarLocalizedPokemonASuscriptores(mensajeLocalizedPokemon);
 					break;
 				case GET_POKEMON:
-					getConIDs = recibir_GET_POKEMON(cliente_fd,&size,&id);
+					getConIDs = recibir_GET_POKEMON(cliente_fd,&size,0);
 					unGetPokemon = getConIDs->getPokemon;
 					unMensajeGetPokemon = guardarMensajeGetPokemon(unGetPokemon);
 					enviarGetPokemonASuscriptores(unMensajeGetPokemon);
 					break;
 				case APPEARED_POKEMON:
-					appearedConIDs = recibir_APPEARED_POKEMON(cliente_fd,&size,&id,1);
+					appearedConIDs = recibir_APPEARED_POKEMON(cliente_fd,&size,0,1);
 					unAppearedPokemon = appearedConIDs->appearedPokemon;
 					mensajeAppearedPokemon = guardarMensajeAppearedPokemon(unAppearedPokemon);
 					enviarAppearedPokemonASuscriptores(mensajeAppearedPokemon);
 					break;
 				case CATCH_POKEMON:
-					catchConIDs = recibir_CATCH_POKEMON(cliente_fd,&size,&id);
-					unCatchPokemon = catchConIDs->IDmensaje;
+					catchConIDs = recibir_CATCH_POKEMON(cliente_fd,&size,0);
+					unCatchPokemon = catchConIDs->catchPokemon;
 					mensajeCatchPokemon = guardarMensajeCatchPokemon(unCatchPokemon);
 					enviarCatchPokemonASuscriptores(mensajeCatchPokemon);
 					break;
 				case CAUGHT_POKEMON:
-					unCaughtPokemonConIDCorrelativo = recibir_CAUGHT_POKEMON(cliente_fd,&size,&id);
+					unCaughtPokemonConIDCorrelativo = recibir_CAUGHT_POKEMON(cliente_fd,&size,0);
 					unCaughtPokemon = unCaughtPokemonConIDCorrelativo->caughtPokemon;
 					idCorrelativo = unCaughtPokemonConIDCorrelativo->IDCorrelativo;
 					//free(unCaughtPokemonConIDCorrelativo);

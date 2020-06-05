@@ -539,13 +539,17 @@ void enviarCatchPokemon(CatchPokemon* catch_pokemon,int socket_suscriptor,int id
 	uint32_t tamanioNombrePokemon = strlen(catch_pokemon->nombre) +1;
 
 	if(id > 0){
-		buffer->size = sizeof(uint32_t) + tamanioNombrePokemon + sizeof(int);
+		buffer->size = sizeof(uint32_t)*3 + tamanioNombrePokemon + sizeof(int);
 	}else {
-		buffer->size = sizeof(uint32_t) + tamanioNombrePokemon;
+		buffer->size = sizeof(uint32_t)*3 + tamanioNombrePokemon;
 	}
+
 	void* stream = serializarCatchPokemon(catch_pokemon,buffer->size,id);
 	buffer->stream = stream;
-	t_paquete* paquete = malloc(sizeof(t_paquete));
+	puts("ata aca llego dentro de la funcion3");
+
+	t_paquete* paquete = malloc(sizeof(t_paquete)); // ACÁ ROMPE
+
 	paquete->codigo_operacion = CATCH_POKEMON;
 	paquete->buffer = buffer;
 	int bytes = buffer->size + sizeof(int) + sizeof(op_code);
@@ -553,7 +557,6 @@ void enviarCatchPokemon(CatchPokemon* catch_pokemon,int socket_suscriptor,int id
 	void* a_enviar = serializar_paquete(paquete,bytes);
 
 	send(socket_suscriptor, a_enviar, bytes, 0);
-
 	free(a_enviar);
 	free(buffer->stream);
 	free(paquete->buffer);
