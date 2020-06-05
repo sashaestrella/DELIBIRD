@@ -25,11 +25,11 @@ void* suscribirseACola(ParametrosSuscripcion* datos){
 
 	printf("Suscriptor numero: %d\n", IDsuscripcion);
 
-	administradorMensajesColas(colaSuscripcion, conexion);
+	administradorMensajesColas(colaSuscripcion, conexion, IDsuscripcion);
 
 }
 
-void administradorMensajesColas(int op_code, int conexion){
+void administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 
 	int cantidadAppearedPokemon;
 	int cantidadCaughtPokemon;
@@ -47,6 +47,7 @@ void administradorMensajesColas(int op_code, int conexion){
 				AppearedPokemonConIDs* nuevoAppearedPokemonConId;
 				for(int i = 0; i<cantidadAppearedPokemon; i++){
 					nuevoAppearedPokemonConId = recibir_APPEARED_POKEMON(conexion, 0, 1, 0);
+					enviarACK(IDsuscripcion, nuevoAppearedPokemonConId->IDmensaje, op_code, conexion);
 					//VALIDAR SI ME SIRVE Y DELEGAR
 				}
 				break;
@@ -58,7 +59,7 @@ void administradorMensajesColas(int op_code, int conexion){
 				CaughtPokemonConIDs* nuevoCaughtPokemonConId;
 				for(int i = 0; i<cantidadCaughtPokemon; i++){
 					nuevoCaughtPokemonConId = recibir_CAUGHT_POKEMON(conexion, 0, 1);
-					//VALIDAR SI ME SIRVE Y DELEGAR
+					enviarACK(IDsuscripcion, nuevoCaughtPokemonConId->IDmensaje, op_code, conexion);
 				}
 				break;
 
@@ -69,6 +70,7 @@ void administradorMensajesColas(int op_code, int conexion){
 				LocalizedPokemonConIDs* nuevoLocalizedPokemonConId;
 				for(int i = 0; i<cantidadLocalizedPokemon; i++){
 					nuevoLocalizedPokemonConId = recibir_LOCALIZED_POKEMON(conexion, 0, 1);
+					enviarACK(IDsuscripcion, nuevoLocalizedPokemonConId->IDmensaje, op_code, conexion);
 					//VALIDAR SI ME SIRVE Y DELEGAR
 				}
 				break;
@@ -80,6 +82,7 @@ void administradorMensajesColas(int op_code, int conexion){
 				GetPokemonConIDs* nuevoGetPokemonConId;
 				for(int i = 0; i<cantidadGetPokemon; i++){
 					nuevoGetPokemonConId = recibir_GET_POKEMON(conexion, 0, 1);
+					enviarACK(IDsuscripcion, nuevoGetPokemonConId->IDmensaje, op_code, conexion);
 					//VALIDAR SI ME SIRVE Y DELEGAR
 				}
 				break;
@@ -91,6 +94,7 @@ void administradorMensajesColas(int op_code, int conexion){
 				NewPokemonConIDs* nuevoNewPokemonConId;
 				for(int i = 0; i<cantidadNewPokemon; i++){
 					nuevoNewPokemonConId = recibir_NEW_POKEMON(conexion, 0, 1);
+					enviarACK(IDsuscripcion, nuevoNewPokemonConId->IDmensaje, op_code, conexion);
 					//VALIDAR SI ME SIRVE Y DELEGAR
 				}
 				break;
@@ -102,13 +106,14 @@ void administradorMensajesColas(int op_code, int conexion){
 				CatchPokemonConIDs* nuevoCatchPokemonConId;
 				for(int i = 0; i<cantidadCatchPokemon; i++){
 					nuevoCatchPokemonConId = recibir_CATCH_POKEMON(conexion, 0, 1);
+					enviarACK(IDsuscripcion, nuevoCatchPokemonConId->IDmensaje, op_code, conexion);
 					//VALIDAR SI ME SIRVE Y DELEGAR
 				}
 				break;
 	}
 }
 
-void* adminMensajes(char* mensajeRecibido){
+void* adminMensajes(){
 	printf("Me llego:");
 	return EXIT_SUCCESS;
 }
@@ -119,7 +124,7 @@ void* recibirMensaje(int conexion){
 	while(1){
 		//mensajeRecibido = recibir_mensaje(conexion,&tamanioMaximo);
 		//Enviar ACK
-		pthread_create(&admin, NULL, adminMensajes, mensajeRecibido);
+		pthread_create(&admin, NULL, adminMensajes, NULL);
 		pthread_join(admin,NULL);
 	}
 	return EXIT_SUCCESS;
