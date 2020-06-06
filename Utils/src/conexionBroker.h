@@ -28,14 +28,15 @@ char* puerto;
 
 void noHayBroker();
 void* suscribirseACola(ParametrosSuscripcion*);
+void* administradorMensajesColas(int, int, int);
 
 // -------- Funciones Team -------- //
 void* recibirMensajesAppeared(int, int);
 void* recibirMensajesLocalized(int, int);
 void* recibirMensajesCaught(int, int);
-void* adminMensajeAppeared(AppearedPokemonConIDs);
-void* adminMensajeLocalized(LocalizedPokemonConIDs);
-void* adminMensajeCaught(CaugthPokemonConIDs);
+void* adminMensajeAppeared(AppearedPokemonConIDs*);
+void* adminMensajeLocalized(LocalizedPokemonConIDs*);
+void* adminMensajeCaught(CaughtPokemonConIDs*);
 
 // -------- Funciones Game Card -------- //
 

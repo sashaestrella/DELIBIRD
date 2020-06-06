@@ -40,19 +40,19 @@ void generarConexiones(int tipoSuscriptor){
 	//pthread_join(hiloLocalized,NULL);
 }
 
-/*void abrirEscuchas(){
+void abrirEscuchas(){
 	pthread_t escuchaAppeared;
-	pthread_create(&escuchaAppeared, NULL, recibirMensajesAppeared, conexionAppeared, IDsuscripcionAppeared);
+	pthread_create(&escuchaAppeared, NULL, recibirMensajesAppeared, (conexionAppeared, IDsuscripcionAppeared));
 	pthread_detach(escuchaAppeared);
 
 	pthread_t escuchaLocalized;
-	pthread_create(&escuchaLocalized, NULL, recibirMensajesLocalized, conexionLocalized, IDsuscripcionLocalized);
+	pthread_create(&escuchaLocalized, NULL, recibirMensajesLocalized, (conexionLocalized, IDsuscripcionLocalized));
 	pthread_detach(escuchaLocalized);
 
 	pthread_t escuchaCaught;
-	pthread_create(&escuchaCaught, NULL, recibirMensajesCaught, conexionCaught, IDsuscripcionCaught);
+	pthread_create(&escuchaCaught, NULL, recibirMensajesCaught, (conexionCaught, IDsuscripcionCaught));
 	pthread_detach(escuchaCaught);
-}*/
+}
 
 void* adminMensajes(char* mensaje){
 	return EXIT_SUCCESS;

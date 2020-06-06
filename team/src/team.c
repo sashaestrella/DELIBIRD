@@ -1,6 +1,5 @@
 #include "team.h"
 
-
 int main(int argc,char* argv[])
 {
 
@@ -109,6 +108,7 @@ int main(int argc,char* argv[])
 
 	for(int j=0; j<list_size(entrenadores);j++)
 			pthread_join(hiloEntrenador[j], NULL);
+
 
 
 	/*-----------------------------------------------PARTE 2-------------------------------------------------------------*/
