@@ -98,6 +98,7 @@ int main(void)
 		mensaje7 = guardarMensajeCaughtPokemon(unCaughtPokemon1,idCorrelativoCaught);
 
 
+
 	//El sistema tira un error si no se creó correctamente el hilo
 		if(pthread_create(&hiloConexion, NULL,(void*)&iniciar_servidor,NULL) != 0){
 				errorExit("El hilo no pudo ser creado");

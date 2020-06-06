@@ -104,6 +104,8 @@ int main(void)
 		printf("\nEnvie el mensaje: %s\n",appearedPokemon1->nombre);
 
 */
+
+	/*
 	CatchPokemon* catchPokemon1 = malloc(sizeof(CatchPokemon));
 		char* nombre = malloc(7);
 		nombre = "CATCH1";
@@ -114,7 +116,7 @@ int main(void)
 		enviarCatchPokemon(catchPokemon1,conexion,id);
 
 		printf("\nEnvie el mensaje: %s\n",catchPokemon1->nombre);
-
+*/
 
 /*
 	CaughtPokemon* caughtPokemon1 = malloc(sizeof(CaughtPokemon));
@@ -263,18 +265,24 @@ int main(void)
 		}
 		free(localizedConIDs);
 */
-/*
+
 
 	int cod_op = 8;
+	int idSuscriptor = 0;
+	int idSuscriptorPosta;
 
 	send(conexion,&cod_op,sizeof(int),0);
 	puts("\nSuscripcion a NewPokemon enviada");
 
+	send(conexion,&idSuscriptor,sizeof(int),0);
+	printf("Envie mi id: %d\n",idSuscriptor);
 
-	int idSuscriptor;
-	recv(conexion,&idSuscriptor,sizeof(int),0);
+	recv(conexion,&idSuscriptorPosta,sizeof(int),MSG_WAITALL);
+	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptorPosta);
 
-	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptor);
+	//printf("Ya fui incluido en la cola de suscriptores de New Pokemon, lo que mi ID es el mismo: %d\n",idSuscriptor);
+
+
 	int tamanioListaNP;
 
 	recv(conexion,&tamanioListaNP,sizeof(int),MSG_WAITALL);
@@ -285,25 +293,22 @@ int main(void)
 	printf("El tamaño de la lista que voy a recibir es: %d\n",tamanioListaNP);
 
 	int size;
-	int id = 1;
-	int idNew;
 	int variableQueNoUsoxd;
+	int ack = 0;
 
 	NewPokemonConIDs* newConIDs;
 	NewPokemon* unNewPokemonTemporal;
 
 	for(int i = 0; i<tamanioListaNP;i++){
 		recv(conexion,&variableQueNoUsoxd,sizeof(int),MSG_WAITALL);
-		newConIDs = recibir_NEW_POKEMON(conexion,&size,&id);
+		newConIDs = recibir_NEW_POKEMON(conexion,&size,1);
 		unNewPokemonTemporal = newConIDs->newPokemon;
-		idNew = newConIDs->IDmensaje;
-		printf("[gameboy] Recibi un %s,con ID: %d\n",unNewPokemonTemporal->nombre,idNew);
-
+		printf("[gameboy] Recibi un %s,con ID: %d\n",unNewPokemonTemporal->nombre,newConIDs->IDmensaje);
+		send(conexion,&ack,sizeof(int),0);
+		printf("[gameboy]ACK=%d del mensaje %d fue enviado\n",ack,newConIDs->IDmensaje);
 	}
 
 	free(newConIDs);
-
-*/
 
 
 /*

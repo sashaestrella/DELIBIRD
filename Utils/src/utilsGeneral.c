@@ -37,6 +37,7 @@ NewPokemonConIDs* recibir_NEW_POKEMON(int cliente_fd,int* size,int reciboID){
 		if(reciboID > 0){
 			memcpy(&id,stream,sizeof(int));
 			stream+= sizeof(int);
+			newConIDs->IDmensaje = id;
 		}
 		memcpy(&(unNewPokemon->tamanioNombrePokemon),stream,sizeof(uint32_t));
 		stream+=sizeof(uint32_t);

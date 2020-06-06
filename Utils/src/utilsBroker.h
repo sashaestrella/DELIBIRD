@@ -87,7 +87,7 @@ void serve_client(int *socket);
 
 
 Suscriptor* recibirSuscripcionNewPokemon(int socket_suscriptor);
-void enviarColaNewPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
+void enviarColaNewPokemon(int socket_suscriptor, Suscriptor* unSuscriptor,int idRecibidoDelSuscriptor);
 void enviarNewPokemonASuscriptores(MensajeNewPokemon* unMensajeNewPokemon);
 
 Suscriptor* recibirSuscripcionLocalizedPokemon(int socket_suscriptor);
