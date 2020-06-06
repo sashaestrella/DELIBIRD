@@ -75,7 +75,6 @@ CatchPokemonConIDs* recibir_CATCH_POKEMON(int cliente_fd,int*size,int reciboID);
 
 CaughtPokemonConIDs* recibir_CAUGHT_POKEMON(int cliente_fd,int* size,int reciboID);
 
-
 void* serializarNewPokemon(NewPokemon* newPokemon,int bytes,int id);
 void enviarNewPokemon(NewPokemon* unNewPokemon, int socket_subscriptor,int id);
 
@@ -94,7 +93,8 @@ void enviarCatchPokemon(CatchPokemon* catch_pokemon,int socket_suscriptor,int id
 void* serializarCaughtPokemon(CaughtPokemon* caughtPokemon,int bytes,int id,int idCorrelativo);
 void enviarCaughtPokemon(CaughtPokemon* caught_pokemon,int socket_suscriptor,int id,int idCorrelativo);
 
-
+void enviarSuscripcionANewPokemon(Suscriptor* unSuscriptor,int socket_suscriptor);
+void* serializarSuscripcion(Suscriptor* unSuscriptor,int bytes);
 
 void liberar_conexion(int socket_cliente);
 //--------------------Clientes--------------

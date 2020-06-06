@@ -266,22 +266,18 @@ int main(void)
 		free(localizedConIDs);
 */
 
-
-	int cod_op = 8;
-	int idSuscriptor = 0;
 	int idSuscriptorPosta;
 
-	send(conexion,&cod_op,sizeof(int),0);
-	puts("\nSuscripcion a NewPokemon enviada");
+	Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
+	unSuscriptor1->socketSuscriptor = 4;
+	unSuscriptor1->IDsuscriptor = 0;
 
-	send(conexion,&idSuscriptor,sizeof(int),0);
-	printf("Envie mi id: %d\n",idSuscriptor);
-
+	enviarSuscripcionANewPokemon(unSuscriptor1,conexion);
+	puts("Envie suscripcion para la cola de mensajes NewPokemon");
 	recv(conexion,&idSuscriptorPosta,sizeof(int),MSG_WAITALL);
 	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptorPosta);
 
 	//printf("Ya fui incluido en la cola de suscriptores de New Pokemon, lo que mi ID es el mismo: %d\n",idSuscriptor);
-
 
 	int tamanioListaNP;
 
@@ -294,7 +290,7 @@ int main(void)
 
 	int size;
 	int variableQueNoUsoxd;
-	int ack = 0;
+	int ack = 1;
 
 	NewPokemonConIDs* newConIDs;
 	NewPokemon* unNewPokemonTemporal;
