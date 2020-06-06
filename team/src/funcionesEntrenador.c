@@ -5,6 +5,27 @@ void* planificar(Entrenador* entrenador){
 
 	printf("\nSoy el entrenador %d y se creo mi hilo.\n", entrenador->ID);
 
+	//-----------------Espera que el hilo main le diga que se puede mover
+	pthread_mutex_lock(&mutexTeam);
+	if(condicionTeam[entrenador->ID-1] == 0){
+	printf("Estoy esperando entrenador %d\n",entrenador->ID );
+	pthread_cond_wait(&cond[entrenador->ID -1], &mutexTeam);
+	}
+	pthread_mutex_unlock(&mutexTeam);
+	//-------------------------------------------------------------------
+
+
+	//---------------Le dice al hilo main que ya se movio
+	pthread_mutex_lock(&mutexTeam);
+
+	entrenador->posicion.posicionX = entrenador->posicion.posicionX + 1;
+	entrenador->posicion.posicionY = entrenador->posicion.posicionY + 1;
+	puts("\nSe movio 1 en cada eje");
+	condicionTeam[entrenador->ID-1]=2;
+	pthread_cond_signal(&cond[entrenador->ID-1]);
+	pthread_mutex_unlock(&mutexTeam);
+	//--------------------------------------------------------------------
+	pthread_exit(NULL);
 }
 
 

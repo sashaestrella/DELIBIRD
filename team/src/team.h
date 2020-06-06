@@ -28,6 +28,9 @@ typedef struct pokemon{
 
 pthread_t *hiloEntrenador;
 
+pthread_cond_t cond[3];
+pthread_mutex_t mutexTeam;
+int condicionTeam[3];;
 
 bool execute;
 t_list* entrenadores;

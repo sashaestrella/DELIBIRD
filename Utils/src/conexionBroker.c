@@ -115,7 +115,7 @@ void administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 
 // ------------------------------- Funciones Team ------------------------------------ //
 
-void* recibirMensajesAppeared(int conexion, int IDsuscripcion){
+/*void* recibirMensajesAppeared(int conexion, int IDsuscripcion){
 	pthread_t admin;
 	void* mensajeRecibido;
 	AppearedPokemonConIDs nuevoAppeared;
@@ -127,11 +127,11 @@ void* recibirMensajesAppeared(int conexion, int IDsuscripcion){
 		pthread_detach(admin);
 	}
 	return EXIT_SUCCESS;
-}
+}*/
 
 void* adminMensajeAppeared(AppearedPokemonConIDs nuevoAppeared){ return EXIT_SUCCESS; }
 
-void* recibirMensajesLocalized(int conexion, int IDsuscripcion){
+/*void* recibirMensajesLocalized(int conexion, int IDsuscripcion){
 	pthread_t admin;
 	void* mensajeRecibido;
 	LocalizedPokemonConIDs nuevoLocalized;
@@ -142,11 +142,11 @@ void* recibirMensajesLocalized(int conexion, int IDsuscripcion){
 		pthread_detach(admin);
 	}
 	return EXIT_SUCCESS;
-}
+}*/
 
 void* adminMensajeLocalized(LocalizedPokemonConIDs nuevoLocalized){ return EXIT_SUCCESS; }
 
-void* recibirMensajesCaught(int conexion, int IDsuscripcion){
+/*void* recibirMensajesCaught(int conexion, int IDsuscripcion){
 	pthread_t admin;
 	void* mensajeRecibido;
 	CaughtPokemonConIDs nuevoCaught;
@@ -158,7 +158,7 @@ void* recibirMensajesCaught(int conexion, int IDsuscripcion){
 		pthread_detach(admin);
 	}
 	return EXIT_SUCCESS;
-}
+}*/
 
 void* adminMensajeCaught(CaughtPokemonConIDs nuevoCaught){ return EXIT_SUCCESS; }
 

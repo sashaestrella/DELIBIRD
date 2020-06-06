@@ -4,14 +4,19 @@
 int main(int argc,char* argv[])
 {
 
+	condicionTeam[0]=0;
+	condicionTeam[1]=0;
+	condicionTeam[2]=0;
+	pthread_mutex_init(&mutexTeam,NULL);
+	pthread_cond_init(&cond[0], NULL);
+	pthread_cond_init(&cond[1], NULL);
+	pthread_cond_init(&cond[2], NULL);
 
+	int hiloCreado;
 
 	cargarDatosConexionConfig();
-	/*generarConexiones(0);
-	abrirEscuchas();
-
-
-	*/
+	//generarConexiones(0);
+	//abrirEscuchas();
 
 	entrenadores = list_create();
 	objetivoGlobal = list_create();
@@ -20,50 +25,90 @@ int main(int argc,char* argv[])
 
 	hiloEntrenador = malloc(list_size(entrenadores) * sizeof(pthread_t));
 
-	for(int j=0; j<list_size(entrenadores);j++)
-		pthread_create(&hiloEntrenador[j],NULL, planificar, list_get(entrenadores, j));
+	for(int j=0; j<list_size(entrenadores);j++){
 
+		pthread_create(&hiloEntrenador[j],NULL, planificar,list_get(entrenadores, j));
+		hiloCreado = j;
+	}
 
+	if(hiloCreado ==2){
+	sleep(1);
 	int i;
 	Entrenador* entrenador = malloc(sizeof(Entrenador));
 	entrenador = list_get (entrenadores, 0);
-	 printf(" \n Entrenador1 posicion (%d, %d)", entrenador->posicion.posicionX, entrenador->posicion.posicionY);
+	 printf("\nEntrenador1 posicion (%d, %d)", entrenador->posicion.posicionX, entrenador->posicion.posicionY);
 	 puts("\nMi objetivo: ");
 	for(i=0; i<list_size(entrenador->objetivos);i++){
 		printf("%s,", list_get(entrenador->objetivos, i));
 	}
+	//-------------Le dice al hilo del entrenador que se mueva
+	pthread_mutex_lock(&mutexTeam);
+	condicionTeam[0]=1;
+	pthread_cond_signal(&cond[0]);
+	pthread_mutex_unlock(&mutexTeam);
+	//--------------------------------------------------------
 
+	//------------Espera que se mueva para mostrarlo
+	pthread_mutex_lock(&mutexTeam);
+	if(condicionTeam[0]==1){
+	pthread_cond_wait(&cond[0], &mutexTeam);
+	printf("Entrenador1 nueva posicion (%d, %d)", entrenador->posicion.posicionX, entrenador->posicion.posicionY);
+	}
+	pthread_mutex_unlock(&mutexTeam);
 
 
 	Entrenador* entrenador1 = malloc(sizeof(Entrenador));
 	entrenador1 = list_get (entrenadores, 1);
-	printf(" \n Entrenador2 posicion (%d, %d)", entrenador1->posicion.posicionX, entrenador1->posicion.posicionY);
+	printf("\n\nEntrenador2 posicion (%d, %d)", entrenador1->posicion.posicionX, entrenador1->posicion.posicionY);
 	puts("\nMi objetivo: ");
+
 	for(i=0; i<list_size(entrenador1->objetivos);i++){
 	 		printf("%s,", list_get(entrenador1->objetivos, i));
 	}
 
+	pthread_mutex_lock(&mutexTeam);
+	condicionTeam[1]=1;
+	pthread_cond_signal(&cond[1]);
+	pthread_mutex_unlock(&mutexTeam);
+
+	pthread_mutex_lock(&mutexTeam);
+	if(condicionTeam[1]==1){
+	pthread_cond_wait(&cond[1], &mutexTeam);
+	printf("Entrenador2 nueva posicion (%d, %d)", entrenador1->posicion.posicionX, entrenador1->posicion.posicionY);
+	}
+	pthread_mutex_unlock(&mutexTeam);
 
 
 	Entrenador* entrenador2 = malloc(sizeof(Entrenador));
 	entrenador2 = list_get (entrenadores, 2);
-	printf(" \n Entrenador3 posicion (%d, %d)", entrenador2->posicion.posicionX, entrenador2->posicion.posicionY);
+	printf("\n\nEntrenador3 posicion (%d, %d)", entrenador2->posicion.posicionX, entrenador2->posicion.posicionY);
 	puts("\nMi objetivo: ");
 	for(i=0; i<list_size(entrenador2->objetivos);i++){
-	 		printf("%s\n,", list_get(entrenador2->objetivos, i));
+	 		printf("%s, ", list_get(entrenador2->objetivos, i));
 	}
+	pthread_mutex_lock(&mutexTeam);
+	condicionTeam[2]=1;
+	pthread_cond_signal(&cond[2]);
+	pthread_mutex_unlock(&mutexTeam);
 
 
-	puts("\n");
+	pthread_mutex_lock(&mutexTeam);
+	if(condicionTeam[2]==1){
+	pthread_cond_wait(&cond[2], &mutexTeam);
+	printf("Entrenador3 nueva posicion (%d, %d)", entrenador2->posicion.posicionX, entrenador2->posicion.posicionY);
+	}
+	pthread_mutex_unlock(&mutexTeam);
+
+
+	puts("\n\nObjetivo Global");
 	for(i=0; i<list_size(objetivoGlobal);i++){
 		 		printf("%s,", list_get(objetivoGlobal, i));
 		}
 
-	puts("\nDios que dificil sincronizar estos hilos de mierda");
+	}
 
 	for(int j=0; j<list_size(entrenadores);j++)
-		pthread_join(hiloEntrenador[j],NULL);
-
+			pthread_join(hiloEntrenador[j], NULL);
 
 
 	/*-----------------------------------------------PARTE 2-------------------------------------------------------------*/
