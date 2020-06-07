@@ -1,28 +1,26 @@
 #include "utilsGeneral.h"
 
-void* serializarSuscripcion(Suscriptor* unSuscriptor,int bytes){
+void* serializarSuscripcion(int idSuscriptor,int bytes){
 		void* buffer = malloc(bytes);
 		int desplazamiento = 0;
 
-		memcpy(buffer + desplazamiento,&(unSuscriptor->socketSuscriptor),sizeof(int));
-		desplazamiento+= sizeof(int);
-		memcpy(buffer + desplazamiento,&(unSuscriptor->IDsuscriptor),sizeof(int));
+		memcpy(buffer + desplazamiento,&(idSuscriptor),sizeof(int));
 		desplazamiento+= sizeof(int);
 
 		return buffer;
 }
 
 
-void enviarSuscripcionANewPokemon(Suscriptor* unSuscriptor,int socket_servidor){
+void enviarSuscripcion(int idSuscriptor,int socket_servidor, int cod_op){
 		t_buffer* buffer = malloc(sizeof(t_buffer));
 
 		void* stream;
-		buffer->size = sizeof(int) * 2;
-		stream = serializarSuscripcion(unSuscriptor,buffer->size);
+		buffer->size = sizeof(int);
+		stream = serializarSuscripcion(idSuscriptor,buffer->size);
 		buffer->stream = stream;
 
 		t_paquete* paquete = malloc(sizeof(t_paquete));
-		paquete->codigo_operacion = SUSCRIPTOR_NEWPOKEMON;
+		paquete->codigo_operacion = cod_op;
 		paquete->buffer = buffer;
 		int bytes = buffer->size + sizeof(int) + sizeof(op_code);
 

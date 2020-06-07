@@ -93,8 +93,8 @@ void enviarCatchPokemon(CatchPokemon* catch_pokemon,int socket_suscriptor,int id
 void* serializarCaughtPokemon(CaughtPokemon* caughtPokemon,int bytes,int id,int idCorrelativo);
 void enviarCaughtPokemon(CaughtPokemon* caught_pokemon,int socket_suscriptor,int id,int idCorrelativo);
 
-void enviarSuscripcionANewPokemon(Suscriptor* unSuscriptor,int socket_suscriptor);
-void* serializarSuscripcion(Suscriptor* unSuscriptor,int bytes);
+void enviarSuscripcionANewPokemon(int idSuscriptor,int socket_suscriptor,int cod_op);
+void* serializarSuscripcion(int idSuscriptor,int bytes);
 
 void liberar_conexion(int socket_cliente);
 //--------------------Clientes--------------

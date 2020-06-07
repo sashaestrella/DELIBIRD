@@ -272,7 +272,7 @@ int main(void)
 	unSuscriptor1->socketSuscriptor = 4;
 	unSuscriptor1->IDsuscriptor = 0;
 
-	enviarSuscripcionANewPokemon(unSuscriptor1,conexion);
+	enviarSuscripcion(unSuscriptor1->IDsuscriptor,conexion,8);
 	puts("Envie suscripcion para la cola de mensajes NewPokemon");
 	recv(conexion,&idSuscriptorPosta,sizeof(int),MSG_WAITALL);
 	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptorPosta);
