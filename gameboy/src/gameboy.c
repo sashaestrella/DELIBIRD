@@ -44,20 +44,20 @@ int main(void)
 
 
 	//enviar mensajes
-	/*
+/*
 	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
 	char* nombrePokemon = malloc(8);
-	int id = 0;
+	int idNewPokemon = 0;
 	nombrePokemon = "PIKACHU";
 	unNewPokemon->nombre = nombrePokemon;
 	unNewPokemon->coordenadas.posicionX = 2;
 	unNewPokemon->coordenadas.posicionY = 3;
 	unNewPokemon->cantidad = 3;
-	enviarNewPokemon(unNewPokemon, conexion,id);
+	enviarNewPokemon(unNewPokemon, conexion,idNewPokemon);
 
-	printf("\nEnvie el mensaje: %s, con id: %d\n",unNewPokemon->nombre,id);
+	printf("\nEnvie el mensaje: %s, con id: %d\n",unNewPokemon->nombre,idNewPokemon);
+*/
 
-	*/
 /*
 	LocalizedPokemon* localizedPokemon1 = malloc(sizeof(LocalizedPokemon));
 	char* nombre = malloc(9);
@@ -66,7 +66,7 @@ int main(void)
 	localizedPokemon1->cantidadParesOrdenados = 2;
 
 	int idmensaje = 0;
-	int idCorrelativo;
+	int idCorrelativo = 2;
 	int numero = 1;
 		t_list* pares = list_create();
 		list_add(pares,&numero);
@@ -89,7 +89,7 @@ int main(void)
 
 	printf("\nEnvie el mensaje: %s\n",getPokemon1->nombre);
 */
-/*	AppearedPokemon* appearedPokemon1 = malloc(sizeof(AppearedPokemon));
+	/*AppearedPokemon* appearedPokemon1 = malloc(sizeof(AppearedPokemon));
 	  char* nombre = malloc(9);
 	  nombre = "APPEARED1";
 		appearedPokemon1->nombre = nombre;
@@ -102,27 +102,28 @@ int main(void)
 		enviarAppearedPokemon(appearedPokemon1,conexion,id,idCorrelativo);
 
 		printf("\nEnvie el mensaje: %s\n",appearedPokemon1->nombre);
+
 */
-/*
+
+	/*
 	CatchPokemon* catchPokemon1 = malloc(sizeof(CatchPokemon));
 		char* nombre = malloc(7);
 		nombre = "CATCH1";
 		catchPokemon1->nombre = nombre;
 		catchPokemon1->coordenadas.posicionX = 2;
 		catchPokemon1->coordenadas.posicionY = 5;
-
 		int id = 0;
 		enviarCatchPokemon(catchPokemon1,conexion,id);
 
 		printf("\nEnvie el mensaje: %s\n",catchPokemon1->nombre);
+*/
 
-		*/
 /*
 	CaughtPokemon* caughtPokemon1 = malloc(sizeof(CaughtPokemon));
 		caughtPokemon1->atrapar = 0;
 
 		int id = 0;
-		int idCorrelativo;
+		int idCorrelativo = 3;
 		enviarCaughtPokemon(caughtPokemon1,conexion,id,idCorrelativo);
 
 		printf("\nEnvie el mensaje: %d\n",caughtPokemon1->atrapar);
@@ -265,17 +266,19 @@ int main(void)
 		free(localizedConIDs);
 */
 
+	int idSuscriptorPosta;
 
-	int cod_op = 8;
+	Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
+	unSuscriptor1->socketSuscriptor = 4;
+	unSuscriptor1->IDsuscriptor = 0;
 
-	send(conexion,&cod_op,sizeof(int),0);
-	puts("\nSuscripcion a NewPokemon enviada");
+	enviarSuscripcion(unSuscriptor1->IDsuscriptor,conexion,8);
+	puts("Envie suscripcion para la cola de mensajes NewPokemon");
+	recv(conexion,&idSuscriptorPosta,sizeof(int),MSG_WAITALL);
+	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptorPosta);
 
+	//printf("Ya fui incluido en la cola de suscriptores de New Pokemon, lo que mi ID es el mismo: %d\n",idSuscriptor);
 
-	int idSuscriptor;
-	recv(conexion,&idSuscriptor,sizeof(int),0);
-
-	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptor);
 	int tamanioListaNP;
 
 	recv(conexion,&tamanioListaNP,sizeof(int),MSG_WAITALL);
@@ -283,20 +286,25 @@ int main(void)
 		puts("\nNo puedo recibir la lista porque esta vacia");
 		printf("Tamaño lista: %d",tamanioListaNP);
 	}
-	printf("\nEl tamaño de la lista que voy a recibir es: %d\n",tamanioListaNP);
+	printf("El tamaño de la lista que voy a recibir es: %d\n",tamanioListaNP);
 
 	int size;
-	int id;
 	int variableQueNoUsoxd;
+	int ack = 1;
+
+	NewPokemonConIDs* newConIDs;
 	NewPokemon* unNewPokemonTemporal;
 
 	for(int i = 0; i<tamanioListaNP;i++){
 		recv(conexion,&variableQueNoUsoxd,sizeof(int),MSG_WAITALL);
-		unNewPokemonTemporal = recibir_NEW_POKEMON(conexion,&size,id);
-		printf("\n[gameboy] Recibi un %s\n",unNewPokemonTemporal->nombre);
-
+		newConIDs = recibir_NEW_POKEMON(conexion,&size,1);
+		unNewPokemonTemporal = newConIDs->newPokemon;
+		printf("[gameboy] Recibi un %s,con ID: %d\n",unNewPokemonTemporal->nombre,newConIDs->IDmensaje);
+		send(conexion,&ack,sizeof(int),0);
+		printf("[gameboy]ACK=%d del mensaje %d fue enviado\n",ack,newConIDs->IDmensaje);
 	}
-	free(unNewPokemonTemporal);
+
+	free(newConIDs);
 
 
 /*

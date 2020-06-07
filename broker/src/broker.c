@@ -62,7 +62,7 @@ int main(void)
 		list_add(pares,&numero);
 		localizedPokemon1->paresOrdenados = pares;
 		int tamanioLista = list_size(localizedPokemon1->paresOrdenados);
-		printf("\nEl tamaño de pares ordenados de localized es: %d\n",tamanioLista);
+		printf("\nEl tamaño de pares ordenados de localized es: %d",tamanioLista);
 
 		mensaje3 = guardarMensajeLocalizedPokemon(localizedPokemon1,idCorrelativo);
 
@@ -96,6 +96,7 @@ int main(void)
 		unCaughtPokemon1->atrapar = 1;
 
 		mensaje7 = guardarMensajeCaughtPokemon(unCaughtPokemon1,idCorrelativoCaught);
+
 
 
 	//El sistema tira un error si no se creó correctamente el hilo

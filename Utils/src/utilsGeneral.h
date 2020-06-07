@@ -57,23 +57,22 @@ void* serializar_paquete(t_paquete* paquete, int bytes);
 void devolver_mensaje(void* payload, int size, int socket_cliente);
 
 
-NewPokemon* recibir_NEW_POKEMON(int cliente_fd,int* size,int reciboID);
+NewPokemonConIDs* recibir_NEW_POKEMON(int cliente_fd,int* size,int reciboID);
 
 
 LocalizedPokemonConIDs* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size,int reciboID);
 
 
-GetPokemon* recibir_GET_POKEMON(int cliente_fd, int* size,int reciboID);
+GetPokemonConIDs* recibir_GET_POKEMON(int cliente_fd, int* size,int reciboID);
 
 
-AppearedPokemon* recibir_APPEARED_POKEMON(int cliente_fd,int* size,int reciboID,int idCorrelativo);
+AppearedPokemonConIDs* recibir_APPEARED_POKEMON(int cliente_fd,int* size,int reciboID,int idCorrelativo);
 
 
-CatchPokemon* recibir_CATCH_POKEMON(int cliente_fd,int*size,int reciboID);
+CatchPokemonConIDs* recibir_CATCH_POKEMON(int cliente_fd,int*size,int reciboID);
 
 
 CaughtPokemonConIDs* recibir_CAUGHT_POKEMON(int cliente_fd,int* size,int reciboID);
-
 
 void* serializarNewPokemon(NewPokemon* newPokemon,int bytes,int id);
 void enviarNewPokemon(NewPokemon* unNewPokemon, int socket_subscriptor,int id);
@@ -93,7 +92,8 @@ void enviarCatchPokemon(CatchPokemon* catch_pokemon,int socket_suscriptor,int id
 void* serializarCaughtPokemon(CaughtPokemon* caughtPokemon,int bytes,int id,int idCorrelativo);
 void enviarCaughtPokemon(CaughtPokemon* caught_pokemon,int socket_suscriptor,int id,int idCorrelativo);
 
-
+void enviarSuscripcionANewPokemon(int idSuscriptor,int socket_suscriptor,int cod_op);
+void* serializarSuscripcion(int idSuscriptor,int bytes);
 
 void liberar_conexion(int socket_cliente);
 //--------------------Clientes--------------

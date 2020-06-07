@@ -17,6 +17,7 @@ RM := rm -rf
 -include broker/src/subdir.mk
 -include broker/Debug/src/subdir.mk
 -include Utils/src/subdir.mk
+-include Utils/Debug/src/subdir.mk
 -include subdir.mk
 -include objects.mk
 
