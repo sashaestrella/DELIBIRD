@@ -7,10 +7,10 @@ void generarConexiones(int tipoSuscriptor){
 	appeared->conexionCola = conexionAppeared;
 	appeared->colaASuscribirse = SUSCRIPTOR_APPEAREDPOKEMON;
 	appeared->nuevoExistente = tipoSuscriptor;
-	appeared->IDSuscripcion = IDsuscripcionAppeared; //Esto hay que sacarlo de aca porque no me actualiza mi ID
+	appeared->IDSuscripcion = IDsuscripcionAppeared;
 
 	pthread_t hiloAppeared;
-	pthread_create(&hiloAppeared, NULL, suscribirseACola, appeared);
+	pthread_create(&hiloAppeared, NULL, suscribirseACola, appeared); //Vamos a ver como sacar esto
 
 
 	// -- Hilo de suscripcion a cola caught -- //
@@ -52,10 +52,6 @@ void abrirEscuchas(){
 	pthread_t escuchaCaught;
 	pthread_create(&escuchaCaught, NULL, recibirMensajesCaught, (conexionCaught, IDsuscripcionCaught));
 	pthread_detach(escuchaCaught);
-}
-
-void* adminMensajes(char* mensaje){
-	return EXIT_SUCCESS;
 }
 
 

@@ -29,8 +29,15 @@ char* puerto;
 void noHayBroker();
 void* suscribirseACola(ParametrosSuscripcion*);
 void* administradorMensajesColas(int, int, int);
+void enviarACK(int, int, int, int);
+void cargarDatosConexionConfig();
 
 // -------- Funciones Team -------- //
+t_list* nuevosAppeared;
+t_list* nuevosLocalized;
+t_list* nuevosCaught;
+t_list* mensajesRecibidos;
+
 void* recibirMensajesAppeared(int, int);
 void* recibirMensajesLocalized(int, int);
 void* recibirMensajesCaught(int, int);
@@ -42,8 +49,6 @@ void* adminMensajeCaught(CaughtPokemonConIDs*);
 
 
 // ------------------------ //
-void enviarACK(int, int, int, int);
-void cargarDatosConexionConfig();
 
 
 #endif /* SRC_CONEXIONBROKER_H_ */

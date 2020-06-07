@@ -48,7 +48,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				for(int i = 0; i<cantidadAppearedPokemon; i++){
 					nuevoAppearedPokemonConId = recibir_APPEARED_POKEMON(conexion, 0, 1, 0);
 					enviarACK(IDsuscripcion, nuevoAppearedPokemonConId->IDmensaje, APPEARED_POKEMON, conexion);
-					//VALIDAR SI ME SIRVE Y DELEGAR
+					adminMensajeAppeared(nuevoAppearedPokemonConId);
 				}
 				break;
 
@@ -60,6 +60,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				for(int i = 0; i<cantidadCaughtPokemon; i++){
 					nuevoCaughtPokemonConId = recibir_CAUGHT_POKEMON(conexion, 0, 1);
 					enviarACK(IDsuscripcion, nuevoCaughtPokemonConId->IDmensaje, CAUGHT_POKEMON, conexion);
+					adminMensajeCaught(nuevoCaughtPokemonConId);
 				}
 				break;
 
@@ -71,11 +72,11 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				for(int i = 0; i<cantidadLocalizedPokemon; i++){
 					nuevoLocalizedPokemonConId = recibir_LOCALIZED_POKEMON(conexion, 0, 1);
 					enviarACK(IDsuscripcion, nuevoLocalizedPokemonConId->IDmensaje, LOCALIZED_POKEMON, conexion);
-					//VALIDAR SI ME SIRVE Y DELEGAR
+					adminMensajeLocalized(nuevoLocalizedPokemonConId);
 				}
 				break;
 			//Estas tres de abajo serian para el gamecard_______________________________________________________
-			/*case SUSCRIPTOR_GETPOKEMON:
+			case SUSCRIPTOR_GETPOKEMON:
 
 				recv(conexion, &cantidadGetPokemon, sizeof(int), MSG_WAITALL);
 				printf("Cantidad de Get Pokemons: %d\n", cantidadGetPokemon);
@@ -109,7 +110,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 					enviarACK(IDsuscripcion, nuevoCatchPokemonConId->IDmensaje, CATCH_POKEMON, conexion);
 					//VALIDAR SI ME SIRVE Y DELEGAR
 				}
-				break;*/
+				break;
 			default:
 				printf("Llego un mensaje invalido");
 				break;
@@ -129,10 +130,13 @@ void* recibirMensajesAppeared(int conexion, int IDsuscripcion){
 		pthread_create(&admin, NULL, adminMensajeAppeared, nuevoAppeared);
 		pthread_detach(admin);
 	}
-	return EXIT_SUCCESS;
 }
 
-void* adminMensajeAppeared(AppearedPokemonConIDs* nuevoAppeared){ return EXIT_SUCCESS; }
+void* adminMensajeAppeared(AppearedPokemonConIDs* nuevoAppeared){
+	list_add(mensajesRecibidos, nuevoAppeared->IDmensaje);
+	list_add(nuevosAppeared, nuevoAppeared);
+	printf("Guarde un mensaje appeared");
+}
 
 void* recibirMensajesLocalized(int conexion, int IDsuscripcion){
 	pthread_t admin;
@@ -144,10 +148,13 @@ void* recibirMensajesLocalized(int conexion, int IDsuscripcion){
 		pthread_create(&admin, NULL, adminMensajeLocalized, nuevoLocalized);
 		pthread_detach(admin);
 	}
-	return EXIT_SUCCESS;
 }
 
-void* adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){ return EXIT_SUCCESS; }
+void* adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
+	list_add(mensajesRecibidos, nuevoLocalized->IDmensaje);
+		list_add(nuevosLocalized, nuevoLocalized);
+		printf("Guarde un mensaje localized");
+}
 
 void* recibirMensajesCaught(int conexion, int IDsuscripcion){
 	pthread_t admin;
@@ -160,10 +167,13 @@ void* recibirMensajesCaught(int conexion, int IDsuscripcion){
 		pthread_create(&admin, NULL, adminMensajeCaught, nuevoCaught);
 		pthread_detach(admin);
 	}
-	return EXIT_SUCCESS;
 }
 
-void* adminMensajeCaught(CaughtPokemonConIDs* nuevoCaught){ return EXIT_SUCCESS; }
+void* adminMensajeCaught(CaughtPokemonConIDs* nuevoCaught){
+	list_add(mensajesRecibidos, nuevoCaught->IDmensaje);
+	list_add(nuevosCaught, nuevoCaught);
+	printf("Guarde un mensaje Caught");
+}
 
 
 
