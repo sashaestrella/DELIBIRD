@@ -3,16 +3,11 @@
 int main(int argc,char* argv[])
 {
 
-	condicionTeam[0]=0;
-	condicionTeam[1]=0;
-	condicionTeam[2]=0;
-	pthread_mutex_init(&mutexTeam,NULL);
-	pthread_cond_init(&cond[0], NULL);
-	pthread_cond_init(&cond[1], NULL);
-	pthread_cond_init(&cond[2], NULL);
+	sem_init(&sem[0], 0, 0);
+	sem_init(&sem[1], 0, 0);
 
 	int hiloCreado;
-
+	algoritmoPlanificacion = "FIFO";
 	cargarDatosConexionConfig();
 	//generarConexiones(0);
 	//abrirEscuchas();
@@ -21,6 +16,9 @@ int main(int argc,char* argv[])
 	objetivoGlobal = list_create();
 
 	leer_config();
+
+	obtener_objetivo_global();
+
 
 	hiloEntrenador = malloc(list_size(entrenadores) * sizeof(pthread_t));
 
@@ -41,19 +39,16 @@ int main(int argc,char* argv[])
 		printf("%s,", list_get(entrenador->objetivos, i));
 	}
 	//-------------Le dice al hilo del entrenador que se mueva
-	pthread_mutex_lock(&mutexTeam);
-	condicionTeam[0]=1;
-	pthread_cond_signal(&cond[0]);
-	pthread_mutex_unlock(&mutexTeam);
+
+	sem_post(&sem[0]);
 	//--------------------------------------------------------
 
 	//------------Espera que se mueva para mostrarlo
-	pthread_mutex_lock(&mutexTeam);
-	if(condicionTeam[0]==1){
-	pthread_cond_wait(&cond[0], &mutexTeam);
+
+
+	sem_wait(&sem2[0]);
+
 	printf("Entrenador1 nueva posicion (%d, %d)", entrenador->posicion.posicionX, entrenador->posicion.posicionY);
-	}
-	pthread_mutex_unlock(&mutexTeam);
 
 
 	Entrenador* entrenador1 = malloc(sizeof(Entrenador));
@@ -65,17 +60,11 @@ int main(int argc,char* argv[])
 	 		printf("%s,", list_get(entrenador1->objetivos, i));
 	}
 
-	pthread_mutex_lock(&mutexTeam);
-	condicionTeam[1]=1;
-	pthread_cond_signal(&cond[1]);
-	pthread_mutex_unlock(&mutexTeam);
+	sem_post(&sem[1]);
 
-	pthread_mutex_lock(&mutexTeam);
-	if(condicionTeam[1]==1){
-	pthread_cond_wait(&cond[1], &mutexTeam);
+	sem_wait(&sem2[1]);
 	printf("Entrenador2 nueva posicion (%d, %d)", entrenador1->posicion.posicionX, entrenador1->posicion.posicionY);
-	}
-	pthread_mutex_unlock(&mutexTeam);
+
 
 
 	Entrenador* entrenador2 = malloc(sizeof(Entrenador));
@@ -85,18 +74,12 @@ int main(int argc,char* argv[])
 	for(i=0; i<list_size(entrenador2->objetivos);i++){
 	 		printf("%s, ", list_get(entrenador2->objetivos, i));
 	}
-	pthread_mutex_lock(&mutexTeam);
-	condicionTeam[2]=1;
-	pthread_cond_signal(&cond[2]);
-	pthread_mutex_unlock(&mutexTeam);
 
+	sem_post(&sem[2]);
 
-	pthread_mutex_lock(&mutexTeam);
-	if(condicionTeam[2]==1){
-	pthread_cond_wait(&cond[2], &mutexTeam);
+	sem_wait(&sem2[2]);
 	printf("Entrenador3 nueva posicion (%d, %d)", entrenador2->posicion.posicionX, entrenador2->posicion.posicionY);
-	}
-	pthread_mutex_unlock(&mutexTeam);
+
 
 
 	puts("\n\nObjetivo Global");

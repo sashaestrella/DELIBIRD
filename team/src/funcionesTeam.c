@@ -14,7 +14,19 @@ void leer_config()
 
 	armar_entrenadores(posiciones_entrenadores, pokemon_entrenadores, objetivos_entrenadores); //les pasas los arrays y la lista
 
-	obtener_objetivo_global();
+	//tiempoDeReconexion = config_get_array_value(archivo_config, "TIEMPO_RECONEXION");
+
+	//retardoCicloCPU = config_get_array_value(archivo_config, "RETARDO_CICLO_CPU");
+
+	//algoritmoPlanificacion = config_get_array_value(archivo_config, "ALGORITMO_PLANIFICACION");
+
+	//quantum = config_get_array_value(archivo_config, "QUANTUM");
+
+	//alpha = config_get_array_value(archivo_config, "ALPHA");
+
+	//estimacionInicial = config_get_array_value(archivo_config, "ESTIMACION_INICIAL");
+
+	//archivoLog = config_get_array_value(archivo_config, "LOG_FILE");
 }
 
 void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
@@ -96,5 +108,19 @@ int cantidad(char** lista){
 		return i;
 }
 
+Algoritmos algoritmoAUtilizar(char* algoritmoPlanificacion){
+
+	if (strcmp(algoritmoPlanificacion, "FIFO") == 0)
+		return FIFO;
+	if (strcmp(algoritmoPlanificacion, "RR") == 0)
+		return RR;
+	if (strcmp(algoritmoPlanificacion, "SJF-CD") == 0)
+		return SJF_CD;
+	if (strcmp(algoritmoPlanificacion, "SJF-SD") == 0)
+		return SJF_SD;
+	else
+		printf("Error en el algoritmo ingresado");
+		return -1;
+}
 
 

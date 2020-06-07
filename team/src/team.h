@@ -1,8 +1,13 @@
 #ifndef TEAM_H_
 #define TEAM_H_
 
+#include<commons/collections/queue.h>
 #include<src/conexionBroker.h>
 #include<semaphore.h>
+
+sem_t sem[3];
+sem_t sem2[3];
+
 
 typedef enum
 {
@@ -13,6 +18,15 @@ typedef enum
 	EXIT=5
 
 }Estado;
+
+typedef enum
+{
+	FIFO=1,
+	RR=2,
+	SJF_CD=3,
+	SJF_SD=4
+
+}Algoritmos;
 
 typedef struct entrenador{
 	uint32_t ID;
@@ -28,15 +42,18 @@ typedef struct pokemon{
 
 pthread_t *hiloEntrenador;
 
-pthread_cond_t cond[3];
-pthread_mutex_t mutexTeam;
-int condicionTeam[3];;
 
 bool execute;
 t_list* entrenadores;
 t_list* objetivoGlobal;
 int tiempoDeReconexion;
 char* archivoLog;
+
+//-----------Colas---------------------
+
+t_queue* colaNEW_BLOCKED;
+
+
 
 //------------Variables para los algoritmos de planificacion
 

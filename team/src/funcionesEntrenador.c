@@ -3,29 +3,22 @@
 
 void* planificar(Entrenador* entrenador){
 
-	printf("\nSoy el entrenador %d y se creo mi hilo.\n", entrenador->ID);
+	switch(algoritmoAUtilizar(algoritmoPlanificacion)){
 
-	//-----------------Espera que el hilo main le diga que se puede mover
-	pthread_mutex_lock(&mutexTeam);
-	if(condicionTeam[entrenador->ID-1] == 0){
-	printf("Estoy esperando entrenador %d\n",entrenador->ID );
-	pthread_cond_wait(&cond[entrenador->ID -1], &mutexTeam);
+		case FIFO:
+			planificacionFifo (entrenador);
+			break;
+		case RR:
+			planificacionRR(entrenador);
+			break;
+		case SJF_CD:
+			planificacionSJF_CD(entrenador);
+			break;
+		case SJF_SD:
+			planificacionSJF_SD(entrenador);
+			break;
 	}
-	pthread_mutex_unlock(&mutexTeam);
-	//-------------------------------------------------------------------
 
-
-	//---------------Le dice al hilo main que ya se movio
-	pthread_mutex_lock(&mutexTeam);
-
-	entrenador->posicion.posicionX = entrenador->posicion.posicionX + 1;
-	entrenador->posicion.posicionY = entrenador->posicion.posicionY + 1;
-	puts("\nSe movio 1 en cada eje");
-	condicionTeam[entrenador->ID-1]=2;
-	pthread_cond_signal(&cond[entrenador->ID-1]);
-	pthread_mutex_unlock(&mutexTeam);
-	//--------------------------------------------------------------------
-	pthread_exit(NULL);
 }
 
 
@@ -40,6 +33,44 @@ int calcularDistancia(Entrenador* entrenador, Pokemon* pokemon){
 	int movimiento_ejeY = abs(posicionX_entrenador - posicionX_pokemon);
 
 	return movimiento_ejeX + movimiento_ejeY;
+
+}
+
+void planificacionFifo(Entrenador* entrenador){
+
+	printf("\nSoy el entrenador %d y se creo mi hilo.\n", entrenador->ID);
+
+	//-----------------Espera que el hilo main le diga que se puede mover
+
+	printf("Estoy esperando entrenador %d\n",entrenador->ID );
+
+	sem_wait(&sem[entrenador->ID-1]);
+
+	//-------------------------------------------------------------------
+
+
+	//---------------Le dice al hilo main que ya se movio
+
+
+
+	entrenador->posicion.posicionX = entrenador->posicion.posicionX + 1;
+	entrenador->posicion.posicionY = entrenador->posicion.posicionY + 1;
+	puts("\nSe movio 1 en cada eje");
+	sem_post(&sem2[entrenador->ID-1]);
+	//--------------------------------------------------------------------
+	pthread_exit(NULL);
+
+}
+
+void planificacionRR(Entrenador* entrenador){
+
+}
+
+void planificacionSJF_CD(Entrenador* entrenador){
+
+}
+
+void planificacionSJF_SD(Entrenador* entrenador){
 
 }
 
