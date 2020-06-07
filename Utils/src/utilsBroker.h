@@ -14,6 +14,8 @@
 #include"utilsEstructuras.h"
 #include"utilsGeneral.h"
 
+int idGeneradoEnElMomento = 0; //Es cero si no lo fue/ 1 si lo fue
+
 int generadorDeIDsMensaje = 0;
 int generadorDeIDsSuscriptor = 0;
 
@@ -113,17 +115,8 @@ void enviarCaughtPokemonASuscriptores(MensajeCaughtPokemon* unMensajeCaughtPokem
 MensajeNewPokemon* guardarMensajeNewPokemon(NewPokemon* unNewPokemon);
 MensajeLocalizedPokemon* guardarMensajeLocalizedPokemon(LocalizedPokemon* unLocalizedPokemon,int idCorrelativo);
 MensajeGetPokemon* guardarMensajeGetPokemon(GetPokemon* unGetPokemon);
-void respoderConIDAlTeam(int id,int cliente_fd);
 MensajeAppearedPokemon* guardarMensajeAppearedPokemon(AppearedPokemon* unAppearedPokemon);
 MensajeCatchPokemon* guardarMensajeCatchPokemon(CatchPokemon* unCatchPokemon);
 MensajeCaughtPokemon* guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemon,int idCorrelativo);
-
-void recibirACK(int cliente_fd);
-void guardarElACKNewPokemon(int idMensaje,int idSuscriptor);
-void guardarElACKLocalizedPokemon(int idMensaje,int idSuscriptor);
-void guardarElACKGetPokemon(int idMensaje,int idSuscriptor);
-void guardarElACKAppearedPokemon(int idMensaje,int idSuscriptor);
-void guardarElACKCatchPokemon(int idMensaje,int idSuscriptor);
-void guardarElACKCaughtPokemon(int idMensaje,int idSuscriptor);
 
 #endif /* CONEXIONES_H_ */

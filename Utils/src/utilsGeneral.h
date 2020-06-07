@@ -30,8 +30,7 @@ typedef enum
 	SUSCRIPTOR_GETPOKEMON = 10,
 	SUSCRIPTOR_APPEAREDPOKEMON = 11,
 	SUSCRIPTOR_CATCHPOKEMON = 12,
-	SUSCRIPTOR_CAUGHTPOKEMON = 13,
-	ACK = 14
+	SUSCRIPTOR_CAUGHTPOKEMON = 13
 }op_code;
 
 typedef struct
@@ -46,11 +45,7 @@ typedef struct
 	t_buffer* buffer;
 } t_paquete;
 
-
-
-
 pthread_t thread;
-
 
 void* recibir_buffer(int*, int);
 void* recibir_mensaje(int socket_cliente, int* size);
@@ -93,7 +88,7 @@ void enviarCatchPokemon(CatchPokemon* catch_pokemon,int socket_suscriptor,int id
 void* serializarCaughtPokemon(CaughtPokemon* caughtPokemon,int bytes,int id,int idCorrelativo);
 void enviarCaughtPokemon(CaughtPokemon* caught_pokemon,int socket_suscriptor,int id,int idCorrelativo);
 
-void enviarSuscripcionANewPokemon(int idSuscriptor,int socket_suscriptor,int cod_op);
+void enviarSuscripcion(int idSuscriptor,int socket_suscriptor,int cod_op);
 void* serializarSuscripcion(int idSuscriptor,int bytes);
 
 void liberar_conexion(int socket_cliente);
