@@ -14,8 +14,6 @@
 #include"utilsEstructuras.h"
 #include"utilsGeneral.h"
 
-int idGeneradoEnElMomento = 0; //Es cero si no lo fue/ 1 si lo fue
-
 int generadorDeIDsMensaje = 0;
 int generadorDeIDsSuscriptor = 0;
 
@@ -89,27 +87,27 @@ void serve_client(int *socket);
 
 
 Suscriptor* recibirSuscripcionNewPokemon(int socket_suscriptor);
-void enviarColaNewPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
+void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor, Suscriptor* unSuscriptor);
 void enviarNewPokemonASuscriptores(MensajeNewPokemon* unMensajeNewPokemon);
 
 Suscriptor* recibirSuscripcionLocalizedPokemon(int socket_suscriptor);
-void enviarColaLocalizedPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
+void enviarColaLocalizedPokemon(int idGeneradoEnElMomento,int socket_suscriptor, Suscriptor* unSuscriptor);
 void enviarLocalizedPokemonASuscriptores(MensajeLocalizedPokemon* unMensajeLocalizedPokemon);
 
 Suscriptor* recibirSuscripcionGetPokemon(int socket_suscriptor);
-void enviarColaGetPokemon(int socket_suscriptor,Suscriptor* unSuscriptor);
+void enviarColaGetPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscriptor* unSuscriptor);
 void enviarGetPokemonASuscriptores(MensajeGetPokemon* unMensajeGetPokemon);
 
 Suscriptor* recibirSuscripcionAppearedPokemon(int socket_suscriptor);
-void enviarColaAppearedPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
+void enviarColaAppearedPokemon(int idGeneradoEnElMomento,int socket_suscriptor, Suscriptor* unSuscriptor);
 void enviarAppearedPokemonASuscriptores(MensajeAppearedPokemon* unMensajeAppearedPokemon);
 
 Suscriptor* recibirSuscripcionCatchPokemon(int socket_suscriptor);
-void enviarColaCatchPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
+void enviarColaCatchPokemon(int idGeneradoEnElMomento,int socket_suscriptor, Suscriptor* unSuscriptor);
 void enviarCatchPokemonASuscriptores(MensajeCatchPokemon* unMensajeCatchPokemon);
 
 Suscriptor* recibirSuscripcionCaughtPokemon(int socket_suscriptor);
-void enviarColaCaughtPokemon(int socket_suscriptor, Suscriptor* unSuscriptor);
+void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor, Suscriptor* unSuscriptor);
 void enviarCaughtPokemonASuscriptores(MensajeCaughtPokemon* unMensajeCaughtPokemon);
 
 MensajeNewPokemon* guardarMensajeNewPokemon(NewPokemon* unNewPokemon);

@@ -101,7 +101,7 @@ void process_request(int cod_op, int cliente_fd) {
 	CatchPokemonConIDs* catchConIDs;
 	CaughtPokemonConIDs* unCaughtPokemonConIDCorrelativo;
 
-	int idCorrelativo, idRecibidoDelSuscriptor;
+	int idCorrelativo;
 
 		switch (cod_op) {
 				case MENSAJE:
@@ -159,27 +159,21 @@ void process_request(int cod_op, int cliente_fd) {
 					break;
 				case SUSCRIPTOR_NEWPOKEMON:
 					elQueSeMeSuscribe =	recibirSuscripcionNewPokemon(cliente_fd);
-					enviarColaNewPokemon(cliente_fd,elQueSeMeSuscribe);
 					break;
 				case SUSCRIPTOR_LOCALIZEDPOKEMON:
 					elQueSeMeSuscribe =	recibirSuscripcionLocalizedPokemon(cliente_fd);
-					enviarColaLocalizedPokemon(cliente_fd,elQueSeMeSuscribe);
 					break;
 				case SUSCRIPTOR_GETPOKEMON:
 					elQueSeMeSuscribe = recibirSuscripcionGetPokemon(cliente_fd);
-					enviarColaGetPokemon(cliente_fd,elQueSeMeSuscribe);
 					break;
 				case SUSCRIPTOR_APPEAREDPOKEMON:
 					elQueSeMeSuscribe = recibirSuscripcionAppearedPokemon(cliente_fd);
-					enviarColaAppearedPokemon(cliente_fd,elQueSeMeSuscribe);
 					break;
 				case SUSCRIPTOR_CATCHPOKEMON:
 					elQueSeMeSuscribe = recibirSuscripcionCatchPokemon(cliente_fd);
-					enviarColaCatchPokemon(cliente_fd,elQueSeMeSuscribe);
 					break;
 				case SUSCRIPTOR_CAUGHTPOKEMON:
 					elQueSeMeSuscribe = recibirSuscripcionCaughtPokemon(cliente_fd);
-					enviarColaCaughtPokemon(cliente_fd,elQueSeMeSuscribe);
 					break;
 	}
 }
@@ -324,92 +318,220 @@ void enviarNewPokemonASuscriptores(MensajeNewPokemon* unMensajeNewPokemon){
 Suscriptor* recibirSuscripcionCaughtPokemon(int socket_suscriptor){
 
 		Suscriptor* unSuscriptor = malloc(sizeof(Suscriptor));
+		int tamanioListaSuscriptores = list_size(suscriptores_caught_pokemon);
+		int idSuscriptor,idGeneradoEnElMomento;
 
-		printf("Recibi solicitud de suscripcion para CaughtPokemon de socket: %d\n",socket_suscriptor);
+		t_buffer* buffer = malloc(sizeof(t_buffer));
+		recv(socket_suscriptor,&(buffer->size),sizeof(int),MSG_WAITALL);
+		void* stream = malloc(buffer->size);
+		buffer->stream = stream;
+		recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
 
-		pthread_mutex_lock(&mutexGeneradorIDSuscriptor);
-		generadorDeIDsSuscriptor++;
-		unSuscriptor->socketSuscriptor = socket_suscriptor;
-		unSuscriptor->IDsuscriptor = generadorDeIDsSuscriptor;
-		pthread_mutex_unlock(&mutexGeneradorIDSuscriptor);
-		pthread_mutex_lock(&mutexListaSuscriptores);
-		list_add(suscriptores_caught_pokemon,unSuscriptor);
-		pthread_mutex_unlock(&mutexListaSuscriptores);
+		memcpy(&idSuscriptor,stream,sizeof(int));
+		printf("\nRecibi solicitud de suscripcion para CaughtPokemon de socket: %d\n",socket_suscriptor);
+		printf("Su ID es: %d\n",idSuscriptor);
 
-		printf("El tamaño de la lista de suscriptores de GP ahora es de: %d\n",list_size(suscriptores_caught_pokemon));
+		if(idSuscriptor == 0){
+			pthread_mutex_lock(&mutexGeneradorIDSuscriptor);
+			generadorDeIDsSuscriptor++;
+			unSuscriptor->IDsuscriptor = generadorDeIDsSuscriptor;
+			pthread_mutex_unlock(&mutexGeneradorIDSuscriptor);
+			unSuscriptor->socketSuscriptor = socket_suscriptor;
 
-		printf("El suscriptor %d con id = %d fue agregago a la lista get pokemon\n",socket_suscriptor,generadorDeIDsSuscriptor);
-		send(socket_suscriptor,&(unSuscriptor->IDsuscriptor),sizeof(int),0);
+			printf("Pero ahora su ID es: %d\n",unSuscriptor->IDsuscriptor);
 
+			pthread_mutex_lock(&mutexListaSuscriptores);
+			list_add(suscriptores_caught_pokemon,unSuscriptor);
+			pthread_mutex_unlock(&mutexListaSuscriptores);
+
+			printf("El tamaño de la lista de suscriptores de CAP ahora es de: %d\n",list_size(suscriptores_caught_pokemon));
+			printf("El suscriptor %d con id = %d fue agregado a la lista caught pokemon\n",socket_suscriptor,unSuscriptor->IDsuscriptor);
+			send(socket_suscriptor,&(unSuscriptor->IDsuscriptor),sizeof(int),0);
+
+			idGeneradoEnElMomento = 1;
+			enviarColaCaughtPokemon(idGeneradoEnElMomento,socket_suscriptor,unSuscriptor);
+		} else {
+			Suscriptor* otroSuscriptor;
+			for(int i=0; i<tamanioListaSuscriptores;i++){
+				otroSuscriptor = list_get(suscriptores_caught_pokemon,i);
+				if(otroSuscriptor->IDsuscriptor == idSuscriptor){
+					otroSuscriptor->socketSuscriptor = socket_suscriptor;
+
+					idGeneradoEnElMomento = 0;
+					enviarColaCaughtPokemon(idGeneradoEnElMomento,socket_suscriptor,otroSuscriptor);
+					otroSuscriptor = unSuscriptor;
+				}
+					puts("Sigo buscando...\n");
+			}
+		}
+
+		free(buffer->stream);
+		free(buffer);
 		return unSuscriptor;
 }
 
 Suscriptor* recibirSuscripcionCatchPokemon(int socket_suscriptor){
 
 		Suscriptor* unSuscriptor = malloc(sizeof(Suscriptor));
+		int tamanioListaSuscriptores = list_size(suscriptores_catch_pokemon);
+		int idSuscriptor,idGeneradoEnElMomento;
 
-		printf("Recibi solicitud de suscripcion para CatchPokemon de socket: %d\n",socket_suscriptor);
+		t_buffer* buffer = malloc(sizeof(t_buffer));
+		recv(socket_suscriptor,&(buffer->size),sizeof(int),MSG_WAITALL);
+		void* stream = malloc(buffer->size);
+		buffer->stream = stream;
+		recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
 
-		pthread_mutex_lock(&mutexGeneradorIDSuscriptor);
-		generadorDeIDsSuscriptor++;
-		unSuscriptor->socketSuscriptor = socket_suscriptor;
-		unSuscriptor->IDsuscriptor = generadorDeIDsSuscriptor;
-		pthread_mutex_unlock(&mutexGeneradorIDSuscriptor);
-		pthread_mutex_lock(&mutexListaSuscriptores);
-		list_add(suscriptores_catch_pokemon,unSuscriptor);
-		pthread_mutex_unlock(&mutexListaSuscriptores);
+		memcpy(&idSuscriptor,stream,sizeof(int));
+		printf("\nRecibi solicitud de suscripcion para CatchPokemon de socket: %d\n",socket_suscriptor);
+		printf("Su ID es: %d\n",idSuscriptor);
 
-		printf("El tamaño de la lista de suscriptores de CP ahora es de: %d\n",list_size(suscriptores_catch_pokemon));
+		if(idSuscriptor == 0){
+			pthread_mutex_lock(&mutexGeneradorIDSuscriptor);
+			generadorDeIDsSuscriptor++;
+			unSuscriptor->IDsuscriptor = generadorDeIDsSuscriptor;
+			pthread_mutex_unlock(&mutexGeneradorIDSuscriptor);
+			unSuscriptor->socketSuscriptor = socket_suscriptor;
 
-		printf("El suscriptor %d con id = %d fue agregago a la lista catch pokemon\n",socket_suscriptor,generadorDeIDsSuscriptor);
-		send(socket_suscriptor,&(unSuscriptor->IDsuscriptor),sizeof(int),0);
+			printf("Pero ahora su ID es: %d\n",unSuscriptor->IDsuscriptor);
 
+			pthread_mutex_lock(&mutexListaSuscriptores);
+			list_add(suscriptores_catch_pokemon,unSuscriptor);
+			pthread_mutex_unlock(&mutexListaSuscriptores);
+
+			printf("El tamaño de la lista de suscriptores de CP ahora es de: %d\n",list_size(suscriptores_catch_pokemon));
+			printf("El suscriptor %d con id = %d fue agregado a la lista catch pokemon\n",socket_suscriptor,unSuscriptor->IDsuscriptor);
+			send(socket_suscriptor,&(unSuscriptor->IDsuscriptor),sizeof(int),0);
+
+			idGeneradoEnElMomento = 1;
+			enviarColaCatchPokemon(idGeneradoEnElMomento,socket_suscriptor,unSuscriptor);
+		} else {
+			Suscriptor* otroSuscriptor;
+			for(int i=0; i<tamanioListaSuscriptores;i++){
+				otroSuscriptor = list_get(suscriptores_catch_pokemon,i);
+				if(otroSuscriptor->IDsuscriptor == idSuscriptor){
+					otroSuscriptor->socketSuscriptor = socket_suscriptor;
+
+					idGeneradoEnElMomento = 0;
+					enviarColaCatchPokemon(idGeneradoEnElMomento,socket_suscriptor,otroSuscriptor);
+					otroSuscriptor = unSuscriptor;
+				}
+					puts("Sigo buscando...\n");
+			}
+		}
+
+		free(buffer->stream);
+		free(buffer);
 		return unSuscriptor;
 }
 
 Suscriptor* recibirSuscripcionAppearedPokemon(int socket_suscriptor){
 
 		Suscriptor* unSuscriptor = malloc(sizeof(Suscriptor));
+		int tamanioListaSuscriptores = list_size(suscriptores_appeared_pokemon);
+		int idSuscriptor,idGeneradoEnElMomento;
 
-		printf("Recibi solicitud de suscripcion para AppearedPokemon de socket: %d\n",socket_suscriptor);
+		t_buffer* buffer = malloc(sizeof(t_buffer));
+		recv(socket_suscriptor,&(buffer->size),sizeof(int),MSG_WAITALL);
+		void* stream = malloc(buffer->size);
+		buffer->stream = stream;
+		recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
 
-		pthread_mutex_lock(&mutexGeneradorIDSuscriptor);
-		generadorDeIDsSuscriptor++;
-		unSuscriptor->socketSuscriptor = socket_suscriptor;
-		unSuscriptor->IDsuscriptor = generadorDeIDsSuscriptor;
-		pthread_mutex_unlock(&mutexGeneradorIDSuscriptor);
-		pthread_mutex_lock(&mutexListaSuscriptores);
-		list_add(suscriptores_appeared_pokemon,unSuscriptor);
-		pthread_mutex_unlock(&mutexListaSuscriptores);
+		memcpy(&idSuscriptor,stream,sizeof(int));
+		printf("\nRecibi solicitud de suscripcion para AppearedPokemon de socket: %d\n",socket_suscriptor);
+		printf("Su ID es: %d\n",idSuscriptor);
 
-		printf("El tamaño de la lista de suscriptores de GP ahora es de: %d\n",list_size(suscriptores_appeared_pokemon));
+		if(idSuscriptor == 0){
+			pthread_mutex_lock(&mutexGeneradorIDSuscriptor);
+			generadorDeIDsSuscriptor++;
+			unSuscriptor->IDsuscriptor = generadorDeIDsSuscriptor;
+			pthread_mutex_unlock(&mutexGeneradorIDSuscriptor);
+			unSuscriptor->socketSuscriptor = socket_suscriptor;
 
-		printf("El suscriptor %d con id = %d fue agregago a la lista appeared pokemon\n",socket_suscriptor,generadorDeIDsSuscriptor);
-		send(socket_suscriptor,&(unSuscriptor->IDsuscriptor),sizeof(int),0);
+			printf("Pero ahora su ID es: %d\n",unSuscriptor->IDsuscriptor);
 
+			pthread_mutex_lock(&mutexListaSuscriptores);
+			list_add(suscriptores_appeared_pokemon,unSuscriptor);
+			pthread_mutex_unlock(&mutexListaSuscriptores);
+
+			printf("El tamaño de la lista de suscriptores de AP ahora es de: %d\n",list_size(suscriptores_appeared_pokemon));
+			printf("El suscriptor %d con id = %d fue agregado a la lista appeared pokemon\n",socket_suscriptor,unSuscriptor->IDsuscriptor);
+			send(socket_suscriptor,&(unSuscriptor->IDsuscriptor),sizeof(int),0);
+
+			idGeneradoEnElMomento = 1;
+			enviarColaAppearedPokemon(idGeneradoEnElMomento,socket_suscriptor,unSuscriptor);
+		} else {
+			Suscriptor* otroSuscriptor;
+			for(int i=0; i<tamanioListaSuscriptores;i++){
+				otroSuscriptor = list_get(suscriptores_appeared_pokemon,i);
+				if(otroSuscriptor->IDsuscriptor == idSuscriptor){
+					otroSuscriptor->socketSuscriptor = socket_suscriptor;
+
+					idGeneradoEnElMomento = 0;
+					enviarColaAppearedPokemon(idGeneradoEnElMomento,socket_suscriptor,otroSuscriptor);
+					otroSuscriptor = unSuscriptor;
+				}
+					puts("Sigo buscando...\n");
+			}
+		}
+
+		free(buffer->stream);
+		free(buffer);
 		return unSuscriptor;
 }
 
 Suscriptor* recibirSuscripcionGetPokemon(int socket_suscriptor){
 
 		Suscriptor* unSuscriptor = malloc(sizeof(Suscriptor));
+		int tamanioListaSuscriptores = list_size(suscriptores_get_pokemon);
+		int idSuscriptor,idGeneradoEnElMomento;
 
-		printf("Recibi solicitud de suscripcion para GetPokemon de socket: %d\n",socket_suscriptor);
+		t_buffer* buffer = malloc(sizeof(t_buffer));
+		recv(socket_suscriptor,&(buffer->size),sizeof(int),MSG_WAITALL);
+		void* stream = malloc(buffer->size);
+		buffer->stream = stream;
+		recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
 
-		pthread_mutex_lock(&mutexGeneradorIDSuscriptor);
-		generadorDeIDsSuscriptor++;
-		unSuscriptor->socketSuscriptor = socket_suscriptor;
-		unSuscriptor->IDsuscriptor = generadorDeIDsSuscriptor;
-		pthread_mutex_unlock(&mutexGeneradorIDSuscriptor);
-		pthread_mutex_lock(&mutexListaSuscriptores);
-		list_add(suscriptores_get_pokemon,unSuscriptor);
-		pthread_mutex_unlock(&mutexListaSuscriptores);
+		memcpy(&idSuscriptor,stream,sizeof(int));
+		printf("\nRecibi solicitud de suscripcion para GetPokemon de socket: %d\n",socket_suscriptor);
+		printf("Su ID es: %d\n",idSuscriptor);
 
-		printf("El tamaño de la lista de suscriptores de GP ahora es de: %d\n",list_size(suscriptores_get_pokemon));
+		if(idSuscriptor == 0){
+			pthread_mutex_lock(&mutexGeneradorIDSuscriptor);
+			generadorDeIDsSuscriptor++;
+			unSuscriptor->IDsuscriptor = generadorDeIDsSuscriptor;
+			pthread_mutex_unlock(&mutexGeneradorIDSuscriptor);
+			unSuscriptor->socketSuscriptor = socket_suscriptor;
 
-		printf("El suscriptor %d con id = %d fue agregago a la lista get pokemon\n",socket_suscriptor,generadorDeIDsSuscriptor);
-		send(socket_suscriptor,&(unSuscriptor->IDsuscriptor),sizeof(int),0);
+			printf("Pero ahora su ID es: %d\n",unSuscriptor->IDsuscriptor);
 
+			pthread_mutex_lock(&mutexListaSuscriptores);
+			list_add(suscriptores_get_pokemon,unSuscriptor);
+			pthread_mutex_unlock(&mutexListaSuscriptores);
+
+			printf("El tamaño de la lista de suscriptores de GP ahora es de: %d\n",list_size(suscriptores_get_pokemon));
+			printf("El suscriptor %d con id = %d fue agregado a la lista get pokemon\n",socket_suscriptor,unSuscriptor->IDsuscriptor);
+			send(socket_suscriptor,&(unSuscriptor->IDsuscriptor),sizeof(int),0);
+
+			idGeneradoEnElMomento = 1;
+			enviarColaGetPokemon(idGeneradoEnElMomento,socket_suscriptor,unSuscriptor);
+		} else {
+			Suscriptor* otroSuscriptor;
+			for(int i=0; i<tamanioListaSuscriptores;i++){
+				otroSuscriptor = list_get(suscriptores_get_pokemon,i);
+				if(otroSuscriptor->IDsuscriptor == idSuscriptor){
+					otroSuscriptor->socketSuscriptor = socket_suscriptor;
+
+					idGeneradoEnElMomento = 0;
+					enviarColaGetPokemon(idGeneradoEnElMomento,socket_suscriptor,otroSuscriptor);
+					otroSuscriptor = unSuscriptor;
+				}
+					puts("Sigo buscando...\n");
+			}
+		}
+
+		free(buffer->stream);
+		free(buffer);
 		return unSuscriptor;
 }
 
@@ -417,32 +539,63 @@ Suscriptor* recibirSuscripcionGetPokemon(int socket_suscriptor){
 Suscriptor* recibirSuscripcionLocalizedPokemon(int socket_suscriptor){
 
 		Suscriptor* unSuscriptor = malloc(sizeof(Suscriptor));
+		int tamanioListaSuscriptores = list_size(suscriptores_localized_pokemon);
+		int idSuscriptor,idGeneradoEnElMomento;
 
-		printf("Recibi solicitud de suscripcion para LocalizedPokemon de socket: %d\n",socket_suscriptor);
+		t_buffer* buffer = malloc(sizeof(t_buffer));
+		recv(socket_suscriptor,&(buffer->size),sizeof(int),MSG_WAITALL);
+		void* stream = malloc(buffer->size);
+		buffer->stream = stream;
+		recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
 
-		pthread_mutex_lock(&mutexGeneradorIDSuscriptor);
-		generadorDeIDsSuscriptor++;
-		unSuscriptor->socketSuscriptor = socket_suscriptor;
-		unSuscriptor->IDsuscriptor = generadorDeIDsSuscriptor;
-		pthread_mutex_unlock(&mutexGeneradorIDSuscriptor);
-		pthread_mutex_lock(&mutexListaSuscriptores);
-		list_add(suscriptores_localized_pokemon,unSuscriptor);
-		pthread_mutex_unlock(&mutexListaSuscriptores);
+		memcpy(&idSuscriptor,stream,sizeof(int));
+		printf("\nRecibi solicitud de suscripcion para LocalizedPokemon de socket: %d\n",socket_suscriptor);
+		printf("Su ID es: %d\n",idSuscriptor);
 
-		printf("El tamaño de la lista de suscriptores de LP ahora es de: %d\n",list_size(suscriptores_localized_pokemon));
+		if(idSuscriptor == 0){
+			pthread_mutex_lock(&mutexGeneradorIDSuscriptor);
+			generadorDeIDsSuscriptor++;
+			unSuscriptor->IDsuscriptor = generadorDeIDsSuscriptor;
+			pthread_mutex_unlock(&mutexGeneradorIDSuscriptor);
+			unSuscriptor->socketSuscriptor = socket_suscriptor;
 
-		printf("El suscriptor %d con id = %d fue agregago a la lista localized pokemon\n",socket_suscriptor,generadorDeIDsSuscriptor);
-		send(socket_suscriptor,&(unSuscriptor->IDsuscriptor),sizeof(int),0);
+			printf("Pero ahora su ID es: %d\n",unSuscriptor->IDsuscriptor);
 
+			pthread_mutex_lock(&mutexListaSuscriptores);
+			list_add(suscriptores_localized_pokemon,unSuscriptor);
+			pthread_mutex_unlock(&mutexListaSuscriptores);
+
+			printf("El tamaño de la lista de suscriptores de LP ahora es de: %d\n",list_size(suscriptores_localized_pokemon));
+			printf("El suscriptor %d con id = %d fue agregado a la lista localized pokemon\n",socket_suscriptor,unSuscriptor->IDsuscriptor);
+			send(socket_suscriptor,&(unSuscriptor->IDsuscriptor),sizeof(int),0);
+
+			idGeneradoEnElMomento = 1;
+			enviarColaLocalizedPokemon(idGeneradoEnElMomento,socket_suscriptor,unSuscriptor);
+		} else {
+			Suscriptor* otroSuscriptor;
+			for(int i=0; i<tamanioListaSuscriptores;i++){
+				otroSuscriptor = list_get(suscriptores_localized_pokemon,i);
+				if(otroSuscriptor->IDsuscriptor == idSuscriptor){
+					otroSuscriptor->socketSuscriptor = socket_suscriptor;
+
+					idGeneradoEnElMomento = 0;
+					enviarColaLocalizedPokemon(idGeneradoEnElMomento,socket_suscriptor,otroSuscriptor);
+					otroSuscriptor = unSuscriptor;
+				}
+					puts("Sigo buscando...\n");
+			}
+		}
+
+		free(buffer->stream);
+		free(buffer);
 		return unSuscriptor;
 }
 
 Suscriptor* recibirSuscripcionNewPokemon(int socket_suscriptor){
 
-		Suscriptor* otroSuscriptor;
-		Suscriptor* elSuscriptorQueVoyARetornar;
+		Suscriptor* unSuscriptor = malloc(sizeof(Suscriptor));
 		int tamanioListaSuscriptores = list_size(suscriptores_new_pokemon);
-		int idSuscriptor;
+		int idSuscriptor,idGeneradoEnElMomento;
 
 		t_buffer* buffer = malloc(sizeof(t_buffer));
 		recv(socket_suscriptor,&(buffer->size),sizeof(int),MSG_WAITALL);
@@ -455,7 +608,6 @@ Suscriptor* recibirSuscripcionNewPokemon(int socket_suscriptor){
 		printf("Su ID es: %d\n",idSuscriptor);
 
 		if(idSuscriptor == 0){
-			Suscriptor* unSuscriptor = malloc(sizeof(Suscriptor));
 			pthread_mutex_lock(&mutexGeneradorIDSuscriptor);
 			generadorDeIDsSuscriptor++;
 			unSuscriptor->IDsuscriptor = generadorDeIDsSuscriptor;
@@ -473,15 +625,17 @@ Suscriptor* recibirSuscripcionNewPokemon(int socket_suscriptor){
 			send(socket_suscriptor,&(unSuscriptor->IDsuscriptor),sizeof(int),0);
 
 			idGeneradoEnElMomento = 1;
-			elSuscriptorQueVoyARetornar = unSuscriptor;
+			enviarColaNewPokemon(idGeneradoEnElMomento,socket_suscriptor,unSuscriptor);
 		} else {
+			Suscriptor* otroSuscriptor;
 			for(int i=0; i<tamanioListaSuscriptores;i++){
 				otroSuscriptor = list_get(suscriptores_new_pokemon,i);
 					if(otroSuscriptor->IDsuscriptor == idSuscriptor){
 						otroSuscriptor->socketSuscriptor = socket_suscriptor;
 
 						idGeneradoEnElMomento = 0;
-						elSuscriptorQueVoyARetornar =  otroSuscriptor;
+						enviarColaNewPokemon(idGeneradoEnElMomento,socket_suscriptor,otroSuscriptor);
+						otroSuscriptor = unSuscriptor;
 					}
 					puts("Sigo buscando...\n");
 			}
@@ -489,7 +643,7 @@ Suscriptor* recibirSuscripcionNewPokemon(int socket_suscriptor){
 
 		free(buffer->stream);
 		free(buffer);
-		return elSuscriptorQueVoyARetornar;
+		return unSuscriptor;
 }
 
 
@@ -653,7 +807,7 @@ MensajeCaughtPokemon* guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemon
 }
 
 
-void enviarColaNewPokemon(int socket_suscriptor, Suscriptor* unSuscriptor){
+void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscriptor* unSuscriptor){
 	puts("Ahora tengo que ver si te puedo mandar los mensajes o no..");
 		MensajeNewPokemon* mensaje;
 		NewPokemon* unNewPokemon;
@@ -739,7 +893,7 @@ void enviarColaNewPokemon(int socket_suscriptor, Suscriptor* unSuscriptor){
 }
 
 
-void enviarColaLocalizedPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
+void enviarColaLocalizedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscriptor* unSuscriptor){
 
 	puts("Ahora tengo que ver si te puedo mandar los mensajes o no..");
 		MensajeLocalizedPokemon* mensaje;
@@ -749,24 +903,24 @@ void enviarColaLocalizedPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 		int loQueDevuelveElRecv = 0;
 		int cantidadDeLocalizedPokemon = list_size(Localized_Pokemon);
 
-		if(unSuscriptor->IDsuscriptor == 0){ //caso feliz
+		if(idGeneradoEnElMomento == 0){ //caso feliz
 			send(socket_suscriptor,&cantidadDeLocalizedPokemon,sizeof(int),0);
 		for(int i=0;i<cantidadDeLocalizedPokemon;i++){
 			mensaje = list_get(Localized_Pokemon,i);
-			printf("\nTe voy a enviar el mensaje: %s\n",mensaje->contenidoDelMensaje->nombre);
+			printf("\n\nTe voy a enviar el mensaje: %s",mensaje->contenidoDelMensaje->nombre);
 
 			pthread_mutex_lock(&mutexColaLocalizedPokemon);
 			unLocalizedPokemon = mensaje->contenidoDelMensaje;
 			enviarLocalizedPokemon(unLocalizedPokemon,socket_suscriptor,mensaje->ID,mensaje->IDCorrelativo);
-			printf("Mensaje enviado: %s\n",unLocalizedPokemon->nombre);
+			printf("\nMensaje enviado: %s",unLocalizedPokemon->nombre);
 			list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 			printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
 
 			loQueDevuelveElRecv = recv(socket_suscriptor,&ack,sizeof(int),0);
-			printf("ACK recibido: %d\n",ack);
+			printf("\nACK recibido: %d\n",ack);
 
 			if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-				puts("Se cayó la conexion...");
+				puts("\nSe cayó la conexion...");
 				pthread_exit(NULL); //Si no le pongo esto sigue ejecutando y no deberia
 			}
 			list_add(mensaje->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
@@ -797,20 +951,20 @@ void enviarColaLocalizedPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 								}
 							}
 							if(mensajeYaEnviado == 0){
-							printf("\nTe voy a enviar el mensaje: %s\n",mensaje->contenidoDelMensaje->nombre);
+							printf("\n\nTe voy a enviar el mensaje: %s",mensaje->contenidoDelMensaje->nombre);
 
 							pthread_mutex_lock(&mutexColaLocalizedPokemon);
 							unLocalizedPokemon = mensaje->contenidoDelMensaje;
 							enviarLocalizedPokemon(unLocalizedPokemon,socket_suscriptor,mensaje->ID,mensaje->IDCorrelativo);
-							printf("Mensaje enviado: %s\n",unLocalizedPokemon->nombre);
+							printf("\nMensaje enviado: %s",unLocalizedPokemon->nombre);
 							list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 							printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
 
 							loQueDevuelveElRecv = recv(socket_suscriptor,&ack,sizeof(int),0);
-							printf("ACK recibido: %d\n",ack);
+							printf("\nACK recibido: %d\n",ack);
 
 							if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-								puts("Se cayó la conexion...");
+								puts("\nSe cayó la conexion...");
 								pthread_exit(NULL); //Si no le pongo esto sigue ejecutando y no deberia
 							}
 							list_add(mensaje->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
@@ -821,10 +975,10 @@ void enviarColaLocalizedPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 							mensajeYaEnviado = 0;
 						}
 					} //fin del caso triste
-					puts("\nSuscriptor ok");
+				puts("\nSuscriptor ok");
 }
 
-void enviarColaGetPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
+void enviarColaGetPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscriptor* unSuscriptor){
 
 	puts("Ahora tengo que ver si te puedo mandar los mensajes o no..");
 		MensajeGetPokemon* mensaje;
@@ -834,28 +988,28 @@ void enviarColaGetPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 		int loQueDevuelveElRecv = 0;
 		int cantidadDeGetPokemon = list_size(Get_Pokemon);
 
-		if(unSuscriptor->IDsuscriptor == 0){ //caso feliz
+		if(idGeneradoEnElMomento == 0){ //caso feliz
 			send(socket_suscriptor,&cantidadDeGetPokemon,sizeof(int),0);
 		for(int i=0;i<cantidadDeGetPokemon;i++){
 			mensaje = list_get(Get_Pokemon,i);
-			printf("\nTe voy a enviar el mensaje: %s\n",mensaje->contenidoDelMensaje->nombre);
+			printf("\n\nTe voy a enviar el mensaje: %s",mensaje->contenidoDelMensaje->nombre);
 
 			pthread_mutex_lock(&mutexColaGetPokemon);
 			unGetPokemon = mensaje->contenidoDelMensaje;
 			enviarGetPokemon(unGetPokemon,socket_suscriptor,mensaje->ID);
-			printf("Mensaje enviado: %s\n",unGetPokemon->nombre);
+			printf("\nMensaje enviado: %s",unGetPokemon->nombre);
 			list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 			printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
 
 			loQueDevuelveElRecv = recv(socket_suscriptor,&ack,sizeof(int),0);
-			printf("ACK recibido: %d\n",ack);
+			printf("\nACK recibido: %d\n",ack);
 
 			if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-				puts("Se cayó la conexion...");
+				puts("\nSe cayó la conexion...");
 				pthread_exit(NULL); //Si no le pongo esto sigue ejecutando y no deberia
 			}
 			list_add(mensaje->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
-			printf("El suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
+			printf("\nEl suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
 
 			pthread_mutex_unlock(&mutexColaGetPokemon);
 			}
@@ -882,24 +1036,24 @@ void enviarColaGetPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 							}
 						}
 						if(mensajeYaEnviado == 0){
-						printf("\nTe voy a enviar el mensaje: %s\n",mensaje->contenidoDelMensaje->nombre);
+						printf("\n\nTe voy a enviar el mensaje: %s",mensaje->contenidoDelMensaje->nombre);
 
 						pthread_mutex_lock(&mutexColaGetPokemon);
 						unGetPokemon = mensaje->contenidoDelMensaje;
 						enviarGetPokemon(unGetPokemon,socket_suscriptor,mensaje->ID);
-						printf("Mensaje enviado: %s\n",unGetPokemon->nombre);
+						printf("\nMensaje enviado: %s",unGetPokemon->nombre);
 						list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 						printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
 
 						loQueDevuelveElRecv = recv(socket_suscriptor,&ack,sizeof(int),0);
-						printf("ACK recibido: %d\n",ack);
+						printf("\nACK recibido: %d\n",ack);
 
 						if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-							puts("Se cayó la conexion...");
+							puts("\nSe cayó la conexion...");
 							pthread_exit(NULL); //Si no le pongo esto sigue ejecutando y no deberia
 						}
 						list_add(mensaje->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
-						printf("El suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
+						printf("\nEl suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
 
 						pthread_mutex_unlock(&mutexColaGetPokemon);
 						}
@@ -910,7 +1064,7 @@ void enviarColaGetPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 }
 
 
-void enviarColaAppearedPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
+void enviarColaAppearedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscriptor* unSuscriptor){
 
 	puts("Ahora tengo que ver si te puedo mandar los mensajes o no..");
 			MensajeAppearedPokemon* mensaje;
@@ -920,28 +1074,28 @@ void enviarColaAppearedPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 			int loQueDevuelveElRecv = 0;
 			int cantidadDeAppearedPokemon = list_size(Appeared_Pokemon);
 
-			if(unSuscriptor->IDsuscriptor == 0){ //caso feliz
+			if(idGeneradoEnElMomento == 0){ //caso feliz
 				send(socket_suscriptor,&cantidadDeAppearedPokemon,sizeof(int),0);
 			for(int i=0;i<cantidadDeAppearedPokemon;i++){
 				mensaje = list_get(Appeared_Pokemon,i);
-				printf("\nTe voy a enviar el mensaje: %s\n",mensaje->contenidoDelMensaje->nombre);
+				printf("\n\nTe voy a enviar el mensaje: %s",mensaje->contenidoDelMensaje->nombre);
 
 				pthread_mutex_lock(&mutexColaAppearedPokemon);
 				unAppearedPokemon = mensaje->contenidoDelMensaje;
 				enviarAppearedPokemon(unAppearedPokemon,socket_suscriptor,mensaje->ID,0);
-				printf("Mensaje enviado: %s\n",unAppearedPokemon->nombre);
+				printf("\nMensaje enviado: %s",unAppearedPokemon->nombre);
 				list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 				printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
 
 				loQueDevuelveElRecv = recv(socket_suscriptor,&ack,sizeof(int),0);
-				printf("ACK recibido: %d\n",ack);
+				printf("\nACK recibido: %d\n",ack);
 
 				if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-					puts("Se cayó la conexion...");
+					puts("\nSe cayó la conexion...");
 					pthread_exit(NULL); //Si no le pongo esto sigue ejecutando y no deberia
 				}
 				list_add(mensaje->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
-				printf("El suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
+				printf("\nEl suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
 
 				pthread_mutex_unlock(&mutexColaAppearedPokemon);
 			}
@@ -968,24 +1122,24 @@ void enviarColaAppearedPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 								}
 							}
 							if(mensajeYaEnviado == 0){
-							printf("\nTe voy a enviar el mensaje: %s\n",mensaje->contenidoDelMensaje->nombre);
+							printf("\n\nTe voy a enviar el mensaje: %s",mensaje->contenidoDelMensaje->nombre);
 
 							pthread_mutex_lock(&mutexColaAppearedPokemon);
 							unAppearedPokemon = mensaje->contenidoDelMensaje;
 							enviarAppearedPokemon(unAppearedPokemon,socket_suscriptor,mensaje->ID,0);
-							printf("Mensaje enviado: %s\n",unAppearedPokemon->nombre);
+							printf("\nMensaje enviado: %s",unAppearedPokemon->nombre);
 							list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 							printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
 
 							loQueDevuelveElRecv = recv(socket_suscriptor,&ack,sizeof(int),0);
-							printf("ACK recibido: %d\n",ack);
+							printf("\nACK recibido: %d\n",ack);
 
 							if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-								puts("Se cayó la conexion...");
+								puts("\nSe cayó la conexion...");
 								pthread_exit(NULL); //Si no le pongo esto sigue ejecutando y no deberia
 							}
 							list_add(mensaje->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
-							printf("El suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
+							printf("\nEl suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
 
 							pthread_mutex_unlock(&mutexColaAppearedPokemon);
 						}
@@ -995,7 +1149,7 @@ void enviarColaAppearedPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 						puts("\nSuscriptor ok");
 }
 
-void enviarColaCatchPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
+void enviarColaCatchPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscriptor* unSuscriptor){
 	puts("Ahora tengo que ver si te puedo mandar los mensajes o no..");
 			MensajeCatchPokemon* mensaje;
 			CatchPokemon* unCatchPokemon;
@@ -1004,28 +1158,28 @@ void enviarColaCatchPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 			int loQueDevuelveElRecv = 0;
 			int cantidadDeCatchPokemon = list_size(Catch_Pokemon);
 
-			if(unSuscriptor->IDsuscriptor == 0){ //caso feliz
+			if(idGeneradoEnElMomento == 0){ //caso feliz
 				send(socket_suscriptor,&cantidadDeCatchPokemon,sizeof(int),0);
 			for(int i=0;i<cantidadDeCatchPokemon;i++){
 				mensaje = list_get(Catch_Pokemon,i);
-				printf("\nTe voy a enviar el mensaje: %s\n",mensaje->contenidoDelMensaje->nombre);
+				printf("\n\nTe voy a enviar el mensaje: %s",mensaje->contenidoDelMensaje->nombre);
 
 				pthread_mutex_lock(&mutexColaCatchPokemon);
 				unCatchPokemon = mensaje->contenidoDelMensaje;
 				enviarCatchPokemon(unCatchPokemon,socket_suscriptor,mensaje->ID);
-				printf("Mensaje enviado: %s\n",unCatchPokemon->nombre);
+				printf("\nMensaje enviado: %s",unCatchPokemon->nombre);
 				list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 				printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
 
 				loQueDevuelveElRecv = recv(socket_suscriptor,&ack,sizeof(int),0);
-				printf("ACK recibido: %d\n",ack);
+				printf("\nACK recibido: %d\n",ack);
 
 				if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-				puts("Se cayó la conexion...");
+				puts("\nSe cayó la conexion...");
 				pthread_exit(NULL); //Si no le pongo esto sigue ejecutando y no deberia
 				}
 				list_add(mensaje->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
-				printf("El suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
+				printf("\nEl suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
 
 				pthread_mutex_unlock(&mutexColaCatchPokemon);
 			}
@@ -1052,24 +1206,24 @@ void enviarColaCatchPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 							}
 						}
 						if(mensajeYaEnviado == 0){
-							printf("\nTe voy a enviar el mensaje: %s\n",mensaje->contenidoDelMensaje->nombre);
+							printf("\n\nTe voy a enviar el mensaje: %s\n",mensaje->contenidoDelMensaje->nombre);
 
 						pthread_mutex_lock(&mutexColaCatchPokemon);
 						unCatchPokemon = mensaje->contenidoDelMensaje;
 						enviarCatchPokemon(unCatchPokemon,socket_suscriptor,mensaje->ID);
-						printf("Mensaje enviado: %s\n",unCatchPokemon->nombre);
+						printf("\nMensaje enviado: %s",unCatchPokemon->nombre);
 						list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 						printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
 
 						loQueDevuelveElRecv = recv(socket_suscriptor,&ack,sizeof(int),0);
-						printf("ACK recibido: %d\n",ack);
+						printf("\nACK recibido: %d\n",ack);
 
 						if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-							puts("Se cayó la conexion...");
+							puts("\nSe cayó la conexion...");
 							pthread_exit(NULL); //Si no le pongo esto sigue ejecutando y no deberia
 						}
 						list_add(mensaje->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
-						printf("El suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
+						printf("\nEl suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
 
 						pthread_mutex_unlock(&mutexColaCatchPokemon);
 					}
@@ -1080,7 +1234,7 @@ void enviarColaCatchPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 }
 
 
-void enviarColaCaughtPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
+void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscriptor* unSuscriptor){
 	puts("Ahora tengo que ver si te puedo mandar los mensajes o no..");
 			MensajeCaughtPokemon* mensaje;
 			CaughtPokemon* unCaughtPokemon;
@@ -1089,28 +1243,28 @@ void enviarColaCaughtPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 			int loQueDevuelveElRecv = 0;
 			int cantidadDeCaughtPokemon = list_size(Caught_Pokemon);
 
-			if(unSuscriptor->IDsuscriptor == 0){ //caso feliz
+			if(idGeneradoEnElMomento == 0){ //caso feliz
 				send(socket_suscriptor,&cantidadDeCaughtPokemon,sizeof(int),0);
 			for(int i=0;i<cantidadDeCaughtPokemon;i++){
 				mensaje = list_get(Caught_Pokemon,i);
-				printf("\nTe voy a enviar el mensaje si el pokemon fue atrapado(1) o no(0): %d\n",mensaje->contenidoDelMensaje->atrapar);
+				printf("\n\nTe voy a enviar el mensaje si el pokemon fue atrapado(1) o no(0): %d",mensaje->contenidoDelMensaje->atrapar);
 
 				pthread_mutex_lock(&mutexColaCaughtPokemon);
 				unCaughtPokemon = mensaje->contenidoDelMensaje;
 				enviarCaughtPokemon(unCaughtPokemon,socket_suscriptor,mensaje->ID,mensaje->IDCorrelativo);
-				printf("Mensaje enviado: %d\n",unCaughtPokemon->atrapar);
+				printf("\nMensaje enviado: %d",unCaughtPokemon->atrapar);
 				list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 				printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
 
 				loQueDevuelveElRecv = recv(socket_suscriptor,&ack,sizeof(int),0);
-				printf("ACK recibido: %d\n",ack);
+				printf("\nACK recibido: %d\n",ack);
 
 				if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-					puts("Se cayó la conexion...");
+					puts("\nSe cayó la conexion...");
 					pthread_exit(NULL); //Si no le pongo esto sigue ejecutando y no deberia
 				}
 				list_add(mensaje->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
-				printf("El suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
+				printf("\nEl suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
 
 				pthread_mutex_unlock(&mutexColaCaughtPokemon);
 			}
@@ -1137,24 +1291,24 @@ void enviarColaCaughtPokemon(int socket_suscriptor,Suscriptor* unSuscriptor){
 							}
 						}
 						if(mensajeYaEnviado == 0){
-						printf("\nTe voy a enviar el mensaje si el pokemon fue atrapado(1) o no(0): %d\n",mensaje->contenidoDelMensaje->atrapar);
+						printf("\n\nTe voy a enviar el mensaje si el pokemon fue atrapado(1) o no(0): %d",mensaje->contenidoDelMensaje->atrapar);
 
 						pthread_mutex_lock(&mutexColaCaughtPokemon);
 						unCaughtPokemon = mensaje->contenidoDelMensaje;
 						enviarCaughtPokemon(unCaughtPokemon,socket_suscriptor,mensaje->ID,mensaje->IDCorrelativo);
-						printf("Mensaje enviado: %d\n",unCaughtPokemon->atrapar);
+						printf("\nMensaje enviado: %d",unCaughtPokemon->atrapar);
 						list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 						printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
 
 						loQueDevuelveElRecv = recv(socket_suscriptor,&ack,sizeof(int),0);
-						printf("ACK recibido: %d\n",ack);
+						printf("\nACK recibido: %d\n",ack);
 
 						if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-							puts("Se cayó la conexion...");
+							puts("\nSe cayó la conexion...");
 							pthread_exit(NULL); //Si no le pongo esto sigue ejecutando y no deberia
 						}
 						list_add(mensaje->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
-						printf("El suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
+						printf("\nEl suscriptor fue agregado a la lista de SuscriptoresACK, ACK del mensaje %d\n",mensaje->ID);
 
 						pthread_mutex_unlock(&mutexColaCaughtPokemon);
 					}

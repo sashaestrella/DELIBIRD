@@ -128,7 +128,7 @@ int main(void)
 
 		printf("\nEnvie el mensaje: %d\n",caughtPokemon1->atrapar);
 */
-/*
+
 	int idSuscriptorPosta;
 	int cod_op = 13;
 
@@ -169,7 +169,7 @@ int main(void)
 	}
 
 	free(caughtConIDs);
-*/
+
 /*
 	int cod_op = 12;
 	int idSuscriptorPosta;
@@ -253,8 +253,8 @@ int main(void)
 	}
 
 	free(appearedConIDs);
-*/
 
+*/
 /*
 	int idSuscriptorPosta;
 	int cod_op = 10;
@@ -297,7 +297,7 @@ int main(void)
 
 	free(getConIDs);
 */
-	/*
+/*
 	int idSuscriptorPosta;
 	int cod_op = 9;
 
@@ -339,7 +339,7 @@ int main(void)
 
 	free(localizedConIDs);
 */
-
+/*
 	int idSuscriptorPosta;
 	int cod_op = 8;
 
@@ -381,7 +381,7 @@ int main(void)
 
 	free(newConIDs);
 
-
+*/
 /*
 	int tamanio_maximo_mensaje = 256;
 
