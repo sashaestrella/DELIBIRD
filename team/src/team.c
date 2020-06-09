@@ -5,11 +5,18 @@ int main(int argc,char* argv[])
 
 	sem_init(&sem[0], 0, 0);
 	sem_init(&sem[1], 0, 0);
+	sem_init(&sem[2], 0, 0);
+
+
+	sem_init(&sem2[0], 0, 0);
+	sem_init(&sem2[1], 0, 0);
+	sem_init(&sem2[2], 0, 0);
 
 	int hiloCreado;
 	algoritmoPlanificacion = "FIFO";
 	cargarDatosConexionConfig();
-	//generarConexiones(0);
+
+	generarConexiones(0);
 	//abrirEscuchas();
 
 	entrenadores = list_create();
@@ -107,7 +114,7 @@ int main(int argc,char* argv[])
 
 	log_info(logger, primerLog);
 
-
+	sleep(5);
 
 	/*---------------------------------------------------PARTE 3-------------------------------------------------------------*/
 

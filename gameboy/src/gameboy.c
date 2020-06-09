@@ -89,7 +89,8 @@ int main(void)
 
 	printf("\nEnvie el mensaje: %s\n",getPokemon1->nombre);
 */
-	/*AppearedPokemon* appearedPokemon1 = malloc(sizeof(AppearedPokemon));
+
+	AppearedPokemon* appearedPokemon1 = malloc(sizeof(AppearedPokemon));
 	  char* nombre = malloc(9);
 	  nombre = "APPEARED1";
 		appearedPokemon1->nombre = nombre;
@@ -103,7 +104,7 @@ int main(void)
 
 		printf("\nEnvie el mensaje: %s\n",appearedPokemon1->nombre);
 
-*/
+
 
 	/*
 	CatchPokemon* catchPokemon1 = malloc(sizeof(CatchPokemon));

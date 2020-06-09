@@ -4,10 +4,10 @@ void generarConexiones(int tipoSuscriptor){
 
 	// -- Hilo de suscripcion a cola appeared -- //
 	ParametrosSuscripcion* appeared = malloc(sizeof(ParametrosSuscripcion));
-	appeared->conexionCola = conexionAppeared;
+	appeared->conexionCola = &conexionAppeared;
 	appeared->colaASuscribirse = SUSCRIPTOR_APPEAREDPOKEMON;
 	appeared->nuevoExistente = tipoSuscriptor;
-	appeared->IDSuscripcion = IDsuscripcionAppeared;
+	appeared->IDSuscripcion = &IDsuscripcionAppeared;
 
 	pthread_t hiloAppeared;
 	pthread_create(&hiloAppeared, NULL, suscribirseACola, appeared); //Vamos a ver como sacar esto
@@ -32,7 +32,7 @@ void generarConexiones(int tipoSuscriptor){
 	localized->IDSuscripcion = IDsuscripcionLocalized;
 
 	pthread_t hiloLocalized;
-	pthread_create(&hiloLocalized, NULL, suscribirseACola, localized);
+	//pthread_create(&hiloLocalized, NULL, suscribirseACola, localized);
 
 
 	//pthread_join(hiloAppeared,NULL);
