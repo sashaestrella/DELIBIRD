@@ -18,22 +18,22 @@ typedef struct parametrosSuscripcion{
 	uint32_t IDSuscripcion;
 }ParametrosSuscripcion;
 
-int conexionGameBoy;
+/*int conexionGameBoy;
 int idGameBoy;
-int msgGameBoy;
+int msgGameBoy;*/
 
 char* ip;
 char* puerto;
 
 
-void noHayBroker();
+/*void noHayBroker();
 void* suscribirseACola(ParametrosSuscripcion*);
-void* administradorMensajesColas(int, int, int);
+void* administradorMensajesColas(int, int, int);*/
 void enviarACK(int, int, int, int);
 void cargarDatosConexionConfig();
 
 // -------- Funciones Team -------- //
-t_list* nuevosAppeared;
+/*t_list* nuevosAppeared;
 t_list* nuevosLocalized;
 t_list* nuevosCaught;
 t_list* mensajesRecibidos;
@@ -43,7 +43,7 @@ void* recibirMensajesLocalized(int, int);
 void* recibirMensajesCaught(int, int);
 void* adminMensajeAppeared(AppearedPokemonConIDs*);
 void* adminMensajeLocalized(LocalizedPokemonConIDs*);
-void* adminMensajeCaught(CaughtPokemonConIDs*);
+void* adminMensajeCaught(CaughtPokemonConIDs*);*/
 
 // -------- Funciones Game Card -------- //
 

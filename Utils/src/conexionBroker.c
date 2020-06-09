@@ -1,6 +1,6 @@
 #include "conexionBroker.h"
 
-void noHayBroker(){
+/*void noHayBroker(){
 	//suscribirseACola(conexionGameBoy, 0, 0, msgGameBoy);
 	//pthread_t hiloGameBoy;
 	//pthread_create(&hiloGameBoy, NULL, recibirMensaje, conexionGameBoy);
@@ -184,7 +184,7 @@ void* adminMensajeCaught(CaughtPokemonConIDs* nuevoCaught){
 	printf("Guarde un mensaje Caught");
 }
 
-
+*/
 
 // ---------------------------- Funciones Game Card ---------------------------------- //
 
