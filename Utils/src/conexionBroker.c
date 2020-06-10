@@ -191,12 +191,38 @@ void* adminMensajeCaught(CaughtPokemonConIDs* nuevoCaught){
 
 // ----------------------------------------------------------------------------------- //
 
+void* serializarACK(ACKmensaje* confirmacion){
+
+	void* stream = malloc(sizeof(int)*3);
+	int offset=0;
+
+	memcpy(stream + offset,confirmacion->IDmensaje,sizeof(int));
+	offset+= sizeof(int);
+	memcpy(stream + offset,confirmacion->IDsuscriptor,sizeof(int));
+	offset+= sizeof(int);
+	memcpy(stream + offset,confirmacion->numeroDeColaALaQuePertenece,sizeof(int));
+	offset+= sizeof(int);
+
+	return stream;
+	//free(stream);
+}
+
+
 void enviarACK(int IDsuscriptor, int IDmensaje, int cola, int conexion){ //arreglar
-	ACKmensaje confirmacion;
-	confirmacion.IDmensaje = IDmensaje;
-	confirmacion.IDsuscriptor = IDsuscriptor;
-	confirmacion.numeroDeColaALaQuePertenece = cola;
-	send(conexion, &confirmacion, sizeof(ACKmensaje), 0);
+
+
+	ACKmensaje* confirmacion = malloc(sizeof(ACKmensaje));
+
+	confirmacion->IDmensaje = IDmensaje;
+	confirmacion->IDsuscriptor = IDsuscriptor;
+	confirmacion->numeroDeColaALaQuePertenece = cola;
+
+	void* stream = serializarACK(confirmacion);
+
+	send(conexion, stream, sizeof(int)*3, 0);
+
+	free(confirmacion);
+	free(stream);
 }
 
 

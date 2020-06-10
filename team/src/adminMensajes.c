@@ -107,7 +107,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				AppearedPokemonConIDs* nuevoAppearedPokemonConId;
 				for(int i = 0; i<cantidadAppearedPokemon; i++){
 					nuevoAppearedPokemonConId = recibir_APPEARED_POKEMON(conexion, 0, 1, 0);
-					enviarACK(IDsuscripcion, nuevoAppearedPokemonConId->IDmensaje, APPEARED_POKEMON, conexion);
+					//enviarACK(IDsuscripcion, nuevoAppearedPokemonConId->IDmensaje, APPEARED_POKEMON, conexion);
 					//adminMensajeAppeared(nuevoAppearedPokemonConId);
 					printf("Recibi mensaje com id: %d\n", nuevoAppearedPokemonConId->IDmensaje);
 				}
@@ -121,6 +121,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				printf("Codigo: %d\n", codigo1);
 				CaughtPokemonConIDs* nuevoCaughtPokemonConId;
 				for(int i = 0; i<cantidadCaughtPokemon; i++){
+
 					nuevoCaughtPokemonConId = recibir_CAUGHT_POKEMON(conexion, 0, 1);
 					//enviarACK(IDsuscripcion, nuevoCaughtPokemonConId->IDmensaje, CAUGHT_POKEMON, conexion);
 					//adminMensajeCaught(nuevoCaughtPokemonConId);
@@ -140,9 +141,10 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 					adminMensajeLocalized(nuevoLocalizedPokemonConId);
 				}
 				break;
+
 			default:
-							printf("Llego un mensaje invalido");
-							break;
+					printf("Llego un mensaje invalido");
+					break;
 	}
 }
 
@@ -173,9 +175,13 @@ void* recibirMensajesLocalized(int conexion, int IDsuscripcion){
 	LocalizedPokemonConIDs* nuevoLocalized;
 	while(1){
 		nuevoLocalized = recibir_LOCALIZED_POKEMON(conexion, 0, 1);
-		enviarACK(IDsuscripcion, nuevoLocalized->IDmensaje, LOCALIZED_POKEMON, conexion);
-		pthread_create(&admin, NULL, adminMensajeLocalized, nuevoLocalized);
-		pthread_detach(admin);
+
+		if(descartar_localized_no_deseados(nuevoLocalized)){
+
+			enviarACK(IDsuscripcion, nuevoLocalized->IDmensaje, LOCALIZED_POKEMON, conexion);
+			pthread_create(&admin, NULL, adminMensajeLocalized, nuevoLocalized);
+			pthread_detach(admin);
+		}
 	}
 }
 
@@ -192,9 +198,12 @@ void* recibirMensajesCaught(int conexion, int IDsuscripcion){
 
 	while(1){
 		nuevoCaught = recibir_CAUGHT_POKEMON(conexion, 0, 1);
-		enviarACK(IDsuscripcion, nuevoCaught->IDmensaje, CAUGHT_POKEMON, conexion);
-		pthread_create(&admin, NULL, adminMensajeCaught, nuevoCaught);
-		pthread_detach(admin);
+
+		if(descartar_caught_no_deseados(nuevoCaught)){
+			enviarACK(IDsuscripcion, nuevoCaught->IDmensaje, CAUGHT_POKEMON, conexion);
+			pthread_create(&admin, NULL, adminMensajeCaught, nuevoCaught);
+			pthread_detach(admin);
+		}
 	}
 }
 
@@ -207,4 +216,64 @@ void* adminMensajeCaught(CaughtPokemonConIDs* nuevoCaught){
 
 
 
+
+void enviar_getPokemon(GetPokemon* get_pokemon){
+
+	int id_mensaje;
+	GetPokemonConIDs* getPokemonConId = malloc(sizeof(GetPokemonConIDs));
+
+	int conexion = crear_conexion(ip, puerto);
+
+	enviarGetPokemon(get_pokemon, conexion ,0);
+
+	recv(conexion, &id_mensaje, sizeof(int), MSG_WAITALL);
+
+	getPokemonConId->IDmensaje = id_mensaje;
+
+	list_add(mensajesGetEnviados, getPokemonConId);
+
+	//cerrar conexion
+}
+
+void enviar_catchPokemon(CatchPokemon* catch_pokemon){
+
+	int id_mensaje;
+	CatchPokemonConIDs* catchPokemonConId = malloc(sizeof(CatchPokemonConIDs));
+
+	int conexion = crear_conexion(ip, puerto);
+
+	enviarGetPokemon(catch_pokemon, conexion ,0);
+
+	recv(conexion, &id_mensaje, sizeof(int), MSG_WAITALL);
+
+	catchPokemonConId->IDmensaje = id_mensaje;
+
+	list_add(mensajesCatchEnviados, catchPokemonConId);
+
+	//cerrar conexion
+}
+
+
+bool descartar_localized_no_deseados(LocalizedPokemonConIDs* localizedPokemonRecibido){
+
+	bool compararIDcorrelativo (GetPokemonConIDs* mensajeGet){
+
+		return mensajeGet->IDmensaje == localizedPokemonRecibido->IDcorrelativo;
+	}
+
+	return list_any_satisfy(mensajesGetEnviados, (void*)compararIDcorrelativo);
+
+}
+
+
+bool descartar_caught_no_deseados(CaughtPokemonConIDs* caughtPokemonRecibido){
+
+	bool compararIDcorrelativo (CaughtPokemonConIDs* mensajeCaught){
+
+		return mensajeCaught->IDmensaje == caughtPokemonRecibido->IDCorrelativo;
+	}
+
+	return list_any_satisfy(mensajesCatchEnviados, (void*)compararIDcorrelativo);
+
+}
 

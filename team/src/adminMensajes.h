@@ -15,12 +15,19 @@ void generarConexiones();
 void abrirEscuchas();
 void empezarAnalizadoresDeMensajes();
 
+void enviar_getPokemon(GetPokemon*);
+void enviar_catchPokemon(CatchPokemon*);
+bool descartar_localized_no_deseados(LocalizedPokemonConIDs*);
+bool descartar_caught_no_deseados(CaughtPokemonConIDs*);
+
 // ----- Auxiliares ----- //
 
 t_list* nuevosAppeared;
 t_list* nuevosLocalized;
 t_list* nuevosCaught;
 t_list* mensajesRecibidos;
+
+
 
 void noHayBroker();
 void* suscribirseACola(ParametrosSuscripcion*);

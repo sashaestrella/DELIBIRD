@@ -22,6 +22,31 @@ int main(int argc,char* argv[])
 	entrenadores = list_create();
 	objetivoGlobal = list_create();
 
+	mensajesGetEnviados= list_create();
+	mensajesCatchEnviados= list_create();
+
+	GetPokemonConIDs* mensajeGet = malloc(sizeof(GetPokemonConIDs));
+
+	GetPokemon* getPokemon= malloc(sizeof(GetPokemon));
+	getPokemon->nombre = "Pikachu";
+	getPokemon->tamanioNombrePokemon=strlen("Pikachu") +1;
+
+	mensajeGet->IDmensaje =1;
+	mensajeGet->getPokemon = getPokemon;
+
+	list_add(mensajesGetEnviados, mensajeGet);
+
+	CatchPokemonConIDs* mensajeCatch = malloc(sizeof(CatchPokemonConIDs));
+
+	CatchPokemon* CatchPokemon= malloc(sizeof(CatchPokemon));
+	CatchPokemon->nombre = "Pikachu";
+	CatchPokemon->tamanioNombrePokemon=strlen("Pikachu") +1;
+
+	mensajeCatch->IDmensaje =1;
+	mensajeCatch->catchPokemon = CatchPokemon;
+
+	list_add(mensajesGetEnviados, mensajeGet);
+	list_add(mensajesCatchEnviados, mensajeCatch);
 	leer_config();
 
 	obtener_objetivo_global();

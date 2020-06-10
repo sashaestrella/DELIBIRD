@@ -55,6 +55,10 @@ t_queue* colaNEW_BLOCKED;
 
 
 
+
+t_list* mensajesGetEnviados;
+t_list* mensajesCatchEnviados;
+
 //------------Variables para los algoritmos de planificacion
 
 int retardoCicloCPU;
