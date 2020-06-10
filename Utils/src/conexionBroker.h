@@ -12,10 +12,8 @@
 
 typedef struct parametrosSuscripcion{
 
-	uint32_t conexionCola;
 	op_code colaASuscribirse;
 	uint32_t nuevoExistente;
-	uint32_t IDSuscripcion;
 }ParametrosSuscripcion;
 
 /*int conexionGameBoy;

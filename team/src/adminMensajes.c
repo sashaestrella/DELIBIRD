@@ -4,21 +4,17 @@ void generarConexiones(int tipoSuscriptor){
 
 	// -- Hilo de suscripcion a cola appeared -- //
 	ParametrosSuscripcion* appeared = malloc(sizeof(ParametrosSuscripcion));
-	appeared->conexionCola = &conexionAppeared;
 	appeared->colaASuscribirse = SUSCRIPTOR_APPEAREDPOKEMON;
 	appeared->nuevoExistente = tipoSuscriptor;
-	appeared->IDSuscripcion = &IDsuscripcionAppeared;
 
 	pthread_t hiloAppeared;
-	pthread_create(&hiloAppeared, NULL, suscribirseACola, appeared); //Vamos a ver como sacar esto
+	pthread_create(&hiloAppeared, NULL, suscribirseACola, appeared);
 
 
 	// -- Hilo de suscripcion a cola caught -- //
 	ParametrosSuscripcion* caught = malloc(sizeof(ParametrosSuscripcion));
-	caught->conexionCola = conexionCaught;
 	caught->colaASuscribirse = SUSCRIPTOR_CAUGHTPOKEMON;
 	caught->nuevoExistente = tipoSuscriptor;
-	caught->IDSuscripcion = IDsuscripcionCaught;
 
 	pthread_t hiloCaught;
 	pthread_create(&hiloCaught, NULL, suscribirseACola, caught);
@@ -26,10 +22,8 @@ void generarConexiones(int tipoSuscriptor){
 
 	// -- Hilo de suscripcion a cola localized -- //
 	ParametrosSuscripcion* localized = malloc(sizeof(ParametrosSuscripcion));
-	localized->conexionCola = conexionLocalized;
 	localized->colaASuscribirse = SUSCRIPTOR_LOCALIZEDPOKEMON;
 	localized->nuevoExistente = tipoSuscriptor;
-	localized->IDSuscripcion = IDsuscripcionLocalized;
 
 	pthread_t hiloLocalized;
 	//pthread_create(&hiloLocalized, NULL, suscribirseACola, localized);
@@ -42,15 +36,15 @@ void generarConexiones(int tipoSuscriptor){
 
 void abrirEscuchas(){
 	pthread_t escuchaAppeared;
-	pthread_create(&escuchaAppeared, NULL, recibirMensajesAppeared, (conexionAppeared, IDsuscripcionAppeared));
+	pthread_create(&escuchaAppeared, NULL, recibirMensajesAppeared, NULL);
 	pthread_detach(escuchaAppeared);
 
 	pthread_t escuchaLocalized;
-	pthread_create(&escuchaLocalized, NULL, recibirMensajesLocalized, (conexionLocalized, IDsuscripcionLocalized));
+	pthread_create(&escuchaLocalized, NULL, recibirMensajesLocalized, NULL);
 	pthread_detach(escuchaLocalized);
 
 	pthread_t escuchaCaught;
-	pthread_create(&escuchaCaught, NULL, recibirMensajesCaught, (conexionCaught, IDsuscripcionCaught));
+	pthread_create(&escuchaCaught, NULL, recibirMensajesCaught, NULL);
 	pthread_detach(escuchaCaught);
 }
 
@@ -65,10 +59,10 @@ void noHayBroker(){
 
 void* suscribirseACola(ParametrosSuscripcion* datos){
 
-	int conexion 			= datos->conexionCola;
+	int conexion;
 	op_code colaSuscripcion = datos->colaASuscribirse;
 	int soyNuevo 			= datos->nuevoExistente;
-	uint32_t IDsuscripcion 	= datos->IDSuscripcion;
+	uint32_t IDsuscripcion;
 
 	conexion = crear_conexion(ip, puerto);
 
@@ -99,6 +93,8 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 	switch(op_code){
 
 			case SUSCRIPTOR_APPEAREDPOKEMON:
+				conexionAppeared = conexion;
+				IDsuscripcionAppeared = IDsuscripcion;
 
 				recv(conexion, &cantidadAppearedPokemon, sizeof(int), MSG_WAITALL);
 				printf("Cantidad de Appeared Pokemons: %d\n", cantidadAppearedPokemon);
@@ -114,6 +110,8 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				break;
 
 			case SUSCRIPTOR_CAUGHTPOKEMON:
+				conexionCaught = conexion;
+				IDsuscripcionCaught = IDsuscripcion;
 
 				recv(conexion, &cantidadCaughtPokemon, sizeof(int), MSG_WAITALL);
 				printf("Cantidad de Caught Pokemons: %d\n", cantidadCaughtPokemon);
@@ -128,6 +126,8 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				break;
 
 			case SUSCRIPTOR_LOCALIZEDPOKEMON:
+				conexionLocalized = conexion;
+				IDsuscripcionLocalized = IDsuscripcion;
 
 				recv(conexion, &cantidadLocalizedPokemon, sizeof(int), MSG_WAITALL);
 				printf("Cantidad de Localized Pokemons: %d\n", cantidadLocalizedPokemon);
@@ -141,21 +141,21 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				}
 				break;
 			default:
-							printf("Llego un mensaje invalido");
-							break;
+				printf("Llego un mensaje invalido");
+				break;
 	}
 }
 
 // ------------------------------- Funciones Team ------------------------------------ //
 
-void* recibirMensajesAppeared(int conexion, int IDsuscripcion){
+void* recibirMensajesAppeared(){
 	pthread_t admin;
 	void* mensajeRecibido;
 	AppearedPokemonConIDs* nuevoAppeared;
 
 	while(1){
-		nuevoAppeared = recibir_APPEARED_POKEMON(conexion, 0, 0, 1);
-		enviarACK(IDsuscripcion, nuevoAppeared->IDmensaje, APPEARED_POKEMON, conexion);
+		nuevoAppeared = recibir_APPEARED_POKEMON(conexionAppeared, 0, 0, 1);
+		enviarACK(IDsuscripcionAppeared, nuevoAppeared->IDmensaje, APPEARED_POKEMON, conexionAppeared);
 		pthread_create(&admin, NULL, adminMensajeAppeared, nuevoAppeared);
 		pthread_detach(admin);
 	}
@@ -167,13 +167,13 @@ void* adminMensajeAppeared(AppearedPokemonConIDs* nuevoAppeared){
 	printf("Guarde un mensaje appeared");
 }
 
-void* recibirMensajesLocalized(int conexion, int IDsuscripcion){
+void* recibirMensajesLocalized(){
 	pthread_t admin;
 	void* mensajeRecibido;
 	LocalizedPokemonConIDs* nuevoLocalized;
 	while(1){
-		nuevoLocalized = recibir_LOCALIZED_POKEMON(conexion, 0, 1);
-		enviarACK(IDsuscripcion, nuevoLocalized->IDmensaje, LOCALIZED_POKEMON, conexion);
+		nuevoLocalized = recibir_LOCALIZED_POKEMON(conexionLocalized, 0, 1);
+		enviarACK(IDsuscripcionLocalized, nuevoLocalized->IDmensaje, LOCALIZED_POKEMON, conexionLocalized);
 		pthread_create(&admin, NULL, adminMensajeLocalized, nuevoLocalized);
 		pthread_detach(admin);
 	}
@@ -185,14 +185,14 @@ void* adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
 		printf("Guarde un mensaje localized");
 }
 
-void* recibirMensajesCaught(int conexion, int IDsuscripcion){
+void* recibirMensajesCaught(){
 	pthread_t admin;
 	void* mensajeRecibido;
 	CaughtPokemonConIDs* nuevoCaught;
 
 	while(1){
-		nuevoCaught = recibir_CAUGHT_POKEMON(conexion, 0, 1);
-		enviarACK(IDsuscripcion, nuevoCaught->IDmensaje, CAUGHT_POKEMON, conexion);
+		nuevoCaught = recibir_CAUGHT_POKEMON(conexionCaught, 0, 1);
+		enviarACK(IDsuscripcionCaught, nuevoCaught->IDmensaje, CAUGHT_POKEMON, conexionCaught);
 		pthread_create(&admin, NULL, adminMensajeCaught, nuevoCaught);
 		pthread_detach(admin);
 	}
