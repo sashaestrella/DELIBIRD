@@ -11,12 +11,6 @@
 #include<commons/collections/list.h>
 #include<commons/temporal.h>
 
-typedef struct ack{
-	int IDsuscriptor;
-	int IDmensaje;
-	int numeroDeColaALaQuePertenece;
-}ACKmensaje;
-
 typedef struct suscriptor{
 	int socketSuscriptor;
 	int IDsuscriptor;

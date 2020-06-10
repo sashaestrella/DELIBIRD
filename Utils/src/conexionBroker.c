@@ -191,6 +191,7 @@ void* adminMensajeCaught(CaughtPokemonConIDs* nuevoCaught){
 
 // ----------------------------------------------------------------------------------- //
 
+/*
 void* serializarACK(ACKmensaje* confirmacion){
 
 	void* stream = malloc(sizeof(int)*3);
@@ -224,7 +225,7 @@ void enviarACK(int IDsuscriptor, int IDmensaje, int cola, int conexion){ //arreg
 	free(confirmacion);
 	free(stream);
 }
-
+*/
 
 void cargarDatosConexionConfig(){
 	t_config* archivo_config =  config_create("team.config");

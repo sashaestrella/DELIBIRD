@@ -106,7 +106,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				AppearedPokemonConIDs* nuevoAppearedPokemonConId;
 				for(int i = 0; i<cantidadAppearedPokemon; i++){
 					nuevoAppearedPokemonConId = recibir_APPEARED_POKEMON(conexion, 0, 1, 0);
-					enviarACK(IDsuscripcion, nuevoAppearedPokemonConId->IDmensaje, APPEARED_POKEMON, conexion);
+					send(conexion, 1, sizeof(int), 0); // No se si pasar el 1 con un void*
 					adminMensajeAppeared(nuevoAppearedPokemonConId);
 					printf("Recibi mensaje com id: %d\n", nuevoAppearedPokemonConId->IDmensaje);
 				}
@@ -123,7 +123,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				CaughtPokemonConIDs* nuevoCaughtPokemonConId;
 				for(int i = 0; i<cantidadCaughtPokemon; i++){
 					nuevoCaughtPokemonConId = recibir_CAUGHT_POKEMON(conexion, 0, 1);
-					enviarACK(IDsuscripcion, nuevoCaughtPokemonConId->IDmensaje, CAUGHT_POKEMON, conexion);
+					send(conexion, 1, sizeof(int), 0);
 					adminMensajeCaught(nuevoCaughtPokemonConId);
 				}
 				break;
@@ -139,7 +139,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				LocalizedPokemonConIDs* nuevoLocalizedPokemonConId;
 				for(int i = 0; i<cantidadLocalizedPokemon; i++){
 					nuevoLocalizedPokemonConId = recibir_LOCALIZED_POKEMON(conexion, 0, 1);
-					enviarACK(IDsuscripcion, nuevoLocalizedPokemonConId->IDmensaje, LOCALIZED_POKEMON, conexion);
+					send(conexion, 1, sizeof(int), 0);
 					adminMensajeLocalized(nuevoLocalizedPokemonConId);
 				}
 				break;
@@ -158,7 +158,7 @@ void* recibirMensajesAppeared(){
 
 	while(1){
 		nuevoAppeared = recibir_APPEARED_POKEMON(conexionAppeared, 0, 0, 1);
-		enviarACK(IDsuscripcionAppeared, nuevoAppeared->IDmensaje, APPEARED_POKEMON, conexionAppeared);
+		send(conexionAppeared, 1, sizeof(int), 0);
 		pthread_create(&admin, NULL, adminMensajeAppeared, nuevoAppeared);
 		pthread_detach(admin);
 	}
@@ -178,7 +178,7 @@ void* recibirMensajesLocalized(){
 
 		if(descartar_localized_no_deseados(nuevoLocalized)){
 			nuevoLocalized = recibir_LOCALIZED_POKEMON(conexionLocalized, 0, 1);
-			enviarACK(IDsuscripcionLocalized, nuevoLocalized->IDmensaje, LOCALIZED_POKEMON, conexionLocalized);
+			send(conexionLocalized, 1, sizeof(int), 0);
 			pthread_create(&admin, NULL, adminMensajeLocalized, nuevoLocalized);
 			pthread_detach(admin);
 		}
@@ -199,7 +199,7 @@ void* recibirMensajesCaught(){
 	while(1){
 		if(descartar_caught_no_deseados(nuevoCaught)){
 			nuevoCaught = recibir_CAUGHT_POKEMON(conexionCaught, 0, 1);
-			enviarACK(IDsuscripcionCaught, nuevoCaught->IDmensaje, CAUGHT_POKEMON, conexionCaught);
+			send(conexionCaught, 1, sizeof(int), 0);
 			pthread_create(&admin, NULL, adminMensajeCaught, nuevoCaught);
 			pthread_detach(admin);
 		}
