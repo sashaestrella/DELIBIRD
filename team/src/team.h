@@ -80,6 +80,9 @@ int conexionCaught;
 int IDsuscripcionCaught;
 int idCaught;
 
+int conexionGameBoy;
+int idGameBoy;
+int msgGameBoy;
 
 t_log* iniciar_logger(void);
 void leer_config();

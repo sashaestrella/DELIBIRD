@@ -3,10 +3,6 @@
 
 #include "team.h"
 
-int conexionGameBoy;
-int idGameBoy;
-int msgGameBoy;
-
 char* msgAppeared;// = "8 0"; //11
 char* msgLocalized;// = "9 0";
 char* msgCaught;// = "13 0";
@@ -35,9 +31,9 @@ void* administradorMensajesColas(int, int, int);
 void enviarACK(int, int, int, int);
 void cargarDatosConexionConfig();
 
-void* recibirMensajesAppeared(int, int);
-void* recibirMensajesLocalized(int, int);
-void* recibirMensajesCaught(int, int);
+void* recibirMensajesAppeared();
+void* recibirMensajesLocalized();
+void* recibirMensajesCaught();
 void* adminMensajeAppeared(AppearedPokemonConIDs*);
 void* adminMensajeLocalized(LocalizedPokemonConIDs*);
 void* adminMensajeCaught(CaughtPokemonConIDs*);
