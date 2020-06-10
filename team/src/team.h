@@ -8,6 +8,7 @@
 sem_t sem[3];
 sem_t sem2[3];
 
+// ----------------- Estructuras ----------------- //
 
 typedef enum
 {
@@ -40,8 +41,9 @@ typedef struct pokemon{
 	CoordenadasXY posicion;
 }Pokemon;
 
-pthread_t *hiloEntrenador;
+// ----------------- Colas ----------------- //
 
+pthread_t *hiloEntrenador;
 
 bool execute;
 t_list* entrenadores;
@@ -49,24 +51,19 @@ t_list* objetivoGlobal;
 int tiempoDeReconexion;
 char* archivoLog;
 
-//-----------Colas---------------------
-
 t_queue* colaNEW_BLOCKED;
-
-
-
-
 t_list* mensajesGetEnviados;
 t_list* mensajesCatchEnviados;
 
-//------------Variables para los algoritmos de planificacion
+//----------------- Variables para los algoritmos de planificacion ----------------- //
 
 int retardoCicloCPU;
 char* algoritmoPlanificacion;
 int quantum;
 float alpha;
 int estimacionInicial;
-//----------------------------------------------------------
+
+// ----------------- Conexiones ----------------- //
 
 int conexionAppeared;
 int IDsuscripcionAppeared;
@@ -83,6 +80,8 @@ int idCaught;
 int conexionGameBoy;
 int idGameBoy;
 int msgGameBoy;
+
+// ----------------- Funciones ----------------- //
 
 t_log* iniciar_logger(void);
 void leer_config();

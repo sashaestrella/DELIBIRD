@@ -32,6 +32,9 @@ void generarConexiones(int tipoSuscriptor){
 	//pthread_join(hiloAppeared,NULL);
 	//pthread_join(hiloCaught,NULL);
 	//pthread_join(hiloLocalized,NULL);
+	free(appeared);
+	free(localized);
+	free(caught);
 }
 
 void abrirEscuchas(){
@@ -99,12 +102,12 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				recv(conexion, &cantidadAppearedPokemon, sizeof(int), MSG_WAITALL);
 				printf("Cantidad de Appeared Pokemons: %d\n", cantidadAppearedPokemon);
 				recv(conexion, &codigo, sizeof(op_code), MSG_WAITALL);
-				printf("Codigo: %d\n", codigo);
+				printf("Codigo de cola: %d\n", codigo);
 				AppearedPokemonConIDs* nuevoAppearedPokemonConId;
 				for(int i = 0; i<cantidadAppearedPokemon; i++){
 					nuevoAppearedPokemonConId = recibir_APPEARED_POKEMON(conexion, 0, 1, 0);
 					enviarACK(IDsuscripcion, nuevoAppearedPokemonConId->IDmensaje, APPEARED_POKEMON, conexion);
-					//adminMensajeAppeared(nuevoAppearedPokemonConId);
+					adminMensajeAppeared(nuevoAppearedPokemonConId);
 					printf("Recibi mensaje com id: %d\n", nuevoAppearedPokemonConId->IDmensaje);
 				}
 				break;
@@ -116,12 +119,12 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				recv(conexion, &cantidadCaughtPokemon, sizeof(int), MSG_WAITALL);
 				printf("Cantidad de Caught Pokemons: %d\n", cantidadCaughtPokemon);
 				recv(conexion, &codigo1, sizeof(op_code), MSG_WAITALL);
-				printf("Codigo: %d\n", codigo1);
+				printf("Codigo de cola: %d\n", codigo1);
 				CaughtPokemonConIDs* nuevoCaughtPokemonConId;
 				for(int i = 0; i<cantidadCaughtPokemon; i++){
 					nuevoCaughtPokemonConId = recibir_CAUGHT_POKEMON(conexion, 0, 1);
-					//enviarACK(IDsuscripcion, nuevoCaughtPokemonConId->IDmensaje, CAUGHT_POKEMON, conexion);
-					//adminMensajeCaught(nuevoCaughtPokemonConId);
+					enviarACK(IDsuscripcion, nuevoCaughtPokemonConId->IDmensaje, CAUGHT_POKEMON, conexion);
+					adminMensajeCaught(nuevoCaughtPokemonConId);
 				}
 				break;
 
@@ -132,7 +135,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				recv(conexion, &cantidadLocalizedPokemon, sizeof(int), MSG_WAITALL);
 				printf("Cantidad de Localized Pokemons: %d\n", cantidadLocalizedPokemon);
 				recv(conexion, &codigo2, sizeof(op_code), MSG_WAITALL);
-				printf("Codigo: %d\n", codigo2);
+				printf("Codigo de cola: %d\n", codigo2);
 				LocalizedPokemonConIDs* nuevoLocalizedPokemonConId;
 				for(int i = 0; i<cantidadLocalizedPokemon; i++){
 					nuevoLocalizedPokemonConId = recibir_LOCALIZED_POKEMON(conexion, 0, 1);
@@ -164,7 +167,7 @@ void* recibirMensajesAppeared(){
 void* adminMensajeAppeared(AppearedPokemonConIDs* nuevoAppeared){
 	list_add(mensajesRecibidos, nuevoAppeared->IDmensaje);
 	list_add(nuevosAppeared, nuevoAppeared);
-	printf("Guarde un mensaje appeared");
+	printf("Guarde un mensaje appeared con el ID %d\n:" ,nuevoAppeared->IDmensaje);
 }
 
 void* recibirMensajesLocalized(){
