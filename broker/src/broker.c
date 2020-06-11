@@ -24,9 +24,19 @@ int main(void)
 	suscriptores_appeared_pokemon = list_create();
 	suscriptores_catch_pokemon = list_create();
 	suscriptores_caught_pokemon = list_create();
+	listaPosicionesLibres=list_create();
 
 
-		NewPokemon* unNewPokemon1 = malloc(sizeof(NewPokemon));
+	t_config* config;
+	config= config_create("broker.config");
+	int tamanioMemoria = atoi(config_get_string_value(config, "TAMANIO_MEMORIA"));
+	memoriaInterna = malloc(tamanioMemoria);
+	PosicionLibre* primerPosicionLibre = malloc(sizeof(PosicionLibre));
+	list_add(listaPosicionesLibres,primerPosicionLibre);
+	primerPosicionLibre->posicion = memoriaInterna;
+	primerPosicionLibre->tamanio = tamanioMemoria;
+
+/*		NewPokemon* unNewPokemon1 = malloc(sizeof(NewPokemon));
 		MensajeNewPokemon* mensaje1;
 		char* nombre = malloc(8);
 		nombre = "PIKACHU";
@@ -46,8 +56,8 @@ int main(void)
 		unNewPokemon2->coordenadas.posicionY = 3;
 		unNewPokemon2->cantidad = 3;
 
-		mensaje2 = guardarMensajeNewPokemon(unNewPokemon2);
-
+		mensaje2 = guardarMensajeNewPokemon(unNewPokemon2);*/
+/*
 
 	LocalizedPokemon* localizedPokemon1 = malloc(sizeof(LocalizedPokemon));
 	MensajeLocalizedPokemon* mensaje3;
@@ -97,7 +107,7 @@ int main(void)
 
 		mensaje7 = guardarMensajeCaughtPokemon(unCaughtPokemon1,idCorrelativoCaught);
 
-
+*/
 
 	//El sistema tira un error si no se creó correctamente el hilo
 		if(pthread_create(&hiloConexion, NULL,(void*)&iniciar_servidor,NULL) != 0){

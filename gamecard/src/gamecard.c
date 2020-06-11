@@ -11,7 +11,7 @@ int main(void)
 {
 
 	/*---------------------------------------------------PARTE 2-------------------------------------------------------------*/
-	/*int conexion;
+	int conexion;
 	char* ip;
 	char* puerto;
 
@@ -31,7 +31,7 @@ int main(void)
 
 	config_set_value(config, "IP", "127.0.0.1");
 	config_set_value(config, "PUERTO", "4444");
-	config_save(config);*/
+	config_save(config);
 
 
 	/*---------------------------------------------------PARTE 3-------------------------------------------------------------*/
@@ -41,13 +41,24 @@ int main(void)
 	//crear conexion
 
 
-	/*ip = config_get_string_value(config, "IP");
+	ip = config_get_string_value(config, "IP");
 	puerto = config_get_string_value(config, "PUERTO");
 
 	conexion = crear_conexion(ip, puerto);
 
-	printf( "\nSe creo la conexion con el valor %d \n", conexion);
+	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
+		char* nombrePokemon = malloc(8);
+		int idNewPokemon = 0;
+		nombrePokemon = "PIKACHU";
+		unNewPokemon->nombre = nombrePokemon;
+		unNewPokemon->coordenadas.posicionX = 2;
+		unNewPokemon->coordenadas.posicionY = 3;
+		unNewPokemon->cantidad = 3;
+		enviarNewPokemon(unNewPokemon, conexion,idNewPokemon);
 
+		printf("\nEnvie el mensaje: %s, con id: %d\n",unNewPokemon->nombre,idNewPokemon);
+
+/*
 	//enviar mensaje
 
 	int tamanio_maximo_mensaje = 256;
@@ -73,7 +84,7 @@ int main(void)
 
 	log_info(logger, "Se recibio el mensaje: %s " ,mensajeRecibido);
 
-	terminar_programa(conexion, logger, config);
+	terminar_programa(conexion, logger, config);*/
 }
 
 //TODO
@@ -98,4 +109,4 @@ void terminar_programa(int conexion, t_log* logger, t_config* config)
 	liberar_conexion(conexion);
 
 	//Y por ultimo, para cerrar, hay que liberar lo que utilizamos (conexion, log y config) con las funciones de las commons y del TP mencionadas en el enunciado
-*/}
+}
