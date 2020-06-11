@@ -126,7 +126,7 @@ LocalizedPokemonConIDs* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size,int r
 
 		}
 
-		unasCoordenadas = unLocalizedPokemon->paresOrdenados;
+		unLocalizedPokemon->paresOrdenados = unasCoordenadas;
 
 		printf("\nMe llego el mensaje: %s\n",localizedConIdCorrelativo->localizedPokemon->nombre);
 

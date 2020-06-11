@@ -46,17 +46,62 @@ int main(void)
 
 	conexion = crear_conexion(ip, puerto);
 
-	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
-		char* nombrePokemon = malloc(8);
-		int idNewPokemon = 0;
-		nombrePokemon = "PIKACHU";
-		unNewPokemon->nombre = nombrePokemon;
-		unNewPokemon->coordenadas.posicionX = 2;
-		unNewPokemon->coordenadas.posicionY = 3;
-		unNewPokemon->cantidad = 3;
-		enviarNewPokemon(unNewPokemon, conexion,idNewPokemon);
 
-		printf("\nEnvie el mensaje: %s, con id: %d\n",unNewPokemon->nombre,idNewPokemon);
+	/*AppearedPokemon* appearedPokemon1 = malloc(sizeof(AppearedPokemon));
+	char* nombre = malloc(9);
+	nombre = "APPEARED1";
+	appearedPokemon1->nombre = nombre;
+	appearedPokemon1->coordenadas.posicionX = 7;
+	appearedPokemon1->coordenadas.posicionY = 3;
+	printf("Coordenadas de appeared: %d %d",appearedPokemon1->coordenadas.posicionX,appearedPokemon1->coordenadas.posicionY);
+	int id = 0;
+	int idCorrelativo = 1;
+
+	enviarAppearedPokemon(appearedPokemon1,conexion,id,idCorrelativo);
+	printf("\nEnvie el mensaje: %s\n",appearedPokemon1->nombre);
+*/
+/*
+		int idSuscriptorPosta;
+		int cod_op = 8;
+
+		Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
+		unSuscriptor1->socketSuscriptor = 4;
+		unSuscriptor1->IDsuscriptor = 0;
+
+		enviarSuscripcion(unSuscriptor1->IDsuscriptor,conexion,cod_op);
+		printf("Envie suscripcion para la cola de mensajes %d",cod_op);
+		recv(conexion,&idSuscriptorPosta,sizeof(int),MSG_WAITALL);
+		printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptorPosta);
+
+		//printf("Ya fui incluido en la cola de suscriptores de New Pokemon, lo que mi ID es el mismo: %d\n",idSuscriptor);
+
+		int tamanioListaNP;
+
+		recv(conexion,&tamanioListaNP,sizeof(int),MSG_WAITALL);
+		if(tamanioListaNP == 0){
+			puts("\nNo puedo recibir la lista porque esta vacia");
+			printf("Tamaño lista: %d",tamanioListaNP);
+		}
+		printf("El tamaño de la lista que voy a recibir es: %d\n",tamanioListaNP);
+
+		int size;
+		int variableQueNoUsoxd;
+		int ack = 1;
+
+		NewPokemonConIDs* newConIDs;
+		NewPokemon* unNewPokemonTemporal;
+
+		for(int i = 0; i<tamanioListaNP;i++){
+			recv(conexion,&variableQueNoUsoxd,sizeof(int),MSG_WAITALL);
+			newConIDs = recibir_NEW_POKEMON(conexion,&size,1);
+			unNewPokemonTemporal = newConIDs->newPokemon;
+			printf("[gameboy] Recibi un %s,con ID: %d\n",unNewPokemonTemporal->nombre,newConIDs->IDmensaje);
+			send(conexion,&ack,sizeof(int),0);
+			printf("[gameboy]ACK=%d del mensaje %d fue enviado\n",ack,newConIDs->IDmensaje);
+		}
+
+		free(newConIDs);
+*/
 
 /*
 	//enviar mensaje

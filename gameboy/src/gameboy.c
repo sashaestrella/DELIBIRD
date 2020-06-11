@@ -44,8 +44,8 @@ int main(void)
 
 
 	//enviar mensajes
-
-/*	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
+/*
+	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
 	char* nombrePokemon = malloc(8);
 	int idNewPokemon = 0;
 	nombrePokemon = "PIKACHU";
@@ -56,8 +56,8 @@ int main(void)
 	enviarNewPokemon(unNewPokemon, conexion,idNewPokemon);
 
 	printf("\nEnvie el mensaje: %s, con id: %d\n",unNewPokemon->nombre,idNewPokemon);
-
 */
+
 /*
 	LocalizedPokemon* localizedPokemon1 = malloc(sizeof(LocalizedPokemon));
 	char* nombre = malloc(9);
@@ -102,11 +102,9 @@ int main(void)
 		enviarAppearedPokemon(appearedPokemon1,conexion,id,idCorrelativo);
 
 		printf("\nEnvie el mensaje: %s\n",appearedPokemon1->nombre);
-
 */
 
-	/*
-	CatchPokemon* catchPokemon1 = malloc(sizeof(CatchPokemon));
+/*	CatchPokemon* catchPokemon1 = malloc(sizeof(CatchPokemon));
 		char* nombre = malloc(7);
 		nombre = "CATCH1";
 		catchPokemon1->nombre = nombre;
@@ -116,9 +114,8 @@ int main(void)
 		enviarCatchPokemon(catchPokemon1,conexion,id);
 
 		printf("\nEnvie el mensaje: %s\n",catchPokemon1->nombre);
+
 */
-
-
 /*	CaughtPokemon* caughtPokemon1 = malloc(sizeof(CaughtPokemon));
 		caughtPokemon1->atrapar = 0;
 
@@ -128,7 +125,7 @@ int main(void)
 
 		printf("\nEnvie el mensaje: %d\n",caughtPokemon1->atrapar);
 */
-/*
+
 	int idSuscriptorPosta;
 	int cod_op = 13;
 
@@ -168,7 +165,7 @@ int main(void)
 		printf("[gameboy]ACK=%d del mensaje %d fue enviado\n",ack,caughtConIDs->IDmensaje);
 	}
 
-	free(caughtConIDs);*/
+	free(caughtConIDs);
 
 /*
 	int cod_op = 12;
@@ -339,7 +336,7 @@ int main(void)
 
 	free(localizedConIDs);
 */
-
+/*
 	int idSuscriptorPosta;
 	int cod_op = 8;
 
@@ -381,7 +378,7 @@ int main(void)
 
 	free(newConIDs);
 
-
+*/
 /*
 	int tamanio_maximo_mensaje = 256;
 
