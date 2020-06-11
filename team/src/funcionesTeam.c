@@ -27,6 +27,10 @@ void leer_config()
 	//estimacionInicial = config_get_array_value(archivo_config, "ESTIMACION_INICIAL");
 
 	//archivoLog = config_get_array_value(archivo_config, "LOG_FILE");
+
+	ip = config_get_string_value(archivo_config,"IP");
+
+	puerto = config_get_string_value(archivo_config,"PUERTO");
 }
 
 void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){

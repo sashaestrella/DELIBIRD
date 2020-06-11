@@ -14,10 +14,6 @@ int main(int argc,char* argv[])
 
 	int hiloCreado;
 	algoritmoPlanificacion = "FIFO";
-	cargarDatosConexionConfig();
-
-	generarConexiones(0);
-	//abrirEscuchas();
 
 	entrenadores = list_create();
 	objetivoGlobal = list_create();
@@ -124,6 +120,10 @@ int main(int argc,char* argv[])
 	for(int j=0; j<list_size(entrenadores);j++)
 			pthread_join(hiloEntrenador[j], NULL);
 
+
+
+	generarConexiones(0);
+	//abrirEscuchas();
 
 
 	/*-----------------------------------------------PARTE 2-------------------------------------------------------------*/

@@ -2,8 +2,15 @@
 #define TEAM_H_
 
 #include<commons/collections/queue.h>
-#include<src/conexionBroker.h>
 #include<semaphore.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<commons/log.h>
+#include<commons/string.h>
+#include<commons/config.h>
+#include<readline/readline.h>
+#include<sys/syscall.h>
+#include<src/utilsGeneral.h>
 
 sem_t sem[3];
 sem_t sem2[3];
@@ -64,6 +71,9 @@ float alpha;
 int estimacionInicial;
 
 // ----------------- Conexiones ----------------- //
+
+char* ip;
+char* puerto;
 
 int conexionAppeared;
 int IDsuscripcionAppeared;

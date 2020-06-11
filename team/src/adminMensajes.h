@@ -29,7 +29,6 @@ void noHayBroker();
 void* suscribirseACola(ParametrosSuscripcion*);
 void* administradorMensajesColas(int, int, int);
 void enviarACK(int, int, int, int);
-void cargarDatosConexionConfig();
 
 void* recibirMensajesAppeared();
 void* recibirMensajesLocalized();

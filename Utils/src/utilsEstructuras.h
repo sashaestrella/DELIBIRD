@@ -98,6 +98,7 @@ typedef struct{
 }CaughtPokemonConIDs;
 
 
+
 #endif /*ESTRUCTURAS_H_*/
 
 
