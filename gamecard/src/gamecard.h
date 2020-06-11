@@ -18,6 +18,24 @@
 #include<src/utilsGeneral.h>
 
 
+// ----------------- Conexiones ----------------- //
+
+int conexionGetPokemon;
+int IDsuscripcionGet;
+int idGetPokemon;
+
+int conexionNewPokemon;
+int IDsuscripcionNew;
+int idNewPokemon;
+
+int conexionCatch;
+int IDsuscripcionCatch;
+int idCatch;
+
+int conexionGameBoy;
+int idGameBoy;
+int msgGameBoy;
+
 t_log* iniciar_logger(void);
 t_config* leer_config(void);
 void terminar_programa(int, t_log*, t_config*);
