@@ -26,7 +26,7 @@ void generarConexiones(int tipoSuscriptor){
 	localized->nuevoExistente = tipoSuscriptor;
 
 	pthread_t hiloLocalized;
-	//pthread_create(&hiloLocalized, NULL, suscribirseACola, localized);
+	pthread_create(&hiloLocalized, NULL, suscribirseACola, localized);
 
 
 	//pthread_join(hiloAppeared,NULL);
@@ -162,6 +162,8 @@ void* recibirMensajesAppeared(){
 		pthread_create(&admin, NULL, adminMensajeAppeared, nuevoAppeared);
 		pthread_detach(admin);
 	}
+	free(mensajeRecibido);
+	free(nuevoAppeared);
 }
 
 void* adminMensajeAppeared(AppearedPokemonConIDs* nuevoAppeared){
@@ -183,6 +185,8 @@ void* recibirMensajesLocalized(){
 			pthread_detach(admin);
 		}
 	}
+	free(mensajeRecibido);
+	free(nuevoLocalized);
 }
 
 void* adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
@@ -204,6 +208,8 @@ void* recibirMensajesCaught(){
 			pthread_detach(admin);
 		}
 	}
+	free(mensajeRecibido);
+	free(nuevoCaught);
 }
 
 void* adminMensajeCaught(CaughtPokemonConIDs* nuevoCaught){
@@ -229,6 +235,7 @@ void enviar_getPokemon(GetPokemon* get_pokemon){
 
 	list_add(mensajesGetEnviados, getPokemonConId);
 
+	free(getPokemonConId);
 	//cerrar conexion
 }
 
@@ -247,6 +254,7 @@ void enviar_catchPokemon(CatchPokemon* catch_pokemon){
 
 	list_add(mensajesCatchEnviados, catchPokemonConId);
 
+	free(catchPokemonConId);
 	//cerrar conexion
 }
 

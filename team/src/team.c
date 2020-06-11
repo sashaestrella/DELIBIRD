@@ -123,7 +123,9 @@ int main(int argc,char* argv[])
 
 
 	generarConexiones(0);
+	enviar_getPokemon(getPokemon);
 	//abrirEscuchas();
+
 
 
 	/*-----------------------------------------------PARTE 2-------------------------------------------------------------*/

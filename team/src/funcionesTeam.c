@@ -31,6 +31,8 @@ void leer_config()
 	ip = config_get_string_value(archivo_config,"IP");
 
 	puerto = config_get_string_value(archivo_config,"PUERTO");
+
+	free(archivo_config);
 }
 
 void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
@@ -60,7 +62,6 @@ void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
 		obtener_objetivos(pokemones_separados, objetivos_separados, entrenador->objetivos);
 
 		list_add(entrenadores, entrenador); //mete al entrenador en la lista
-
 	}
 }
 
