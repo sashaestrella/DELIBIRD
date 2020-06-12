@@ -21,6 +21,23 @@ int main(int argc,char* argv[])
 	mensajesGetEnviados= list_create();
 	mensajesCatchEnviados= list_create();
 
+	leer_config();
+
+	/*char* nombre = "Pikachu";
+
+	AppearedPokemon* appearedPokemon = malloc(sizeof(AppearedPokemon));
+	appearedPokemon -> nombre = nombre;
+	//appearedPokemon ->tamanioNombrePokemon = sizeof("Pikachu");
+
+	AppearedPokemonConIDs* nuevoAppeared = malloc(sizeof(AppearedPokemonConIDs));
+	nuevoAppeared -> IDcorrelativo = 0;
+	nuevoAppeared -> IDmensaje = 0;
+	nuevoAppeared -> appearedPokemon;
+
+	if(descartar_appeared_no_deseados(nuevoAppeared)){
+		printf("Funciona\n");
+	} */
+
 	GetPokemonConIDs* mensajeGet = malloc(sizeof(GetPokemonConIDs));
 
 	GetPokemon* getPokemon= malloc(sizeof(GetPokemon));
@@ -43,7 +60,6 @@ int main(int argc,char* argv[])
 
 	list_add(mensajesGetEnviados, mensajeGet);
 	list_add(mensajesCatchEnviados, mensajeCatch);
-	leer_config();
 
 	obtener_objetivo_global();
 
@@ -124,7 +140,7 @@ int main(int argc,char* argv[])
 
 	generarConexiones(0);
 	enviar_getPokemon(getPokemon);
-	//abrirEscuchas();
+	abrirEscuchas();
 
 
 
