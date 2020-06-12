@@ -91,6 +91,7 @@ LocalizedPokemonConIDs* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size,int r
 		localizedConIdCorrelativo->localizedPokemon = unLocalizedPokemon;
 
 		recv(cliente_fd,&(buffer->size),sizeof(int),MSG_WAITALL);
+		printf("recibi un paquete de tamaño %i", buffer->size);
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
 		recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
@@ -114,17 +115,17 @@ LocalizedPokemonConIDs* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size,int r
 		stream+=sizeof(uint32_t);
 
 		int cantidadDePares = (unLocalizedPokemon->cantidadParesOrdenados);
-		int coordenadasXY = cantidadDePares * 2;
 		t_list* unasCoordenadas = list_create();
-		for(int i=0;i<coordenadasXY;i++){
+		for(int i=0;i<cantidadDePares;i++){
 			CoordenadasXY* coordenadas = malloc(sizeof(CoordenadasXY));
 			memcpy(&(coordenadas->posicionX),stream,sizeof(uint32_t));
 			stream+=sizeof(uint32_t);
 			memcpy(&(coordenadas->posicionY),stream,sizeof(uint32_t));
 			stream+=sizeof(uint32_t);
 			list_add(unasCoordenadas,coordenadas);
-
+			printf("\nMe llegaron las coordenadas X: %d, Y: %d", coordenadas->posicionX, coordenadas->posicionY);
 		}
+
 
 		unLocalizedPokemon->paresOrdenados = unasCoordenadas;
 
@@ -482,12 +483,13 @@ void enviarLocalizedPokemon(LocalizedPokemon* localized_pokemon,int socket_suscr
 	t_buffer* buffer = malloc(sizeof(t_buffer));
 
 	int tamanioNombrePokemon = strlen(localized_pokemon->nombre) +1;
-	int coordenadas = localized_pokemon->cantidadParesOrdenados * 2;
+	int cantCoordenadas = localized_pokemon->cantidadParesOrdenados;
 	if(id > 0){
-		buffer->size = sizeof(uint32_t) * 2 * coordenadas + tamanioNombrePokemon + sizeof(int)*2;
+		buffer->size = sizeof(CoordenadasXY) * cantCoordenadas + tamanioNombrePokemon + sizeof(uint32_t)*2 + sizeof(int)*2;
 	}else {
-		buffer->size = sizeof(uint32_t) * 2 * coordenadas + tamanioNombrePokemon + sizeof(int);
+		buffer->size = sizeof(CoordenadasXY) * cantCoordenadas + tamanioNombrePokemon + sizeof(uint32_t)*2 + sizeof(int);
 	}
+	printf("voy a mandar un paquete de tamaño: %d", buffer->size);
 	void* stream = serializarLocalizedPokemon(localized_pokemon,buffer->size,id,idCorrelativo);
 	buffer->stream = stream;
 	t_paquete* paquete = malloc(sizeof(t_paquete));
