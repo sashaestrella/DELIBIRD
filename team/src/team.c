@@ -23,7 +23,9 @@ int main(int argc,char* argv[])
 
 	leer_config();
 
-	/*char* nombre = "Pikachu";
+	/*
+
+	char* nombre = "Pikachu";
 
 	AppearedPokemon* appearedPokemon = malloc(sizeof(AppearedPokemon));
 	appearedPokemon -> nombre = nombre;
@@ -48,6 +50,8 @@ int main(int argc,char* argv[])
 	mensajeGet->getPokemon = getPokemon;
 
 	list_add(mensajesGetEnviados, mensajeGet);
+
+	/*
 
 	CatchPokemonConIDs* mensajeCatch = malloc(sizeof(CatchPokemonConIDs));
 
@@ -136,7 +140,7 @@ int main(int argc,char* argv[])
 	for(int j=0; j<list_size(entrenadores);j++)
 			pthread_join(hiloEntrenador[j], NULL);
 
-
+	*/
 
 	generarConexiones(0);
 	enviar_getPokemon(getPokemon);

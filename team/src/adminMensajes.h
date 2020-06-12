@@ -26,7 +26,9 @@ t_list* mensajesRecibidos;
 
 
 void noHayBroker();
-void* suscribirseACola(ParametrosSuscripcion*);
+void* suscribirseAColaAppeared();
+void* suscribirseAColaLocalized();
+void* suscribirseAColaCaught();
 void* administradorMensajesColas(int, int, int);
 void enviarACK(int, int, int, int);
 
