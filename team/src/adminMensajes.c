@@ -87,9 +87,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 	int cantidadAppearedPokemon;
 	int cantidadCaughtPokemon;
 	int cantidadLocalizedPokemon;
-	int cantidadGetPokemon;
-	int cantidadNewPokemon;
-	int cantidadCatchPokemon;
+
 	uint32_t codigo;
 	uint32_t codigo1;
 	uint32_t codigo2;
