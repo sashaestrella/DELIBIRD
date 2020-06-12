@@ -58,7 +58,7 @@ int main(void)
 	printf("\nEnvie el mensaje: %s, con id: %d\n",unNewPokemon->nombre,idNewPokemon);
 */
 
-
+/*
 	LocalizedPokemon* localizedPokemon1 = malloc(sizeof(LocalizedPokemon));
 	char* nombre = malloc(9);
 	nombre = "LOCALIZED";
@@ -79,7 +79,7 @@ int main(void)
 	enviarLocalizedPokemon(localizedPokemon1,conexion,idmensaje,idCorrelativo);
 
 	printf("\nEnvie el mensaje: %s\n",localizedPokemon1->nombre);
-
+*/
 /*
 	GetPokemon* getPokemon1 = malloc(sizeof(GetPokemon));
 	char* nombre = malloc(5);
@@ -91,7 +91,7 @@ int main(void)
 
 	printf("\nEnvie el mensaje: %s\n",getPokemon1->nombre);
 */
-	/*AppearedPokemon* appearedPokemon1 = malloc(sizeof(AppearedPokemon));
+/*	AppearedPokemon* appearedPokemon1 = malloc(sizeof(AppearedPokemon));
 	  char* nombre = malloc(9);
 	  nombre = "APPEARED1";
 		appearedPokemon1->nombre = nombre;
@@ -116,9 +116,8 @@ int main(void)
 		enviarCatchPokemon(catchPokemon1,conexion,id);
 
 		printf("\nEnvie el mensaje: %s\n",catchPokemon1->nombre);
-
 */
-/*	CaughtPokemon* caughtPokemon1 = malloc(sizeof(CaughtPokemon));
+		CaughtPokemon* caughtPokemon1 = malloc(sizeof(CaughtPokemon));
 		caughtPokemon1->atrapar = 0;
 
 		int id = 0;
@@ -126,7 +125,7 @@ int main(void)
 		enviarCaughtPokemon(caughtPokemon1,conexion,id,idCorrelativo);
 
 		printf("\nEnvie el mensaje: %d\n",caughtPokemon1->atrapar);
-*/
+
 
 /*	int idSuscriptorPosta;
 	int cod_op = 13;
