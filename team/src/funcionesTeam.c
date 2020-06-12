@@ -14,17 +14,17 @@ void leer_config()
 
 	armar_entrenadores(posiciones_entrenadores, pokemon_entrenadores, objetivos_entrenadores); //les pasas los arrays y la lista
 
-	//tiempoDeReconexion = config_get_array_value(archivo_config, "TIEMPO_RECONEXION");
+	//tiempoDeReconexion = config_get_int_value(archivo_config, "TIEMPO_RECONEXION");
 
-	//retardoCicloCPU = config_get_array_value(archivo_config, "RETARDO_CICLO_CPU");
+	//retardoCicloCPU = config_get_int_value(archivo_config, "RETARDO_CICLO_CPU");
 
 	//algoritmoPlanificacion = config_get_array_value(archivo_config, "ALGORITMO_PLANIFICACION");
 
-	//quantum = config_get_array_value(archivo_config, "QUANTUM");
+	//quantum = config_get_int_value(archivo_config, "QUANTUM");
 
 	//alpha = config_get_array_value(archivo_config, "ALPHA");
 
-	//estimacionInicial = config_get_array_value(archivo_config, "ESTIMACION_INICIAL");
+	//estimacionInicial = config_get_int_value(archivo_config, "ESTIMACION_INICIAL");
 
 	//archivoLog = config_get_array_value(archivo_config, "LOG_FILE");
 

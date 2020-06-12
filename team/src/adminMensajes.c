@@ -26,7 +26,7 @@ void generarConexiones(int tipoSuscriptor){
 	localized->nuevoExistente = tipoSuscriptor;
 
 	pthread_t hiloLocalized;
-	pthread_create(&hiloLocalized, NULL, suscribirseACola, localized);
+	//pthread_create(&hiloLocalized, NULL, suscribirseACola, localized);
 
 
 	//pthread_join(hiloAppeared,NULL);
@@ -62,7 +62,7 @@ void noHayBroker(){
 
 void* suscribirseACola(ParametrosSuscripcion* datos){
 
-	int conexion;
+	/*int conexion;
 	op_code colaSuscripcion = datos->colaASuscribirse;
 	int soyNuevo 			= datos->nuevoExistente;
 	uint32_t IDsuscripcion;
@@ -71,14 +71,54 @@ void* suscribirseACola(ParametrosSuscripcion* datos){
 
 	printf( "\nSe creo la suscripcion con el valor %d \n", conexion);
 
-	send(conexion, &colaSuscripcion, sizeof(int),0);
-	//send(conexion, &soyNuevo, sizeof(int),0);
+	enviarSuscripcion(0, conexion, colaSuscripcion);
 
 	recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
 
 	printf("Suscriptor numero: %d\n", IDsuscripcion);
 
-	administradorMensajesColas(colaSuscripcion, conexion, IDsuscripcion);
+	administradorMensajesColas(colaSuscripcion, conexion, IDsuscripcion);*/
+	int idSuscriptorPosta;
+	int cod_op = datos->colaASuscribirse;
+	int conexion = crear_conexion(ip, puerto);
+	printf("El codigo de operacion es %d", cod_op);
+	Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
+
+	unSuscriptor1->IDsuscriptor = 0;
+
+	enviarSuscripcion(unSuscriptor1->IDsuscriptor,conexion,cod_op);
+	printf("Envie suscripcion para la cola de mensajes %d",cod_op);
+	recv(conexion,&idSuscriptorPosta,sizeof(int),MSG_WAITALL);
+	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptorPosta);
+
+	//printf("Ya fui incluido en la cola de suscriptores de New Pokemon, lo que mi ID es el mismo: %d\n",idSuscriptor);
+
+	int tamanioLista;
+
+	recv(conexion,&tamanioLista,sizeof(int),MSG_WAITALL);
+	if(tamanioLista == 0){
+		puts("\nNo puedo recibir la lista porque esta vacia");
+		printf("Tamaño lista: %d",tamanioLista);
+	}
+	printf("El tamaño de la lista que voy a recibir es: %d\n",tamanioLista);
+
+	int size;
+	int variableQueNoUsoxd;
+	int ack = 1;
+
+	AppearedPokemonConIDs* appearedConIDs;
+	AppearedPokemon* unAppearedPokemonTemporal;
+
+	for(int i = 0; i<tamanioLista;i++){
+		recv(conexion,&variableQueNoUsoxd,sizeof(int),MSG_WAITALL);
+		appearedConIDs = recibir_APPEARED_POKEMON(conexion,&size,1,0);
+		unAppearedPokemonTemporal = appearedConIDs->appearedPokemon;
+		printf("[gameboy] Recibi un %s,con ID: %d\n",unAppearedPokemonTemporal->nombre,appearedConIDs->IDmensaje);
+		send(conexion,&ack,sizeof(int),0);
+		printf("[gameboy]ACK=%d del mensaje %d fue enviado\n",ack,appearedConIDs->IDmensaje);
+	}
+
+	free(appearedConIDs);
 
 }
 
@@ -91,6 +131,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 	uint32_t codigo;
 	uint32_t codigo1;
 	uint32_t codigo2;
+	printf("\nOpcode %d ", op_code);
 	switch(op_code){
 
 			case SUSCRIPTOR_APPEAREDPOKEMON:
@@ -196,9 +237,10 @@ void* recibirMensajesLocalized(){
 }
 
 void* adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
+
 	if(descartar_localized_no_deseados(nuevoLocalized)){
 
-		list_add(mensajesRecibidos, nuevoLocalized->IDmensaje);
+		list_add(mensajesRecibidos, nuevoLocalized->IDmensaje); //por si se cae conexion
 		list_add(nuevosLocalized, nuevoLocalized);
 		printf("Guarde un mensaje localized");
 
