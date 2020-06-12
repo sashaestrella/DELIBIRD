@@ -18,7 +18,6 @@ bool descartar_caught_no_deseados(CaughtPokemonConIDs*);
 
 // ----- Auxiliares ----- //
 
-t_list* nuevosAppeared;
 t_list* nuevosLocalized;
 t_list* nuevosCaught;
 t_list* mensajesRecibidos;
