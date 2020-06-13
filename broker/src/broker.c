@@ -31,6 +31,9 @@ int main(void)
 
 	t_config* config;
 	config= config_create("broker.config");
+	tamanioMinimoParticion = atoi(config_get_string_value(config, "TAMANIO_MINIMO_PARTICION"));
+	printf("el tamanio minimo de particion es: %d",tamanioMinimoParticion);
+	puts("a");
 	int tamanioMemoria = atoi(config_get_string_value(config, "TAMANIO_MEMORIA"));
 	memoriaInterna = malloc(tamanioMemoria);
 	PosicionLibre* primerPosicionLibre = malloc(sizeof(PosicionLibre));
