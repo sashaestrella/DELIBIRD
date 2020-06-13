@@ -407,7 +407,7 @@ int pruebas(void)
 
 	terminar_programa(conexion, logger, config);
 }
-
+/*
 //TODO
 t_log* iniciar_logger(void)
 {
@@ -430,4 +430,4 @@ void terminar_programa(int conexion, t_log* logger, t_config* config)
 	liberar_conexion(conexion);
 
 	//Y por ultimo, para cerrar, hay que liberar lo que utilizamos (conexion, log y config) con las funciones de las commons y del TP mencionadas en el enunciado
-}
+}*/

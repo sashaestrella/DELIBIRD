@@ -42,18 +42,46 @@ int main(int argc, char *argv[])
 
 
 	//Enviar mensaje
+	if(!strcmp(argv[2],"NEW_POKEMON")){
+		puts("entre a new pokemon");
+		NewPokemon* newPokemon;
+		newPokemon = parsearNewPokemon(argv[3], argv[4], argv[5], argv[6]);
 
-	NewPokemon* newPokemon;
-	newPokemon = parsearNewPokemon(argv[3], argv[4], argv[5], argv[6]);
+		enviarNewPokemon(newPokemon, conexion,0);
+	}
+	if(!strcmp(argv[2],"GET_POKEMON")){
+		GetPokemon* unGetPokemon;
+		unGetPokemon = parsearGetPokemon(argv[3]);
+		enviarGetPokemon(unGetPokemon,conexion,0);
+	}
 
+	if(!strcmp(argv[2],"CATCH_POKEMON")){
+		CatchPokemon* unCatchPokemon;
+		unCatchPokemon = parsearCatchPokemon(argv[3],argv[4],argv[5]);
+		enviarCatchPokemon(unCatchPokemon,conexion,0);
+	}
 
-	enviarNewPokemon(newPokemon, conexion,0);
+	if(!strcmp(argv[2],"CAUGHT_POKEMON")){
+		CaughtPokemon* unCaughtPokemon;
+		unCaughtPokemon = parsearCaughtPokemon(argv[4]);
+		int id_correlativo = atoi(argv[3]);
+
+		enviarCaughtPokemon(unCaughtPokemon,conexion,0,id_correlativo);
+	}
+
+	if(!strcmp(argv[2],"APPEARED_POKEMON")){
+		AppearedPokemon* unAppearedPokemon;
+		unAppearedPokemon = parsearAppearedPokemon(argv[3],argv[4],argv[5]);
+		int id_correlativo = atoi(argv[6]);
+		enviarAppearedPokemon(unAppearedPokemon,conexion,0,id_correlativo);
+	}
+
 	//Recibir mensaje
-/*
-	char* mensajeRecibido;
 
-	mensajeRecibido=recibir_mensaje(conexion);
-*/
+	//char* mensajeRecibido;
+
+//	mensajeRecibido=recibir_mensaje(conexion);
+
 	//Loguear mensaje recibido
 /*
 	log_info(logger, "Se recibio el mensaje: %s " ,mensajeRecibido);

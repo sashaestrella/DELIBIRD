@@ -26,8 +26,7 @@ endif
 all: gameboy
 
 dependents:
-
-	-cd /home/utnso/tp-2020-1c-BOMP/Utils/Debug && $(MAKE) all
+	-cd /home/utnso/tp-2020-1c-BOMP/Utils/Debug && $(MAKE) clean all
 
 # Tool invocations
 gameboy: $(OBJS) $(USER_OBJS) /home/utnso/tp-2020-1c-BOMP/Utils/Debug/libUtils.so
@@ -43,10 +42,6 @@ clean:
 	-@echo ' '
 
 .PHONY: all clean dependents
-<<<<<<< HEAD
 /home/utnso/tp-2020-1c-BOMP/Utils/Debug/libUtils.so:
-=======
-/home/utnso/Documentos/TP/tp-2020-1c-BOMP/Utils/Debug/libUtils.so:
->>>>>>> enviarNewPokemon
 
 -include ../makefile.targets
