@@ -291,20 +291,19 @@ void enviar_catchPokemon(CatchPokemon* catch_pokemon){
 	//cerrar conexion
 }
 
-bool descartar_appeared_no_deseados(AppearedPokemonConIDs* appearedPokemonRecibido){ //REVISAR SI FUNCIONA
+bool descartar_appeared_no_deseados(AppearedPokemonConIDs* appearedPokemonRecibido){
 	bool compararNombre(char* nombreObjetivo){
-		return nombreObjetivo == appearedPokemonRecibido -> appearedPokemon -> nombre;
+		return strcmp(nombreObjetivo, appearedPokemonRecibido -> appearedPokemon -> nombre);
 	}
 	bool yaRecibi(int idMensaje){
 		return idMensaje != appearedPokemonRecibido -> IDmensaje;
 	}
-	return list_any_satisfy(objetivoGlobal, (void*)compararNombre);// && list_all_satisfy(mensajesRecibidos, (void*)yaRecibi;
+	return list_any_satisfy(objetivoGlobal, (void*)compararNombre) && list_all_satisfy(mensajesRecibidos, (void*)yaRecibi);
 }
 
 bool descartar_localized_no_deseados(LocalizedPokemonConIDs* localizedPokemonRecibido){
 
 	bool compararIDcorrelativo (GetPokemonConIDs* mensajeGet){
-
 		return mensajeGet->IDmensaje == localizedPokemonRecibido->IDcorrelativo;
 	}
 
@@ -312,7 +311,7 @@ bool descartar_localized_no_deseados(LocalizedPokemonConIDs* localizedPokemonRec
 			return idMensaje != localizedPokemonRecibido -> IDmensaje;
 	}
 
-	return list_any_satisfy(mensajesGetEnviados, (void*)compararIDcorrelativo);// && list_all_satisfy(mensajesRecibidos, (void*)yaRecibi);
+	return list_any_satisfy(mensajesGetEnviados, (void*)compararIDcorrelativo) && list_all_satisfy(mensajesRecibidos, (void*)yaRecibi);
 
 }
 
@@ -328,7 +327,7 @@ bool descartar_caught_no_deseados(CaughtPokemonConIDs* caughtPokemonRecibido){
 			return idMensaje != caughtPokemonRecibido -> IDmensaje;
 	}
 
-	return list_any_satisfy(mensajesCatchEnviados, (void*)compararIDcorrelativo); // && list_all_satisfy(mensajesRecibidos, (void*)yaRecibi);
+	return list_any_satisfy(mensajesCatchEnviados, (void*)compararIDcorrelativo) && list_all_satisfy(mensajesRecibidos, (void*)yaRecibi);
 
 }
 

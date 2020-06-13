@@ -25,6 +25,7 @@ int main(int argc,char* argv[])
 	nuevosCaught = list_create();
 
 	leer_config();
+	obtener_objetivo_global();
 
 
 	// Agrego entrenador de prueba //
@@ -70,7 +71,6 @@ int main(int argc,char* argv[])
 	coordenadas3->posicionY = 2;
 	list_add(localizedNuevo ->localizedPokemon ->paresOrdenados, coordenadas3);
 
-
 	// Debería devolver al Pokemon de la posición (1,1) //
 	//Pokemon* mejorOpcion = malloc(sizeof(Pokemon));
 	//mejorOpcion = elegirMejorUbicacion(localizedNuevo);
@@ -92,7 +92,7 @@ int main(int argc,char* argv[])
 		printf("Funciona\n");
 	}
 
-	GetPokemonConIDs* mensajeGet = malloc(sizeof(GetPokemonConIDs));
+	/*GetPokemonConIDs* mensajeGet = malloc(sizeof(GetPokemonConIDs));
 
 	GetPokemon* getPokemon= malloc(sizeof(GetPokemon));
 	getPokemon->nombre = "Pikachu";
@@ -114,8 +114,6 @@ int main(int argc,char* argv[])
 
 	list_add(mensajesGetEnviados, mensajeGet);
 	list_add(mensajesCatchEnviados, mensajeCatch);
-
-	obtener_objetivo_global();
 
 
 	hiloEntrenador = malloc(list_size(entrenadores) * sizeof(pthread_t));
@@ -192,6 +190,7 @@ int main(int argc,char* argv[])
 
 	generarConexiones(0);
 	//abrirEscuchas();
+	*/
 
 	t_log* logger;
 
