@@ -45,8 +45,48 @@ int main(void)
 	puerto = config_get_string_value(config, "PUERTO");
 
 	conexion = crear_conexion(ip, puerto);
-
+/*
 	int idSuscriptorPosta;
+		int cod_op = 9;
+
+		Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
+		unSuscriptor1->socketSuscriptor = 4;
+		unSuscriptor1->IDsuscriptor = 0;
+
+		enviarSuscripcion(unSuscriptor1->IDsuscriptor,conexion,cod_op);
+		printf("Envie suscripcion para la cola de mensajes %d",cod_op);
+		recv(conexion,&idSuscriptorPosta,sizeof(int),MSG_WAITALL);
+		printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptorPosta);
+
+		//printf("Ya fui incluido en la cola de suscriptores de New Pokemon, lo que mi ID es el mismo: %d\n",idSuscriptor);
+
+		int tamanioLista;
+
+		recv(conexion,&tamanioLista,sizeof(int),MSG_WAITALL);
+		if(tamanioLista == 0){
+			puts("\nNo puedo recibir la lista porque esta vacia");
+			printf("Tamaño lista: %d",tamanioLista);
+		}
+		printf("El tamaño de la lista que voy a recibir es: %d\n",tamanioLista);
+
+		int size;
+		int variableQueNoUsoxd;
+		int ack = 1;
+
+		LocalizedPokemonConIDs* localizedConIDs;
+		LocalizedPokemon* unLocalizedPokemonTemporal;
+
+		for(int i = 0; i<tamanioLista;i++){
+			recv(conexion,&variableQueNoUsoxd,sizeof(int),MSG_WAITALL);
+			localizedConIDs = recibir_LOCALIZED_POKEMON(conexion,&size,1);
+			unLocalizedPokemonTemporal = localizedConIDs->localizedPokemon;
+			printf("[gameboy] Recibi un %s,con ID: %d\n",unLocalizedPokemonTemporal->nombre,localizedConIDs->IDmensaje);
+			send(conexion,&ack,sizeof(int),0);
+			printf("[gameboy]ACK=%d del mensaje %d fue enviado\n",ack,localizedConIDs->IDmensaje);
+		}
+
+		free(localizedConIDs)*/;
+	/*int idSuscriptorPosta;
 		int cod_op = 13;
 
 		Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
@@ -85,7 +125,7 @@ int main(void)
 			printf("[gameboy]ACK=%d del mensaje %d fue enviado\n",ack,caughtConIDs->IDmensaje);
 		}
 
-		free(caughtConIDs);
+		free(caughtConIDs);*/
 	/*AppearedPokemon* appearedPokemon1 = malloc(sizeof(AppearedPokemon));
 	char* nombre = malloc(9);
 	nombre = "APPEARED1";
@@ -141,7 +181,46 @@ int main(void)
 
 		free(newConIDs);
 */
+		int idSuscriptorPosta;
+		int cod_op = 8;
 
+		Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
+		unSuscriptor1->socketSuscriptor = 4;
+		unSuscriptor1->IDsuscriptor = 0;
+
+		enviarSuscripcion(unSuscriptor1->IDsuscriptor,conexion,cod_op);
+		printf("Envie suscripcion para la cola de mensajes %d",cod_op);
+		recv(conexion,&idSuscriptorPosta,sizeof(int),MSG_WAITALL);
+		printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptorPosta);
+
+		//printf("Ya fui incluido en la cola de suscriptores de New Pokemon, lo que mi ID es el mismo: %d\n",idSuscriptor);
+
+		int tamanioListaNP;
+
+		recv(conexion,&tamanioListaNP,sizeof(int),MSG_WAITALL);
+		if(tamanioListaNP == 0){
+			puts("\nNo puedo recibir la lista porque esta vacia");
+			printf("Tamaño lista: %d",tamanioListaNP);
+		}
+		printf("El tamaño de la lista que voy a recibir es: %d\n",tamanioListaNP);
+
+		int size;
+		int variableQueNoUsoxd;
+		int ack = 1;
+
+		NewPokemonConIDs* newConIDs;
+		NewPokemon* unNewPokemonTemporal;
+
+		for(int i = 0; i<tamanioListaNP;i++){
+			recv(conexion,&variableQueNoUsoxd,sizeof(int),MSG_WAITALL);
+			newConIDs = recibir_NEW_POKEMON(conexion,&size,1);
+			unNewPokemonTemporal = newConIDs->newPokemon;
+			printf("[gameboy] Recibi un %s,con ID: %d\n",unNewPokemonTemporal->nombre,newConIDs->IDmensaje);
+			send(conexion,&ack,sizeof(int),0);
+			printf("[gameboy]ACK=%d del mensaje %d fue enviado\n",ack,newConIDs->IDmensaje);
+		}
+
+		free(newConIDs);
 
 
 /*

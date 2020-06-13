@@ -25,6 +25,8 @@ int main(void)
 	suscriptores_catch_pokemon = list_create();
 	suscriptores_caught_pokemon = list_create();
 	listaPosicionesLibres=list_create();
+	listaPosicionesOcupadas=list_create();
+
 
 
 	t_config* config;
@@ -35,6 +37,7 @@ int main(void)
 	list_add(listaPosicionesLibres,primerPosicionLibre);
 	primerPosicionLibre->posicion = memoriaInterna;
 	primerPosicionLibre->tamanio = tamanioMemoria;
+
 
 /*		NewPokemon* unNewPokemon1 = malloc(sizeof(NewPokemon));
 		MensajeNewPokemon* mensaje1;

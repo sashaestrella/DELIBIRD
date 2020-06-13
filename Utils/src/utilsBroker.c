@@ -666,6 +666,64 @@ void recibirSuscripcionNewPokemon(int socket_suscriptor){
 		free(buffer);
 }
 
+
+void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID){
+	PosicionOcupada* unaPosicion = malloc(sizeof(PosicionOcupada));
+	unaPosicion->ID = ID;
+	unaPosicion->colaALaQuePertenece = colaALaQuePertenece;
+	unaPosicion->posicion = posicion;
+	unaPosicion->tamanio = tamanio;
+
+	list_add(listaPosicionesOcupadas, unaPosicion);
+	printf("ocupe exitosamente una posicion del mensaje con ID %d", unaPosicion->ID);
+}
+
+//---------------------------------------------------Particiones Dinamicas
+
+void borrarFIFO(){
+	int tamanioOcupados = list_size(listaPosicionesOcupadas);
+	int posicionABorrar;
+	int auxID = 0;
+	PosicionOcupada* unaPosicionOcupada;
+	for(int i=0; i<tamanioOcupados; i++){
+		unaPosicionOcupada = list_get(listaPosicionesOcupadas,i);
+		if(unaPosicionOcupada->ID < auxID){
+			auxID = unaPosicionOcupada->ID;
+			posicionABorrar = i;
+		}
+	}
+	unaPosicionOcupada = list_get(listaPosicionesOcupadas,posicionABorrar);
+	PosicionLibre* unaPosicionLibre;
+	unaPosicionLibre->posicion = unaPosicionOcupada->posicion;
+	unaPosicionLibre->tamanio = unaPosicionOcupada->tamanio;
+	free(unaPosicionOcupada);
+	list_remove(listaPosicionesOcupadas,posicionABorrar);
+	list_add(listaPosicionesLibres,unaPosicionLibre);
+}
+
+PosicionLibre* pedirPosicionFF(int tamanio){
+	PosicionLibre* unaPosicionLibre;
+	int tamanioPosicionesLibres = list_size(listaPosicionesLibres);
+	for(int i=0;i<tamanioPosicionesLibres;i++){
+		unaPosicionLibre = list_get(listaPosicionesLibres,i);
+		if (unaPosicionLibre->tamanio >= tamanio){
+			return unaPosicionLibre;
+		}
+	}
+}
+
+PosicionLibre* pedirPosicion (int tamanio){
+	if (1){
+		return pedirPosicionFF(tamanio);
+	}
+}
+
+
+
+//---------------------------------------------------Particiones Dinamicas
+
+
+
 void grabarNewPokemonAMemoriaInterna(NewPokemon* unNewPokemon, int tamanio){
 	PosicionLibre* unaPosicionLibre = list_get(listaPosicionesLibres,0);
 
@@ -687,7 +745,7 @@ MensajeNewPokemon2* guardarMensajeNewPokemon(NewPokemon* unNewPokemon) {
 		MensajeNewPokemon2* mensaje = malloc(sizeof(MensajeNewPokemon2));
 		int tamanioDeNew = sizeof(uint32_t) * 4 + unNewPokemon->tamanioNombrePokemon;
 		//mutex
-		PosicionLibre* unaPosicionLibre = list_get(listaPosicionesLibres,0);
+		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeNew);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
 		if(unaPosicionLibre->tamanio > tamanioDeNew){
 		void* principioContenidoDelMensaje;
@@ -715,7 +773,7 @@ MensajeNewPokemon2* guardarMensajeNewPokemon(NewPokemon* unNewPokemon) {
 
 		printf("[NewPokemon] Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
 		printf("[NewPokemon] Su ID es: %d\n",mensaje->ID);
-
+		ocuparPosicion(tamanioDeNew,mensaje->contenidoDelMensaje,2,mensaje->ID);
 		} else {
 			puts("No hay memoria disponible.");
 		}
@@ -754,7 +812,7 @@ MensajeLocalizedPokemon2* guardarMensajeLocalizedPokemon(LocalizedPokemon* unLoc
 		int tamanioParesOrdenados = list_size(unLocalizedPokemon->paresOrdenados);
 		int tamanioDeLocalized = sizeof(uint32_t) * tamanioParesOrdenados * 2 + (unLocalizedPokemon->tamanioNombrePokemon);
 		//mutex
-		PosicionLibre* unaPosicionLibre = list_get(listaPosicionesLibres,0);
+		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeLocalized);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
 		if(unaPosicionLibre->tamanio > tamanioDeLocalized){
 		void* principioContenidoDelMensaje;
@@ -783,7 +841,7 @@ MensajeLocalizedPokemon2* guardarMensajeLocalizedPokemon(LocalizedPokemon* unLoc
 
 		printf("[LocalizedPokemon] Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
 		printf("[LocalizedPokemon] Su ID es: %d, y su IDCorrelativo es: %d\n",mensaje->ID,mensaje->IDCorrelativo);
-
+		ocuparPosicion(tamanioDeLocalized,mensaje->contenidoDelMensaje,3,mensaje->ID);
 		} else {
 			puts("No hay memoria disponible.");
 		}
@@ -811,7 +869,7 @@ MensajeGetPokemon2* guardarMensajeGetPokemon(GetPokemon* unGetPokemon){
 		MensajeGetPokemon2* mensaje = malloc(sizeof(MensajeGetPokemon2));
 		int tamanioDeGet = sizeof(uint32_t) + unGetPokemon->tamanioNombrePokemon;
 		//mutex
-		PosicionLibre* unaPosicionLibre = list_get(listaPosicionesLibres,0);
+		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeGet);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
 		if(unaPosicionLibre->tamanio > tamanioDeGet){
 		void* principioContenidoDelMensaje;
@@ -839,7 +897,7 @@ MensajeGetPokemon2* guardarMensajeGetPokemon(GetPokemon* unGetPokemon){
 
 		printf("[GetPokemon] Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
 		printf("[GetPokemon] Su ID es: %d\n",mensaje->ID);
-
+		ocuparPosicion(tamanioDeGet,mensaje->contenidoDelMensaje,4,mensaje->ID);
 		} else {
 			puts("No hay memoria disponible.");
 		}
@@ -871,7 +929,7 @@ MensajeAppearedPokemon2* guardarMensajeAppearedPokemon(AppearedPokemon* unAppear
 		MensajeAppearedPokemon2* mensaje = malloc(sizeof(MensajeAppearedPokemon2));
 		int tamanioDeAppeared = sizeof(uint32_t) * 3 + unAppearedPokemon->tamanioNombrePokemon;
 		//mutex
-		PosicionLibre* unaPosicionLibre = list_get(listaPosicionesLibres,0);
+		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeAppeared);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
 		if(unaPosicionLibre->tamanio > tamanioDeAppeared){
 		void* principioContenidoDelMensaje;
@@ -896,7 +954,7 @@ MensajeAppearedPokemon2* guardarMensajeAppearedPokemon(AppearedPokemon* unAppear
 		mensaje->suscriptoresAtendidos = list_create();
 		mensaje->suscriptoresACK = list_create();
 		char* nombreDelPokemonQueGuarde = unAppearedPokemon->nombre;
-
+		ocuparPosicion(tamanioDeAppeared,mensaje->contenidoDelMensaje,5,mensaje->ID);
 		printf("[AppearedPokemon] Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
 		printf("[AppearedPokemon] Su ID es: %d\n",mensaje->ID);
 		} else {
@@ -930,7 +988,7 @@ MensajeCatchPokemon2* guardarMensajeCatchPokemon(CatchPokemon* unCatchPokemon){
 		MensajeCatchPokemon2* mensaje = malloc(sizeof(MensajeCatchPokemon2));
 		int tamanioDeCatch = sizeof(uint32_t) * 3 + unCatchPokemon->tamanioNombrePokemon;
 		//mutex
-		PosicionLibre* unaPosicionLibre = list_get(listaPosicionesLibres,0);
+		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeCatch);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
 		if(unaPosicionLibre->tamanio > tamanioDeCatch){
 		void* principioContenidoDelMensaje;
@@ -955,7 +1013,7 @@ MensajeCatchPokemon2* guardarMensajeCatchPokemon(CatchPokemon* unCatchPokemon){
 		mensaje->suscriptoresAtendidos = list_create();
 		mensaje->suscriptoresACK = list_create();
 		char* nombreDelPokemonQueGuarde = unCatchPokemon->nombre;
-
+		ocuparPosicion(tamanioDeCatch,mensaje->contenidoDelMensaje,6,mensaje->ID);
 		printf("[CatchPokemon] Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
 		printf("[CatchPokemon] Su ID es: %d\n",mensaje->ID);
 		} else {
@@ -985,7 +1043,7 @@ MensajeCaughtPokemon2* guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemo
 		MensajeCaughtPokemon2* mensaje = malloc(sizeof(MensajeCaughtPokemon2));
 		int tamanioDeCaught = sizeof(uint32_t);
 		//mutex
-		PosicionLibre* unaPosicionLibre = list_get(listaPosicionesLibres,0);
+		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeCaught);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
 		if(unaPosicionLibre->tamanio > tamanioDeCaught){
 		void* principioContenidoDelMensaje;
@@ -1013,7 +1071,7 @@ MensajeCaughtPokemon2* guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemo
 
 		printf("[CaughtPokemon] Guarde el mensaje: %d\n",unCaughtPokemon->atrapar);
 		printf("[CaughtPokemon] Su ID es: %d, y su IDCorrelativo es: %d\n",mensaje->ID,mensaje->IDCorrelativo);
-
+		ocuparPosicion(tamanioDeCaught,mensaje->contenidoDelMensaje,CAUGHT_POKEMON,mensaje->ID);
 		} else {
 			puts("No hay memoria disponible.");
 		}
@@ -1650,4 +1708,9 @@ void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Sus
 			free(unCaughtPokemon);
 			puts("\nSuscriptor ok");
 }
+
+
+//----------------------------------------------------PARTICIONES DINÁMICAS-----------------
+
+
 

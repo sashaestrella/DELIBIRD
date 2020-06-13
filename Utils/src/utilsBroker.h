@@ -33,12 +33,23 @@ t_list* suscriptores_appeared_pokemon;
 t_list* suscriptores_catch_pokemon;
 t_list* suscriptores_caught_pokemon;
 t_list* listaPosicionesLibres;
-void* memoriaInterna; //esto en el futuro va a ser una lista
+t_list* listaPosicionesOcupadas;
+void* memoriaInterna;
+
+
+
 
 typedef struct{
 	void* posicion;
 	int tamanio;
 }PosicionLibre;
+
+typedef struct{
+	int tamanio;
+	void* posicion;
+	int colaALaQuePertenece;
+	int ID;
+}PosicionOcupada;
 
 //Mensajes 2
 typedef struct{
