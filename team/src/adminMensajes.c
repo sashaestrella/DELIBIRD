@@ -4,17 +4,23 @@ void generarConexiones(int tipoSuscriptor){
 
 	// -- Hilo de suscripcion a cola appeared -- //
 	pthread_t hiloAppeared;
-	pthread_create(&hiloAppeared, NULL, suscribirseAColaAppeared(), NULL);
+	suscribirseAColaAppeared();
+	//pthread_create(&hiloAppeared, NULL, suscribirseAColaAppeared, NULL);
+	//pthread_detach(hiloAppeared);
 
 
 	// -- Hilo de suscripcion a cola caught -- //
 	pthread_t hiloCaught;
-	pthread_create(&hiloCaught, NULL, suscribirseAColaCaught, NULL);
+	suscribirseAColaCaught();
+	//pthread_create(&hiloCaught, NULL, suscribirseAColaCaught, NULL);
+	//pthread_detach(hiloCaught);
 
 
 	// -- Hilo de suscripcion a cola localized -- //
 	pthread_t hiloLocalized;
-	pthread_create(&hiloLocalized, NULL, suscribirseAColaLocalized, NULL);
+	suscribirseAColaLocalized();
+	//pthread_create(&hiloLocalized, NULL, suscribirseAColaLocalized, NULL);
+	//pthread_detach(hiloLocalized);
 
 
 	//pthread_join(hiloAppeared,NULL);
@@ -25,14 +31,17 @@ void generarConexiones(int tipoSuscriptor){
 void abrirEscuchas(){
 	pthread_t escuchaAppeared;
 	pthread_create(&escuchaAppeared, NULL, recibirMensajesAppeared, NULL);
+	printf("Ya estoy escuchando la cola appeared... \n\n");
 	pthread_detach(escuchaAppeared);
 
 	pthread_t escuchaLocalized;
 	pthread_create(&escuchaLocalized, NULL, recibirMensajesLocalized, NULL);
+	printf("Ya estoy escuchando la cola localized... \n\n");
 	pthread_detach(escuchaLocalized);
 
 	pthread_t escuchaCaught;
 	pthread_create(&escuchaCaught, NULL, recibirMensajesCaught, NULL);
+	printf("Ya estoy escuchando la cola Caught... \n\n");
 	pthread_detach(escuchaCaught);
 }
 
@@ -186,16 +195,17 @@ void* recibirMensajesAppeared(){
 
 void* adminMensajeAppeared(AppearedPokemonConIDs* nuevoAppeared){
 	if(descartar_appeared_no_deseados(nuevoAppeared)){
-
 		list_add(mensajesRecibidos, nuevoAppeared->IDmensaje);
 
-		char* nombre = nuevoAppeared -> appearedPokemon -> nombre;
-		GetPokemon* mensajeGet = malloc(sizeof(GetPokemon));
-		mensajeGet -> nombre = nombre;
-		mensajeGet -> tamanioNombrePokemon = strlen(nombre)+1;
-		enviar_getPokemon(mensajeGet);
+		Pokemon* nuevo = malloc(sizeof(Pokemon));
+		nuevo -> nombre = nuevoAppeared -> appearedPokemon -> nombre;
+		nuevo -> posicion = nuevoAppeared -> appearedPokemon -> coordenadas;
+		list_add(nuevosPokemon, nuevo);
+		printf("Guarde un Pokemon %s de appeared con el ID de mensaje: %d\n", nuevo->nombre ,nuevoAppeared->IDmensaje);
+
+	} else {
+		printf("Mensaje Appeared que no es para nosotros\n");
 	}
-	printf("Guarde un mensaje appeared con el ID: %d\n" ,nuevoAppeared->IDmensaje);
 }
 
 
@@ -217,10 +227,12 @@ void* recibirMensajesLocalized(){
 void* adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
 
 	if(descartar_localized_no_deseados(nuevoLocalized)){
-
 		list_add(mensajesRecibidos, nuevoLocalized->IDmensaje); //por si se cae conexion
-		list_add(nuevosLocalized, nuevoLocalized);
-		printf("Guarde un mensaje localized");
+
+		Pokemon* nuevo = malloc(sizeof(Pokemon));
+		nuevo = elegirMejorUbicacion(nuevoLocalized);
+		list_add(nuevosPokemon, nuevo);
+		printf("Guarde un Pokemon %s de localized con el ID de mensaje %d\n", nuevo->nombre, nuevoLocalized->IDmensaje);
 
 	} else {
 		printf("Mensaje Localized que no es para nosotros\n");

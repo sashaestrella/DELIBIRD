@@ -74,3 +74,45 @@ void planificacionSJF_SD(Entrenador* entrenador){
 
 }
 
+Pokemon* elegirMejorUbicacion(LocalizedPokemonConIDs* localizedPokemon){
+	Pokemon* mejor = malloc(sizeof(Pokemon));
+	mejor -> nombre = localizedPokemon -> localizedPokemon -> nombre;
+
+	int menorDistancia = 9999999;
+	int distancia = 0;
+
+	int cursorEntrenadores = 0;
+	int cursorUbicaciones = 0;
+
+	CoordenadasXY mejoresCoordenadas;
+	CoordenadasXY* coordenadas = malloc(sizeof(CoordenadasXY));
+	Entrenador* paraProbar = malloc(sizeof(Entrenador));
+
+	paraProbar = (Entrenador*)list_get(entrenadores, cursorEntrenadores);
+	coordenadas = (CoordenadasXY*)list_get(localizedPokemon -> localizedPokemon -> paresOrdenados, cursorUbicaciones);
+
+	while(coordenadas != NULL){
+		mejor -> posicion = *coordenadas;
+
+		while(paraProbar != NULL){
+			distancia = calcularDistancia(paraProbar, mejor);
+
+			if(menorDistancia > distancia){
+				menorDistancia = distancia;
+				mejoresCoordenadas = *coordenadas;
+			}
+
+			cursorEntrenadores++;
+			paraProbar = (Entrenador*)list_get(entrenadores, cursorEntrenadores);
+		}
+
+		cursorEntrenadores = 0;
+		paraProbar = (Entrenador*)list_get(entrenadores, cursorEntrenadores);
+		cursorUbicaciones++;
+		coordenadas = (CoordenadasXY*)list_get(localizedPokemon -> localizedPokemon -> paresOrdenados, cursorUbicaciones);
+	}
+
+	mejor -> posicion = mejoresCoordenadas;
+	return mejor;
+}
+

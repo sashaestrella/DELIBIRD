@@ -8,6 +8,8 @@
 #ifndef PLANIFICACION_H_
 #define PLANIFICACION_H_
 
+#include "team.h"
+
 //_______________Funciones de hilos______________________
 
 void* algoritmoPlanificador();

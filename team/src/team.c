@@ -23,6 +23,57 @@ int main(int argc,char* argv[])
 
 	leer_config();
 
+	printf("Llegue");
+
+	// Agrego entrenador de prueba //
+
+	Entrenador* prueba = malloc(sizeof(Entrenador));
+	prueba -> ID = 1;
+	prueba -> estado = NEW;
+	prueba -> objetivos = NULL;
+	CoordenadasXY coordenadas;
+	coordenadas.posicionX = 1;
+	coordenadas.posicionY = 1;
+	prueba -> posicion = coordenadas;
+	list_add(entrenadores, prueba);
+
+	printf("Llegue");
+	// Agrego Localized de Prueba //
+	LocalizedPokemonConIDs* localizedNuevo = malloc(sizeof(LocalizedPokemonConIDs));
+	localizedNuevo -> localizedPokemon -> nombre = "Pikachu";
+	localizedNuevo -> IDcorrelativo = 0;
+	localizedNuevo -> IDmensaje = 0;
+	localizedNuevo -> localizedPokemon -> cantidadParesOrdenados = 3;
+	localizedNuevo -> localizedPokemon -> tamanioNombrePokemon = strlen("Pikachu") + 1;
+
+	printf("Llegue");
+
+	CoordenadasXY* coordenadas1 = malloc(sizeof(CoordenadasXY));
+	coordenadas1->posicionX = 2;
+	coordenadas1->posicionY = 3;
+	list_add(localizedNuevo ->localizedPokemon ->paresOrdenados, coordenadas1);
+
+	printf("Llegue");
+
+	CoordenadasXY* coordenadas2 = malloc(sizeof(CoordenadasXY));
+	coordenadas2->posicionX = 1;
+	coordenadas2->posicionY = 1;
+	list_add(localizedNuevo ->localizedPokemon ->paresOrdenados, coordenadas2);
+
+	printf("Llegue");
+
+	CoordenadasXY* coordenadas3 = malloc(sizeof(CoordenadasXY));
+	coordenadas3->posicionX = 3;
+	coordenadas3->posicionY = 2;
+	list_add(localizedNuevo ->localizedPokemon ->paresOrdenados, coordenadas3);
+
+	printf("Llegue\n");
+
+	// Debería devolver al Pokemon de la posición (1,1) //
+	Pokemon* mejorOpcion = malloc(sizeof(Pokemon));
+	mejorOpcion = elegirMejorUbicacion(localizedNuevo);
+	printf("La mejor opcion es %s en la posicion ( %d , %d )\n", mejorOpcion -> nombre, mejorOpcion -> posicion.posicionX, mejorOpcion -> posicion.posicionY);
+
 	/*
 
 	char* nombre = "Pikachu";
@@ -38,7 +89,7 @@ int main(int argc,char* argv[])
 
 	if(descartar_appeared_no_deseados(nuevoAppeared)){
 		printf("Funciona\n");
-	} */
+	}
 
 	GetPokemonConIDs* mensajeGet = malloc(sizeof(GetPokemonConIDs));
 
@@ -50,8 +101,6 @@ int main(int argc,char* argv[])
 	mensajeGet->getPokemon = getPokemon;
 
 	list_add(mensajesGetEnviados, mensajeGet);
-
-	/*
 
 	CatchPokemonConIDs* mensajeCatch = malloc(sizeof(CatchPokemonConIDs));
 
@@ -140,13 +189,8 @@ int main(int argc,char* argv[])
 	for(int j=0; j<list_size(entrenadores);j++)
 			pthread_join(hiloEntrenador[j], NULL);
 
-	*/
-
 	generarConexiones(0);
-	enviar_getPokemon(getPokemon);
-	abrirEscuchas();
-
-
+	abrirEscuchas(); */
 
 	/*-----------------------------------------------PARTE 2-------------------------------------------------------------*/
 

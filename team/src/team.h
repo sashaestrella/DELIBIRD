@@ -15,6 +15,7 @@
 sem_t sem[3];
 sem_t sem2[3];
 
+
 // ----------------- Estructuras ----------------- //
 
 typedef enum
@@ -61,6 +62,10 @@ char* archivoLog;
 t_queue* colaNEW_BLOCKED;
 t_list* mensajesGetEnviados;
 t_list* mensajesCatchEnviados;
+
+t_list* nuevosCaught;
+t_list* mensajesRecibidos;
+t_list* nuevosPokemon;
 
 //----------------- Variables para los algoritmos de planificacion ----------------- //
 
