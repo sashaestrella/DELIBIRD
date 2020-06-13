@@ -13,5 +13,6 @@ void planificacionSJF_CD(Entrenador*);
 void planificacionSJF_SD(Entrenador*);
 
 Pokemon* elegirMejorUbicacion(LocalizedPokemonConIDs*);
+int elegirMejorEntrenador(Pokemon*);
 
 #endif /* FUNCIONESENTRENADOR_H_ */

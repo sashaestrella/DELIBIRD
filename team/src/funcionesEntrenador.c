@@ -117,3 +117,38 @@ Pokemon* elegirMejorUbicacion(LocalizedPokemonConIDs* localizedPokemon){
 	return mejor;
 }
 
+int elegirMejorEntrenador(Pokemon* nuevoPokemon){
+	Entrenador* paraProbar = malloc(sizeof(Entrenador));
+	Entrenador* mejorEntrenador = malloc(sizeof(Entrenador));
+
+	int mejor;
+
+	int menorDistancia;
+	int distancia = 0;
+
+	int cursorEntrenadores = 0;
+	int cantidadEntrenadores = list_size(entrenadores);
+
+	paraProbar = (Entrenador*)list_get(entrenadores, cursorEntrenadores);
+	distancia = calcularDistancia(paraProbar, nuevoPokemon);
+	menorDistancia = distancia;
+	mejorEntrenador = paraProbar;
+
+	while(cursorEntrenadores < cantidadEntrenadores){
+
+		if(menorDistancia > distancia){
+			menorDistancia = distancia;
+			mejorEntrenador = paraProbar;
+		}
+
+		paraProbar = (Entrenador*)list_get(entrenadores, cursorEntrenadores);
+		distancia = calcularDistancia(paraProbar, nuevoPokemon);
+
+		cursorEntrenadores++;
+	}
+
+	printf("El mejor entrenador es ID %d en la posicion (%d , %d)\n\n", mejorEntrenador -> ID, mejorEntrenador -> posicion.posicionX, mejorEntrenador -> posicion.posicionY);
+	return mejorEntrenador -> ID;
+}
+
+

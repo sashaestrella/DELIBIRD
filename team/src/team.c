@@ -12,6 +12,9 @@ int main(int argc,char* argv[])
 	sem_init(&sem2[1], 0, 0);
 	sem_init(&sem2[2], 0, 0);
 
+	sem_init(&mensajesCaught, 0, 0);
+	sem_init(&nuevosPokemons, 0, 0);
+
 	int hiloCreado;
 	algoritmoPlanificacion = "FIFO";
 
@@ -27,22 +30,8 @@ int main(int argc,char* argv[])
 	leer_config();
 	obtener_objetivo_global();
 
-
-	// Agrego entrenador de prueba //
-
-	/*Entrenador* prueba = malloc(sizeof(Entrenador));
-	prueba -> ID = 1;
-	prueba -> estado = NEW;
-	prueba -> objetivos = list_create();
-	list_add(prueba->objetivos, "Squirtle");
-	CoordenadasXY coordenadas;
-	coordenadas.posicionX = 1;
-	coordenadas.posicionY = 1;
-	prueba -> posicion = coordenadas;
-	list_add(entrenadores, prueba);*/
-
 	// Agrego Localized de Prueba //
-	LocalizedPokemon * localized = malloc(sizeof(LocalizedPokemon));
+	/*LocalizedPokemon * localized = malloc(sizeof(LocalizedPokemon));
 	localized->tamanioNombrePokemon = strlen("Pikachu")+1;
 	localized->nombre = "Pikachu";
 	localized->cantidadParesOrdenados = 3;
@@ -71,13 +60,6 @@ int main(int argc,char* argv[])
 	coordenadas3->posicionY = 2;
 	list_add(localizedNuevo ->localizedPokemon ->paresOrdenados, coordenadas3);
 
-	adminMensajeLocalized(localizedNuevo);
-
-	// Debería devolver al Pokemon de la posición (1,1) //
-	//Pokemon* mejorOpcion = malloc(sizeof(Pokemon));
-	//mejorOpcion = elegirMejorUbicacion(localizedNuevo);
-	//printf("La mejor opcion es %s en la posicion ( %d , %d )\n", mejorOpcion -> nombre, mejorOpcion -> posicion.posicionX, mejorOpcion -> posicion.posicionY);
-
 
 	char* nombre = "Pikachu";
 
@@ -94,7 +76,7 @@ int main(int argc,char* argv[])
 		printf("Funciona\n");
 	}
 
-	/*GetPokemonConIDs* mensajeGet = malloc(sizeof(GetPokemonConIDs));
+	GetPokemonConIDs* mensajeGet = malloc(sizeof(GetPokemonConIDs));
 
 	GetPokemon* getPokemon= malloc(sizeof(GetPokemon));
 	getPokemon->nombre = "Pikachu";
