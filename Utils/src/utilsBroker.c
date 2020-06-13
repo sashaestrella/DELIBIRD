@@ -134,6 +134,7 @@ void process_request(int cod_op, int cliente_fd) {
 					unGetPokemon = getConIDs->getPokemon;
 					free(getConIDs);
 					unMensajeGetPokemon2 = guardarMensajeGetPokemon(unGetPokemon);
+					devolverID(cliente_fd,unMensajeGetPokemon2->ID);
 					enviarGetPokemonASuscriptores(unMensajeGetPokemon2);
 					break;
 				case APPEARED_POKEMON:
@@ -145,9 +146,11 @@ void process_request(int cod_op, int cliente_fd) {
 					break;
 				case CATCH_POKEMON:
 					catchConIDs = recibir_CATCH_POKEMON(cliente_fd,&size,0);
+					devolverID(cliente_fd,catchConIDs->IDmensaje);
 					unCatchPokemon = catchConIDs->catchPokemon;
 					free(catchConIDs);
 					mensajeCatchPokemon2 = guardarMensajeCatchPokemon(unCatchPokemon);
+					devolverID(cliente_fd,mensajeCatchPokemon2->ID);
 					enviarCatchPokemonASuscriptores(mensajeCatchPokemon2);
 					break;
 				case CAUGHT_POKEMON:
@@ -179,6 +182,9 @@ void process_request(int cod_op, int cliente_fd) {
 	}
 }
 
+void devolverID (int socket, int id){
+	send(socket,&id,sizeof(int),0);
+}
 
 
 void enviarCaughtPokemonASuscriptores(MensajeCaughtPokemon2* unMensajeCaughtPokemon){
@@ -919,6 +925,7 @@ MensajeGetPokemon2* guardarMensajeGetPokemon(GetPokemon* unGetPokemon){
 				generadorDeIDsMensaje++;
 				mensaje->ID = generadorDeIDsMensaje;
 				pthread_mutex_unlock(&mutexGeneradorIDMensaje);
+
 		int tamanioDeGet = sizeof(uint32_t) + unGetPokemon->tamanioNombrePokemon;
 		pthread_mutex_lock(&mutexMemoriaInterna);
 		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeGet);
