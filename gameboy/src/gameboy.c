@@ -43,11 +43,11 @@ int main(int argc, char *argv[])
 
 	//Enviar mensaje
 
-	NewPokemon* newPokemon = malloc(sizeof(NewPokemon));
+	NewPokemon* newPokemon;
 	newPokemon = parsearNewPokemon(argv[3], argv[4], argv[5], argv[6]);
 
 
-	enviarNewPokemon(newPokemon, conexion);
+	enviarNewPokemon(newPokemon, conexion,0);
 	//Recibir mensaje
 /*
 	char* mensajeRecibido;
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 	log_info(logger, "Se recibio el mensaje: %s " ,mensajeRecibido);
 */
 
->>>>>>> enviarNewPokemon
+
 	terminar_programa(conexion, logger, config);
 }
 

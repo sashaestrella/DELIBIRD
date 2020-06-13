@@ -655,7 +655,7 @@ NewPokemon* parsearNewPokemon(char* pokemon
 	NewPokemon* newPokemon = malloc(sizeof(NewPokemon));
 
 	newPokemon->nombre = pokemon;
-	newPokemon->tamanioNombrePokemon = strlen(pokemon);
+	newPokemon->tamanioNombrePokemon = strlen(pokemon)+1;
 	newPokemon->coordenadas.posicionX = atoi(posicionX);
 	newPokemon->coordenadas.posicionY = atoi(posicionY);
 	newPokemon->cantidad = atoi(cantidad);
@@ -663,7 +663,7 @@ NewPokemon* parsearNewPokemon(char* pokemon
 	return newPokemon;
 }
 
-void enviarNewPokemon(NewPokemon* newPokemon, int conexion)
+/*void enviarNewPokemon(NewPokemon* newPokemon, int conexion)
 {
 	uint32_t codigo = NEW_POKEMON;
 	send(conexion, &codigo, sizeof(uint32_t), 0);
@@ -680,5 +680,5 @@ void enviarNewPokemon(NewPokemon* newPokemon, int conexion)
 	send(conexion,&posY,sizeof(uint32_t),0);
 	send(conexion,&cant,sizeof(uint32_t),0);
 	//send() de todo new pokemon
-}
+}*/
 
