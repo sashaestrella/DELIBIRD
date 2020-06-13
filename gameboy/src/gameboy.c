@@ -42,6 +42,18 @@ int main(void)
 
 	printf( "\nSe creo la conexion con el valor %d \n", conexion);
 
+	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
+	char* nombrePokemon = malloc(8);
+	int idNewPokemon = 0;
+	nombrePokemon = "PIKACHU";
+	unNewPokemon->nombre = nombrePokemon;
+	unNewPokemon->coordenadas.posicionX = 2;
+	unNewPokemon->coordenadas.posicionY = 3;
+	unNewPokemon->cantidad = 3;
+	enviarNewPokemon(unNewPokemon, conexion,idNewPokemon);
+
+	printf("\nEnvie el mensaje: %s, con id: %d\n",unNewPokemon->nombre,idNewPokemon);
+
 
 
 /*
