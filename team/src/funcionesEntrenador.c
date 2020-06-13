@@ -113,6 +113,7 @@ Pokemon* elegirMejorUbicacion(LocalizedPokemonConIDs* localizedPokemon){
 	}
 
 	mejor -> posicion = mejoresCoordenadas;
+	printf("La mejor posicion es ( %d , %d  )\n", mejoresCoordenadas.posicionX, mejoresCoordenadas.posicionY);
 	return mejor;
 }
 

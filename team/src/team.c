@@ -71,6 +71,8 @@ int main(int argc,char* argv[])
 	coordenadas3->posicionY = 2;
 	list_add(localizedNuevo ->localizedPokemon ->paresOrdenados, coordenadas3);
 
+	adminMensajeLocalized(localizedNuevo);
+
 	// Debería devolver al Pokemon de la posición (1,1) //
 	//Pokemon* mejorOpcion = malloc(sizeof(Pokemon));
 	//mejorOpcion = elegirMejorUbicacion(localizedNuevo);

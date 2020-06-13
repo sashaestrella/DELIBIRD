@@ -106,4 +106,6 @@ char** obtener_objetivos(char**, char**, t_list*);
 void terminar_programa(int, t_log*, t_config*);
 void obtener_objetivo_global();
 void* planificar(Entrenador*);
+int obtenerCantidadObjetivo(char*);
+
 #endif

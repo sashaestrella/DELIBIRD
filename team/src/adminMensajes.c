@@ -177,7 +177,6 @@ void* recibirMensajesAppeared(){
 
 void* adminMensajeAppeared(AppearedPokemonConIDs* nuevoAppeared){
 	if(descartar_appeared_no_deseados(nuevoAppeared)){
-		list_add(mensajesRecibidos, (void*)nuevoAppeared->IDmensaje);
 
 		Pokemon* nuevo = malloc(sizeof(Pokemon));
 		nuevo -> nombre = nuevoAppeared -> appearedPokemon -> nombre;
@@ -188,6 +187,7 @@ void* adminMensajeAppeared(AppearedPokemonConIDs* nuevoAppeared){
 	} else {
 		printf("Mensaje Appeared que no es para nosotros\n");
 	}
+	list_add(mensajesRecibidos, (void*)nuevoAppeared->IDmensaje);
 }
 
 
@@ -207,18 +207,32 @@ void* recibirMensajesLocalized(){
 }
 
 void* adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
+	int cantidadObjetivos = 0;
+	cantidadObjetivos = obtenerCantidadObjetivo(nuevoLocalized -> localizedPokemon -> nombre);
+	int j = 0;
+	int cantidadPokemonLocalizados = list_size(nuevoLocalized -> localizedPokemon -> paresOrdenados);
+	Pokemon* nuevo = malloc(sizeof(Pokemon));
 
-	if(descartar_localized_no_deseados(nuevoLocalized)){
-		list_add(mensajesRecibidos, nuevoLocalized->IDmensaje); //por si se cae conexion
+	//if(descartar_localized_no_deseados(nuevoLocalized)){
 
-		Pokemon* nuevo = malloc(sizeof(Pokemon));
+		for(int i=0; i<cantidadObjetivos && j < cantidadPokemonLocalizados; i++){
 		nuevo = elegirMejorUbicacion(nuevoLocalized);
 		list_add(nuevosPokemon, nuevo);
 		printf("Guarde un Pokemon %s de localized con el ID de mensaje %d\n", nuevo->nombre, nuevoLocalized->IDmensaje);
 
-	} else {
-		printf("Mensaje Localized que no es para nosotros\n");
-	}
+		bool compararCoordenadas(CoordenadasXY* coordenadas){
+			return (nuevo -> posicion.posicionX == coordenadas->posicionX) && (nuevo -> posicion.posicionY == coordenadas->posicionY);
+		}
+		list_remove_by_condition(nuevoLocalized -> localizedPokemon -> paresOrdenados, (void*)compararCoordenadas);
+
+		j++;
+		}
+
+	//} else {
+		//printf("Mensaje Localized que no es para nosotros\n");
+	//}
+	list_add(mensajesRecibidos, nuevoLocalized->IDmensaje); //por si se cae conexion
+	free(nuevo);
 }
 
 
@@ -242,13 +256,13 @@ void* recibirMensajesCaught(){
 void* adminMensajeCaught(CaughtPokemonConIDs* nuevoCaught){
 	if(descartar_caught_no_deseados(nuevoCaught)){
 
-		list_add(mensajesRecibidos, nuevoCaught->IDmensaje);
 		list_add(nuevosCaught, nuevoCaught);
 		printf("Guarde un mensaje Caught");
 
 	} else {
 		printf("Mensaje Caught que no es para nosotros\n");
 	}
+	list_add(mensajesRecibidos, nuevoCaught->IDmensaje);
 }
 
 

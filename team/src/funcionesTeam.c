@@ -103,6 +103,13 @@ void obtener_objetivo_global(){
 	}
 }
 
+int obtenerCantidadObjetivo(char* nombre){
+	bool compararNombre(char* objetivo){
+		 return strcmp(nombre,objetivo);
+	}
+	return list_count_satisfying(objetivoGlobal, (void*)compararNombre);
+}
+
 int cantidad(char** lista){
 
 		int i=0;
