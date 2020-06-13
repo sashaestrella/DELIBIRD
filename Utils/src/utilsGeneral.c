@@ -172,6 +172,7 @@ GetPokemonConIDs* recibir_GET_POKEMON(int cliente_fd, int* size,int reciboID){
 		return getConIDs;
 }
 
+
 AppearedPokemonConIDs* recibir_APPEARED_POKEMON(int cliente_fd,int* size,int reciboID,int reciboIDCorrelativo){
 
 		AppearedPokemon* unAppearedPokemon = malloc(sizeof(AppearedPokemon));
@@ -234,6 +235,7 @@ CatchPokemonConIDs* recibir_CATCH_POKEMON(int cliente_fd,int*size,int reciboID){
 			catchConIDs->IDmensaje = id;
 		}
 
+
 		memcpy(&(unCatchPokemon->tamanioNombrePokemon),stream,sizeof(uint32_t));
 		stream+=sizeof(uint32_t);
 		unCatchPokemon->nombre = malloc(unCatchPokemon->tamanioNombrePokemon);
@@ -288,8 +290,10 @@ CaughtPokemonConIDs* recibir_CAUGHT_POKEMON(int cliente_fd,int* size,int reciboI
 
 
 
+
 void* serializar_paquete(t_paquete* paquete, int bytes)
 {
+
 
 	void * a_enviar = malloc(bytes);
 	int desplazamiento = 0;
@@ -641,3 +645,40 @@ void liberar_conexion(int socket_cliente)
 {
 	close(socket_cliente);
 }
+
+
+NewPokemon* parsearNewPokemon(char* pokemon
+							, char* posicionX
+							, char* posicionY
+							, char* cantidad)
+{
+	NewPokemon* newPokemon = malloc(sizeof(NewPokemon));
+
+	newPokemon->nombre = pokemon;
+	newPokemon->tamanioNombrePokemon = strlen(pokemon);
+	newPokemon->coordenadas.posicionX = atoi(posicionX);
+	newPokemon->coordenadas.posicionY = atoi(posicionY);
+	newPokemon->cantidad = atoi(cantidad);
+
+	return newPokemon;
+}
+
+void enviarNewPokemon(NewPokemon* newPokemon, int conexion)
+{
+	uint32_t codigo = NEW_POKEMON;
+	send(conexion, &codigo, sizeof(uint32_t), 0);
+	puts("te envie el codopeee");
+	char* nombrePokemon = newPokemon->nombre;
+	uint32_t tamanioNombre= strlen(newPokemon->tamanioNombrePokemon)+1;
+	uint32_t posX = newPokemon->coordenadas.posicionX;
+	uint32_t posY = newPokemon->coordenadas.posicionY;
+	uint32_t cant = newPokemon->cantidad;;
+
+	send(conexion,&tamanioNombre,sizeof(uint32_t),0);
+	send(conexion,nombrePokemon,tamanioNombre,0);
+	send(conexion,&posX,sizeof(uint32_t),0);
+	send(conexion,&posY,sizeof(uint32_t),0);
+	send(conexion,&cant,sizeof(uint32_t),0);
+	//send() de todo new pokemon
+}
+

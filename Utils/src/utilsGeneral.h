@@ -1,6 +1,7 @@
 #ifndef CONEXIONES_H_
 #define CONEXIONES_H_
 
+#include<stdint.h>
 #include<stdio.h>
 #include<stdlib.h>
 #include<sys/socket.h>
@@ -51,7 +52,13 @@ void* recibir_buffer(int*, int);
 void* recibir_mensaje(int socket_cliente, int* size);
 void* serializar_paquete(t_paquete* paquete, int bytes);
 void devolver_mensaje(void* payload, int size, int socket_cliente);
+<<<<<<< HEAD
 
+=======
+NewPokemon* parsearNewPokemon(char* pokemon, char* posicionX, char* posicionY, char* cantidad);
+void enviarNewPokemon(NewPokemon* newPokemon, int conexion);
+void validarMensaje();
+>>>>>>> enviarNewPokemon
 
 NewPokemonConIDs* recibir_NEW_POKEMON(int cliente_fd,int* size,int reciboID);
 

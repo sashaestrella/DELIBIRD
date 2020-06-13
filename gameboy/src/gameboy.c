@@ -1,26 +1,25 @@
-
-
 #include "game-boy.h"
+#include <src/utilsGeneral.h>
 
-int main(void)
+int main(int argc, char *argv[])
 {
 
+
 	/*---------------------------------------------------PARTE 2-------------------------------------------------------------*/
+
 	int conexion;
 	char* ip;
 	char* puerto;
-
-
 	t_log* logger;
 	t_config* config;
 
 	logger = iniciar_logger();
 
-	char* primerLog = "Soy un log";
+	//Loggear "soy un log"
+	char* primerLog = "Soy game-boy";
 
 	log_info(logger, primerLog);
 
-	//Loggear "soy un log"
 
 	config = leer_config();
 
@@ -37,66 +36,47 @@ int main(void)
 
 	ip = config_get_string_value(config, "IP");
 	puerto = config_get_string_value(config, "PUERTO");
-
 	conexion = crear_conexion(ip, puerto);
 
 	printf( "\nSe creo la conexion con el valor %d \n", conexion);
 
-	NewPokemon* unNewPokemon = malloc(sizeof(NewPokemon));
-	char* nombrePokemon = malloc(8);
-	int idNewPokemon = 0;
-	nombrePokemon = "PIKACHU";
-	unNewPokemon->nombre = nombrePokemon;
-	unNewPokemon->coordenadas.posicionX = 2;
-	unNewPokemon->coordenadas.posicionY = 3;
-	unNewPokemon->cantidad = 3;
-	enviarNewPokemon(unNewPokemon, conexion,idNewPokemon);
 
-	printf("\nEnvie el mensaje: %s, con id: %d\n",unNewPokemon->nombre,idNewPokemon);
+	//Enviar mensaje
+
+	NewPokemon* newPokemon = malloc(sizeof(NewPokemon));
+	newPokemon = parsearNewPokemon(argv[3], argv[4], argv[5], argv[6]);
 
 
-
+	enviarNewPokemon(newPokemon, conexion);
+	//Recibir mensaje
 /*
-	int tamanio_maximo_mensaje = 256;
-
-	char* mensajeAEnviar = malloc(tamanio_maximo_mensaje);
-
-	printf("\nIngrese el mensaje:");
-
-	fgets(mensajeAEnviar,tamanio_maximo_mensaje,stdin);
-
-	printf("Se va a enviar el mensaje %s", mensajeAEnviar);
-
-	enviar_mensaje(mensajeAEnviar, conexion); //Envia el mensaje
-
-	//recibir mensaje
-
 	char* mensajeRecibido;
 
 	mensajeRecibido=recibir_mensaje(conexion);
-
-
-	//loguear mensaje recibido
-
+*/
+	//Loguear mensaje recibido
+/*
 	log_info(logger, "Se recibio el mensaje: %s " ,mensajeRecibido);
 */
 
+>>>>>>> enviarNewPokemon
 	terminar_programa(conexion, logger, config);
 }
 
 //TODO
 t_log* iniciar_logger(void)
 {
-	return log_create("gameboy.log", "Log de GameBoy" , 1, LOG_LEVEL_INFO);
+	return log_create("game-boy.log", "Game Boy" , 1, LOG_LEVEL_INFO);
 
 }
 
 //TODO
 t_config* leer_config(void)
 {
-	return config_create("gameboy.config");
+	return config_create("game-boy.config");
 
 }
+
 
 //TODO
 void terminar_programa(int conexion, t_log* logger, t_config* config)
