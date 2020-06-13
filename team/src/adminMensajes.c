@@ -295,7 +295,10 @@ bool descartar_appeared_no_deseados(AppearedPokemonConIDs* appearedPokemonRecibi
 	bool compararNombre(char* nombreObjetivo){
 		return nombreObjetivo == appearedPokemonRecibido -> appearedPokemon -> nombre;
 	}
-	return list_any_satisfy(objetivoGlobal, (void*)compararNombre);
+	bool yaRecibi(int idMensaje){
+		return idMensaje != appearedPokemonRecibido -> IDmensaje;
+	}
+	return list_any_satisfy(objetivoGlobal, (void*)compararNombre);// && list_all_satisfy(mensajesRecibidos, (void*)yaRecibi;
 }
 
 bool descartar_localized_no_deseados(LocalizedPokemonConIDs* localizedPokemonRecibido){
@@ -305,7 +308,11 @@ bool descartar_localized_no_deseados(LocalizedPokemonConIDs* localizedPokemonRec
 		return mensajeGet->IDmensaje == localizedPokemonRecibido->IDcorrelativo;
 	}
 
-	return list_any_satisfy(mensajesGetEnviados, (void*)compararIDcorrelativo);
+	bool yaRecibi(int idMensaje){
+			return idMensaje != localizedPokemonRecibido -> IDmensaje;
+	}
+
+	return list_any_satisfy(mensajesGetEnviados, (void*)compararIDcorrelativo);// && list_all_satisfy(mensajesRecibidos, (void*)yaRecibi);
 
 }
 
@@ -317,7 +324,11 @@ bool descartar_caught_no_deseados(CaughtPokemonConIDs* caughtPokemonRecibido){
 		return mensajeCatch->IDmensaje == caughtPokemonRecibido->IDCorrelativo;
 	}
 
-	return list_any_satisfy(mensajesCatchEnviados, (void*)compararIDcorrelativo);
+	bool yaRecibi(int idMensaje){
+			return idMensaje != caughtPokemonRecibido -> IDmensaje;
+	}
+
+	return list_any_satisfy(mensajesCatchEnviados, (void*)compararIDcorrelativo); // && list_all_satisfy(mensajesRecibidos, (void*)yaRecibi);
 
 }
 
