@@ -2,30 +2,12 @@
 
 void generarConexiones(int tipoSuscriptor){
 
-	// -- Hilo de suscripcion a cola appeared -- //
-	pthread_t hiloAppeared;
 	suscribirseAColaAppeared();
-	//pthread_create(&hiloAppeared, NULL, suscribirseAColaAppeared, NULL);
-	//pthread_detach(hiloAppeared);
 
-
-	// -- Hilo de suscripcion a cola caught -- //
-	pthread_t hiloCaught;
 	suscribirseAColaCaught();
-	//pthread_create(&hiloCaught, NULL, suscribirseAColaCaught, NULL);
-	//pthread_detach(hiloCaught);
 
-
-	// -- Hilo de suscripcion a cola localized -- //
-	pthread_t hiloLocalized;
 	suscribirseAColaLocalized();
-	//pthread_create(&hiloLocalized, NULL, suscribirseAColaLocalized, NULL);
-	//pthread_detach(hiloLocalized);
 
-
-	//pthread_join(hiloAppeared,NULL);
-	//pthread_join(hiloCaught,NULL);
-	//pthread_join(hiloLocalized,NULL);
 }
 
 void abrirEscuchas(){
@@ -80,12 +62,12 @@ void* suscribirseAColaCaught(){
 	int ack = 1;
 
 	CaughtPokemonConIDs* CaughtConIDs;
-	CaughtPokemon* unCaughtPokemonTemporal;
+	//CaughtPokemon* unCaughtPokemonTemporal;
 
 	for(int i = 0; i<tamanioLista;i++){
 		recv(conexion,&variableQueNoUsoxd,sizeof(int),MSG_WAITALL);
 		CaughtConIDs = recibir_CAUGHT_POKEMON(conexion,&size,1);
-		unCaughtPokemonTemporal = CaughtConIDs -> caughtPokemon;
+		//unCaughtPokemonTemporal = CaughtConIDs -> caughtPokemon;
 		printf("[gameboy] Recibi un Caught, con ID: %d\n", CaughtConIDs->IDmensaje);
 		send(conexion,&ack,sizeof(int),0);
 		printf("[gameboy]ACK=%d del mensaje %d fue enviado\n",ack,CaughtConIDs->IDmensaje);
@@ -129,14 +111,14 @@ void* suscribirseAColaLocalized(){
 		printf("[gameboy] Recibi un %s,con ID: %d\n",unLocalizedPokemonTemporal->nombre,localizedConIDs->IDmensaje);
 		send(conexion,&ack,sizeof(int),0);
 		printf("[gameboy]ACK=%d del mensaje %d fue enviado\n",ack,localizedConIDs->IDmensaje);
-		adminMensajeLocalized(localizedConIDs);
+		//adminMensajeLocalized(localizedConIDs);
 	}
 free(localizedConIDs);
 }
 
 void* suscribirseAColaAppeared(){
 
-	printf("\nCola Appeared:\n");
+	printf("\n\nCola Appeared:\n");
 	int conexion = crear_conexion(ip, puerto);
 	Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
 	unSuscriptor1->IDsuscriptor = 0;
@@ -186,7 +168,7 @@ void* recibirMensajesAppeared(){
 	while(1){
 		nuevoAppeared = recibir_APPEARED_POKEMON(conexionAppeared, 0, 0, 1);
 		send(conexionAppeared, 1, sizeof(int), 0);
-		pthread_create(&admin, NULL, adminMensajeAppeared, nuevoAppeared);
+		pthread_create(&admin, NULL, (void*)adminMensajeAppeared, nuevoAppeared);
 		pthread_detach(admin);
 	}
 	free(mensajeRecibido);
@@ -195,7 +177,7 @@ void* recibirMensajesAppeared(){
 
 void* adminMensajeAppeared(AppearedPokemonConIDs* nuevoAppeared){
 	if(descartar_appeared_no_deseados(nuevoAppeared)){
-		list_add(mensajesRecibidos, nuevoAppeared->IDmensaje);
+		list_add(mensajesRecibidos, (void*)nuevoAppeared->IDmensaje);
 
 		Pokemon* nuevo = malloc(sizeof(Pokemon));
 		nuevo -> nombre = nuevoAppeared -> appearedPokemon -> nombre;
@@ -217,7 +199,7 @@ void* recibirMensajesLocalized(){
 	while(1){
 		nuevoLocalized = recibir_LOCALIZED_POKEMON(conexionLocalized, 0, 1);
 		send(conexionLocalized, 1, sizeof(int), 0);
-		pthread_create(&admin, NULL, adminMensajeLocalized, nuevoLocalized);
+		pthread_create(&admin, NULL, (void*)adminMensajeLocalized, nuevoLocalized);
 		pthread_detach(admin);
 	}
 	free(mensajeRecibido);

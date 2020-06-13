@@ -20,61 +20,62 @@ int main(int argc,char* argv[])
 
 	mensajesGetEnviados= list_create();
 	mensajesCatchEnviados= list_create();
+	mensajesRecibidos = list_create();
+	nuevosPokemon = list_create();
+	nuevosCaught = list_create();
 
 	leer_config();
 
-	printf("Llegue");
 
 	// Agrego entrenador de prueba //
 
-	Entrenador* prueba = malloc(sizeof(Entrenador));
+	/*Entrenador* prueba = malloc(sizeof(Entrenador));
 	prueba -> ID = 1;
 	prueba -> estado = NEW;
-	prueba -> objetivos = NULL;
+	prueba -> objetivos = list_create();
+	list_add(prueba->objetivos, "Squirtle");
 	CoordenadasXY coordenadas;
 	coordenadas.posicionX = 1;
 	coordenadas.posicionY = 1;
 	prueba -> posicion = coordenadas;
-	list_add(entrenadores, prueba);
+	list_add(entrenadores, prueba);*/
 
-	printf("Llegue");
 	// Agrego Localized de Prueba //
+	LocalizedPokemon * localized = malloc(sizeof(LocalizedPokemon));
+	localized->tamanioNombrePokemon = strlen("Pikachu")+1;
+	localized->nombre = "Pikachu";
+	localized->cantidadParesOrdenados = 3;
+	localized->paresOrdenados=list_create();
+
 	LocalizedPokemonConIDs* localizedNuevo = malloc(sizeof(LocalizedPokemonConIDs));
-	localizedNuevo -> localizedPokemon -> nombre = "Pikachu";
 	localizedNuevo -> IDcorrelativo = 0;
 	localizedNuevo -> IDmensaje = 0;
-	localizedNuevo -> localizedPokemon -> cantidadParesOrdenados = 3;
-	localizedNuevo -> localizedPokemon -> tamanioNombrePokemon = strlen("Pikachu") + 1;
+	localizedNuevo->localizedPokemon = localized;
 
-	printf("Llegue");
 
 	CoordenadasXY* coordenadas1 = malloc(sizeof(CoordenadasXY));
 	coordenadas1->posicionX = 2;
 	coordenadas1->posicionY = 3;
 	list_add(localizedNuevo ->localizedPokemon ->paresOrdenados, coordenadas1);
 
-	printf("Llegue");
 
 	CoordenadasXY* coordenadas2 = malloc(sizeof(CoordenadasXY));
 	coordenadas2->posicionX = 1;
 	coordenadas2->posicionY = 1;
 	list_add(localizedNuevo ->localizedPokemon ->paresOrdenados, coordenadas2);
 
-	printf("Llegue");
 
 	CoordenadasXY* coordenadas3 = malloc(sizeof(CoordenadasXY));
 	coordenadas3->posicionX = 3;
 	coordenadas3->posicionY = 2;
 	list_add(localizedNuevo ->localizedPokemon ->paresOrdenados, coordenadas3);
 
-	printf("Llegue\n");
 
 	// Debería devolver al Pokemon de la posición (1,1) //
-	Pokemon* mejorOpcion = malloc(sizeof(Pokemon));
-	mejorOpcion = elegirMejorUbicacion(localizedNuevo);
-	printf("La mejor opcion es %s en la posicion ( %d , %d )\n", mejorOpcion -> nombre, mejorOpcion -> posicion.posicionX, mejorOpcion -> posicion.posicionY);
+	//Pokemon* mejorOpcion = malloc(sizeof(Pokemon));
+	//mejorOpcion = elegirMejorUbicacion(localizedNuevo);
+	//printf("La mejor opcion es %s en la posicion ( %d , %d )\n", mejorOpcion -> nombre, mejorOpcion -> posicion.posicionX, mejorOpcion -> posicion.posicionY);
 
-	/*
 
 	char* nombre = "Pikachu";
 
@@ -85,7 +86,7 @@ int main(int argc,char* argv[])
 	AppearedPokemonConIDs* nuevoAppeared = malloc(sizeof(AppearedPokemonConIDs));
 	nuevoAppeared -> IDcorrelativo = 0;
 	nuevoAppeared -> IDmensaje = 0;
-	nuevoAppeared -> appearedPokemon;
+	nuevoAppeared -> appearedPokemon = appearedPokemon;
 
 	if(descartar_appeared_no_deseados(nuevoAppeared)){
 		printf("Funciona\n");
@@ -190,14 +191,9 @@ int main(int argc,char* argv[])
 			pthread_join(hiloEntrenador[j], NULL);
 
 	generarConexiones(0);
-	abrirEscuchas(); */
-
-	/*-----------------------------------------------PARTE 2-------------------------------------------------------------*/
-
-
+	//abrirEscuchas();
 
 	t_log* logger;
-	t_config* config;
 
 	logger = iniciar_logger();
 
@@ -205,45 +201,6 @@ int main(int argc,char* argv[])
 
 	log_info(logger, primerLog);
 
-	sleep(3);
-
-	/*---------------------------------------------------PARTE 3-------------------------------------------------------------*/
-
-	//antes de continuar, tenemos que asegurarnos que el servidor esté corriendo porque lo necesitaremos para lo que sigue.
-
-	//crear conexion
-
-
-	//conexion = crear_conexion(ip, puerto);
-
-	//printf( "\nSe creo la conexion con el valor %d \n", conexion);
-
-	//enviar mensaje
-
-	/*int tamanio_maximo_mensaje = 256;
-
-	char* mensajeAEnviar = malloc(tamanio_maximo_mensaje);
-
-	printf("\nIngrese el mensaje:");
-
-	fgets(mensajeAEnviar,tamanio_maximo_mensaje,stdin);
-
-	printf("Se va a enviar el mensaje %s", mensajeAEnviar);
-
-	enviar_mensaje(mensajeAEnviar, conexion); //Envia el mensaje
-
-	//recibir mensaje
-
-	char* mensajeRecibido;
-
-	//mensajeRecibido=recibir_mensaje(conexion);*/
-
-
-	//loguear mensaje recibido
-
-	//log_info(logger, "Se recibio el mensaje: %s " ,mensajeRecibido);
-
-	//terminar_programa(conexion, logger, config);
 }
 
 //TODO
@@ -253,15 +210,3 @@ t_log* iniciar_logger(void)
 
 }
 
-//TODO
-
-
-//TODO
-void terminar_programa(int conexion, t_log* logger, t_config* config)
-{
-	log_destroy(logger);
-	config_destroy(config);
-	liberar_conexion(conexion);
-
-	//Y por ultimo, para cerrar, hay que liberar lo que utilizamos (conexion, log y config) con las funciones de las commons y del TP mencionadas en el enunciado
-}
