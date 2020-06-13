@@ -1,6 +1,7 @@
 #ifndef CONEXIONES_H_
 #define CONEXIONES_H_
 
+#include<stdint.h>
 #include<stdio.h>
 #include<stdlib.h>
 #include<sys/socket.h>
@@ -57,7 +58,6 @@ void* recibir_mensaje(int socket_cliente, int* size);
 void* serializar_paquete(t_paquete* paquete, int bytes);
 void devolver_mensaje(void* payload, int size, int socket_cliente);
 
-
 NewPokemonConIDs* recibir_NEW_POKEMON(int cliente_fd,int* size,int reciboID);
 
 
@@ -76,7 +76,7 @@ CatchPokemonConIDs* recibir_CATCH_POKEMON(int cliente_fd,int*size,int reciboID);
 CaughtPokemonConIDs* recibir_CAUGHT_POKEMON(int cliente_fd,int* size,int reciboID);
 
 void* serializarNewPokemon(NewPokemon* newPokemon,int bytes,int id);
-void enviarNewPokemon(NewPokemon* unNewPokemon, int socket_subscriptor,int id);
+void enviarNewPokemon(NewPokemon* unNewPokemon, int socket_suscriptor,int id);
 
 void* serializarLocalizedPokemon(LocalizedPokemon* localizedPokemon,int bytes,int id,int idCorrelativo);
 void enviarLocalizedPokemon(LocalizedPokemon* localized_pokemon,int socket_suscriptor,int id,int idCorrelativo);

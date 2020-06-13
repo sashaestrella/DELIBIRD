@@ -102,9 +102,9 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				printf("Codigo de cola: %d\n", codigo);
 				NewPokemonConIDs* nuevoNewPokemonConId;
 				for(int i = 0; i<cantidadNewPokemon; i++){
-					nuevoNewPokemonConId = recibir_NEW_POKEMON(conexion, 0, 1, 0);
+					nuevoNewPokemonConId = recibir_NEW_POKEMON(conexion, 0, 1);
 					send(conexion, 1, sizeof(int), 0); // No se si pasar el 1 con un void*
-					adminMensajeAppeared(nuevoNewPokemonConId);
+					adminMensajeNew(nuevoNewPokemonConId);
 					printf("Recibi mensaje com id: %d\n", nuevoNewPokemonConId->IDmensaje);
 				}
 				break;
@@ -154,9 +154,9 @@ void* recibirMensajesNew(){
 	NewPokemonConIDs* nuevoNewPokemon;
 
 	while(1){
-		nuevoNewPokemon = recibir_NEW_POKEMON(conexionNewPokemon, 0, 0, 1);
+		nuevoNewPokemon = recibir_NEW_POKEMON(conexionNewPokemon, 0, 0);
 		send(conexionNewPokemon, 1, sizeof(int), 0);
-		pthread_create(&admin, NULL, adminMensajeAppeared, nuevoNewPokemon);
+		pthread_create(&admin, NULL, adminMensajeNewPokemon, nuevoNewPokemon);
 		pthread_detach(admin);
 	}
 }

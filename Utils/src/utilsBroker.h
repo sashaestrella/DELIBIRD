@@ -17,6 +17,7 @@
 int generadorDeIDsMensaje = 0;
 int generadorDeIDsSuscriptor = 0;
 
+pthread_mutex_t mutexMemoriaInterna = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexGeneradorIDMensaje,mutexGeneradorIDSuscriptor, mutexListaSuscriptores = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexColaNewPokemon, mutexColaLocalizedPokemon, mutexColaGetPokemon,mutexColaAppearedPokemon, mutexColaCatchPokemon, mutexColaCaughtPokemon = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t no_vacioNP,no_vacioLP,no_vacioGP,no_vacioAP,no_vacioCP,no_vacioCAP = PTHREAD_COND_INITIALIZER;
@@ -32,9 +33,77 @@ t_list* suscriptores_get_pokemon;
 t_list* suscriptores_appeared_pokemon;
 t_list* suscriptores_catch_pokemon;
 t_list* suscriptores_caught_pokemon;
+t_list* listaPosicionesLibres;
+t_list* listaPosicionesOcupadas;
+void* memoriaInterna;
+int tamanioMinimoParticion;
 
 
 
+typedef struct{
+	void* posicion;
+	int tamanio;
+}PosicionLibre;
+
+typedef struct{
+	int tamanio;
+	void* posicion;
+	int colaALaQuePertenece;
+	int ID;
+}PosicionOcupada;
+
+//Mensajes 2
+typedef struct{
+	int ID;
+	void* contenidoDelMensaje; //parte de la memoria cache donde esta
+	int tamanioEnMemoria;
+	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
+	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
+}MensajeNewPokemon2;
+
+typedef struct{
+	int ID;
+	int IDCorrelativo;
+	void* contenidoDelMensaje; //parte de la memoria cache donde esta
+	int tamanioEnMemoria;
+	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
+	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
+}MensajeLocalizedPokemon2;
+
+typedef struct{
+	int ID;
+	void* contenidoDelMensaje; //parte de la memoria cache donde esta
+	int tamanioEnMemoria;
+	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
+	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
+}MensajeGetPokemon2;
+
+typedef struct{
+	int ID;
+	void* contenidoDelMensaje; //parte de la memoria cache donde esta
+	int tamanioEnMemoria;
+	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
+	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
+}MensajeAppearedPokemon2;
+
+typedef struct{
+	int ID;
+	void* contenidoDelMensaje; //parte de la memoria cache donde esta
+	int tamanioEnMemoria;
+	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
+	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
+}MensajeCatchPokemon2;
+
+typedef struct{
+	int ID;
+	int IDCorrelativo;
+	void* contenidoDelMensaje; //parte de la memoria cache donde esta
+	int tamanioEnMemoria;
+	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
+	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
+}MensajeCaughtPokemon2;
+/*
+//Mensajes 1
 typedef struct{
 	int ID;
 	NewPokemon* contenidoDelMensaje; //
@@ -43,7 +112,6 @@ typedef struct{
 }MensajeNewPokemon;
 
 typedef struct{
-
 	int ID;
 	int IDCorrelativo;
 	LocalizedPokemon* contenidoDelMensaje;
@@ -79,6 +147,8 @@ typedef struct{
 	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
 	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
 }MensajeCaughtPokemon;
+*/
+
 void iniciar_servidor(void);
 void esperar_cliente(int);
 int recibir_operacion(int);
@@ -86,35 +156,42 @@ void process_request(int cod_op, int cliente_fd);
 void serve_client(int *socket);
 
 
-Suscriptor* recibirSuscripcionNewPokemon(int socket_suscriptor);
+void recibirSuscripcionNewPokemon(int socket_suscriptor);
 void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor, Suscriptor* unSuscriptor);
-void enviarNewPokemonASuscriptores(MensajeNewPokemon* unMensajeNewPokemon);
+void enviarNewPokemonASuscriptores(MensajeNewPokemon2* unMensajeNewPokemon);
 
-Suscriptor* recibirSuscripcionLocalizedPokemon(int socket_suscriptor);
+void recibirSuscripcionLocalizedPokemon(int socket_suscriptor);
 void enviarColaLocalizedPokemon(int idGeneradoEnElMomento,int socket_suscriptor, Suscriptor* unSuscriptor);
-void enviarLocalizedPokemonASuscriptores(MensajeLocalizedPokemon* unMensajeLocalizedPokemon);
+void enviarLocalizedPokemonASuscriptores(MensajeLocalizedPokemon2* unMensajeLocalizedPokemon);
 
-Suscriptor* recibirSuscripcionGetPokemon(int socket_suscriptor);
+void recibirSuscripcionGetPokemon(int socket_suscriptor);
 void enviarColaGetPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscriptor* unSuscriptor);
-void enviarGetPokemonASuscriptores(MensajeGetPokemon* unMensajeGetPokemon);
+void enviarGetPokemonASuscriptores(MensajeGetPokemon2* unMensajeGetPokemon);
 
-Suscriptor* recibirSuscripcionAppearedPokemon(int socket_suscriptor);
+void recibirSuscripcionAppearedPokemon(int socket_suscriptor);
 void enviarColaAppearedPokemon(int idGeneradoEnElMomento,int socket_suscriptor, Suscriptor* unSuscriptor);
-void enviarAppearedPokemonASuscriptores(MensajeAppearedPokemon* unMensajeAppearedPokemon);
+void enviarAppearedPokemonASuscriptores(MensajeAppearedPokemon2* unMensajeAppearedPokemon);
 
-Suscriptor* recibirSuscripcionCatchPokemon(int socket_suscriptor);
+void recibirSuscripcionCatchPokemon(int socket_suscriptor);
 void enviarColaCatchPokemon(int idGeneradoEnElMomento,int socket_suscriptor, Suscriptor* unSuscriptor);
-void enviarCatchPokemonASuscriptores(MensajeCatchPokemon* unMensajeCatchPokemon);
+void enviarCatchPokemonASuscriptores(MensajeCatchPokemon2* unMensajeCatchPokemon);
 
-Suscriptor* recibirSuscripcionCaughtPokemon(int socket_suscriptor);
+void recibirSuscripcionCaughtPokemon(int socket_suscriptor);
 void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor, Suscriptor* unSuscriptor);
-void enviarCaughtPokemonASuscriptores(MensajeCaughtPokemon* unMensajeCaughtPokemon);
+void enviarCaughtPokemonASuscriptores(MensajeCaughtPokemon2* unMensajeCaughtPokemon);
 
-MensajeNewPokemon* guardarMensajeNewPokemon(NewPokemon* unNewPokemon);
-MensajeLocalizedPokemon* guardarMensajeLocalizedPokemon(LocalizedPokemon* unLocalizedPokemon,int idCorrelativo);
-MensajeGetPokemon* guardarMensajeGetPokemon(GetPokemon* unGetPokemon);
-MensajeAppearedPokemon* guardarMensajeAppearedPokemon(AppearedPokemon* unAppearedPokemon);
-MensajeCatchPokemon* guardarMensajeCatchPokemon(CatchPokemon* unCatchPokemon);
-MensajeCaughtPokemon* guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemon,int idCorrelativo);
+MensajeNewPokemon2* guardarMensajeNewPokemon(NewPokemon* unNewPokemon);
+MensajeLocalizedPokemon2* guardarMensajeLocalizedPokemon(LocalizedPokemon* unLocalizedPokemon,int idCorrelativo);
+MensajeGetPokemon2* guardarMensajeGetPokemon(GetPokemon* unGetPokemon);
+MensajeAppearedPokemon2* guardarMensajeAppearedPokemon(AppearedPokemon* unAppearedPokemon);
+MensajeCatchPokemon2* guardarMensajeCatchPokemon(CatchPokemon* unCatchPokemon);
+MensajeCaughtPokemon2* guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemon,int idCorrelativo);
+
+NewPokemon* sacarDeMemoriaElNewPokemon(MensajeNewPokemon2* mensajeNew2);
+LocalizedPokemon* sacarDeMemoriaElLocalizedPokemon(MensajeLocalizedPokemon2* mensajeLocalized2);
+GetPokemon* sacarDeMemoriaElGetPokemon(MensajeGetPokemon2* mensajeGet2);
+AppearedPokemon* sacarDeMemoriaElAppearedPokemon(MensajeAppearedPokemon2* mensajeAppeared2);
+CatchPokemon* sacarDeMemoriaElCatchPokemon(MensajeCatchPokemon2* mensajeCatch2);
+CaughtPokemon* sacarDeMemoriaElCaughtPokemon(MensajeCaughtPokemon2* mensajeCaught2);
 
 #endif /* CONEXIONES_H_ */

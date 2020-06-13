@@ -27,9 +27,9 @@ void* administradorMensajesColas(int, int, int);
 void enviarACK(int, int, int, int);
 void cargarDatosConexionConfig();
 
-void* recibirMensajesAppeared();
-void* recibirMensajesLocalized();
-void* recibirMensajesCaught();
+void* recibirMensajesNew();
+void* recibirMensajesGet();
+void* recibirMensajesCatch();
 void* adminMensajeNewPokemon(NewPokemonConIDs*);
 void* adminMensajeGetPokemon(GetPokemonConIDs*);
 void* adminMensajeCatch(CatchPokemonConIDs*);

@@ -89,6 +89,7 @@ LocalizedPokemonConIDs* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size,int r
 		localizedConIdCorrelativo->localizedPokemon = unLocalizedPokemon;
 
 		recv(cliente_fd,&(buffer->size),sizeof(int),MSG_WAITALL);
+		printf("recibi un paquete de tamaño %i", buffer->size);
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
 		recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
@@ -112,19 +113,19 @@ LocalizedPokemonConIDs* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size,int r
 		stream+=sizeof(uint32_t);
 
 		int cantidadDePares = (unLocalizedPokemon->cantidadParesOrdenados);
-		int coordenadasXY = cantidadDePares * 2;
 		t_list* unasCoordenadas = list_create();
-		for(int i=0;i<coordenadasXY;i++){
+		for(int i=0;i<cantidadDePares;i++){
 			CoordenadasXY* coordenadas = malloc(sizeof(CoordenadasXY));
 			memcpy(&(coordenadas->posicionX),stream,sizeof(uint32_t));
 			stream+=sizeof(uint32_t);
 			memcpy(&(coordenadas->posicionY),stream,sizeof(uint32_t));
 			stream+=sizeof(uint32_t);
 			list_add(unasCoordenadas,coordenadas);
-
+			printf("\nMe llegaron las coordenadas X: %d, Y: %d", coordenadas->posicionX, coordenadas->posicionY);
 		}
 
-		unasCoordenadas = unLocalizedPokemon->paresOrdenados;
+
+		unLocalizedPokemon->paresOrdenados = unasCoordenadas;
 
 		printf("\nMe llego el mensaje: %s\n",localizedConIdCorrelativo->localizedPokemon->nombre);
 
@@ -168,6 +169,7 @@ GetPokemonConIDs* recibir_GET_POKEMON(int cliente_fd, int* size,int reciboID){
 
 		return getConIDs;
 }
+
 
 AppearedPokemonConIDs* recibir_APPEARED_POKEMON(int cliente_fd,int* size,int reciboID,int reciboIDCorrelativo){
 
@@ -231,6 +233,7 @@ CatchPokemonConIDs* recibir_CATCH_POKEMON(int cliente_fd,int*size,int reciboID){
 			catchConIDs->IDmensaje = id;
 		}
 
+
 		memcpy(&(unCatchPokemon->tamanioNombrePokemon),stream,sizeof(uint32_t));
 		stream+=sizeof(uint32_t);
 		unCatchPokemon->nombre = malloc(unCatchPokemon->tamanioNombrePokemon);
@@ -286,8 +289,10 @@ CaughtPokemonConIDs* recibir_CAUGHT_POKEMON(int cliente_fd,int* size,int reciboI
 
 
 
+
 void* serializar_paquete(t_paquete* paquete, int bytes)
 {
+
 
 	void * a_enviar = malloc(bytes);
 	int desplazamiento = 0;
@@ -480,12 +485,13 @@ void enviarLocalizedPokemon(LocalizedPokemon* localized_pokemon,int socket_suscr
 	t_buffer* buffer = malloc(sizeof(t_buffer));
 
 	int tamanioNombrePokemon = strlen(localized_pokemon->nombre) +1;
-	int coordenadas = localized_pokemon->cantidadParesOrdenados * 2;
+	int cantCoordenadas = localized_pokemon->cantidadParesOrdenados;
 	if(id > 0){
-		buffer->size = sizeof(uint32_t) * 2 * coordenadas + tamanioNombrePokemon + sizeof(int)*2;
+		buffer->size = sizeof(CoordenadasXY) * cantCoordenadas + tamanioNombrePokemon + sizeof(uint32_t)*2 + sizeof(int)*2;
 	}else {
-		buffer->size = sizeof(uint32_t) * 2 * coordenadas + tamanioNombrePokemon + sizeof(int);
+		buffer->size = sizeof(CoordenadasXY) * cantCoordenadas + tamanioNombrePokemon + sizeof(uint32_t)*2 + sizeof(int);
 	}
+	printf("voy a mandar un paquete de tamaño: %d", buffer->size);
 	void* stream = serializarLocalizedPokemon(localized_pokemon,buffer->size,id,idCorrelativo);
 	buffer->stream = stream;
 	t_paquete* paquete = malloc(sizeof(t_paquete));
@@ -637,3 +643,40 @@ void liberar_conexion(int socket_cliente)
 {
 	close(socket_cliente);
 }
+
+
+NewPokemon* parsearNewPokemon(char* pokemon
+							, char* posicionX
+							, char* posicionY
+							, char* cantidad)
+{
+	NewPokemon* newPokemon = malloc(sizeof(NewPokemon));
+
+	newPokemon->nombre = pokemon;
+	newPokemon->tamanioNombrePokemon = strlen(pokemon)+1;
+	newPokemon->coordenadas.posicionX = atoi(posicionX);
+	newPokemon->coordenadas.posicionY = atoi(posicionY);
+	newPokemon->cantidad = atoi(cantidad);
+
+	return newPokemon;
+}
+
+/*void enviarNewPokemon(NewPokemon* newPokemon, int conexion)
+{
+	uint32_t codigo = NEW_POKEMON;
+	send(conexion, &codigo, sizeof(uint32_t), 0);
+	puts("te envie el codopeee");
+	char* nombrePokemon = newPokemon->nombre;
+	uint32_t tamanioNombre= strlen(newPokemon->tamanioNombrePokemon)+1;
+	uint32_t posX = newPokemon->coordenadas.posicionX;
+	uint32_t posY = newPokemon->coordenadas.posicionY;
+	uint32_t cant = newPokemon->cantidad;;
+
+	send(conexion,&tamanioNombre,sizeof(uint32_t),0);
+	send(conexion,nombrePokemon,tamanioNombre,0);
+	send(conexion,&posX,sizeof(uint32_t),0);
+	send(conexion,&posY,sizeof(uint32_t),0);
+	send(conexion,&cant,sizeof(uint32_t),0);
+	//send() de todo new pokemon
+}*/
+

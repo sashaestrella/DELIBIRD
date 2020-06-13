@@ -1,0 +1,15 @@
+22:54:58 **** Build of configuration Debug for project broker ****
+make all 
+Building file: ../src/broker.c
+Invoking: GCC C Compiler
+gcc -I"/home/utnso/tp-2020-1c-BOMP/Utils" -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/broker.d" -MT"src/broker.o" -o "src/broker.o" "../src/broker.c"
+Finished building: ../src/broker.c
+ 
+Building target: broker
+Invoking: GCC C Linker
+gcc -L"/home/utnso/tp-2020-1c-BOMP/Utils/Debug" -o "broker"  ./src/broker.o   -lUtils -lpthread -lcommons
+Finished building target: broker
+ 
+
+22:54:59 Build Finished (took 662ms)
+

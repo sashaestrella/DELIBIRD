@@ -43,5 +43,4 @@ clean:
 
 .PHONY: all clean dependents
 /home/utnso/Documentos/tp-2020-1c-BOMP/Utils/Debug/libUtils.so:
-
 -include ../makefile.targets
