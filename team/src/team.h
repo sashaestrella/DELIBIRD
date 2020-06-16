@@ -11,6 +11,7 @@
 #include<readline/readline.h>
 #include<sys/syscall.h>
 #include<src/utilsGeneral.h>
+#include "adminMensajes.h"
 
 sem_t sem[3];
 sem_t sem2[3];

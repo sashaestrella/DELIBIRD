@@ -30,10 +30,7 @@ void abrirEscuchas(){
 // ------------------------------------ AUXILIARES ------------------------------------ //
 
 void noHayBroker(){
-	//suscribirseACola(conexionGameBoy, 0, 0, msgGameBoy);
-	//pthread_t hiloGameBoy;
-	//pthread_create(&hiloGameBoy, NULL, recibirMensaje, conexionGameBoy);
-	//pthread_join(hiloGameBoy,NULL);
+	iniciar_servidor_team();
 }
 
 void* suscribirseAColaCaught(){
@@ -166,7 +163,7 @@ void* recibirMensajesAppeared(){
 	AppearedPokemonConIDs* nuevoAppeared;
 
 	while(1){
-		nuevoAppeared = recibir_APPEARED_POKEMON(conexionAppeared, 0, 0, 1);
+		nuevoAppeared = recibir_APPEARED_POKEMON(conexionAppeared, 0, 0, 0);
 		send(conexionAppeared, 1, sizeof(int), 0);
 		pthread_create(&admin, NULL, (void*)adminMensajeAppeared, nuevoAppeared);
 		pthread_detach(admin);
@@ -199,7 +196,7 @@ void* recibirMensajesLocalized(){
 	void* mensajeRecibido;
 	LocalizedPokemonConIDs* nuevoLocalized;
 	while(1){
-		nuevoLocalized = recibir_LOCALIZED_POKEMON(conexionLocalized, 0, 1);
+		nuevoLocalized = recibir_LOCALIZED_POKEMON(conexionLocalized, 0, 0);
 		send(conexionLocalized, 1, sizeof(int), 0);
 		pthread_create(&admin, NULL, (void*)adminMensajeLocalized, nuevoLocalized);
 		pthread_detach(admin);
@@ -350,3 +347,99 @@ bool descartar_caught_no_deseados(CaughtPokemonConIDs* caughtPokemonRecibido){
 
 }
 
+
+//-----------Servidor para gameBoy--------
+
+
+void iniciar_servidor_team(void){
+	int socket_servidor;
+
+    struct addrinfo hints, *servinfo, *p;
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;
+
+    getaddrinfo(IP, PUERTO, &hints, &servinfo);
+
+    for (p=servinfo; p != NULL; p = p->ai_next)
+    {
+        if ((socket_servidor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
+            continue;
+
+        if (bind(socket_servidor, p->ai_addr, p->ai_addrlen) == -1) {
+            close(socket_servidor);
+            continue;
+        }
+        break;
+    }
+
+	listen(socket_servidor, SOMAXCONN);
+
+    freeaddrinfo(servinfo);
+
+    while(1)
+    	esperar_cliente_team(socket_servidor);
+}
+
+void esperar_cliente_team(int socket_servidor)
+{
+	struct sockaddr_in dir_cliente;
+
+	int tam_direccion = sizeof(struct sockaddr_in);
+
+	int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
+
+	pthread_create(&hiloServidorTeam,NULL,(void*)serve_client_team,&socket_cliente);
+	pthread_detach(hiloServidorTeam);
+
+}
+
+void serve_client_team(int* socket)
+{
+	int cod_op;
+
+	if(recv(*socket, &cod_op, sizeof(int), MSG_WAITALL) == -1)
+		cod_op = -1;
+	process_request_team(cod_op, *socket);
+}
+
+void process_request_team(int cod_op, int cliente){
+
+	pthread_t hiloLocalized;
+	pthread_t hiloAppeared;
+	pthread_t hiloCaught;
+
+	AppearedPokemonConIDs* appeared;
+	Pokemon* pokemon = malloc(sizeof(Pokemon));
+
+	switch(cod_op){
+
+	case LOCALIZED_POKEMON:
+		pthread_create(&hiloLocalized, NULL, recibirMensajesLocalized, NULL);
+		break;
+
+	case APPEARED_POKEMON:
+		//pthread_create(&hiloAppeared, NULL, recibirMensajesAppeared, NULL);
+		//pthread_detach(hiloAppeared);
+		//con la funcion recibirMensajesAppeared me tira segmentation fault
+
+		appeared = recibir_APPEARED_POKEMON(cliente,0,0,0);
+
+		pokemon->nombre = appeared->appearedPokemon->nombre;
+		pokemon->posicion.posicionX = appeared->appearedPokemon->coordenadas.posicionX;
+		pokemon->posicion.posicionY = appeared->appearedPokemon->coordenadas.posicionY;
+		list_add(nuevosPokemon, pokemon);
+		puts("\nAgregue un pokemon a la lista");
+		break;
+
+	case CAUGHT_POKEMON:
+		pthread_create(&hiloCaught, NULL, recibirMensajesCaught, NULL);
+		break;
+	default:
+		puts("\nError en codigo de operacion");
+		break;
+
+	}
+}

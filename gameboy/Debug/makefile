@@ -26,13 +26,13 @@ endif
 all: gameboy
 
 dependents:
-	-cd /home/utnso/Documentos/TP/tp-2020-1c-BOMP/Utils/Debug && $(MAKE) clean all
+	-cd /home/utnso/workspace/tp-2020-1c-BOMP/Utils/Debug && $(MAKE) all
 
 # Tool invocations
-gameboy: $(OBJS) $(USER_OBJS) /home/utnso/Documentos/TP/tp-2020-1c-BOMP/Utils/Debug/libUtils.so
+gameboy: $(OBJS) $(USER_OBJS) /home/utnso/workspace/tp-2020-1c-BOMP/Utils/Debug/libUtils.so
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L"/home/utnso/Documentos/TP/tp-2020-1c-BOMP/Utils/Debug" -o "gameboy" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L"/home/utnso/workspace/tp-2020-1c-BOMP/Utils/Debug" -o "gameboy" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -42,6 +42,6 @@ clean:
 	-@echo ' '
 
 .PHONY: all clean dependents
-/home/utnso/Documentos/TP/tp-2020-1c-BOMP/Utils/Debug/libUtils.so:
+/home/utnso/workspace/tp-2020-1c-BOMP/Utils/Debug/libUtils.so:
 
 -include ../makefile.targets
