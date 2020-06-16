@@ -23,6 +23,7 @@ t_list* mensajesRecibidos;
 
 void noHayBroker();
 void* suscribirseACola(ParametrosSuscripcion*);
+void* suscribirseAColaNew();
 void* administradorMensajesColas(int, int, int);
 void enviarACK(int, int, int, int);
 void cargarDatosConexionConfig();

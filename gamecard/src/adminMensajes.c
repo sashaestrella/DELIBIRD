@@ -8,10 +8,10 @@ void generarConexiones(int tipoSuscriptor){
 	new->nuevoExistente = tipoSuscriptor;
 
 	pthread_t hiloNew;
-	pthread_create(&hiloNew, NULL, suscribirseACola, new);
+	pthread_create(&hiloNew, NULL, suscribirseAColaNew, NULL);
 
 
-	// -- Hilo de suscripcion a catch -- //
+/*	// -- Hilo de suscripcion a catch -- //
 	ParametrosSuscripcion* catch = malloc(sizeof(ParametrosSuscripcion));
 	catch->colaASuscribirse = SUSCRIPTOR_CATCHPOKEMON;
 	catch->nuevoExistente = tipoSuscriptor;
@@ -27,25 +27,29 @@ void generarConexiones(int tipoSuscriptor){
 
 	pthread_t hiloGet;
 	//pthread_create(&hiloGet, NULL, suscribirseACola, get);
-
+*/
 
 	//pthread_join(hiloNew,NULL);
 	//pthread_join(hiloGet,NULL);
 	//pthread_join(hiloCatch,NULL);
 	free(new);
-	free(get);
-	free(catch);
+	//free(get);
+	//free(catch);
 }
 
-void abrirEscuchas(){
+void abrirEscuchaNew(){
 	pthread_t escuchaNew;
 	pthread_create(&escuchaNew, NULL, recibirMensajesNew, NULL);
 	pthread_detach(escuchaNew);
+}
 
+void abrirEscuchaGet(){
 	pthread_t escuchaGet;
 	pthread_create(&escuchaGet, NULL, recibirMensajesGet, NULL);
 	pthread_detach(escuchaGet);
+}
 
+void abrirEscuchaCatch(){
 	pthread_t escuchaCatch;
 	pthread_create(&escuchaCatch, NULL, recibirMensajesCatch, NULL);
 	pthread_detach(escuchaCatch);
@@ -82,6 +86,23 @@ void* suscribirseACola(ParametrosSuscripcion* datos){
 
 }
 
+void* suscribirseAColaNew(){
+	int IDsuscripcion;
+
+	conexion = crear_conexion(ip, puerto);
+
+	printf( "\nSe creo la suscripcion con el valor %d \n", conexion);
+
+	enviarSuscripcion(0, conexion, SUSCRIPTOR_NEWPOKEMON);
+	recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
+
+	printf("Suscriptor numero: %d\n", IDsuscripcion);
+
+	administradorMensajesColas(SUSCRIPTOR_NEWPOKEMON, conexion, IDsuscripcion);
+}
+
+
+
 void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 
 	int cantidadGetPokemon;
@@ -107,6 +128,8 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 					adminMensajeNew(nuevoNewPokemonConId);
 					printf("Recibi mensaje com id: %d\n", nuevoNewPokemonConId->IDmensaje);
 				}
+
+				abrirEscuchaNew();
 				break;
 
 			case SUSCRIPTOR_GETPOKEMON:
@@ -123,6 +146,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 					send(conexion, 1, sizeof(int), 0);
 					adminMensajeGet(nuevoGetPokemonConId);
 				}
+				abrirEscuchaGet();
 				break;
 
 			case SUSCRIPTOR_CATCHPOKEMON:
@@ -135,10 +159,11 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				printf("Codigo de cola: %d\n", codigo2);
 				CatchPokemonConIDs* nuevoCatchPokemonConId;
 				for(int i = 0; i<cantidadCatchPokemon; i++){
-					nuevoCatchPokemonConId = recibir_LOCALIZED_POKEMON(conexion, 0, 1);
+					nuevoCatchPokemonConId = recibir_CATCH_POKEMON(conexion, 0, 1);
 					send(conexion, 1, sizeof(int), 0);
 					adminMensajeCatch(nuevoCatchPokemonConId);
 				}
+				abrirEscuchaCatch();
 				break;
 			default:
 				printf("Llego un mensaje invalido");
