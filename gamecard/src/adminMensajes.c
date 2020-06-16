@@ -29,9 +29,9 @@ void generarConexiones(int tipoSuscriptor){
 	//pthread_create(&hiloGet, NULL, suscribirseACola, get);
 
 
-	//pthread_join(hiloAppeared,NULL);
-	//pthread_join(hiloCaught,NULL);
-	//pthread_join(hiloLocalized,NULL);
+	//pthread_join(hiloNew,NULL);
+	//pthread_join(hiloGet,NULL);
+	//pthread_join(hiloCatch,NULL);
 	free(new);
 	free(get);
 	free(catch);
@@ -172,13 +172,10 @@ void* recibirMensajesGet(){
 	void* mensajeRecibido;
 	GetPokemonConIDs* nuevoGetPokemon;
 	while(1){
-
-		if(descartar_localized_no_deseados(nuevoGetPokemon)){
-			nuevoGetPokemon = recibir_LOCALIZED_POKEMON(conexionGetPokemon, 0, 1);
-			send(conexionGetPokemon, 1, sizeof(int), 0);
-			pthread_create(&admin, NULL, adminMensajeGetPokemon, nuevoGetPokemon);
-			pthread_detach(admin);
-		}
+		nuevoGetPokemon = recibir_GET_POKEMON(conexionGetPokemon, 0, 1);
+		send(conexionGetPokemon, 1, sizeof(int), 0);
+		pthread_create(&admin, NULL, adminMensajeGetPokemon, nuevoGetPokemon);
+		pthread_detach(admin);
 	}
 }
 
@@ -191,15 +188,13 @@ void* adminMensajeGetPokemon(GetPokemonConIDs* nuevoGetPokemon){
 void* recibirMensajesCatch(){
 	pthread_t admin;
 	void* mensajeRecibido;
-	CaughtPokemonConIDs* nuevoCatch;
+	CatchPokemonConIDs* nuevoCatch;
 
 	while(1){
-		if(descartar_caught_no_deseados(nuevoCatch)){
-			nuevoCatch = recibir_CAUGHT_POKEMON(conexionCatch, 0, 1);
-			send(conexionCatch, 1, sizeof(int), 0);
-			pthread_create(&admin, NULL, adminMensajeCatch, nuevoCatch);
-			pthread_detach(admin);
-		}
+		nuevoCatch = recibir_CATCH_POKEMON(conexionCatch, 0, 1);
+		send(conexionCatch, 1, sizeof(int), 0);
+		pthread_create(&admin, NULL, adminMensajeCatch, nuevoCatch);
+		pthread_detach(admin);
 	}
 }
 
@@ -208,3 +203,5 @@ void* adminMensajeCatch(CatchPokemonConIDs* nuevoCatch){
 	list_add(nuevosCatch, nuevoCatch);
 	printf("Guarde un mensaje Catch");
 }
+
+
