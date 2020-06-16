@@ -50,4 +50,8 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-.settings/
+Utils/.settings/
+gameboy/.settings/
+gamecard/.settings/
+broker/.settings/
+team/.settings/
