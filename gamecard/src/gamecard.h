@@ -16,8 +16,6 @@
 #include<readline/readline.h>
 #include<src/utilsGeneral.h>
 
-
-int conexion;
 char* ip;
 char* puerto;
 
