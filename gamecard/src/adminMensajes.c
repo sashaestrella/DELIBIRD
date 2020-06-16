@@ -125,7 +125,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				for(int i = 0; i<cantidadNewPokemon; i++){
 					nuevoNewPokemonConId = recibir_NEW_POKEMON(conexion, 0, 1);
 					send(conexion, 1, sizeof(int), 0); // No se si pasar el 1 con un void*
-					adminMensajeNew(nuevoNewPokemonConId);
+					adminMensajeNewPokemon(nuevoNewPokemonConId);
 					printf("Recibi mensaje com id: %d\n", nuevoNewPokemonConId->IDmensaje);
 				}
 
@@ -144,7 +144,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				for(int i = 0; i<cantidadGetPokemon; i++){
 					nuevoGetPokemonConId = recibir_GET_POKEMON(conexion, 0, 1);
 					send(conexion, 1, sizeof(int), 0);
-					adminMensajeGet(nuevoGetPokemonConId);
+					adminMensajeGetPokemon(nuevoGetPokemonConId);
 				}
 				abrirEscuchaGet();
 				break;

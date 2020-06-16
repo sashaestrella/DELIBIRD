@@ -18,3 +18,9 @@ int main(void)
 	log_info(logger, primerLog);
 
 }
+
+t_log* iniciar_logger(void)
+{
+	return log_create("team.log", "Log de team" , 1, LOG_LEVEL_INFO);
+
+}
