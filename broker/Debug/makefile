@@ -26,16 +26,13 @@ endif
 all: broker
 
 dependents:
-
-	-cd /home/utnso/tp-2020-1c-BOMP/Utils/Debug && $(MAKE) all
+	-cd /home/utnso/tp-2020-1c-BOMP/Utils/Debug && $(MAKE) clean all
 
 # Tool invocations
 broker: $(OBJS) $(USER_OBJS) /home/utnso/tp-2020-1c-BOMP/Utils/Debug/libUtils.so
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
 	gcc -L"/home/utnso/tp-2020-1c-BOMP/Utils/Debug" -o "broker" $(OBJS) $(USER_OBJS) $(LIBS)
-
-
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -45,10 +42,6 @@ clean:
 	-@echo ' '
 
 .PHONY: all clean dependents
-<<<<<<< HEAD
 /home/utnso/tp-2020-1c-BOMP/Utils/Debug/libUtils.so:
-=======
-/home/utnso/Documentos/TP/tp-2020-1c-BOMP/Utils/Debug/libUtils.so:
->>>>>>> enviarNewPokemon
 
 -include ../makefile.targets

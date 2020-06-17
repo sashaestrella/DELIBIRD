@@ -1,0 +1,37 @@
+[INFO] 18:46:58:619 Broker-Log/(12199:12202): Se creo una conexión.
+[INFO] 18:48:40:582 Broker-Log/(12434:12437): Se creo una conexión.
+[INFO] 18:49:41:784 Broker-Log/(12503:12506): Se creo una conexión.
+[INFO] 18:49:41:784 Broker-Log/(12503:12506): Recibi un mensaje NewPokemon.
+[INFO] 18:54:19:734 Broker-Log/(12757:12760): Se creo una conexión.
+[INFO] 18:54:19:734 Broker-Log/(12757:12760): Recibi un mensaje NewPokemon.
+[INFO] 18:57:07:631 Broker-Log/(12926:12929): Se creo una conexión.
+[INFO] 18:57:07:631 Broker-Log/(12926:12929): Recibi un mensaje NewPokemon.
+[INFO] 18:58:06:509 Broker-Log/(12973:12976): Se creo una conexión.
+[INFO] 18:58:06:509 Broker-Log/(12973:12976): Recibi un mensaje PIKACHU.
+[INFO] 19:45:26:491 Broker-Log/(15875:15880): Se creo una conexión.
+[INFO] 19:45:26:491 Broker-Log/(15875:15880): Recibi un mensaje NewPokemon.
+[INFO] 19:45:26:491 Broker-Log/(15875:15880): Almacené en memoria el mensaje: 1,donde comienza en: 153757416
+[INFO] 19:47:45:834 Broker-Log/(16052:16055): Se creo una conexión.
+[INFO] 19:47:45:835 Broker-Log/(16052:16055): Recibi un mensaje NewPokemon.
+[INFO] 19:47:45:835 Broker-Log/(16052:16055): Almacené en memoria el mensaje: 1,donde comienza en: -1240465240
+[INFO] 19:53:18:869 Broker-Log/(16198:16201): Se creo una conexión.
+[INFO] 19:53:18:869 Broker-Log/(16198:16201): Recibi un mensaje NewPokemon.
+[INFO] 19:53:18:870 Broker-Log/(16198:16201): Almacené en memoria el mensaje: 1,donde comienza en: 135263176
+[INFO] 19:58:30:20 Broker-Log/(16527:16530): Se creo una conexión.
+[INFO] 19:58:30:20 Broker-Log/(16527:16530): Recibi un mensaje NewPokemon.
+[INFO] 19:58:30:20 Broker-Log/(16527:16530): Almacené en memoria el mensaje con ID=1,donde comienza en: 0
+[INFO] 20:00:28:235 Broker-Log/(16580:16583): Se creo una conexión.
+[INFO] 20:00:28:235 Broker-Log/(16580:16583): Recibi un mensaje NewPokemon.
+[INFO] 20:00:28:236 Broker-Log/(16580:16583): Almacené en memoria el mensaje con ID=1,donde comienza en: 0
+[INFO] 20:00:46:565 Broker-Log/(16580:16587): Se creo una conexión.
+[INFO] 20:00:46:565 Broker-Log/(16580:16587): Recibi un mensaje NewPokemon.
+[INFO] 20:00:46:565 Broker-Log/(16580:16587): Almacené en memoria el mensaje con ID=2,donde comienza en: 24
+[INFO] 20:00:53:988 Broker-Log/(16580:16591): Se creo una conexión.
+[INFO] 20:00:53:988 Broker-Log/(16580:16591): Recibi un mensaje NewPokemon.
+[INFO] 20:00:53:988 Broker-Log/(16580:16591): Almacené en memoria el mensaje con ID=3,donde comienza en: 48
+[INFO] 20:00:55:906 Broker-Log/(16580:16594): Se creo una conexión.
+[INFO] 20:00:55:906 Broker-Log/(16580:16594): Recibi un mensaje NewPokemon.
+[INFO] 20:00:55:906 Broker-Log/(16580:16594): Almacené en memoria el mensaje con ID=4,donde comienza en: 72
+[INFO] 20:19:19:481 Broker-Log/(17552:17555): Se creo una conexión.
+[INFO] 20:19:19:481 Broker-Log/(17552:17555): Recibi un mensaje NewPokemon.
+[INFO] 20:19:19:481 Broker-Log/(17552:17555): Almacené en memoria el mensaje con ID=1,donde comienza en: 0

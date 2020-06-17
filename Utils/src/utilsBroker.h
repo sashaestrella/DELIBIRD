@@ -37,8 +37,11 @@ t_list* listaPosicionesLibres;
 t_list* listaPosicionesOcupadas;
 void* memoriaInterna;
 int tamanioMinimoParticion;
+char* algoritmoParticionLibre,algoritmoReemplazo;
+//int busquedasFallidasPreviasACompactacion;
 
-
+t_log* logger;
+t_config* config;
 
 typedef struct{
 	void* posicion;

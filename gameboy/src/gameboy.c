@@ -40,7 +40,6 @@ int main(int argc, char *argv[])
 
 	printf( "\nSe creo la conexion con el valor %d \n", conexion);
 
-
 	//Enviar mensaje
 	if(!strcmp(argv[2],"NEW_POKEMON")){
 		puts("entre a new pokemon");

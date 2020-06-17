@@ -29,7 +29,7 @@ int main(void)
 
 
 
-	t_config* config;
+
 	config= config_create("broker.config");
 	tamanioMinimoParticion = atoi(config_get_string_value(config, "TAMANIO_MINIMO_PARTICION"));
 	printf("el tamanio minimo de particion es: %d",tamanioMinimoParticion);
@@ -41,18 +41,16 @@ int main(void)
 	primerPosicionLibre->posicion = memoriaInterna;
 	primerPosicionLibre->tamanio = tamanioMemoria;
 
+	algoritmoReemplazo = config_get_string_value(config,"ALGORITMO_REEMPLAZO");
+	algoritmoParticionLibre = config_get_string_value(config, "ALGORITMO_PARTICION_LIBRE");
+	config_set_value(config,"IP_BROKER","127.0.0.1");
+	//config_set_value(config,"PUERTO_BROKER","4444");
+	//busquedasFallidasPreviasACompactacion = atoi(config_get_string_value(config, "FRECUENCIA_COMPACTACION"));
+	//config_set_value(config,"LOG_FILE",logger->file);
 
-/*		NewPokemon* unNewPokemon1 = malloc(sizeof(NewPokemon));
-		MensajeNewPokemon* mensaje1;
-		char* nombre = malloc(8);
-		nombre = "PIKACHU";
-		unNewPokemon1->nombre = nombre;
-		unNewPokemon1->coordenadas.posicionX = 2;
-		unNewPokemon1->coordenadas.posicionY = 3;
-		unNewPokemon1->cantidad = 3;
+	logger = log_create("broker.log", "Broker-Log" , 1, LOG_LEVEL_INFO);
 
-		mensaje1 = guardarMensajeNewPokemon(unNewPokemon1);
-
+/*
 	NewPokemon* unNewPokemon2 = malloc(sizeof(NewPokemon));
 	MensajeNewPokemon* mensaje2;
 		char* nombre2 = malloc(9);
