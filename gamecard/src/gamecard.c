@@ -13,7 +13,7 @@ int main(void)
 
 	logger = iniciar_logger();
 
-	char* primerLog = "Soy un log";
+	char* primerLog = "Log de Gamecard";
 
 	log_info(logger, primerLog);
 

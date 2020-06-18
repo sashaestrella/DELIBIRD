@@ -171,10 +171,9 @@ int main(int argc,char* argv[])
 
 	for(int j=0; j<list_size(entrenadores);j++)
 			pthread_join(hiloEntrenador[j], NULL);
-
-	generarConexiones(0);
-	//abrirEscuchas();
 	*/
+	generarConexiones(0);
+	abrirEscuchas();
 
 	t_log* logger;
 

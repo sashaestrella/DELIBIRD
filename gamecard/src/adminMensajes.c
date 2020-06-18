@@ -10,13 +10,13 @@ void generarConexiones(int tipoSuscriptor){
 	pthread_t hiloNew;
 	pthread_create(&hiloNew, NULL, suscribirseAColaNew, NULL);
 
-/*	// -- Hilo de suscripcion a catch -- //
+	// -- Hilo de suscripcion a catch -- //
 	ParametrosSuscripcion* catch = malloc(sizeof(ParametrosSuscripcion));
 	catch->colaASuscribirse = SUSCRIPTOR_CATCHPOKEMON;
 	catch->nuevoExistente = tipoSuscriptor;
 
 	pthread_t hiloCatch;
-	pthread_create(&hiloCatch, NULL, suscribirseACola, catch);
+	pthread_create(&hiloCatch, NULL, suscribirseAColaCatch, NULL);
 
 
 	// -- Hilo de suscripcion a cola get -- //
@@ -25,15 +25,15 @@ void generarConexiones(int tipoSuscriptor){
 	get->nuevoExistente = tipoSuscriptor;
 
 	pthread_t hiloGet;
-	//pthread_create(&hiloGet, NULL, suscribirseACola, get);
-*/
+	pthread_create(&hiloGet, NULL, suscribirseAColaGet, NULL);
+
 
 	pthread_join(hiloNew,NULL);
-	//pthread_join(hiloGet,NULL);
-	//pthread_join(hiloCatch,NULL);
+	pthread_join(hiloGet,NULL);
+	pthread_join(hiloCatch,NULL);
 	free(new);
-	//free(get);
-	//free(catch);
+	free(get);
+	free(catch);
 }
 
 void abrirEscuchaNew(){
@@ -63,32 +63,11 @@ void noHayBroker(){
 	//pthread_join(hiloGameBoy,NULL);
 }
 
-void* suscribirseACola(ParametrosSuscripcion* datos){
-
-	int conexion;
-	op_code colaSuscripcion = datos->colaASuscribirse;
-	int soyNuevo 			= datos->nuevoExistente;
-	uint32_t IDsuscripcion;
-
-	conexion = crear_conexion(ip, puerto);
-
-	printf( "\nSe creo la suscripcion con el valor %d \n", conexion);
-
-	send(conexion, &colaSuscripcion, sizeof(int),0);
-	//send(conexion, &soyNuevo, sizeof(int),0);
-
-	recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
-
-	printf("Suscriptor numero: %d\n", IDsuscripcion);
-
-	administradorMensajesColas(colaSuscripcion, conexion, IDsuscripcion);
-
-}
 
 void* suscribirseAColaNew(){
 	int IDsuscripcion;
 	int conexion = crear_conexion(ip, puerto);
-	printf( "\nSe creo la suscripcion con el valor %d \n", conexion);
+	printf( "\nSe creo la suscripcion a cola New con el valor %d \n", conexion);
 
 	enviarSuscripcion(0, conexion, SUSCRIPTOR_NEWPOKEMON);
 	recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
@@ -96,6 +75,32 @@ void* suscribirseAColaNew(){
 	printf("Suscriptor numero: %d\n", IDsuscripcion);
 
 	administradorMensajesColas(SUSCRIPTOR_NEWPOKEMON, conexion, IDsuscripcion);
+}
+
+void* suscribirseAColaGet(){
+	int IDsuscripcion;
+	int conexion = crear_conexion(ip, puerto);
+	printf( "\nSe creo la suscripcion a cola Get con el valor %d \n", conexion);
+
+	enviarSuscripcion(0, conexion, SUSCRIPTOR_GETPOKEMON);
+	recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
+
+	printf("Suscriptor numero: %d\n", IDsuscripcion);
+
+	administradorMensajesColas(SUSCRIPTOR_GETPOKEMON, conexion, IDsuscripcion);
+}
+
+void* suscribirseAColaCatch(){
+	int IDsuscripcion;
+	int conexion = crear_conexion(ip, puerto);
+	printf( "\nSe creo la suscripcion a cola Catch con el valor %d \n", conexion);
+
+	enviarSuscripcion(0, conexion, SUSCRIPTOR_CATCHPOKEMON);
+	recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
+
+	printf("Suscriptor numero: %d\n", IDsuscripcion);
+
+	administradorMensajesColas(SUSCRIPTOR_CATCHPOKEMON, conexion, IDsuscripcion);
 }
 
 
@@ -201,11 +206,11 @@ void* adminMensajeNewPokemon(NewPokemonConIDs* nuevoNewPokemon){
 
 void* recibirMensajesGet(){
 	pthread_t admin;
-	void* mensajeRecibido;
 	GetPokemonConIDs* nuevoGetPokemon;
 	while(1){
 		nuevoGetPokemon = recibir_GET_POKEMON(conexionGetPokemon, 0, 1);
-		send(conexionGetPokemon, 1, sizeof(int), 0);
+		int ack = 1;
+		send(conexionNewPokemon, &ack, sizeof(int), 0);
 		pthread_create(&admin, NULL, adminMensajeGetPokemon, nuevoGetPokemon);
 		pthread_detach(admin);
 	}
@@ -213,18 +218,18 @@ void* recibirMensajesGet(){
 
 void* adminMensajeGetPokemon(GetPokemonConIDs* nuevoGetPokemon){
 	list_add(mensajesRecibidos, nuevoGetPokemon->IDmensaje);
-		list_add(nuevosGetPokemon, nuevoGetPokemon);
-		printf("Guarde un mensaje Get");
+	list_add(nuevosGetPokemon, nuevoGetPokemon);
+	printf("Guarde un mensaje Get");
 }
 
 void* recibirMensajesCatch(){
 	pthread_t admin;
-	void* mensajeRecibido;
 	CatchPokemonConIDs* nuevoCatch;
 
 	while(1){
 		nuevoCatch = recibir_CATCH_POKEMON(conexionCatch, 0, 1);
-		send(conexionCatch, 1, sizeof(int), 0);
+		int ack = 1;
+		send(conexionNewPokemon, &ack, sizeof(int), 0);
 		pthread_create(&admin, NULL, adminMensajeCatch, nuevoCatch);
 		pthread_detach(admin);
 	}
