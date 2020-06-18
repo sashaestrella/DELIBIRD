@@ -45,19 +45,22 @@ int main(int argc, char *argv[])
 		puts("entre a new pokemon");
 		NewPokemon* newPokemon;
 		newPokemon = parsearNewPokemon(argv[3], argv[4], argv[5], argv[6]);
-
 		enviarNewPokemon(newPokemon, conexion,0);
 	}
 	if(!strcmp(argv[2],"GET_POKEMON")){
 		GetPokemon* unGetPokemon;
 		unGetPokemon = parsearGetPokemon(argv[3]);
 		enviarGetPokemon(unGetPokemon,conexion,0);
+		int idMensaje;
+		recv(conexion,&idMensaje,sizeof(int),0);
 	}
 
 	if(!strcmp(argv[2],"CATCH_POKEMON")){
 		CatchPokemon* unCatchPokemon;
 		unCatchPokemon = parsearCatchPokemon(argv[3],argv[4],argv[5]);
 		enviarCatchPokemon(unCatchPokemon,conexion,0);
+		int idMensaje;
+		recv(conexion,&idMensaje,sizeof(int),0);
 	}
 
 	if(!strcmp(argv[2],"CAUGHT_POKEMON")){
@@ -66,6 +69,7 @@ int main(int argc, char *argv[])
 		int id_correlativo = atoi(argv[3]);
 
 		enviarCaughtPokemon(unCaughtPokemon,conexion,0,id_correlativo);
+
 	}
 
 	if(!strcmp(argv[2],"APPEARED_POKEMON")){

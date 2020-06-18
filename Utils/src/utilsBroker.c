@@ -160,7 +160,6 @@ void process_request(int cod_op, int cliente_fd) {
 					loQueVoyALoguear = "Recibi un mensaje CatchPokemon.";
 					log_info(logger, loQueVoyALoguear);
 					catchConIDs = recibir_CATCH_POKEMON(cliente_fd,&size,0);
-					devolverID(cliente_fd,catchConIDs->IDmensaje);
 					unCatchPokemon = catchConIDs->catchPokemon;
 					free(catchConIDs);
 					mensajeCatchPokemon2 = guardarMensajeCatchPokemon(unCatchPokemon);
@@ -755,7 +754,7 @@ void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID
 	printf("\nOcupe exitosamente una posicion del mensaje con ID %d\n", unaPosicion->ID);
 	uint32_t posicionRelativa = unaPosicion->posicion - memoriaInterna;
 	printf("\nGuarde ese dato en la posicion de memoria %u\n", posicionRelativa);
-
+	printf("\nAhora tengo %d posiciones ocupadas", list_size(listaPosicionesOcupadas));
 	loQueVoyALoguear = "Almacené en memoria el mensaje con ID=%d,donde comienza en: %d";
 	log_info(logger, loQueVoyALoguear,unaPosicion->ID,posicionRelativa);
 
@@ -765,7 +764,10 @@ void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID
 //---------------------------------------------------Particiones Dinamicas
 
 void borrarFIFO(){
+	//pthread_mutex_lock(&mutexMemoriaInterna);
 	int tamanioOcupados = list_size(listaPosicionesOcupadas);
+	printf("\nhay %d posiciones ocupadas", list_size(listaPosicionesOcupadas));
+	//pthread_mutex_unlock(&mutexMemoriaInterna);
 	int posicionABorrar;
 	int auxID = 0;
 	PosicionOcupada* unaPosicionOcupada;
@@ -789,8 +791,21 @@ void borrarLRU(){
 
 }
 
+void borrarPosicion(){
+	puts("estoy en borrar posicion");
+	if(!strcmp(algoritmoReemplazo,"FIFO")){
+		puts("voy a borrar por FIFO");
+		borrarFIFO();
+	} else{
+		borrarLRU();
+	}
+
+}
+
 PosicionLibre* pedirPosicionFF(int tamanio){
 	PosicionLibre* unaPosicionLibre;
+	PosicionLibre* posicionFalsa = malloc(sizeof(PosicionLibre));
+	posicionFalsa->tamanio = 0;
 	if(tamanio < tamanioMinimoParticion){
 		tamanio= tamanioMinimoParticion;
 	}
@@ -798,16 +813,22 @@ PosicionLibre* pedirPosicionFF(int tamanio){
 	for(int i=0;i<tamanioPosicionesLibres;i++){
 		unaPosicionLibre = list_get(listaPosicionesLibres,i);
 		if (unaPosicionLibre->tamanio >= tamanio){
+			free(posicionFalsa);
+			puts("voy a retornar una posicion buena");
 			return unaPosicionLibre;
 		}
 	}
+	puts("voy a retornar una posicion falsa");
+	return posicionFalsa;
+
 }
 
 PosicionLibre* pedirPosicionBestFit(int tamanio) {
 	PosicionLibre* unaPosicionLibre;
-	PosicionLibre* otraPosicionLibre;
 	PosicionLibre* otraPosicionLibreBis;
 	PosicionLibre* posicionQueVoyARetornar;
+	PosicionLibre* posicionFalsa = malloc(sizeof(PosicionLibre));
+	posicionFalsa->tamanio = 0;
 	t_list* posicionesPotablesAElegir = list_create();
 	int tamanioListaPosicionesPotables;
 	int variableAux;
@@ -816,44 +837,76 @@ PosicionLibre* pedirPosicionBestFit(int tamanio) {
 	if(tamanio < tamanioMinimoParticion){
 			tamanio = tamanioMinimoParticion;
 	}
+
 	int tamanioPosicionesLibres = list_size(listaPosicionesLibres);
+	printf("las posiciones libres son %i", tamanioPosicionesLibres);
 		for(int i=0;i<tamanioPosicionesLibres;i++){
+			puts("entre al primer for");
 			unaPosicionLibre = list_get(listaPosicionesLibres,i);
-			if(unaPosicionLibre->tamanio > tamanio){
+			if(unaPosicionLibre->tamanio >= tamanio){
 				variableAux = unaPosicionLibre->tamanio - tamanio;
 				if(variableAux > 0){
 					list_add(posicionesPotablesAElegir,unaPosicionLibre);
 				}else{
-					unaPosicionLibre = posicionQueVoyARetornar;
+					free(posicionFalsa);
+					return unaPosicionLibre;
 				}
-			}else {
-				unaPosicionLibre = posicionQueVoyARetornar;
 			}
 		}
 		tamanioListaPosicionesPotables = list_size(posicionesPotablesAElegir);
-
-		for(int i=0;i<tamanioListaPosicionesPotables;i++){
-			otraPosicionLibre = list_get(posicionesPotablesAElegir,i);
-			otraPosicionLibreBis = list_get(posicionesPotablesAElegir,i+1);
-			variableAux = otraPosicionLibre->tamanio - tamanio;
+		printf("las posiciones potables son %i", tamanioListaPosicionesPotables);
+		if (tamanioListaPosicionesPotables == 0){
+			return posicionFalsa;
+		}
+		posicionQueVoyARetornar= list_get(posicionesPotablesAElegir,0);
+		for(int i=1;i<tamanioListaPosicionesPotables;i++){
+			puts("entre al segundo for");
+			otraPosicionLibreBis = list_get(posicionesPotablesAElegir,i);
+			variableAux = posicionQueVoyARetornar->tamanio - tamanio;
 			otraVariableAux = otraPosicionLibreBis->tamanio - tamanio;
-			if(variableAux < otraVariableAux){
-				otraPosicionLibre = posicionQueVoyARetornar;
-			}else{
-				otraPosicionLibreBis = posicionQueVoyARetornar;
+			if(variableAux > otraVariableAux){
+				posicionQueVoyARetornar = otraPosicionLibreBis;
 			}
 		}
-
+		list_destroy(posicionesPotablesAElegir);
+		free(posicionFalsa);
 		return posicionQueVoyARetornar;
 }
 
 PosicionLibre* pedirPosicion(int tamanio){
 
-	algoritmoParticionLibre = config_get_string_value(config,"ALGORITMO_PARTICION_LIBRE");
-	if(algoritmoParticionLibre == "FF"){
-		return pedirPosicionFF(tamanio);
+	PosicionLibre* posicionARetornar;
+	//algoritmoParticionLibre = config_get_string_value(config,"ALGORITMO_PARTICION_LIBRE");
+	if(!strcmp(algoritmoParticionLibre,"FF")){
+		posicionARetornar = pedirPosicionFF(tamanio);
+		if(posicionARetornar->tamanio == 0){
+			puts("me llego una pos falsa");
+			free(posicionARetornar);
+			borrarPosicion();
+			pthread_mutex_lock(&mutexBusquedasFallidas);
+			busquedasFallidasPreviasACompactacion--;
+			/*if(busquedasFallidasPreviasACompactacion == 0){
+				compacta();
+			}*/ //resolverCompactacion, dentro de compactar, reiniciar las busquedasfallidas
+			pthread_mutex_unlock(&mutexBusquedasFallidas);
+			return pedirPosicion(tamanio);
+		}
+		return posicionARetornar;
 	}else {
-		return pedirPosicionBestFit(tamanio);
+		puts("estoy en el else de pedirPosicion");
+		posicionARetornar = pedirPosicionBestFit(tamanio);
+		if(posicionARetornar->tamanio == 0){
+			free(posicionARetornar);
+			borrarPosicion();
+			pthread_mutex_lock(&mutexBusquedasFallidas);
+			busquedasFallidasPreviasACompactacion--;
+			/*if(busquedasFallidasPreviasACompactacion == 0){
+				compacta();
+			}*/ //resolverCompactacion, dentro de compactar, reiniciar las busquedasfallidas
+			pthread_mutex_unlock(&mutexBusquedasFallidas);
+			return pedirPosicion(tamanio);
+		}
+		return posicionARetornar;
 	}
 }
 
@@ -896,7 +949,7 @@ MensajeNewPokemon2* guardarMensajeNewPokemon(NewPokemon* unNewPokemon) {
 		pthread_mutex_lock(&mutexMemoriaInterna);
 		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeNew);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
-		if(unaPosicionLibre->tamanio > tamanioDeNew){
+		if(unaPosicionLibre->tamanio >= tamanioDeNew){
 		void* principioContenidoDelMensaje;
 
 		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
@@ -976,7 +1029,7 @@ MensajeLocalizedPokemon2* guardarMensajeLocalizedPokemon(LocalizedPokemon* unLoc
 
 		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeLocalized);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
-		if(unaPosicionLibre->tamanio > tamanioDeLocalized){
+		if(unaPosicionLibre->tamanio >= tamanioDeLocalized){
 		void* principioContenidoDelMensaje;
 
 		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
@@ -1044,7 +1097,7 @@ MensajeGetPokemon2* guardarMensajeGetPokemon(GetPokemon* unGetPokemon){
 		pthread_mutex_lock(&mutexMemoriaInterna);
 		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeGet);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
-		if(unaPosicionLibre->tamanio > tamanioDeGet){
+		if(unaPosicionLibre->tamanio >= tamanioDeGet){
 		void* principioContenidoDelMensaje;
 
 		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
@@ -1116,7 +1169,7 @@ MensajeAppearedPokemon2* guardarMensajeAppearedPokemon(AppearedPokemon* unAppear
 		pthread_mutex_lock(&mutexMemoriaInterna);
 		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeAppeared);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
-		if(unaPosicionLibre->tamanio > tamanioDeAppeared){
+		if(unaPosicionLibre->tamanio >= tamanioDeAppeared){
 		void* principioContenidoDelMensaje;
 
 		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
@@ -1184,7 +1237,7 @@ MensajeCatchPokemon2* guardarMensajeCatchPokemon(CatchPokemon* unCatchPokemon){
 		pthread_mutex_lock(&mutexMemoriaInterna);
 		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeCatch);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
-		if(unaPosicionLibre->tamanio > tamanioDeCatch){
+		if(unaPosicionLibre->tamanio >= tamanioDeCatch){
 		void* principioContenidoDelMensaje;
 
 		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
@@ -1246,17 +1299,20 @@ MensajeCaughtPokemon2* guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemo
 				mensaje->IDCorrelativo = idCorrelativo;
 				pthread_mutex_unlock(&mutexGeneradorIDMensaje);
 		int tamanioDeCaught = sizeof(uint32_t);
+
 		pthread_mutex_lock(&mutexMemoriaInterna);
 		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeCaught);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
-		if(unaPosicionLibre->tamanio > tamanioDeCaught){
+		if(unaPosicionLibre->tamanio >= tamanioDeCaught){
 		void* principioContenidoDelMensaje;
 
 		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
 		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
+
 		grabarCaughtPokemonAMemoriaInterna(unCaughtPokemon,tamanioDeCaught,unaPosicionLibre);
 		ocuparPosicion(tamanioDeCaught,mensaje->contenidoDelMensaje,CAUGHT_POKEMON,mensaje->ID);
 		pthread_mutex_unlock(&mutexMemoriaInterna);
+
 		if(tamanioDeCaught>=tamanioMinimoParticion){
 			mensaje->tamanioEnMemoria-= tamanioDeCaught;
 		} else{

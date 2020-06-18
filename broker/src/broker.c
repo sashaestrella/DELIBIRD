@@ -32,7 +32,7 @@ int main(void)
 
 	config= config_create("broker.config");
 	tamanioMinimoParticion = atoi(config_get_string_value(config, "TAMANIO_MINIMO_PARTICION"));
-	printf("el tamanio minimo de particion es: %d",tamanioMinimoParticion);
+	printf("\nel tamanio minimo de particion es: %d",tamanioMinimoParticion);
 	puts("a");
 	int tamanioMemoria = atoi(config_get_string_value(config, "TAMANIO_MEMORIA"));
 	memoriaInterna = malloc(tamanioMemoria);
@@ -42,13 +42,14 @@ int main(void)
 	primerPosicionLibre->tamanio = tamanioMemoria;
 
 	algoritmoReemplazo = config_get_string_value(config,"ALGORITMO_REEMPLAZO");
+	printf("\n el algoritmo de reemplazo es %s",algoritmoReemplazo);
+	puts("a");
 	algoritmoParticionLibre = config_get_string_value(config, "ALGORITMO_PARTICION_LIBRE");
 	config_set_value(config,"IP_BROKER","127.0.0.1");
-	//config_set_value(config,"PUERTO_BROKER","4444");
-	//busquedasFallidasPreviasACompactacion = atoi(config_get_string_value(config, "FRECUENCIA_COMPACTACION"));
-	//config_set_value(config,"LOG_FILE",logger->file);
-
-	logger = log_create("broker.log", "Broker-Log" , 1, LOG_LEVEL_INFO);
+	config_set_value(config,"PUERTO_BROKER","4444");
+	busquedasFallidasPreviasACompactacion = atoi(config_get_string_value(config, "FRECUENCIA_COMPACTACION"));
+	char* pathDelLogger = config_get_string_value(config,"LOG_FILE");
+	logger = log_create(pathDelLogger, "Broker-Log" , 1, LOG_LEVEL_INFO);
 
 /*
 	NewPokemon* unNewPokemon2 = malloc(sizeof(NewPokemon));

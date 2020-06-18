@@ -17,6 +17,7 @@
 int generadorDeIDsMensaje = 0;
 int generadorDeIDsSuscriptor = 0;
 
+pthread_mutex_t mutexBusquedasFallidas = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexMemoriaInterna = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexGeneradorIDMensaje,mutexGeneradorIDSuscriptor, mutexListaSuscriptores = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexColaNewPokemon, mutexColaLocalizedPokemon, mutexColaGetPokemon,mutexColaAppearedPokemon, mutexColaCatchPokemon, mutexColaCaughtPokemon = PTHREAD_MUTEX_INITIALIZER;
@@ -37,8 +38,9 @@ t_list* listaPosicionesLibres;
 t_list* listaPosicionesOcupadas;
 void* memoriaInterna;
 int tamanioMinimoParticion;
-char* algoritmoParticionLibre,algoritmoReemplazo;
-//int busquedasFallidasPreviasACompactacion;
+char* algoritmoParticionLibre;
+char* algoritmoReemplazo;
+int busquedasFallidasPreviasACompactacion;
 
 t_log* logger;
 t_config* config;
