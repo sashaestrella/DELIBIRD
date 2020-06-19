@@ -118,13 +118,12 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 			case SUSCRIPTOR_NEWPOKEMON:
 				conexionNewPokemon = conexion;
 				IDsuscripcionNew= IDsuscripcion;
-
 				recv(conexion, &cantidadNewPokemon, sizeof(int), MSG_WAITALL);
 				printf("Cantidad de New Pokemons: %d\n", cantidadNewPokemon);
-				recv(conexion, &codigo, sizeof(op_code), MSG_WAITALL);
-				printf("Codigo de cola: %d\n", codigo);
 				NewPokemonConIDs* nuevoNewPokemonConId;
 				for(int i = 0; i<cantidadNewPokemon; i++){
+					recv(conexion, &codigo, sizeof(op_code), MSG_WAITALL);
+					printf("Codigo de cola: %d\n", codigo);
 					nuevoNewPokemonConId = recibir_NEW_POKEMON(conexion, 0, 1);
 					send(conexion, 1, sizeof(int), 0); // No se si pasar el 1 con un void*
 					adminMensajeNewPokemon(nuevoNewPokemonConId);
@@ -179,6 +178,8 @@ void* recibirMensajesNew(){
 	void* mensajeRecibido;
 	NewPokemonConIDs* nuevoNewPokemon;
 	while(1){
+		int cod_op;
+		recv(conexionNewPokemon, &cod_op, sizeof(int), 0);
 		nuevoNewPokemon = recibir_NEW_POKEMON(conexionNewPokemon, 0, 1);
 		int ack = 1;
 		send(conexionNewPokemon, &ack, sizeof(int), 0);
@@ -208,6 +209,8 @@ void* recibirMensajesGet(){
 	pthread_t admin;
 	GetPokemonConIDs* nuevoGetPokemon;
 	while(1){
+		int cod_op;
+		recv(conexionGetPokemon, &cod_op, sizeof(int), 0);
 		nuevoGetPokemon = recibir_GET_POKEMON(conexionGetPokemon, 0, 1);
 		int ack = 1;
 		send(conexionNewPokemon, &ack, sizeof(int), 0);
@@ -227,6 +230,8 @@ void* recibirMensajesCatch(){
 	CatchPokemonConIDs* nuevoCatch;
 
 	while(1){
+		int cod_op;
+		recv(conexionCatch, &cod_op, sizeof(int), 0);
 		nuevoCatch = recibir_CATCH_POKEMON(conexionCatch, 0, 1);
 		int ack = 1;
 		send(conexionNewPokemon, &ack, sizeof(int), 0);
