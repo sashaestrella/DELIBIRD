@@ -765,44 +765,109 @@ void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID
 	log_info(logger, loQueVoyALoguear,unaPosicion->ID,posicionRelativa);
 
 
+
 }
 
 //---------------------------------------------------Particiones Dinamicas
 
+/*
+//Esta muy tirado de los pelos esto, hay que revisar
+void compactacionContigua(){
+	PosicionOcupada* unaPosicionOcupada;
+	PosicionOcupada* otraPosicionOcupada;
+	int continuar;
+	int tamanioListaPosicionesOcupadas = list_size(listaPosicionesOcupadas);
+
+	do{
+		continuar = 0;
+		if(tamanioListaPosicionesOcupadas > 1){
+			unaPosicionOcupada = list_get(listaPosicionesOcupadas,0);
+			tamanioQueSobra1 = tamanioMinimoParticion - unaPosicionOcupada->tamanio;
+			for(int i=0;i<tamanioListaPosicionesOcupadas;i++){
+				otraPosicionOcupada = list_get(listaPosicionesOcupadas,i);
+				posicionDondeComienza2 = otraPosicionOcupada->posicion - memoriaInterna;
+				if((posicionDondeComienza2 - posicionDondeComienza1)!= tamanioMinimoParticion){
+					unaPosicionOcupada->tamanio += otraPosicionOcupada->tamanio;
+					free(otraPosicionOcupada);
+					continuar = 1;
+					break;
+				}
+			}
+		}
+	}while(continuar);
+}
+*/
+
 void borrarFIFO(){
-	//pthread_mutex_lock(&mutexMemoriaInterna);
 	int tamanioOcupados = list_size(listaPosicionesOcupadas);
-	printf("\nhay %d posiciones ocupadas", list_size(listaPosicionesOcupadas));
-	//pthread_mutex_unlock(&mutexMemoriaInterna);
+	printf("\n\nEl tamaño de la lista de posiciones ocupadas es: %d\n",tamanioOcupados);
 	int posicionABorrar;
-	int auxID = 0;
+	int auxID;
 	PosicionOcupada* unaPosicionOcupada;
 	for(int i=0; i<tamanioOcupados; i++){
 		unaPosicionOcupada = list_get(listaPosicionesOcupadas,i);
-		if(unaPosicionOcupada->ID < auxID){
-			auxID = unaPosicionOcupada->ID;
+		auxID = unaPosicionOcupada->ID;
+		if(auxID > 0){
 			posicionABorrar = i;
+			break;
 		}
 	}
+
 	unaPosicionOcupada = list_get(listaPosicionesOcupadas,posicionABorrar);
 	PosicionLibre* unaPosicionLibre = malloc(sizeof(PosicionLibre));
 	unaPosicionLibre->posicion = unaPosicionOcupada->posicion;
 	unaPosicionLibre->tamanio = unaPosicionOcupada->tamanio;
+	printf("\nVoy a borrar de posiciones ocupadas la posicion de tamaño: %d",unaPosicionOcupada->tamanio);
 	free(unaPosicionOcupada);
 	list_remove(listaPosicionesOcupadas,posicionABorrar);
 	list_add(listaPosicionesLibres,unaPosicionLibre);
+	printf("\nAgregué a posiciones libres la posicion de tamaño: %d",unaPosicionLibre->tamanio);
+	printf("\nAhora el tamaño de la lista de posiciones ocupadas es de: %d",list_size(listaPosicionesOcupadas));
 }
 
+
 void borrarLRU(){
+	int tamanioOcupados = list_size(listaPosicionesOcupadas);
+	printf("\n\nEl tamaño de la lista de posiciones ocupadas es: %d\n",tamanioOcupados);
+	int posicionABorrar;
+	int auxID1,auxID2;
+	PosicionOcupada* unaPosicionOcupada;
+	PosicionOcupada* otraPosicionOcupada;
+
+	unaPosicionOcupada = list_get(listaPosicionesOcupadas,0);
+	auxID1 = unaPosicionOcupada->ID;
+	for(int i=1; i<tamanioOcupados-1; i++){
+		otraPosicionOcupada = list_get(listaPosicionesOcupadas,i);
+		auxID2 = otraPosicionOcupada->ID;
+		if(auxID1 > 0 && auxID2 > 0){
+			if(auxID2 > auxID1){
+				posicionABorrar = i-1;
+			}
+		}
+	}
+
+	unaPosicionOcupada = list_get(listaPosicionesOcupadas,posicionABorrar);
+	PosicionLibre* unaPosicionLibre = malloc(sizeof(PosicionLibre));
+	unaPosicionLibre->posicion = unaPosicionOcupada->posicion;
+	unaPosicionLibre->tamanio = unaPosicionOcupada->tamanio;
+	printf("\nVoy a borrar de posiciones ocupadas la posicion de tamaño: %d",unaPosicionOcupada->tamanio);
+	free(unaPosicionOcupada);
+	list_remove(listaPosicionesOcupadas,posicionABorrar);
+	list_add(listaPosicionesLibres,unaPosicionLibre);
+	printf("\nAgregué a posiciones libres la posicion de tamaño: %d",unaPosicionLibre->tamanio);
+	printf("\nAhora el tamaño de la lista de posiciones ocupadas es de: %d",list_size(listaPosicionesOcupadas));
 
 }
 
 void borrarPosicion(){
-	puts("estoy en borrar posicion");
+	puts("\nEstoy en borrar posicion");
+	int tamanioOcupados = list_size(listaPosicionesOcupadas);
+	printf("\nHay %d posiciones ocupadas", tamanioOcupados);
 	if(!strcmp(algoritmoReemplazo,"FIFO")){
-		puts("voy a borrar por FIFO");
+		puts("\nVoy a borrar por FIFO");
 		borrarFIFO();
 	} else{
+		puts("\nVoy a borrar por LRU");
 		borrarLRU();
 	}
 
@@ -811,9 +876,9 @@ void borrarPosicion(){
 PosicionLibre* pedirPosicionFF(int tamanio){
 	PosicionLibre* unaPosicionLibre;
 	PosicionLibre* posicionFalsa = malloc(sizeof(PosicionLibre));
-	t_list* posicionesYaAsignadas = list_create();
 	posicionFalsa->tamanio = 0;
-	int unTamanio;
+	int unTamanioSobrante;
+	void* nuevaPosicion;
 	if(tamanio < tamanioMinimoParticion){
 		tamanio= tamanioMinimoParticion;
 	}
@@ -825,8 +890,17 @@ PosicionLibre* pedirPosicionFF(int tamanio){
 			free(posicionFalsa);
 			puts("\nVoy a retornar una posicion buena");
 			printf("Tamaño posicion buena: %d\n",unaPosicionLibre->tamanio);
-			unTamanio = unaPosicionLibre->tamanio - tamanio;
-			printf("Tamaño sobrante: %d\n",unTamanio);
+			unTamanioSobrante = unaPosicionLibre->tamanio - tamanio;
+			if(unTamanioSobrante > 0){
+				PosicionLibre* unaNuevaPosicionLibre = malloc(sizeof(PosicionLibre));
+				nuevaPosicion = unaPosicionLibre->posicion + 1;
+				unaNuevaPosicionLibre->posicion = nuevaPosicion;
+				unaNuevaPosicionLibre->tamanio = unTamanioSobrante;
+				list_add(listaPosicionesLibres,unaNuevaPosicionLibre);
+				printf("Una nueva posicion libre de tamaño: %d\n",unaNuevaPosicionLibre->tamanio);
+			}else {
+				printf("Tamaño sobrante: %d\n",unTamanioSobrante);
+			}
 			puts("Posicion asignada correctamente.\n");
 
 			return unaPosicionLibre;
@@ -848,7 +922,8 @@ PosicionLibre* pedirPosicionBF(int tamanio) {
 	int tamanioListaPosicionesPotables;
 	int variableAux;
 	int otraVariableAux;
-	int unTamanio;
+	int unTamanioSobrante;
+	void* nuevaPosicion;
 
 	if(tamanio < tamanioMinimoParticion){
 			tamanio = tamanioMinimoParticion;
@@ -866,8 +941,17 @@ PosicionLibre* pedirPosicionBF(int tamanio) {
 				}else{
 					free(posicionFalsa);
 					printf("\nTamaño de posicion elegida: %d\n",unaPosicionLibre->tamanio);
-					unTamanio = unaPosicionLibre->tamanio - tamanio;
-					printf("Tamaño sobrante: %d\n",unTamanio);
+					unTamanioSobrante = unaPosicionLibre->tamanio - tamanio;
+					if(unTamanioSobrante > 0){
+						PosicionLibre* unaNuevaPosicionLibre = malloc(sizeof(PosicionLibre));
+						nuevaPosicion = unaPosicionLibre->posicion + 1;
+						unaNuevaPosicionLibre->posicion = nuevaPosicion;
+						unaNuevaPosicionLibre->tamanio = unTamanioSobrante;
+						list_add(listaPosicionesLibres,unaNuevaPosicionLibre);
+						printf("Una nueva posicion libre de tamaño: %d\n",unaNuevaPosicionLibre->tamanio);
+					}else {
+						printf("Tamaño sobrante: %d\n",unTamanioSobrante);
+					}
 					puts("Posicion asignada correctamente.");
 					return unaPosicionLibre;
 				}
@@ -887,7 +971,16 @@ PosicionLibre* pedirPosicionBF(int tamanio) {
 			otraVariableAux = otraPosicionLibreBis->tamanio - tamanio;
 			if(variableAux < otraVariableAux){
 				printf("\nTamaño de posicion elegida: %d\n",posicionQueVoyARetornar->tamanio);
-				printf("Tamaño sobrante: %d\n",variableAux);
+				if(variableAux > 0){
+					PosicionLibre* unaNuevaPosicionLibre = malloc(sizeof(PosicionLibre));
+					nuevaPosicion = unaNuevaPosicionLibre->posicion + 1;
+					unaNuevaPosicionLibre->posicion = nuevaPosicion;
+					unaNuevaPosicionLibre->tamanio = variableAux;
+					list_add(listaPosicionesLibres,unaNuevaPosicionLibre);
+					printf("Una nueva posicion libre de tamaño: %d\n",unaNuevaPosicionLibre->tamanio);
+				}else {
+					printf("Tamaño sobrante: %d\n",variableAux);
+				}
 				puts("Posicion asignada correctamente.");
 				return posicionQueVoyARetornar;
 			}
@@ -895,8 +988,17 @@ PosicionLibre* pedirPosicionBF(int tamanio) {
 		list_destroy(posicionesPotablesAElegir);
 		free(posicionFalsa);
 		printf("\nTamaño de posicion elegida: %d\n",posicionQueVoyARetornar->tamanio);
-		unTamanio = unaPosicionLibre->tamanio - tamanio;
-		printf("Tamaño sobrante: %d\n",unTamanio);
+		unTamanioSobrante = posicionQueVoyARetornar->tamanio - tamanio;
+		if(unTamanioSobrante > 0){
+			PosicionLibre* unaNuevaPosicionLibre = malloc(sizeof(PosicionLibre));
+			nuevaPosicion = unaPosicionLibre->posicion + 1;
+			unaNuevaPosicionLibre->posicion = nuevaPosicion;
+			unaNuevaPosicionLibre->tamanio = unTamanioSobrante;
+			list_add(listaPosicionesLibres,unaNuevaPosicionLibre);
+			printf("Una nueva posicion libre de tamaño: %d\n",unaNuevaPosicionLibre->tamanio);
+		}else {
+			printf("Tamaño sobrante: %d\n",unTamanioSobrante);
+		}
 		puts("Posicion asignada correctamente.");
 
 		return posicionQueVoyARetornar;

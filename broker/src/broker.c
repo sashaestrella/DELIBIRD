@@ -73,7 +73,29 @@ int main(void)
 	unaPosicionLibre3->tamanio = 400;
 	list_add(listaPosicionesLibres,unaPosicionLibre3);
 
-	puts("------------Agrego posiciones cualquiera\n");
+	PosicionOcupada* unaPosicionOcupada1 = malloc(sizeof(PosicionOcupada));
+	unaPosicionOcupada1->tamanio = 150;
+	unaPosicionOcupada1->posicion = 0;
+	unaPosicionOcupada1->colaALaQuePertenece = 2;
+	unaPosicionOcupada1->ID = 1;
+	list_add(listaPosicionesOcupadas,unaPosicionOcupada1);
+
+	PosicionOcupada* unaPosicionOcupada2 = malloc(sizeof(PosicionOcupada));
+	unaPosicionOcupada2->tamanio = 60;
+	unaPosicionOcupada2->posicion = 1;
+	unaPosicionOcupada2->colaALaQuePertenece = 2;
+	unaPosicionOcupada2->ID = 2;
+	list_add(listaPosicionesOcupadas,unaPosicionOcupada2);
+
+	PosicionOcupada* unaPosicionOcupada3 = malloc(sizeof(PosicionOcupada));
+	unaPosicionOcupada3->tamanio = 450;
+	unaPosicionOcupada3->posicion = 2;
+	unaPosicionOcupada3->colaALaQuePertenece = 2;
+	unaPosicionOcupada3->ID = 3;
+	list_add(listaPosicionesOcupadas,unaPosicionOcupada3);
+
+
+	puts("------------Agrego posiciones libres cualquiera\n");
 	printf("Tamaño de posiciones libres: %d\n", list_size(listaPosicionesLibres));
 	PosicionLibre* unaPosicion = list_get(listaPosicionesLibres,0);
 	PosicionLibre* unaPosicion2 = list_get(listaPosicionesLibres,1);
@@ -124,6 +146,54 @@ int main(void)
 	printf("\nIngrese el tamaño: %d",tamanio7);
 	posicionQueVoyAPedir7 = pedirPosicionBF(tamanio7);
 	puts("\n------------Fin Pruebas BF\n");
+
+	puts("\n------------Pruebas borrar por FIFO\n");
+	puts("------------Agrego posiciones ocupadas cualquiera\n");
+	PosicionOcupada* unaPosicionOcupada = list_get(listaPosicionesOcupadas,0);
+	PosicionOcupada* unaPosicionOc2 = list_get(listaPosicionesOcupadas,1);
+	PosicionOcupada* unaPosicionOc3 = list_get(listaPosicionesOcupadas,2);
+
+	printf("Tamaño posicion 0: %d,ID = %d\n",unaPosicionOcupada->tamanio,unaPosicionOcupada->ID);
+	printf("Tamaño posicion 1: %d,ID = %d\n",unaPosicionOc2->tamanio,unaPosicionOc2->ID);
+	printf("Tamaño posicion 2: %d,ID = %d\n",unaPosicionOc3->tamanio,unaPosicionOc3->ID);
+
+	int tamanioOcupados = list_size(listaPosicionesOcupadas);
+	for(int i=0;i<tamanioOcupados;i++){
+		borrarFIFO();
+	}
+	puts("\n------------Fin Pruebas borrar por FIFO\n");
+
+	puts("\n------------Pruebas borrar por LRU\n");
+	PosicionOcupada* unaPosicionOcupada4 = malloc(sizeof(PosicionOcupada));
+	unaPosicionOcupada4->tamanio = 48;
+	unaPosicionOcupada4->posicion = 3;
+	unaPosicionOcupada4->colaALaQuePertenece = 2;
+	unaPosicionOcupada4->ID = 4;
+	list_add(listaPosicionesOcupadas,unaPosicionOcupada4);
+
+	PosicionOcupada* unaPosicionOcupada5 = malloc(sizeof(PosicionOcupada));
+	unaPosicionOcupada5->tamanio = 650;
+	unaPosicionOcupada5->posicion = 4;
+	unaPosicionOcupada5->colaALaQuePertenece = 2;
+	unaPosicionOcupada5->ID = 5;
+	list_add(listaPosicionesOcupadas,unaPosicionOcupada5);
+
+	PosicionOcupada* unaPosicionOcupada6 = malloc(sizeof(PosicionOcupada));
+	unaPosicionOcupada6->tamanio = 270;
+	unaPosicionOcupada6->posicion = 5;
+	unaPosicionOcupada6->colaALaQuePertenece = 2;
+	unaPosicionOcupada6->ID = 6;
+	list_add(listaPosicionesOcupadas,unaPosicionOcupada6);
+
+	PosicionOcupada* unaPosicionOcupada7 = malloc(sizeof(PosicionOcupada));
+	unaPosicionOcupada7->tamanio = 70;
+	unaPosicionOcupada7->posicion = 6;
+	unaPosicionOcupada7->colaALaQuePertenece = 2;
+	unaPosicionOcupada7->ID = 7;
+	list_add(listaPosicionesOcupadas,unaPosicionOcupada7);
+
+	borrarLRU();
+	puts("\n------------Fin Pruebas borrar por LRU");
 
 /*
 	NewPokemon* unNewPokemon2 = malloc(sizeof(NewPokemon));

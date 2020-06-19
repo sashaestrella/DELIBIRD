@@ -205,6 +205,8 @@ CaughtPokemon* sacarDeMemoriaElCaughtPokemon(MensajeCaughtPokemon2* mensajeCaugh
 PosicionLibre* pedirPosicion(int tamanio);
 PosicionLibre* pedirPosicionFF(int tamanio);
 PosicionLibre* pedirPosicionBF(int tamanio);
-
+void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID);
+void borrarFIFO();
+void borrarLRU();
 
 #endif /* CONEXIONES_H_ */
