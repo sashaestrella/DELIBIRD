@@ -222,7 +222,8 @@ void enviarCaughtPokemonASuscriptores(MensajeCaughtPokemon2* unMensajeCaughtPoke
 		int ack = 0;
 		int loQueDevuelveElRecv = 0;
 		int tamanioSuscriptoresCaughtPokemon = list_size(suscriptores_caught_pokemon);
-		char* loQueVoyALoguear,loQueVoyALoguear2;
+		char* loQueVoyALoguear;
+		char* loQueVoyALoguear2;
 		printf("El tamaño de la lista suscriptores caught pokemon es %d",tamanioSuscriptoresCaughtPokemon);
 
 		for(int i=0;i<tamanioSuscriptoresCaughtPokemon;i++){
@@ -254,7 +255,8 @@ void enviarCatchPokemonASuscriptores(MensajeCatchPokemon2* unMensajeCatchPokemon
 		int ack = 0;
 		int loQueDevuelveElRecv = 0;
 		int tamanioSuscriptoresCatchPokemon = list_size(suscriptores_catch_pokemon);
-		char* loQueVoyALoguear,loQueVoyALoguear2;
+		char* loQueVoyALoguear;
+		char* loQueVoyALoguear2;
 
 		for(int i=0;i<tamanioSuscriptoresCatchPokemon;i++){
 			unSuscriptor = list_get(suscriptores_catch_pokemon,i);
@@ -287,7 +289,8 @@ void enviarLocalizedPokemonASuscriptores(MensajeLocalizedPokemon2* unMensajeLoca
 		int ack = 0;
 		int loQueDevuelveElRecv = 0;
 		int tamanioSuscriptoresLocalizedPokemon = list_size(suscriptores_localized_pokemon);
-		char* loQueVoyALoguear,loQueVoyALoguear2;
+		char* loQueVoyALoguear;
+		char* loQueVoyALoguear2;
 
 		for(int i=0;i<tamanioSuscriptoresLocalizedPokemon;i++){
 			unSuscriptor = list_get(suscriptores_localized_pokemon,i);
@@ -321,7 +324,8 @@ void enviarGetPokemonASuscriptores(MensajeGetPokemon2* unMensajeGetPokemon){
 		int ack = 0;
 		int loQueDevuelveElRecv = 0;
 		int tamanioSuscriptoresGetPokemon = list_size(suscriptores_get_pokemon);
-		char* loQueVoyALoguear,loQueVoyALoguear2;
+		char* loQueVoyALoguear;
+		char* loQueVoyALoguear2;
 
 		for(int i=0;i<tamanioSuscriptoresGetPokemon;i++){
 			unSuscriptor = list_get(suscriptores_get_pokemon,i);
@@ -354,7 +358,8 @@ void enviarAppearedPokemonASuscriptores(MensajeAppearedPokemon2* unMensajeAppear
 		int ack = 0;
 		int loQueDevuelveElRecv = 0;
 		int tamanioSuscriptoresAppearedPokemon = list_size(suscriptores_appeared_pokemon);
-		char* loQueVoyALoguear,loQueVoyALoguear2;
+		char* loQueVoyALoguear;
+		char* loQueVoyALoguear2;
 
 		for(int i=0;i<tamanioSuscriptoresAppearedPokemon;i++){
 			unSuscriptor = list_get(suscriptores_appeared_pokemon,i);
@@ -387,7 +392,8 @@ void enviarNewPokemonASuscriptores(MensajeNewPokemon2* unMensajeNewPokemon){
 		int ack = 0;
 		int loQueDevuelveElRecv = 0;
 		int tamanioSuscriptoresNewPokemon = list_size(suscriptores_new_pokemon);
-		char* loQueVoyALoguear,loQueVoyALoguear2;
+		char* loQueVoyALoguear;
+		char* loQueVoyALoguear2;
 
 		for(int i=0;i<tamanioSuscriptoresNewPokemon;i++){
 			unSuscriptor = list_get(suscriptores_new_pokemon,i);
@@ -805,25 +811,34 @@ void borrarPosicion(){
 PosicionLibre* pedirPosicionFF(int tamanio){
 	PosicionLibre* unaPosicionLibre;
 	PosicionLibre* posicionFalsa = malloc(sizeof(PosicionLibre));
+	t_list* posicionesYaAsignadas = list_create();
 	posicionFalsa->tamanio = 0;
+	int unTamanio;
 	if(tamanio < tamanioMinimoParticion){
 		tamanio= tamanioMinimoParticion;
 	}
 	int tamanioPosicionesLibres = list_size(listaPosicionesLibres);
+
 	for(int i=0;i<tamanioPosicionesLibres;i++){
 		unaPosicionLibre = list_get(listaPosicionesLibres,i);
-		if (unaPosicionLibre->tamanio >= tamanio){
+		if(unaPosicionLibre->tamanio >= tamanio){
 			free(posicionFalsa);
-			puts("voy a retornar una posicion buena");
+			puts("\nVoy a retornar una posicion buena");
+			printf("Tamaño posicion buena: %d\n",unaPosicionLibre->tamanio);
+			unTamanio = unaPosicionLibre->tamanio - tamanio;
+			printf("Tamaño sobrante: %d\n",unTamanio);
+			puts("Posicion asignada correctamente.\n");
+
 			return unaPosicionLibre;
 		}
+		puts("\nSigo buscando...");
 	}
-	puts("voy a retornar una posicion falsa");
+	puts("\nVoy a retornar una posicion falsa");
+	printf("No se le pudo asignar ninguna posicion al tamaño: %d\n",tamanio);
 	return posicionFalsa;
-
 }
 
-PosicionLibre* pedirPosicionBestFit(int tamanio) {
+PosicionLibre* pedirPosicionBF(int tamanio) {
 	PosicionLibre* unaPosicionLibre;
 	PosicionLibre* otraPosicionLibreBis;
 	PosicionLibre* posicionQueVoyARetornar;
@@ -833,15 +848,16 @@ PosicionLibre* pedirPosicionBestFit(int tamanio) {
 	int tamanioListaPosicionesPotables;
 	int variableAux;
 	int otraVariableAux;
+	int unTamanio;
 
 	if(tamanio < tamanioMinimoParticion){
 			tamanio = tamanioMinimoParticion;
 	}
 
 	int tamanioPosicionesLibres = list_size(listaPosicionesLibres);
-	printf("las posiciones libres son %i", tamanioPosicionesLibres);
+	printf("\nLas posiciones libres son %i", tamanioPosicionesLibres);
 		for(int i=0;i<tamanioPosicionesLibres;i++){
-			puts("entre al primer for");
+			printf("\nEntre al primer for %d vez/veces",i);
 			unaPosicionLibre = list_get(listaPosicionesLibres,i);
 			if(unaPosicionLibre->tamanio >= tamanio){
 				variableAux = unaPosicionLibre->tamanio - tamanio;
@@ -849,27 +865,40 @@ PosicionLibre* pedirPosicionBestFit(int tamanio) {
 					list_add(posicionesPotablesAElegir,unaPosicionLibre);
 				}else{
 					free(posicionFalsa);
+					printf("\nTamaño de posicion elegida: %d\n",unaPosicionLibre->tamanio);
+					unTamanio = unaPosicionLibre->tamanio - tamanio;
+					printf("Tamaño sobrante: %d\n",unTamanio);
+					puts("Posicion asignada correctamente.");
 					return unaPosicionLibre;
 				}
 			}
 		}
 		tamanioListaPosicionesPotables = list_size(posicionesPotablesAElegir);
-		printf("las posiciones potables son %i", tamanioListaPosicionesPotables);
+		printf("\nLas posiciones potables son %i", tamanioListaPosicionesPotables);
 		if (tamanioListaPosicionesPotables == 0){
+			puts("\nNinguna posicion potable para asignarle.");
 			return posicionFalsa;
 		}
 		posicionQueVoyARetornar= list_get(posicionesPotablesAElegir,0);
 		for(int i=1;i<tamanioListaPosicionesPotables;i++){
-			puts("entre al segundo for");
+			printf("\nEntre al segundo for %d vez/veces",i);
 			otraPosicionLibreBis = list_get(posicionesPotablesAElegir,i);
 			variableAux = posicionQueVoyARetornar->tamanio - tamanio;
 			otraVariableAux = otraPosicionLibreBis->tamanio - tamanio;
-			if(variableAux > otraVariableAux){
-				posicionQueVoyARetornar = otraPosicionLibreBis;
+			if(variableAux < otraVariableAux){
+				printf("\nTamaño de posicion elegida: %d\n",posicionQueVoyARetornar->tamanio);
+				printf("Tamaño sobrante: %d\n",variableAux);
+				puts("Posicion asignada correctamente.");
+				return posicionQueVoyARetornar;
 			}
 		}
 		list_destroy(posicionesPotablesAElegir);
 		free(posicionFalsa);
+		printf("\nTamaño de posicion elegida: %d\n",posicionQueVoyARetornar->tamanio);
+		unTamanio = unaPosicionLibre->tamanio - tamanio;
+		printf("Tamaño sobrante: %d\n",unTamanio);
+		puts("Posicion asignada correctamente.");
+
 		return posicionQueVoyARetornar;
 }
 
@@ -878,7 +907,9 @@ PosicionLibre* pedirPosicion(int tamanio){
 	PosicionLibre* posicionARetornar;
 	//algoritmoParticionLibre = config_get_string_value(config,"ALGORITMO_PARTICION_LIBRE");
 	if(!strcmp(algoritmoParticionLibre,"FF")){
+
 		posicionARetornar = pedirPosicionFF(tamanio);
+
 		if(posicionARetornar->tamanio == 0){
 			puts("me llego una pos falsa");
 			free(posicionARetornar);
@@ -894,7 +925,7 @@ PosicionLibre* pedirPosicion(int tamanio){
 		return posicionARetornar;
 	}else {
 		puts("estoy en el else de pedirPosicion");
-		posicionARetornar = pedirPosicionBestFit(tamanio);
+		posicionARetornar = pedirPosicionBF(tamanio);
 		if(posicionARetornar->tamanio == 0){
 			free(posicionARetornar);
 			borrarPosicion();
@@ -1461,7 +1492,8 @@ void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 		int ack = 0;
 		int loQueDevuelveElRecv = 0;
 		int cantidadDeNewPokemon = list_size(New_Pokemon);
-		char* loQueVoyALoguear,loQueVoyALoguear2;
+		char* loQueVoyALoguear;
+		char* loQueVoyALoguear2;
 
 		if(idGeneradoEnElMomento == 1){ //caso feliz
 		send(socket_suscriptor,&cantidadDeNewPokemon,sizeof(int),0);
@@ -1562,7 +1594,8 @@ void enviarColaLocalizedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,
 		int ack = 0;
 		int loQueDevuelveElRecv = 0;
 		int cantidadDeLocalizedPokemon = list_size(Localized_Pokemon);
-		char* loQueVoyALoguear,loQueVoyALoguear2;
+		char* loQueVoyALoguear;
+		char* loQueVoyALoguear2;
 
 		if(idGeneradoEnElMomento == 1){ //caso feliz
 		send(socket_suscriptor,&cantidadDeLocalizedPokemon,sizeof(int),0);
@@ -1661,7 +1694,8 @@ void enviarColaGetPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 		int ack = 0;
 		int loQueDevuelveElRecv = 0;
 		int cantidadDeGetPokemon = list_size(Get_Pokemon);
-		char* loQueVoyALoguear,loQueVoyALoguear2;
+		char* loQueVoyALoguear;
+		char* loQueVoyALoguear2;
 
 		if(idGeneradoEnElMomento == 1){ //caso feliz
 		send(socket_suscriptor,&cantidadDeGetPokemon,sizeof(int),0);
@@ -1761,7 +1795,8 @@ void enviarColaAppearedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,S
 		int ack = 0;
 		int loQueDevuelveElRecv = 0;
 		int cantidadDeAppearedPokemon = list_size(Appeared_Pokemon);
-		char* loQueVoyALoguear,loQueVoyALoguear2;
+		char* loQueVoyALoguear;
+		char* loQueVoyALoguear2;
 
 		if(idGeneradoEnElMomento == 1){ //caso feliz
 		send(socket_suscriptor,&cantidadDeAppearedPokemon,sizeof(int),0);
@@ -1860,7 +1895,8 @@ void enviarColaCatchPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Susc
 		int ack = 0;
 		int loQueDevuelveElRecv = 0;
 		int cantidadDeCatchPokemon = list_size(Catch_Pokemon);
-		char* loQueVoyALoguear,loQueVoyALoguear2;
+		char* loQueVoyALoguear;
+		char* loQueVoyALoguear2;
 
 		if(idGeneradoEnElMomento == 1){ //caso feliz
 		send(socket_suscriptor,&cantidadDeCatchPokemon,sizeof(int),0);
@@ -1958,7 +1994,8 @@ void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Sus
 		int ack = 0;
 		int loQueDevuelveElRecv = 0;
 		int cantidadDeCaughtPokemon = list_size(Caught_Pokemon);
-		char* loQueVoyALoguear,loQueVoyALoguear2;
+		char* loQueVoyALoguear;
+		char* loQueVoyALoguear2;
 
 		if(idGeneradoEnElMomento == 1){ //caso feliz
 		send(socket_suscriptor,&cantidadDeCaughtPokemon,sizeof(int),0);

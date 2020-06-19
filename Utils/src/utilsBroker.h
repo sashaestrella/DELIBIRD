@@ -38,6 +38,9 @@ t_list* listaPosicionesLibres;
 t_list* listaPosicionesOcupadas;
 void* memoriaInterna;
 int tamanioMinimoParticion;
+int ip;
+int puerto;
+char* algoritmoMemoria;
 char* algoritmoParticionLibre;
 char* algoritmoReemplazo;
 int busquedasFallidasPreviasACompactacion;
@@ -198,5 +201,10 @@ GetPokemon* sacarDeMemoriaElGetPokemon(MensajeGetPokemon2* mensajeGet2);
 AppearedPokemon* sacarDeMemoriaElAppearedPokemon(MensajeAppearedPokemon2* mensajeAppeared2);
 CatchPokemon* sacarDeMemoriaElCatchPokemon(MensajeCatchPokemon2* mensajeCatch2);
 CaughtPokemon* sacarDeMemoriaElCaughtPokemon(MensajeCaughtPokemon2* mensajeCaught2);
+
+PosicionLibre* pedirPosicion(int tamanio);
+PosicionLibre* pedirPosicionFF(int tamanio);
+PosicionLibre* pedirPosicionBF(int tamanio);
+
 
 #endif /* CONEXIONES_H_ */
