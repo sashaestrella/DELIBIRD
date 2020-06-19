@@ -38,6 +38,9 @@ t_list* listaPosicionesLibres;
 t_list* listaPosicionesOcupadas;
 void* memoriaInterna;
 int tamanioMinimoParticion;
+int ip;
+int puerto;
+char* algoritmoMemoria;
 char* algoritmoParticionLibre;
 char* algoritmoReemplazo;
 int busquedasFallidasPreviasACompactacion;
@@ -160,7 +163,6 @@ int recibir_operacion(int);
 void process_request(int cod_op, int cliente_fd);
 void serve_client(int *socket);
 
-
 void recibirSuscripcionNewPokemon(int socket_suscriptor);
 void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor, Suscriptor* unSuscriptor);
 void enviarNewPokemonASuscriptores(MensajeNewPokemon2* unMensajeNewPokemon);
@@ -198,5 +200,20 @@ GetPokemon* sacarDeMemoriaElGetPokemon(MensajeGetPokemon2* mensajeGet2);
 AppearedPokemon* sacarDeMemoriaElAppearedPokemon(MensajeAppearedPokemon2* mensajeAppeared2);
 CatchPokemon* sacarDeMemoriaElCatchPokemon(MensajeCatchPokemon2* mensajeCatch2);
 CaughtPokemon* sacarDeMemoriaElCaughtPokemon(MensajeCaughtPokemon2* mensajeCaught2);
+
+
+PosicionLibre* pedirPosicion(int tamanio);
+PosicionLibre* pedirPosicionFF(int tamanio);
+PosicionLibre* pedirPosicionBF(int tamanio);
+void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID);
+void borrarFIFO();
+void borrarLRU();
+void borrarDeColaDeMensajes(int nroDeCola,int idMensaje);
+void buscarIDNewPokemonYBorrarlo(int id);
+void buscarIDLocalizedPokemonYBorrarlo(int id);
+void buscarIDGetPokemonYBorrarlo(int id);
+void buscarIDAppearedPokemonYBorrarlo(int id);
+void buscarIDCatchPokemonYBorrarlo(int id);
+void buscarIDCaughtPokemonYBorrarlo(int id);
 
 #endif /* CONEXIONES_H_ */
