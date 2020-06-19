@@ -29,7 +29,11 @@ C_DEPS += \
 src/%.o: ../src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C Compiler'
+<<<<<<< HEAD
 	gcc -I"/home/utnso/Documentos/TP/tp-2020-1c-BOMP/Utils" -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+=======
+	gcc -I"/home/utnso/workspace/tp-2020-1c-BOMP/Utils" -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+>>>>>>> 7d5c2a525a444daf778e89b607988ca983f1356f
 	@echo 'Finished building: $<'
 	@echo ' '
 

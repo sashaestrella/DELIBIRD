@@ -32,6 +32,11 @@ void* adminMensajeLocalized(LocalizedPokemonConIDs*);
 void* adminMensajeCaught(CaughtPokemonConIDs*);
 
 
+pthread_t hiloServidorTeam;
+void iniciar_servidor_team(void);
+void esperar_cliente_team(int);
+void serve_client_team(int*);
+void process_request_team(int, int);
 
 
 

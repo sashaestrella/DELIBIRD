@@ -4,9 +4,6 @@
 int main(int argc, char *argv[])
 {
 
-
-	/*---------------------------------------------------PARTE 2-------------------------------------------------------------*/
-
 	int conexion;
 	char* ip;
 	char* puerto;
@@ -28,10 +25,6 @@ int main(int argc, char *argv[])
 	config_save(config);
 
 
-	/*---------------------------------------------------PARTE 3-------------------------------------------------------------*/
-
-	//antes de continuar, tenemos que asegurarnos que el servidor esté corriendo porque lo necesitaremos para lo que sigue.
-
 	//crear conexion
 
 	ip = config_get_string_value(config, "IP");
@@ -42,21 +35,20 @@ int main(int argc, char *argv[])
 
 	//Enviar mensaje
 
+	if(!strcmp(argv[2], "NEW_POKEMON")){
 	NewPokemon* newPokemon;
 	newPokemon = parsearNewPokemon(argv[3], argv[4], argv[5], argv[6]);
 
-
 	enviarNewPokemon(newPokemon, conexion,0);
+	}
 	//Recibir mensaje
-/*
-	char* mensajeRecibido;
 
-	mensajeRecibido=recibir_mensaje(conexion);
-*/
-	//Loguear mensaje recibido
-/*
-	log_info(logger, "Se recibio el mensaje: %s " ,mensajeRecibido);
-*/
+	if(!strcmp(argv[2], "APPEARED_POKEMON")){
+	AppearedPokemon* appearedPokemon;
+	appearedPokemon = parsearAppearedPokemon(argv[3], argv[4], argv[5]);
+	enviarAppearedPokemon(appearedPokemon, conexion, 0,0);
+	puts("Mande un appeared");
+	}
 
 
 	terminar_programa(conexion, logger, config);

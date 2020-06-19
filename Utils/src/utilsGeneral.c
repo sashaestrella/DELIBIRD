@@ -661,6 +661,18 @@ NewPokemon* parsearNewPokemon(char* pokemon
 	return newPokemon;
 }
 
+AppearedPokemon* parsearAppearedPokemon(char* pokemon, char* posX, char* posY){
+
+	AppearedPokemon* appeared = malloc(sizeof(AppearedPokemon));
+
+	appeared->nombre = pokemon;
+	appeared->tamanioNombrePokemon = strlen(pokemon +1);
+	appeared->coordenadas.posicionX = atoi(posX);
+	appeared->coordenadas.posicionY = atoi(posY);
+
+	return appeared;
+}
+
 /*void enviarNewPokemon(NewPokemon* newPokemon, int conexion)
 {
 	uint32_t codigo = NEW_POKEMON;

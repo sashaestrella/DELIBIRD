@@ -96,6 +96,9 @@ void enviarCaughtPokemon(CaughtPokemon* caught_pokemon,int socket_suscriptor,int
 void enviarSuscripcion(int idSuscriptor,int socket_suscriptor,int cod_op);
 void* serializarSuscripcion(int idSuscriptor,int bytes);
 
+AppearedPokemon* parsearAppearedPokemon(char* pokemon, char* posX, char* posY);
+NewPokemon* parsearNewPokemon(char* pokemon, char* posicion, char* posicionY, char* cantidad);
+
 void liberar_conexion(int socket_cliente);
 //--------------------Clientes--------------
 

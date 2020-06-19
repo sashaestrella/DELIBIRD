@@ -171,9 +171,29 @@ int main(int argc,char* argv[])
 
 	for(int j=0; j<list_size(entrenadores);j++)
 			pthread_join(hiloEntrenador[j], NULL);
+<<<<<<< HEAD
 	*/
 	generarConexiones(0);
 	abrirEscuchas();
+=======
+*/
+	//generarConexiones(0);
+	//abrirEscuchas();
+
+	puts("\Voy a crear el hilo");
+	pthread_t hiloConexionGameboy;
+	pthread_create(&hiloConexionGameboy, NULL, (void*)noHayBroker, NULL);
+
+	pthread_detach(hiloConexionGameboy);
+	sleep(20);//puse esto para no poner semaforos porque paja
+	for(int i=0; i<list_size(nuevosPokemon); i++){
+		Pokemon* pokemon = list_get(nuevosPokemon, i);
+		printf("Nombre %s, Posicion (%d,%d)", pokemon->nombre, pokemon->posicion.posicionX, pokemon->posicion.posicionY);
+		puts("\n");
+	}
+
+	//pthread_join(hiloConexionGameboy,NULL);
+>>>>>>> 7d5c2a525a444daf778e89b607988ca983f1356f
 
 	t_log* logger;
 
