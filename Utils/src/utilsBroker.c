@@ -769,7 +769,7 @@ void borrarFIFO(){
 	printf("\nhay %d posiciones ocupadas", list_size(listaPosicionesOcupadas));
 	//pthread_mutex_unlock(&mutexMemoriaInterna);
 	int posicionABorrar;
-	int auxID = 0;
+	int auxID = 99999999;
 	PosicionOcupada* unaPosicionOcupada;
 	for(int i=0; i<tamanioOcupados; i++){
 		unaPosicionOcupada = list_get(listaPosicionesOcupadas,i);
@@ -782,6 +782,7 @@ void borrarFIFO(){
 	PosicionLibre* unaPosicionLibre = malloc(sizeof(PosicionLibre));
 	unaPosicionLibre->posicion = unaPosicionOcupada->posicion;
 	unaPosicionLibre->tamanio = unaPosicionOcupada->tamanio;
+	borrarDeColaDeMensajes(unaPosicionOcupada->colaALaQuePertenece,unaPosicionOcupada->ID);
 	free(unaPosicionOcupada);
 	list_remove(listaPosicionesOcupadas,posicionABorrar);
 	list_add(listaPosicionesLibres,unaPosicionLibre);
@@ -914,7 +915,18 @@ PosicionLibre* pedirPosicion(int tamanio){
 
 //---------------------------------------------------Particiones Dinamicas
 
+void limpiarPosicionesEn0(){
+	PosicionLibre* unaPosicionLibre;
+	int tamanioPosicionesLibres = list_size(listaPosicionesLibres);
+	for (int i =0; i<tamanioPosicionesLibres; i++){
+		unaPosicionLibre = list_get(listaPosicionesLibres,i);
+		if(unaPosicionLibre->tamanio == 0){
+			free(unaPosicionLibre);
+			list_remove(listaPosicionesLibres,i);
+		}
 
+	}
+}
 
 void grabarNewPokemonAMemoriaInterna(NewPokemon* unNewPokemon, int tamanio, PosicionLibre* unaPosicionLibre){
 
@@ -956,6 +968,7 @@ MensajeNewPokemon2* guardarMensajeNewPokemon(NewPokemon* unNewPokemon) {
 		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
 		grabarNewPokemonAMemoriaInterna(unNewPokemon,tamanioDeNew,unaPosicionLibre);
 		ocuparPosicion(tamanioDeNew,mensaje->contenidoDelMensaje,2,mensaje->ID);
+		limpiarPosicionesEn0();
 		pthread_mutex_unlock(&mutexMemoriaInterna);
 
 		if(tamanioDeNew>=tamanioMinimoParticion){
@@ -1036,6 +1049,7 @@ MensajeLocalizedPokemon2* guardarMensajeLocalizedPokemon(LocalizedPokemon* unLoc
 		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
 		grabarLocalizedPokemonAMemoriaInterna(unLocalizedPokemon,tamanioDeLocalized,unaPosicionLibre);
 		ocuparPosicion(tamanioDeLocalized,mensaje->contenidoDelMensaje,3,mensaje->ID);
+		limpiarPosicionesEn0();
 		pthread_mutex_unlock(&mutexMemoriaInterna);
 
 
@@ -1104,6 +1118,7 @@ MensajeGetPokemon2* guardarMensajeGetPokemon(GetPokemon* unGetPokemon){
 		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
 		grabarGetPokemonAMemoriaInterna(unGetPokemon,tamanioDeGet,unaPosicionLibre);
 		ocuparPosicion(tamanioDeGet,mensaje->contenidoDelMensaje,4,mensaje->ID);
+		limpiarPosicionesEn0();
 		pthread_mutex_unlock(&mutexMemoriaInterna);
 
 		if(tamanioDeGet>=tamanioMinimoParticion){
@@ -1176,6 +1191,7 @@ MensajeAppearedPokemon2* guardarMensajeAppearedPokemon(AppearedPokemon* unAppear
 		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
 		grabarAppearedPokemonAMemoriaInterna(unAppearedPokemon,tamanioDeAppeared,unaPosicionLibre);
 		ocuparPosicion(tamanioDeAppeared,mensaje->contenidoDelMensaje,5,mensaje->ID);
+		limpiarPosicionesEn0();
 		pthread_mutex_unlock(&mutexMemoriaInterna);
 		if(tamanioDeAppeared>=tamanioMinimoParticion){
 			mensaje->tamanioEnMemoria-= tamanioDeAppeared;
@@ -1244,6 +1260,7 @@ MensajeCatchPokemon2* guardarMensajeCatchPokemon(CatchPokemon* unCatchPokemon){
 		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
 		grabarCatchPokemonAMemoriaInterna(unCatchPokemon,tamanioDeCatch,unaPosicionLibre);
 		ocuparPosicion(tamanioDeCatch,mensaje->contenidoDelMensaje,6,mensaje->ID);
+		limpiarPosicionesEn0();
 		pthread_mutex_unlock(&mutexMemoriaInterna);
 		if(tamanioDeCatch>=tamanioMinimoParticion){
 			mensaje->tamanioEnMemoria-= tamanioDeCatch;
@@ -1311,6 +1328,7 @@ MensajeCaughtPokemon2* guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemo
 
 		grabarCaughtPokemonAMemoriaInterna(unCaughtPokemon,tamanioDeCaught,unaPosicionLibre);
 		ocuparPosicion(tamanioDeCaught,mensaje->contenidoDelMensaje,CAUGHT_POKEMON,mensaje->ID);
+		limpiarPosicionesEn0();
 		pthread_mutex_unlock(&mutexMemoriaInterna);
 
 		if(tamanioDeCaught>=tamanioMinimoParticion){
