@@ -172,10 +172,10 @@ int main(int argc,char* argv[])
 	for(int j=0; j<list_size(entrenadores);j++)
 			pthread_join(hiloEntrenador[j], NULL);
 */
-	//generarConexiones(0);
+	generarConexiones(0);
 	//abrirEscuchas();
 
-	puts("\Voy a crear el hilo");
+	/*puts("\Voy a crear el hilo");
 	pthread_t hiloConexionGameboy;
 	pthread_create(&hiloConexionGameboy, NULL, (void*)noHayBroker, NULL);
 
@@ -185,7 +185,7 @@ int main(int argc,char* argv[])
 		Pokemon* pokemon = list_get(nuevosPokemon, i);
 		printf("Nombre %s, Posicion (%d,%d)", pokemon->nombre, pokemon->posicion.posicionX, pokemon->posicion.posicionY);
 		puts("\n");
-	}
+	}*/
 
 	//pthread_join(hiloConexionGameboy,NULL);
 
