@@ -746,6 +746,8 @@ void recibirSuscripcionNewPokemon(int socket_suscriptor){
 void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID){
 	PosicionOcupada* unaPosicion = malloc(sizeof(PosicionOcupada));
 	char* loQueVoyALoguear;
+	int unTamanioSobrante;
+	void* nuevaPosicion;
 
 	unaPosicion->ID = ID;
 	unaPosicion->colaALaQuePertenece = colaALaQuePertenece;
@@ -761,6 +763,17 @@ void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID
 	uint32_t posicionRelativa = unaPosicion->posicion - memoriaInterna;
 	printf("\nGuarde ese dato en la posicion de memoria %u\n", posicionRelativa);
 	printf("\nAhora tengo %d posiciones ocupadas", list_size(listaPosicionesOcupadas));
+	unTamanioSobrante = unaPosicion->tamanio - tamanio;
+	if(unTamanioSobrante > 0){
+		PosicionLibre* unaNuevaPosicionLibre = malloc(sizeof(PosicionLibre));
+		nuevaPosicion = unaPosicion->posicion + 1;
+		unaNuevaPosicionLibre->posicion = nuevaPosicion;
+		unaNuevaPosicionLibre->tamanio = unTamanioSobrante;
+		list_add(listaPosicionesLibres,unaNuevaPosicionLibre);
+		printf("Se creo nueva posicion libre de tamaño: %d\n",unaNuevaPosicionLibre->tamanio);
+	}else {
+		printf("Tamaño sobrante: %d\n",unTamanioSobrante);
+	}
 	loQueVoyALoguear = "Almacené en memoria el mensaje con ID=%d,donde comienza en: %d";
 	log_info(logger, loQueVoyALoguear,unaPosicion->ID,posicionRelativa);
 
@@ -890,19 +903,7 @@ PosicionLibre* pedirPosicionFF(int tamanio){
 			free(posicionFalsa);
 			puts("\nVoy a retornar una posicion buena");
 			printf("Tamaño posicion buena: %d\n",unaPosicionLibre->tamanio);
-			unTamanioSobrante = unaPosicionLibre->tamanio - tamanio;
-			if(unTamanioSobrante > 0){
-				PosicionLibre* unaNuevaPosicionLibre = malloc(sizeof(PosicionLibre));
-				nuevaPosicion = unaPosicionLibre->posicion + 1;
-				unaNuevaPosicionLibre->posicion = nuevaPosicion;
-				unaNuevaPosicionLibre->tamanio = unTamanioSobrante;
-				list_add(listaPosicionesLibres,unaNuevaPosicionLibre);
-				printf("Una nueva posicion libre de tamaño: %d\n",unaNuevaPosicionLibre->tamanio);
-			}else {
-				printf("Tamaño sobrante: %d\n",unTamanioSobrante);
-			}
 			puts("Posicion asignada correctamente.\n");
-
 			return unaPosicionLibre;
 		}
 		puts("\nSigo buscando...");
@@ -922,8 +923,6 @@ PosicionLibre* pedirPosicionBF(int tamanio) {
 	int tamanioListaPosicionesPotables;
 	int variableAux;
 	int otraVariableAux;
-	int unTamanioSobrante;
-	void* nuevaPosicion;
 
 	if(tamanio < tamanioMinimoParticion){
 			tamanio = tamanioMinimoParticion;
@@ -941,17 +940,6 @@ PosicionLibre* pedirPosicionBF(int tamanio) {
 				}else{
 					free(posicionFalsa);
 					printf("\nTamaño de posicion elegida: %d\n",unaPosicionLibre->tamanio);
-					unTamanioSobrante = unaPosicionLibre->tamanio - tamanio;
-					if(unTamanioSobrante > 0){
-						PosicionLibre* unaNuevaPosicionLibre = malloc(sizeof(PosicionLibre));
-						nuevaPosicion = unaPosicionLibre->posicion + 1;
-						unaNuevaPosicionLibre->posicion = nuevaPosicion;
-						unaNuevaPosicionLibre->tamanio = unTamanioSobrante;
-						list_add(listaPosicionesLibres,unaNuevaPosicionLibre);
-						printf("Una nueva posicion libre de tamaño: %d\n",unaNuevaPosicionLibre->tamanio);
-					}else {
-						printf("Tamaño sobrante: %d\n",unTamanioSobrante);
-					}
 					puts("Posicion asignada correctamente.");
 					return unaPosicionLibre;
 				}
@@ -971,16 +959,7 @@ PosicionLibre* pedirPosicionBF(int tamanio) {
 			otraVariableAux = otraPosicionLibreBis->tamanio - tamanio;
 			if(variableAux < otraVariableAux){
 				printf("\nTamaño de posicion elegida: %d\n",posicionQueVoyARetornar->tamanio);
-				if(variableAux > 0){
-					PosicionLibre* unaNuevaPosicionLibre = malloc(sizeof(PosicionLibre));
-					nuevaPosicion = unaNuevaPosicionLibre->posicion + 1;
-					unaNuevaPosicionLibre->posicion = nuevaPosicion;
-					unaNuevaPosicionLibre->tamanio = variableAux;
-					list_add(listaPosicionesLibres,unaNuevaPosicionLibre);
-					printf("Una nueva posicion libre de tamaño: %d\n",unaNuevaPosicionLibre->tamanio);
-				}else {
-					printf("Tamaño sobrante: %d\n",variableAux);
-				}
+
 				puts("Posicion asignada correctamente.");
 				return posicionQueVoyARetornar;
 			}
@@ -988,17 +967,6 @@ PosicionLibre* pedirPosicionBF(int tamanio) {
 		list_destroy(posicionesPotablesAElegir);
 		free(posicionFalsa);
 		printf("\nTamaño de posicion elegida: %d\n",posicionQueVoyARetornar->tamanio);
-		unTamanioSobrante = posicionQueVoyARetornar->tamanio - tamanio;
-		if(unTamanioSobrante > 0){
-			PosicionLibre* unaNuevaPosicionLibre = malloc(sizeof(PosicionLibre));
-			nuevaPosicion = unaPosicionLibre->posicion + 1;
-			unaNuevaPosicionLibre->posicion = nuevaPosicion;
-			unaNuevaPosicionLibre->tamanio = unTamanioSobrante;
-			list_add(listaPosicionesLibres,unaNuevaPosicionLibre);
-			printf("Una nueva posicion libre de tamaño: %d\n",unaNuevaPosicionLibre->tamanio);
-		}else {
-			printf("Tamaño sobrante: %d\n",unTamanioSobrante);
-		}
 		puts("Posicion asignada correctamente.");
 
 		return posicionQueVoyARetornar;
