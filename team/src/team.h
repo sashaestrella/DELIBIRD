@@ -17,6 +17,7 @@ sem_t sem[3];
 sem_t sem2[3];
 sem_t mensajesCaught;
 sem_t nuevosPokemons;
+sem_t suscripciones;
 
 
 // ----------------- Estructuras ----------------- //

@@ -4,7 +4,7 @@
 
 int main(void)
 {
-
+	sem_init(&suscripciones, 0, 1);
 	t_config* config = config_create("gamecard.config");
 	ip = config_get_string_value(config,"IP");
 	puerto = config_get_string_value(config,"PUERTO");
@@ -13,7 +13,7 @@ int main(void)
 
 	logger = iniciar_logger();
 
-	char* primerLog = "Soy un log";
+	char* primerLog = "Log de Gamecard";
 
 	log_info(logger, primerLog);
 

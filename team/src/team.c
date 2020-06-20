@@ -7,6 +7,7 @@ int main(int argc,char* argv[])
 	sem_init(&sem[1], 0, 0);
 	sem_init(&sem[2], 0, 0);
 
+	sem_init(&suscripciones, 0, 1);
 
 	sem_init(&sem2[0], 0, 0);
 	sem_init(&sem2[1], 0, 0);
@@ -171,6 +172,7 @@ int main(int argc,char* argv[])
 
 	for(int j=0; j<list_size(entrenadores);j++)
 			pthread_join(hiloEntrenador[j], NULL);
+
 */
 	generarConexiones(0);
 	//abrirEscuchas();
@@ -188,6 +190,7 @@ int main(int argc,char* argv[])
 	}*/
 
 	//pthread_join(hiloConexionGameboy,NULL);
+
 
 	t_log* logger;
 

@@ -55,3 +55,8 @@ gameboy/.settings/
 gamecard/.settings/
 broker/.settings/
 team/.settings/
+Utils/Debug/
+broker/Debug/
+team/Debug/
+gamecard/Debug/
+gameboy/Debug/

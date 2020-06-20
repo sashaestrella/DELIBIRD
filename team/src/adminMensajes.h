@@ -24,10 +24,10 @@ void* suscribirseAColaCaught();
 void* administradorMensajesColas(int, int, int);
 void enviarACK(int, int, int, int);
 
-void* recibirMensajesAppeared();
+void recibirMensajesAppeared();
 void* recibirMensajesLocalized();
 void* recibirMensajesCaught();
-void* adminMensajeAppeared(AppearedPokemonConIDs*);
+void adminMensajeAppeared(AppearedPokemonConIDs*);
 void* adminMensajeLocalized(LocalizedPokemonConIDs*);
 void* adminMensajeCaught(CaughtPokemonConIDs*);
 

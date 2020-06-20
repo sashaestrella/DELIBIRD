@@ -2,29 +2,66 @@
 
 void generarConexiones(int tipoSuscriptor){
 
-	suscribirseAColaAppeared();
+	//suscribirseAColaAppeared();
 
-	suscribirseAColaCaught();
+	//suscribirseAColaCaught();
 
-	suscribirseAColaLocalized();
+	//suscribirseAColaLocalized();
+
+	// -- Hilo de suscripcion a cola appeared -- //
+	ParametrosSuscripcion* appeared = malloc(sizeof(ParametrosSuscripcion));
+	appeared->colaASuscribirse = SUSCRIPTOR_APPEAREDPOKEMON;
+	appeared->nuevoExistente = tipoSuscriptor;
+
+	pthread_t hiloAppeared;
+	pthread_create(&hiloAppeared, NULL, suscribirseAColaAppeared, NULL);
+
+	// -- Hilo de suscripcion a localized -- //
+	ParametrosSuscripcion* localized = malloc(sizeof(ParametrosSuscripcion));
+	localized->colaASuscribirse = SUSCRIPTOR_LOCALIZEDPOKEMON;
+	localized->nuevoExistente = tipoSuscriptor;
+
+	pthread_t hiloLocalized;
+	pthread_create(&hiloLocalized, NULL, suscribirseAColaLocalized, NULL);
+
+
+	// -- Hilo de suscripcion a cola caught -- //
+	ParametrosSuscripcion* caught = malloc(sizeof(ParametrosSuscripcion));
+	caught->colaASuscribirse = SUSCRIPTOR_CAUGHTPOKEMON;
+	caught->nuevoExistente = tipoSuscriptor;
+
+	pthread_t hiloCaught;
+	pthread_create(&hiloCaught, NULL, suscribirseAColaCaught, NULL);
+
+
+	pthread_join(hiloAppeared,NULL);
+	pthread_join(hiloCaught,NULL);
+	pthread_join(hiloLocalized,NULL);
+	free(appeared);
+	free(localized);
+	free(caught);
 
 }
 
-void abrirEscuchas(){
+void abrirEscuchaAppeared(){
 	pthread_t escuchaAppeared;
 	pthread_create(&escuchaAppeared, NULL, recibirMensajesAppeared, NULL);
 	printf("Ya estoy escuchando la cola appeared... \n\n");
-	pthread_detach(escuchaAppeared);
+	pthread_join(escuchaAppeared, NULL);
+}
 
+void abrirEscuchaLocalized(){
 	pthread_t escuchaLocalized;
 	pthread_create(&escuchaLocalized, NULL, recibirMensajesLocalized, NULL);
 	printf("Ya estoy escuchando la cola localized... \n\n");
-	pthread_detach(escuchaLocalized);
+	pthread_join(escuchaLocalized, NULL);
+}
 
+void abrirEscuchaCaught(){
 	pthread_t escuchaCaught;
 	pthread_create(&escuchaCaught, NULL, recibirMensajesCaught, NULL);
 	printf("Ya estoy escuchando la cola Caught... \n\n");
-	pthread_detach(escuchaCaught);
+	pthread_join(escuchaCaught, NULL);
 }
 
 // ------------------------------------ AUXILIARES ------------------------------------ //
@@ -35,174 +72,174 @@ void noHayBroker(){
 
 void* suscribirseAColaCaught(){
 
-	printf("\nCola Caught:\n");
+	int IDsuscripcion;
+	sem_wait(&suscripciones);
 	int conexion = crear_conexion(ip, puerto);
-	Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
-	unSuscriptor1->IDsuscriptor = 0;
 
-	enviarSuscripcion(unSuscriptor1->IDsuscriptor,conexion,SUSCRIPTOR_CAUGHTPOKEMON);
-	printf("Envie suscripcion para la cola de mensajes %d",SUSCRIPTOR_CAUGHTPOKEMON);
-	recv(conexion,&IDsuscripcionCaught,sizeof(int),MSG_WAITALL);
-	printf("\nRecibi mi id como suscriptor: %d\n",IDsuscripcionCaught);
+	printf( "\nSe creo la suscripcion a cola Caught con el valor %d \n", conexion);
 
-	int tamanioLista;
+	enviarSuscripcion(0, conexion, SUSCRIPTOR_CAUGHTPOKEMON);
+	recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
+	sem_post(&suscripciones);
+	printf("Suscriptor numero: %d\n", IDsuscripcion);
 
-	recv(conexion,&tamanioLista,sizeof(int),MSG_WAITALL);
-	if(tamanioLista == 0){
-		puts("\nNo puedo recibir la lista porque esta vacia");
-		printf("Tamaño lista: %d",tamanioLista);
-	}
-	printf("El tamaño de la lista que voy a recibir es: %d\n",tamanioLista);
-
-	int size;
-	int variableQueNoUsoxd;
-	int ack = 1;
-
-	CaughtPokemonConIDs* CaughtConIDs;
-	//CaughtPokemon* unCaughtPokemonTemporal;
-
-	for(int i = 0; i<tamanioLista;i++){
-		recv(conexion,&variableQueNoUsoxd,sizeof(int),MSG_WAITALL);
-		CaughtConIDs = recibir_CAUGHT_POKEMON(conexion,&size,1);
-		//unCaughtPokemonTemporal = CaughtConIDs -> caughtPokemon;
-		printf("[gameboy] Recibi un Caught, con ID: %d\n", CaughtConIDs->IDmensaje);
-		send(conexion,&ack,sizeof(int),0);
-		printf("[gameboy]ACK=%d del mensaje %d fue enviado\n",ack,CaughtConIDs->IDmensaje);
-		adminMensajeCaught(CaughtConIDs);
-	}
-free(CaughtConIDs);
+	administradorMensajesColas(SUSCRIPTOR_CAUGHTPOKEMON, conexion, IDsuscripcion);
 }
 
 void* suscribirseAColaLocalized(){
 
-	printf("\nCola Localized:\n");
+	int IDsuscripcion;
+	sem_wait(&suscripciones);
 	int conexion = crear_conexion(ip, puerto);
-	Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
-	unSuscriptor1->IDsuscriptor = 0;
 
-	enviarSuscripcion(unSuscriptor1->IDsuscriptor,conexion,SUSCRIPTOR_LOCALIZEDPOKEMON);
-	printf("Envie suscripcion para la cola de mensajes %d",SUSCRIPTOR_LOCALIZEDPOKEMON);
-	recv(conexion,&IDsuscripcionLocalized,sizeof(int),MSG_WAITALL);
-	printf("\nRecibi mi id como suscriptor: %d\n",IDsuscripcionLocalized);
+	printf( "\nSe creo la suscripcion a cola Localized con el valor %d \n", conexion);
 
-	int tamanioLista;
+	enviarSuscripcion(0, conexion, SUSCRIPTOR_LOCALIZEDPOKEMON);
+	recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
+	sem_post(&suscripciones);
+	printf("Suscriptor numero: %d\n", IDsuscripcion);
 
-	recv(conexion,&tamanioLista,sizeof(int),MSG_WAITALL);
-	if(tamanioLista == 0){
-		puts("\nNo puedo recibir la lista porque esta vacia");
-		printf("Tamaño lista: %d",tamanioLista);
-	}
-	printf("El tamaño de la lista que voy a recibir es: %d\n",tamanioLista);
-
-	int size;
-	int variableQueNoUsoxd;
-	int ack = 1;
-
-	LocalizedPokemonConIDs* localizedConIDs;
-	LocalizedPokemon* unLocalizedPokemonTemporal;
-
-	for(int i = 0; i<tamanioLista;i++){
-		recv(conexion,&variableQueNoUsoxd,sizeof(int),MSG_WAITALL);
-		localizedConIDs = recibir_LOCALIZED_POKEMON(conexion,&size,1);
-		unLocalizedPokemonTemporal = localizedConIDs->localizedPokemon;
-		printf("[gameboy] Recibi un %s,con ID: %d\n",unLocalizedPokemonTemporal->nombre,localizedConIDs->IDmensaje);
-		send(conexion,&ack,sizeof(int),0);
-		printf("[gameboy]ACK=%d del mensaje %d fue enviado\n",ack,localizedConIDs->IDmensaje);
-		//adminMensajeLocalized(localizedConIDs);
-	}
-free(localizedConIDs);
+	administradorMensajesColas(SUSCRIPTOR_LOCALIZEDPOKEMON, conexion, IDsuscripcion);
 }
 
 void* suscribirseAColaAppeared(){
 
-	printf("\n\nCola Appeared:\n");
+	int IDsuscripcion;
+	sem_wait(&suscripciones);
 	int conexion = crear_conexion(ip, puerto);
-	Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
-	unSuscriptor1->IDsuscriptor = 0;
-	enviarSuscripcion(unSuscriptor1->IDsuscriptor,conexion,SUSCRIPTOR_APPEAREDPOKEMON);
 
-	printf("Envie suscripcion para la cola de mensajes %d",SUSCRIPTOR_APPEAREDPOKEMON);
-	recv(conexion,&IDsuscripcionAppeared,sizeof(int),MSG_WAITALL);
-	printf("\nRecibi mi id como suscriptor: %d\n",IDsuscripcionAppeared);
+	printf( "\nSe creo la suscripcion a cola Appeared con el valor %d \n", conexion);
 
-	int tamanioLista;
+	enviarSuscripcion(0, conexion, SUSCRIPTOR_APPEAREDPOKEMON);
+	recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
+	sem_post(&suscripciones);
+	printf("Suscriptor numero: %d\n", IDsuscripcion);
 
-	recv(conexion,&tamanioLista,sizeof(int),MSG_WAITALL);
-	if(tamanioLista == 0){
-		puts("\nNo puedo recibir la lista porque esta vacia");
-		printf("Tamaño lista: %d",tamanioLista);
-	}
-	printf("El tamaño de la lista que voy a recibir es: %d\n",tamanioLista);
-
-	int size;
-	int variableQueNoUsoxd;
-	int ack = 1;
-
-	AppearedPokemonConIDs* appearedConIDs;
-	AppearedPokemon* unAppearedPokemonTemporal;
-
-	for(int i = 0; i<tamanioLista;i++){
-		recv(conexion,&variableQueNoUsoxd,sizeof(int),MSG_WAITALL);
-		appearedConIDs = recibir_APPEARED_POKEMON(conexion,&size,1,0);
-		unAppearedPokemonTemporal = appearedConIDs->appearedPokemon;
-		printf("[gameboy] Recibi un %s,con ID: %d\n",unAppearedPokemonTemporal->nombre,appearedConIDs->IDmensaje);
-		send(conexion,&ack,sizeof(int),0);
-		printf("[gameboy]ACK=%d del mensaje %d fue enviado\n",ack,appearedConIDs->IDmensaje);
-		adminMensajeAppeared(appearedConIDs);
-
-	}
-
-	free(appearedConIDs);
+	administradorMensajesColas(SUSCRIPTOR_APPEAREDPOKEMON, conexion, IDsuscripcion);
 }
 
+void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
+
+	int cantidadAppearedPokemon;
+	int cantidadLocalizedPokemon;
+	int cantidadCaughtPokemon;
+	uint32_t codigo;
+	uint32_t codigo1;
+	uint32_t codigo2;
+	switch(op_code){
+
+			case SUSCRIPTOR_APPEAREDPOKEMON:
+				conexionAppeared = conexion;
+				IDsuscripcionAppeared= IDsuscripcion;
+				recv(conexion, &cantidadAppearedPokemon, sizeof(int), MSG_WAITALL);
+				printf("Cantidad de Appeared Pokemons: %d\n", cantidadAppearedPokemon);
+				AppearedPokemonConIDs* nuevoAppearedPokemonConId;
+				for(int i = 0; i<cantidadAppearedPokemon; i++){
+					recv(conexion, &codigo, sizeof(op_code), MSG_WAITALL);
+					printf("Codigo de cola: %d\n", codigo);
+					nuevoAppearedPokemonConId = recibir_APPEARED_POKEMON(conexion, 0,0,0);
+					int ack = 1;
+					send(conexion, &ack, sizeof(int), 0); // No se si pasar el 1 con un void*
+					adminMensajeAppeared(nuevoAppearedPokemonConId);
+					printf("Recibi mensaje com id: %d\n", nuevoAppearedPokemonConId->IDmensaje);
+				}
+				abrirEscuchaAppeared();
+				break;
+
+			case SUSCRIPTOR_LOCALIZEDPOKEMON:
+				conexionLocalized = conexion;
+				IDsuscripcionLocalized= IDsuscripcion;
+
+				recv(conexion, &cantidadLocalizedPokemon, sizeof(int), MSG_WAITALL);
+				printf("Cantidad de Localized Pokemons: %d\n", cantidadLocalizedPokemon);
+				LocalizedPokemonConIDs* nuevoLocalizedPokemonConId;
+				for(int i = 0; i<cantidadLocalizedPokemon; i++){
+					recv(conexion, &codigo1, sizeof(op_code), MSG_WAITALL);
+					printf("Codigo de cola: %d\n", codigo1);
+					nuevoLocalizedPokemonConId = recibir_LOCALIZED_POKEMON(conexion, 0, 1);
+					int ack = 1;
+					send(conexion, &ack, sizeof(int), 0);
+					adminMensajeLocalized(nuevoLocalizedPokemonConId);
+				}
+				abrirEscuchaLocalized();
+				break;
+
+			case SUSCRIPTOR_CAUGHTPOKEMON:
+				conexionCaught = conexion;
+				IDsuscripcionCaught= IDsuscripcion;
+
+				recv(conexion, &cantidadCaughtPokemon, sizeof(int), MSG_WAITALL);
+				printf("Cantidad de Caught Pokemons: %d\n", cantidadCaughtPokemon);
+				recv(conexion, &codigo2, sizeof(op_code), MSG_WAITALL);
+				printf("Codigo de cola: %d\n", codigo2);
+				CaughtPokemonConIDs* nuevoCaughtPokemonConId;
+				for(int i = 0; i<cantidadCaughtPokemon; i++){
+					nuevoCaughtPokemonConId = recibir_CAUGHT_POKEMON(conexion, 0, 1);
+					send(conexion, 1, sizeof(int), 0);
+					adminMensajeCaught(nuevoCaughtPokemonConId);
+				}
+				abrirEscuchaCaught();
+				break;
+			default:
+				printf("Llego un mensaje invalido");
+				break;
+	}
+}
 // ------------------------------- Funciones Team ------------------------------------ //
 
-void* recibirMensajesAppeared(){
+void recibirMensajesAppeared(){
 	pthread_t admin;
-	void* mensajeRecibido;
 	AppearedPokemonConIDs* nuevoAppeared;
 
 	while(1){
-		nuevoAppeared = recibir_APPEARED_POKEMON(conexionAppeared, 0, 0, 0);
-		send(conexionAppeared, 1, sizeof(int), 0);
+		int cod_op;
+		recv(conexionAppeared, &cod_op, sizeof(int), 0);
+		nuevoAppeared = recibir_APPEARED_POKEMON(conexionAppeared, 0, 1, 0); // aca no iria id correlativo
+		int ack = 1;
+		send(conexionAppeared, &ack, sizeof(int), 0);
 		pthread_create(&admin, NULL, (void*)adminMensajeAppeared, nuevoAppeared);
 		pthread_detach(admin);
 	}
-	free(mensajeRecibido);
-	free(nuevoAppeared);
+
+	//free(nuevoAppeared);
 }
 
-void* adminMensajeAppeared(AppearedPokemonConIDs* nuevoAppeared){
+void adminMensajeAppeared(AppearedPokemonConIDs* nuevoAppeared){
+
 	if(descartar_appeared_no_deseados(nuevoAppeared)){
 
 		Pokemon* nuevo = malloc(sizeof(Pokemon));
 		nuevo -> nombre = nuevoAppeared -> appearedPokemon -> nombre;
-		nuevo -> posicion = nuevoAppeared -> appearedPokemon -> coordenadas;
+		nuevo -> posicion.posicionX = nuevoAppeared -> appearedPokemon -> coordenadas.posicionX;
+		nuevo -> posicion.posicionY = nuevoAppeared -> appearedPokemon -> coordenadas.posicionY;
 		list_add(nuevosPokemon, nuevo);
 		printf("Guarde un Pokemon %s de appeared con el ID de mensaje: %d\n", nuevo->nombre ,nuevoAppeared->IDmensaje);
-
+		printf(" y coordenadas (%d, %d) ", nuevo->posicion.posicionX, nuevo->posicion.posicionY);
+		puts("\n");
 		sem_post(&nuevosPokemons);
 
 	} else {
 		printf("Mensaje Appeared que no es para nosotros\n");
 	}
 	list_add(mensajesRecibidos, (void*)nuevoAppeared->IDmensaje);
+
 }
 
 
 
 void* recibirMensajesLocalized(){
 	pthread_t admin;
-	void* mensajeRecibido;
 	LocalizedPokemonConIDs* nuevoLocalized;
 	while(1){
-		nuevoLocalized = recibir_LOCALIZED_POKEMON(conexionLocalized, 0, 0);
-		send(conexionLocalized, 1, sizeof(int), 0);
-		pthread_create(&admin, NULL, (void*)adminMensajeLocalized, nuevoLocalized);
+		int cod_op;
+		recv(conexionLocalized, &cod_op, sizeof(int), 0);
+		nuevoLocalized = recibir_LOCALIZED_POKEMON(conexionLocalized, 0, 1);
+		int ack = 1;
+		send(conexionLocalized, &ack, sizeof(int), 0);
 		pthread_detach(admin);
 	}
-	free(mensajeRecibido);
-	free(nuevoLocalized);
+
+	//free(nuevoLocalized);
 }
 
 void* adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
@@ -241,17 +278,18 @@ void* adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
 
 void* recibirMensajesCaught(){
 	pthread_t admin;
-	void* mensajeRecibido;
 	CaughtPokemonConIDs* nuevoCaught;
 
 	while(1){
+		int cod_op;
+		recv(conexionCaught, &cod_op, sizeof(int), 0);
 		nuevoCaught = recibir_CAUGHT_POKEMON(conexionCaught, 0, 1);
-		send(conexionCaught, 1, sizeof(int), 0);
+		int ack = 1;
+		send(conexionCaught, &ack, sizeof(int), 0);
 		pthread_create(&admin, NULL, adminMensajeCaught, nuevoCaught);
 		pthread_detach(admin);
 	}
-	free(mensajeRecibido);
-	free(nuevoCaught);
+	//free(nuevoCaught);
 }
 
 void* adminMensajeCaught(CaughtPokemonConIDs* nuevoCaught){
@@ -425,13 +463,13 @@ void process_request_team(int cod_op, int cliente){
 		//pthread_detach(hiloAppeared);
 		//con la funcion recibirMensajesAppeared me tira segmentation fault
 
-		appeared = recibir_APPEARED_POKEMON(cliente,0,0,0);
+		/*appeared = recibir_APPEARED_POKEMON(cliente,0,0,0);
 
 		pokemon->nombre = appeared->appearedPokemon->nombre;
 		pokemon->posicion.posicionX = appeared->appearedPokemon->coordenadas.posicionX;
 		pokemon->posicion.posicionY = appeared->appearedPokemon->coordenadas.posicionY;
 		list_add(nuevosPokemon, pokemon);
-		puts("\nAgregue un pokemon a la lista");
+		puts("\nAgregue un pokemon a la lista");*/
 		break;
 
 	case CAUGHT_POKEMON:

@@ -15,10 +15,11 @@
 #include<commons/config.h>
 #include<readline/readline.h>
 #include<src/utilsGeneral.h>
+#include<semaphore.h>
 
 char* ip;
 char* puerto;
-
+sem_t suscripciones;
 
 // ----------------- Conexiones ----------------- //
 
