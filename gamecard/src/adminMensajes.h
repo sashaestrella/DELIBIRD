@@ -19,8 +19,6 @@ t_list* nuevosGetPokemon;
 t_list* nuevosCatch;
 t_list* mensajesRecibidos;
 
-
-
 void noHayBroker();
 void* suscribirseAColaNew();
 void* suscribirseAColaGet();
@@ -33,11 +31,11 @@ void* recibirMensajesNew();
 void* recibirMensajesGet();
 void* recibirMensajesCatch();
 void* adminMensajeNewPokemon(NewPokemonConIDs*);
+void* armarFolderPara(NewPokemonConIDs*);
 void* adminMensajeGetPokemon(GetPokemonConIDs*);
 void* adminMensajeCatch(CatchPokemonConIDs*);
-
-
-
-
+void* crearDirectorioTG();
+void* crearMetadata();
+void* crearFiles();
 
 #endif /* ADMINMENSAJES_H_ */
