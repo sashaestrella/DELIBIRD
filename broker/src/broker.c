@@ -28,7 +28,7 @@ int main(void)
 	listaPosicionesOcupadas=list_create();
 
 
-	config= config_create("broker.config");
+	config= config_create("/home/utnso/tp-2020-1c-BOMP/broker/Debug/broker.config");
 	tamanioMinimoParticion = atoi(config_get_string_value(config, "TAMANIO_MINIMO_PARTICION"));
 	int tamanioMemoria = atoi(config_get_string_value(config, "TAMANIO_MEMORIA"));
 	memoriaInterna = malloc(tamanioMemoria);
@@ -58,7 +58,7 @@ int main(void)
 	logger = log_create(pathDelLogger, "Broker-Log" , 1, LOG_LEVEL_INFO);
 
 	printf("------------FIN DE ARCHIVO DE CONFIGURACION BROKER\n");
-
+/*
 	PosicionLibre* unaPosicionLibre1 = malloc(sizeof(PosicionLibre));
 	unaPosicionLibre1->posicion = 1;
 	unaPosicionLibre1->tamanio = 160;
@@ -70,9 +70,11 @@ int main(void)
 	list_add(listaPosicionesLibres,unaPosicionLibre2);
 
 	PosicionLibre* unaPosicionLibre3 = malloc(sizeof(PosicionLibre));
-	unaPosicionLibre3->posicion = 3;
+	unaPosicionLibre3->posicion = 4;
 	unaPosicionLibre3->tamanio = 400;
 	list_add(listaPosicionesLibres,unaPosicionLibre3);
+
+
 
 	PosicionOcupada* unaPosicionOcupada1 = malloc(sizeof(PosicionOcupada));
 	unaPosicionOcupada1->tamanio = 150;
@@ -195,7 +197,7 @@ int main(void)
 
 	borrarLRU();
 	puts("\n------------Fin Pruebas borrar por LRU");
-
+*/
 /*
 	NewPokemon* unNewPokemon2 = malloc(sizeof(NewPokemon));
 	MensajeNewPokemon* mensaje2;

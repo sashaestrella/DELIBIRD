@@ -16,7 +16,9 @@
 
 int generadorDeIDsMensaje = 0;
 int generadorDeIDsSuscriptor = 0;
+int contadorTimestamp = 0;
 
+pthread_mutex_t mutexContadorTimestamp = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexBusquedasFallidas = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexMemoriaInterna = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexGeneradorIDMensaje,mutexGeneradorIDSuscriptor, mutexListaSuscriptores = PTHREAD_MUTEX_INITIALIZER;
@@ -58,6 +60,7 @@ typedef struct{
 	void* posicion;
 	int colaALaQuePertenece;
 	int ID;
+	int timestamp;
 }PosicionOcupada;
 
 //Mensajes 2
