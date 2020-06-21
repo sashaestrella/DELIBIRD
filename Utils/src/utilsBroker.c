@@ -245,7 +245,6 @@ void enviarCaughtPokemonASuscriptores(MensajeCaughtPokemon2* unMensajeCaughtPoke
 				log_info(logger, loQueVoyALoguear2,unSuscriptor->IDsuscriptor);
 			}
 		}
-
 		free(unCaughtPokemon);
 }
 
@@ -277,7 +276,7 @@ void enviarCatchPokemonASuscriptores(MensajeCatchPokemon2* unMensajeCatchPokemon
 				log_info(logger, loQueVoyALoguear2,unSuscriptor->IDsuscriptor);
 			}
 		}
-
+		free(unCatchPokemon->nombre);
 		free(unCatchPokemon);
 }
 
@@ -311,8 +310,14 @@ void enviarLocalizedPokemonASuscriptores(MensajeLocalizedPokemon2* unMensajeLoca
 				log_info(logger, loQueVoyALoguear2,unSuscriptor->IDsuscriptor);
 			}
 		}
-
-		free(unLocalizedPokemon); //falta el quilombo extra
+		CoordenadasXY* unaCoordenada;
+		for (int i =0;i<unLocalizedPokemon->cantidadParesOrdenados;i++){
+			unaCoordenada = list_get(unLocalizedPokemon->paresOrdenados,i);
+			free(unaCoordenada);
+		}
+		list_destroy(unLocalizedPokemon->paresOrdenados);
+		free(unLocalizedPokemon->nombre);
+		free(unLocalizedPokemon);
 }
 
 
@@ -346,7 +351,7 @@ void enviarGetPokemonASuscriptores(MensajeGetPokemon2* unMensajeGetPokemon){
 				log_info(logger, loQueVoyALoguear2,unSuscriptor->IDsuscriptor);
 			}
 		}
-
+		free(unGetPokemon->nombre);
 		free(unGetPokemon);
 }
 
@@ -380,7 +385,7 @@ void enviarAppearedPokemonASuscriptores(MensajeAppearedPokemon2* unMensajeAppear
 				log_info(logger, loQueVoyALoguear2,unSuscriptor->IDsuscriptor);
 			}
 		}
-
+		free(unAppearedPokemon->nombre);
 		free(unAppearedPokemon);
 }
 
@@ -414,6 +419,7 @@ void enviarNewPokemonASuscriptores(MensajeNewPokemon2* unMensajeNewPokemon){
 				log_info(logger, loQueVoyALoguear2,unSuscriptor->IDsuscriptor);
 			}
 		}
+		free(unNewPokemon->nombre);
 		free(unNewPokemon);
 }
 void recibirSuscripcionCaughtPokemon(int socket_suscriptor){
@@ -1740,6 +1746,8 @@ void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 			printf("\n\nNombre: %s",unNewPokemon->nombre);
 			pthread_mutex_lock(&mutexColaNewPokemon);
 			enviarNewPokemon(unNewPokemon,socket_suscriptor,mensaje->ID);
+			free(unNewPokemon->nombre);
+			free(unNewPokemon);
 			printf("\nMensaje enviado: %s",unNewPokemon->nombre);
 			list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 			printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
@@ -1793,6 +1801,8 @@ void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 
 					printf("\n\nNombre: %s",unNewPokemon->nombre);
 					enviarNewPokemon(unNewPokemon,socket_suscriptor,mensaje->ID);
+					free(unNewPokemon->nombre);
+					free(unNewPokemon);
 					printf("Mensaje enviado: %s\n",unNewPokemon->nombre);
 					list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 					printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d\n",list_size(mensaje->suscriptoresAtendidos));
@@ -1812,7 +1822,7 @@ void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 				mensajeYaEnviado = 0;
 			}
 		} //fin del caso triste
-		free(unNewPokemon);
+
 		puts("\nSuscriptor ok");
 }
 
@@ -1845,6 +1855,16 @@ void enviarColaLocalizedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,
 			pthread_mutex_lock(&mutexColaLocalizedPokemon);
 			enviarLocalizedPokemon(unLocalizedPokemon,socket_suscriptor,mensaje->ID,0);
 			printf("\nMensaje enviado: %s",unLocalizedPokemon->nombre);
+			//borrado
+			CoordenadasXY* unaCoordenada;
+			for (int i =0;i<unLocalizedPokemon->cantidadParesOrdenados;i++){
+				unaCoordenada = list_get(unLocalizedPokemon->paresOrdenados,i);
+				free(unaCoordenada);
+			}
+			list_destroy(unLocalizedPokemon->paresOrdenados);
+			free(unLocalizedPokemon->nombre);
+			free(unLocalizedPokemon);
+			//borrado
 			list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 			printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
 
@@ -1897,6 +1917,16 @@ void enviarColaLocalizedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,
 					printf("\n\nNombre: %s",unLocalizedPokemon->nombre);
 					enviarLocalizedPokemon(unLocalizedPokemon,socket_suscriptor,mensaje->ID,0);
 					printf("Mensaje enviado: %s\n",unLocalizedPokemon->nombre);
+					//borrado
+					CoordenadasXY* unaCoordenada;
+					for (int i =0;i<unLocalizedPokemon->cantidadParesOrdenados;i++){
+						unaCoordenada = list_get(unLocalizedPokemon->paresOrdenados,i);
+						free(unaCoordenada);
+					}
+					list_destroy(unLocalizedPokemon->paresOrdenados);
+					free(unLocalizedPokemon->nombre);
+					free(unLocalizedPokemon);
+					//borrado
 					list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 					printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d\n",list_size(mensaje->suscriptoresAtendidos));
 
@@ -1915,7 +1945,6 @@ void enviarColaLocalizedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,
 				mensajeYaEnviado = 0;
 			}
 		} //fin del caso triste
-		free(unLocalizedPokemon);
 		puts("\nSuscriptor ok");
 }
 
@@ -1946,6 +1975,9 @@ void enviarColaGetPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 			printf("\n\nNombre: %s",unGetPokemon->nombre);
 			pthread_mutex_lock(&mutexColaGetPokemon);
 			enviarGetPokemon(unGetPokemon,socket_suscriptor,mensaje->ID);
+			free(unGetPokemon->nombre);
+			free(unGetPokemon);
+
 			printf("\nMensaje enviado: %s",unGetPokemon->nombre);
 			list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 			printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
@@ -1999,6 +2031,9 @@ void enviarColaGetPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 					printf("\n\nNombre: %s",unGetPokemon->nombre);
 					enviarGetPokemon(unGetPokemon,socket_suscriptor,mensaje->ID);
 					printf("Mensaje enviado: %s\n",unGetPokemon->nombre);
+					free(unGetPokemon->nombre);
+					free(unGetPokemon);
+
 					list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 					printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d\n",list_size(mensaje->suscriptoresAtendidos));
 
@@ -2017,7 +2052,6 @@ void enviarColaGetPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 				mensajeYaEnviado = 0;
 			}
 		} //fin del caso triste
-		free(unGetPokemon);
 		puts("\nSuscriptor ok");
 }
 
@@ -2050,6 +2084,9 @@ void enviarColaAppearedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,S
 			pthread_mutex_lock(&mutexColaAppearedPokemon);
 			enviarAppearedPokemon(unAppearedPokemon,socket_suscriptor,mensaje->ID,0);
 			printf("\nMensaje enviado: %s",unAppearedPokemon->nombre);
+			free(unAppearedPokemon->nombre);
+			free(unAppearedPokemon);
+
 			list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 			printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
 
@@ -2101,6 +2138,8 @@ void enviarColaAppearedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,S
 
 					printf("\n\nNombre: %s",unAppearedPokemon->nombre);
 					enviarAppearedPokemon(unAppearedPokemon,socket_suscriptor,mensaje->ID,0);
+					free(unAppearedPokemon->nombre);
+					free(unAppearedPokemon);
 
 					printf("Mensaje enviado: %s\n",unAppearedPokemon->nombre);
 					list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
@@ -2121,7 +2160,6 @@ void enviarColaAppearedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,S
 				mensajeYaEnviado = 0;
 			}
 		} //fin del caso triste
-		free(unAppearedPokemon);
 		puts("\nSuscriptor ok");
 }
 
@@ -2151,6 +2189,10 @@ void enviarColaCatchPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Susc
 			pthread_mutex_lock(&mutexColaCatchPokemon);
 			enviarCatchPokemon(unCatchPokemon,socket_suscriptor,mensaje->ID);
 			printf("\nMensaje enviado: %s",unCatchPokemon->nombre);
+			free(unCatchPokemon->nombre);
+			free(unCatchPokemon);
+
+
 			list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 			printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
 
@@ -2203,6 +2245,9 @@ void enviarColaCatchPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Susc
 					printf("\n\nNombre: %s",unCatchPokemon->nombre);
 					enviarCatchPokemon(unCatchPokemon,socket_suscriptor,mensaje->ID);
 					printf("Mensaje enviado: %s\n",unCatchPokemon->nombre);
+					free(unCatchPokemon->nombre);
+					free(unCatchPokemon);
+
 					list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 					printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d\n",list_size(mensaje->suscriptoresAtendidos));
 
@@ -2221,7 +2266,6 @@ void enviarColaCatchPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Susc
 				mensajeYaEnviado = 0;
 			}
 		} //fin del caso triste
-		free(unCatchPokemon);
 		puts("\nSuscriptor ok");
 }
 
@@ -2254,6 +2298,8 @@ void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Sus
 			printf("\n\nAtrapado?: %d",unCaughtPokemon->atrapar);
 			pthread_mutex_lock(&mutexColaCaughtPokemon);
 			enviarCaughtPokemon(unCaughtPokemon,socket_suscriptor,mensaje->ID,0);
+			free(unCaughtPokemon);
+
 			printf("\nMensaje enviado: %d",unCaughtPokemon->atrapar);
 			list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 			printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
@@ -2308,6 +2354,8 @@ void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Sus
 				printf("\n\nAtrapado?: %d",unCaughtPokemon->atrapar);
 				enviarCaughtPokemon(unCaughtPokemon,socket_suscriptor,mensaje->ID,0);
 				printf("Mensaje enviado: %d\n",unCaughtPokemon->atrapar);
+				free(unCaughtPokemon);
+
 				list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
 				printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d\n",list_size(mensaje->suscriptoresAtendidos));
 
@@ -2326,7 +2374,6 @@ void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Sus
 				mensajeYaEnviado = 0;
 			}
 		} //fin del caso triste
-			free(unCaughtPokemon);
 			puts("\nSuscriptor ok");
 }
 
