@@ -44,6 +44,7 @@ typedef enum
 typedef struct entrenador{
 	uint32_t ID;
 	Estado estado;
+	bool tieneAsignadoUnPokemon;
 	CoordenadasXY posicion;
 	t_list* objetivos;
 }Entrenador;
@@ -51,6 +52,7 @@ typedef struct entrenador{
 typedef struct pokemon{
 	char* nombre;
 	CoordenadasXY posicion;
+	int IdEntrenadorQueLoVaAatrapar;
 }Pokemon;
 
 // ----------------- Colas ----------------- //
@@ -63,13 +65,17 @@ t_list* objetivoGlobal;
 int tiempoDeReconexion;
 char* archivoLog;
 
-t_queue* colaNEW_BLOCKED;
+
 t_list* mensajesGetEnviados;
 t_list* mensajesCatchEnviados;
 
 t_list* nuevosCaught;
 t_list* mensajesRecibidos;
 t_list* nuevosPokemon;
+
+t_list* blocked_new;
+t_list* ready;
+t_list* pokemones_en_mapa;
 
 //----------------- Variables para los algoritmos de planificacion ----------------- //
 

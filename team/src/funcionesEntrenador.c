@@ -130,10 +130,12 @@ int elegirMejorEntrenador(Pokemon* nuevoPokemon){
 	int cantidadEntrenadores = list_size(entrenadores);
 
 	paraProbar = (Entrenador*)list_get(entrenadores, cursorEntrenadores);
+
+	//if(paraProbar->tieneAsignadoUnPokemon == false){
 	distancia = calcularDistancia(paraProbar, nuevoPokemon);
 	menorDistancia = distancia;
 	mejorEntrenador = paraProbar;
-
+	//}
 	while(cursorEntrenadores < cantidadEntrenadores){
 
 		if(menorDistancia > distancia){
@@ -142,12 +144,15 @@ int elegirMejorEntrenador(Pokemon* nuevoPokemon){
 		}
 
 		paraProbar = (Entrenador*)list_get(entrenadores, cursorEntrenadores);
-		distancia = calcularDistancia(paraProbar, nuevoPokemon);
 
+		//if(paraProbar->tieneAsignadoUnPokemon == false){
+		distancia = calcularDistancia(paraProbar, nuevoPokemon);
+		//}
 		cursorEntrenadores++;
 	}
 
 	printf("El mejor entrenador es ID %d en la posicion (%d , %d)\n\n", mejorEntrenador -> ID, mejorEntrenador -> posicion.posicionX, mejorEntrenador -> posicion.posicionY);
+	//mejorEntrenador->tieneAsignadoUnPokemon = true;
 	return mejorEntrenador -> ID;
 }
 

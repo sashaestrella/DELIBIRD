@@ -19,6 +19,6 @@ void* esperarCaught();
 
 void* entrenadoresReadyLocalizedAppeared();
 
-
+void pokemonesParaPrueba();
 
 #endif /* PLANIFICACION_H_ */

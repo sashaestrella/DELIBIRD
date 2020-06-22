@@ -28,11 +28,17 @@ int main(int argc,char* argv[])
 	nuevosPokemon = list_create();
 	nuevosCaught = list_create();
 
+	blocked_new= list_create();
+	ready= list_create();
+	pokemones_en_mapa= list_create();
+
 	leer_config();
 	obtener_objetivo_global();
 
+	pokemonesParaPrueba();
+
 	// Agrego Localized de Prueba //
-	/*LocalizedPokemon * localized = malloc(sizeof(LocalizedPokemon));
+	LocalizedPokemon * localized = malloc(sizeof(LocalizedPokemon));
 	localized->tamanioNombrePokemon = strlen("Pikachu")+1;
 	localized->nombre = "Pikachu";
 	localized->cantidadParesOrdenados = 3;
@@ -173,12 +179,39 @@ int main(int argc,char* argv[])
 	for(int j=0; j<list_size(entrenadores);j++)
 			pthread_join(hiloEntrenador[j], NULL);
 
-*/
-	generarConexiones(0);
-	GetPokemon* get = malloc(sizeof(GetPokemon));
-	get->nombre = "Pikachu";
-	get->tamanioNombrePokemon=7;
-	enviar_getPokemon(get);
+
+	//generarConexiones(0);
+
+	pasar_a_ready_por_cercania();
+	int i;
+
+	Entrenador* entrenadorReady1 = malloc(sizeof(Entrenador));
+		entrenadorReady1 = list_get (ready, 0);
+		 printf("\nEntrenador1 posicion (%d, %d)", entrenadorReady1->posicion.posicionX, entrenadorReady1->posicion.posicionY);
+		 puts("\nMi objetivo: ");
+		for(i=0; i<list_size(entrenadorReady1->objetivos);i++){
+			printf("%s,", list_get(entrenadorReady1->objetivos, i));
+		}
+
+
+		Entrenador* entrenadorReady2 = malloc(sizeof(Entrenador));
+		entrenadorReady2 = list_get (ready, 1);
+		printf("\n\nEntrenador2 posicion (%d, %d)", entrenadorReady2->posicion.posicionX, entrenadorReady2->posicion.posicionY);
+		puts("\nMi objetivo: ");
+
+		for(i=0; i<list_size(entrenadorReady2->objetivos);i++){
+		 		printf("%s,", list_get(entrenadorReady2->objetivos, i));
+		}
+
+
+		Entrenador* entrenadorReady3 = malloc(sizeof(Entrenador));
+		entrenadorReady3 = list_get (ready, 2);
+		printf("\n\nEntrenador3 posicion (%d, %d)", entrenadorReady3->posicion.posicionX, entrenadorReady3->posicion.posicionY);
+		puts("\nMi objetivo: ");
+		for(i=0; i<list_size(entrenadorReady3->objetivos);i++){
+		 		printf("%s, ", list_get(entrenadorReady3->objetivos, i));
+		}
+
 	//abrirEscuchas();
 
 	/*puts("\Voy a crear el hilo");
