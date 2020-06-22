@@ -1,7 +1,7 @@
 #include "adminMensajes.h"
 
 void generarConexiones(int tipoSuscriptor){
-
+	crearDirectorioTG();
 	// -- Hilo de suscripcion a cola new -- //
 	ParametrosSuscripcion* new = malloc(sizeof(ParametrosSuscripcion));
 	new->colaASuscribirse = SUSCRIPTOR_NEWPOKEMON;
@@ -205,7 +205,14 @@ void* adminMensajeNewPokemon(NewPokemonConIDs* nuevoNewPokemon){
 	enviarAppearedPokemon(appearedPokemon1,conexion,id,idCorrelativo);
 
 	printf("\nEnvie el mensaje: %s\n",appearedPokemon1->nombre);
+	armarFolderPara(nuevoNewPokemon);
+}
 
+void* armarFolderPara(NewPokemonConIDs* newPokemon){
+	char* path = string_new();
+	string_append(&path, "../../TALL_GRASS/Files/");
+	string_append(&path, newPokemon->newPokemon->nombre);
+	mkdir(path, 0777);
 }
 
 void* recibirMensajesGet(){
@@ -247,6 +254,22 @@ void* adminMensajeCatch(CatchPokemonConIDs* nuevoCatch){
 	list_add(mensajesRecibidos, nuevoCatch->IDmensaje);
 	list_add(nuevosCatch, nuevoCatch);
 	printf("Guarde un mensaje Catch");
+}
+
+void* crearDirectorioTG(){
+	char* path = string_new();
+	string_append(&path, "../../TALL_GRASS");
+	mkdir(path, 0777);
+	crearMetadata(path);
+	crearFiles(path);
+}
+
+void* crearMetadata(){
+	mkdir("../../TALL_GRASS/Metadata", 0777);
+}
+
+void* crearFiles(){
+	mkdir("../../TALL_GRASS/Files", 0777);
 }
 
 
