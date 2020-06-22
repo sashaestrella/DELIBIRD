@@ -175,6 +175,10 @@ int main(int argc,char* argv[])
 
 */
 	generarConexiones(0);
+	GetPokemon* get = malloc(sizeof(GetPokemon));
+	get->nombre = "Pikachu";
+	get->tamanioNombrePokemon=7;
+	enviar_getPokemon(get);
 	//abrirEscuchas();
 
 	/*puts("\Voy a crear el hilo");

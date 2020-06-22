@@ -33,7 +33,9 @@ void generarConexiones(int tipoSuscriptor){
 	pthread_t hiloCaught;
 	pthread_create(&hiloCaught, NULL, suscribirseAColaCaught, NULL);
 
-
+	//pthread_detach(hiloAppeared);
+	//pthread_detach(hiloCaught);
+	//pthread_detach(hiloLocalized);
 	pthread_join(hiloAppeared,NULL);
 	pthread_join(hiloCaught,NULL);
 	pthread_join(hiloLocalized,NULL);
@@ -317,7 +319,7 @@ void enviar_getPokemon(GetPokemon* get_pokemon){
 	enviarGetPokemon(get_pokemon, conexion ,0);
 
 	recv(conexion, &id_mensaje, sizeof(int), MSG_WAITALL);
-
+	printf("El id del mi mensaje es %d", id_mensaje);
 	getPokemonConId->IDmensaje = id_mensaje;
 
 	list_add(mensajesGetEnviados, getPokemonConId);
