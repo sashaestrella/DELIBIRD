@@ -50,8 +50,7 @@ char* algoritmoReemplazo;
 int busquedasFallidasPreviasACompactacionOriginal;
 int busquedasFallidasPreviasACompactacion;
 int tamanioMemoria;
-int yaCompacte =0;
-
+int yaCompacte = 0;
 
 t_log* logger;
 t_config* config;
@@ -224,7 +223,9 @@ void buscarIDGetPokemonYBorrarlo(int id);
 void buscarIDAppearedPokemonYBorrarlo(int id);
 void buscarIDCatchPokemonYBorrarlo(int id);
 void buscarIDCaughtPokemonYBorrarlo(int id);
+void actualizarTimestamp(int ID);
 
-void dumpEnCache(int senial);
+void recibirSenial(int senial);
+void dumpEnCache();
 
 #endif /* CONEXIONES_H_ */

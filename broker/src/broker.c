@@ -1,12 +1,67 @@
 #include "broker.h"
 
+void recibirSenial(int senial){
+	int pid = getpid();
+	switch(senial){
+		case SIGINT:
+			printf("No sé,estoy de colado");
+			break;
+		case SIGUSR1:
+			printf("Proceso %d: señal SIGUSR1 recibida.\n",pid);
+			dumpEnCache();
+			break;
+	}
+}
+
+void dumpEnCache(){
+	FILE *archivoDump;
+	PosicionLibre* unaPosicionLibre;
+	PosicionOcupada* unaPosicionOcupada;
+	int tamanioListaPosicionesLibres = list_size(listaPosicionesLibres);
+	int tamanioListaPosicionesOcupadas = list_size(listaPosicionesOcupadas);
+	time_t tiempo;
+	struct tm* tm;
+	char fechaYHora[128];
+
+	archivoDump = txt_open_for_append("/home/utnso/tp-2020-1c-BOMP/broker/dumpDeLaCache.txt");
+	tiempo = time(NULL);
+	tm = localtime(&tiempo);
+
+	strftime(fechaYHora,128,"\nDump: %d/%m/%y %H:%M:%S",tm);
+	printf("%s\n",fechaYHora);
+	txt_write_in_file(archivoDump,fechaYHora);
+
+	for(int i=0;i<tamanioListaPosicionesLibres;i++){
+			unaPosicionLibre = list_get(listaPosicionesLibres,i);
+			fprintf(archivoDump,"\nPartición %d: %p-%p.",i,unaPosicionLibre->posicion,unaPosicionLibre->posicion+(unaPosicionLibre->tamanio)-1);
+			fputs("\t\t[L]",archivoDump);
+			fprintf(archivoDump,"\t\tSize: %db",unaPosicionLibre->tamanio);
+
+		for(int j=0;j<tamanioListaPosicionesOcupadas;j++){
+			unaPosicionOcupada = list_get(listaPosicionesOcupadas,j);
+			fprintf(archivoDump,"\nPartición %d: %p-%p.",j,unaPosicionOcupada->posicion,unaPosicionOcupada->posicion+(unaPosicionOcupada->tamanio)-1);
+			fputs("\t\t[X]",archivoDump);
+			fprintf(archivoDump,"\t\tSize: %db",unaPosicionOcupada->tamanio);
+			fprintf(archivoDump,"\t\tLRU: %d",unaPosicionOcupada->timestamp);
+			fprintf(archivoDump,"\t\tCola: %d",unaPosicionOcupada->colaALaQuePertenece);
+			fprintf(archivoDump,"\t\tID: %d",unaPosicionOcupada->ID);
+		}
+	}
+
+	txt_write_in_stdout("\nSe imprimió el archivo Dump correctamente.");
+
+	txt_close_file(archivoDump);
+
+}
+
 void errorExit(char* strerr){
 	perror(strerr);
 	exit(1);
 }
 
-int main(void)
-{
+int main(void){
+
+	signal(SIGUSR1,recibirSenial);
 
 	//iniciar_servidor();
 
@@ -26,7 +81,6 @@ int main(void)
 	suscriptores_caught_pokemon = list_create();
 	listaPosicionesLibres=list_create();
 	listaPosicionesOcupadas=list_create();
-
 
 	config= config_create("/home/utnso/tp-2020-1c-BOMP/broker/Debug/broker.config");
 	tamanioMinimoParticion = atoi(config_get_string_value(config, "TAMANIO_MINIMO_PARTICION"));
@@ -60,8 +114,7 @@ int main(void)
 
 	printf("------------FIN DE ARCHIVO DE CONFIGURACION BROKER\n");
 
-	//int senial = SIGUSR1;
-	//dumpEnCache(senial);
+
 /*
 	PosicionLibre* unaPosicionLibre1 = malloc(sizeof(PosicionLibre));
 	unaPosicionLibre1->posicion = 1;

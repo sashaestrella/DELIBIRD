@@ -841,10 +841,11 @@ void consolidar(int posicion){
 
 void borrarFIFO(){
 	int tamanioOcupados = list_size(listaPosicionesOcupadas);
-	printf("\nhay %d posiciones ocupadas", list_size(listaPosicionesOcupadas));
+	printf("\nHay %d posiciones ocupadas", list_size(listaPosicionesOcupadas));
 	int posicionABorrar;
 	int auxID = 999999999;
 	PosicionOcupada* unaPosicionOcupada;
+	char* loQueVoyALoguear;
 	for(int i=0; i<tamanioOcupados; i++){
 		unaPosicionOcupada = list_get(listaPosicionesOcupadas,i);
 		if(unaPosicionOcupada->ID < auxID){
@@ -857,6 +858,8 @@ void borrarFIFO(){
 	unaPosicionLibre->posicion = unaPosicionOcupada->posicion;
 	unaPosicionLibre->tamanio = unaPosicionOcupada->tamanio;
 	borrarDeColaDeMensajes(unaPosicionOcupada->colaALaQuePertenece,unaPosicionOcupada->ID);
+	loQueVoyALoguear = "Eliminé por FIFO la posicion ocupada que comienza en: %d";
+	log_info(logger, loQueVoyALoguear,unaPosicionOcupada->posicion);
 	free(unaPosicionOcupada);
 	list_remove(listaPosicionesOcupadas,posicionABorrar);
 	int posicionQueQuedo = insertarOrdenadoEnListaPosicionesLibres(unaPosicionLibre);
@@ -986,10 +989,11 @@ void borrarDeColaDeMensajes(int nroDeCola,int idMensaje){
 
 void borrarLRU(){
 	int tamanioOcupados = list_size(listaPosicionesOcupadas);
-	printf("\nhay %d posiciones ocupadas", list_size(listaPosicionesOcupadas));
+	printf("\nHay %d posiciones ocupadas", list_size(listaPosicionesOcupadas));
 	int posicionABorrar;
 	int auxTimestamp = 999999999;
 	PosicionOcupada* unaPosicionOcupada;
+	char* loQueVoyALoguear;
 	for(int i=0; i<tamanioOcupados; i++){
 		unaPosicionOcupada = list_get(listaPosicionesOcupadas,i);
 		if(unaPosicionOcupada->timestamp < auxTimestamp){
@@ -1002,6 +1006,8 @@ void borrarLRU(){
 	unaPosicionLibre->posicion = unaPosicionOcupada->posicion;
 	unaPosicionLibre->tamanio = unaPosicionOcupada->tamanio;
 	borrarDeColaDeMensajes(unaPosicionOcupada->colaALaQuePertenece,unaPosicionOcupada->ID);
+	loQueVoyALoguear = "Eliminé por LRU la posicion ocupada que comienza en: %d";
+	log_info(logger, loQueVoyALoguear,unaPosicionOcupada->posicion);
 	free(unaPosicionOcupada);
 	list_remove(listaPosicionesOcupadas,posicionABorrar);
 	int posicionQueQuedo = insertarOrdenadoEnListaPosicionesLibres(unaPosicionLibre);
@@ -1141,7 +1147,9 @@ void compacta(){
 	PosicionOcupada* posicionQueItera;
 	PosicionOcupada* posicionAnterior;
 	PosicionLibre* posicionLibreQueItera;
-	for (int i=0; i<tamanioOcupados;i++){
+	char* loQueVoyALoguear;
+
+	for(int i=0;i<tamanioOcupados;i++){
 		posicionQueItera = list_get(listaPosicionesOcupadas,i);
 		if(i==0){
 			posicionQueItera->posicion = memoriaInterna;
@@ -1150,9 +1158,10 @@ void compacta(){
 			posicionQueItera->posicion = posicionAnterior->posicion + posicionAnterior->tamanio;
 		}
 	}
-	if (tamanioOcupados >0){
-		for(int i = 1; i<tamanioLibres;i++){
-			posicionLibreQueItera= list_get(listaPosicionesLibres,i);
+
+	if(tamanioOcupados > 0){
+		for(int i = 1;i<tamanioLibres;i++){
+			posicionLibreQueItera = list_get(listaPosicionesLibres,i);
 			free(posicionLibreQueItera);
 		}
 		for (int i=1; i<tamanioLibres;i++){
@@ -1164,13 +1173,17 @@ void compacta(){
 		posicionLibreQueItera->tamanio = tamanioMemoria - tamanioOcupadas();
 		printf("La memoria empieza en: %d y la primer posicion libre quedo en %d", memoriaInterna, posicionLibreQueItera->posicion);
 	}
+
+	loQueVoyALoguear = "Se asociaron las particiones con ID: %d y %d, las cuales la primera comienza en %d y la segunda comienza en %d";
+	log_info(logger, loQueVoyALoguear,posicionAnterior->ID,posicionQueItera->ID,posicionAnterior->posicion,posicionQueItera->posicion);
+
 	busquedasFallidasPreviasACompactacion = busquedasFallidasPreviasACompactacionOriginal;
-	puts("Acabo de compactar");
+
+	puts("Acabo de terminar de compactar");
 
 }
 
 PosicionLibre* pedirPosicion(int tamanio){
-	int senial = SIGUSR1;
 	PosicionLibre* posicionARetornar;
 	//algoritmoParticionLibre = config_get_string_value(config,"ALGORITMO_PARTICION_LIBRE");
 	if(!strcmp(algoritmoParticionLibre,"FF")){
@@ -1179,11 +1192,8 @@ PosicionLibre* pedirPosicion(int tamanio){
 		posicionARetornar = pedirPosicionBF(tamanio);
 	}
 
-	printf("BUSQUEDA 1 : %d",busquedasFallidasPreviasACompactacion);
-	dumpEnCache(senial);
-
 	if(posicionARetornar->tamanio == 0){
-		puts("me llego una pos falsa");
+		puts("Me llego una pos falsa");
 		free(posicionARetornar);
 		if(busquedasFallidasPreviasACompactacionOriginal > 1){
 		//	pthread_mutex_lock(&mutexBusquedasFallidas);
@@ -1192,8 +1202,6 @@ PosicionLibre* pedirPosicion(int tamanio){
 
 			if(busquedasFallidasPreviasACompactacion == 0){
 				compacta();
-
-				//dumpEnCache(senial);
 				//	pthread_mutex_unlock(&mutexBusquedasFallidas);
 				return pedirPosicion(tamanio);
 			}
@@ -1201,15 +1209,10 @@ PosicionLibre* pedirPosicion(int tamanio){
 		} else{
 			if((busquedasFallidasPreviasACompactacionOriginal == 1 || busquedasFallidasPreviasACompactacionOriginal == 0) && yaCompacte==0){
 				compacta();
-				printf("BUSQUEDA: %d",busquedasFallidasPreviasACompactacion);
-			//	dumpEnCache(senial);
 				yaCompacte=1;
-
 				return pedirPosicion(tamanio);
 			} // -1 no lo contemplo porque es lo mismo que nada
 		}
-		puts("ENTRO BIEN");
-		//dumpEnCache(senial);
 		borrarPosicion();
 		yaCompacte=0;
 		return pedirPosicion(tamanio);
@@ -2455,60 +2458,3 @@ void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Sus
 }
 
 //----------------------------------------------------PARTICIONES DINÁMICAS-----------------
-
-//----------------------------------------------------DUMP EN LA CACHE----------------------
-
-void dumpEnCache(int senial){
-	FILE *archivoDump;
-	PosicionLibre* unaPosicionLibre;
-	PosicionOcupada* unaPosicionOcupada;
-	int posicionInicioPosLib;
-	int posicionInicioPosOcup;
-	int tamanioListaPosicionesLibres = list_size(listaPosicionesLibres);
-	int tamanioListaPosicionesOcupadas = list_size(listaPosicionesOcupadas);
-	time_t tiempo;
-	struct tm* tm;
-	char fechaYHora[128];
-	int pid = getpid();
-
-	if(senial == 10){
-		printf("Proceso %d: señal %d recibida.\n",pid,senial);
-
-			archivoDump = txt_open_for_append("/home/utnso/tp-2020-1c-BOMP/broker/dumpDeLaCache.txt");
-			tiempo = time(NULL);
-			tm = localtime(&tiempo);
-
-			strftime(fechaYHora,128,"\nDump: %d/%m/%y %H:%M:%S",tm);
-			printf("%s\n",fechaYHora);
-			txt_write_in_file(archivoDump,fechaYHora);
-
-			for(int i=0;i<tamanioListaPosicionesLibres;i++){
-					unaPosicionLibre = list_get(listaPosicionesLibres,i);
-					//posicionInicioPosLib = unaPosicionLibre->posicion - memoriaInterna;
-					fprintf(archivoDump,"\nPartición %d: %p-%p.",i,unaPosicionLibre->posicion,unaPosicionLibre->posicion+(unaPosicionLibre->tamanio)-1);
-					fputs("\t\t[L]",archivoDump);
-					fprintf(archivoDump,"\t\tSize: %db",unaPosicionLibre->tamanio);
-
-				for(int j=0;j<tamanioListaPosicionesOcupadas;j++){
-					unaPosicionOcupada = list_get(listaPosicionesOcupadas,j);
-				//	posicionInicioPosOcup = unaPosicionOcupada->posicion - memoriaInterna;
-
-					fprintf(archivoDump,"\nPartición %d: %p-%p.",j,unaPosicionOcupada->posicion,unaPosicionOcupada->posicion+(unaPosicionOcupada->tamanio)-1);
-
-					fputs("\t\t[X]",archivoDump);
-					fprintf(archivoDump,"\t\tSize: %db",unaPosicionOcupada->tamanio);
-					fprintf(archivoDump,"\t\tLRU: %d",unaPosicionOcupada->timestamp);
-					fprintf(archivoDump,"\t\tCola: %d",unaPosicionOcupada->colaALaQuePertenece);
-					fprintf(archivoDump,"\t\tID: %d",unaPosicionOcupada->ID);
-				}
-			}
-
-			txt_write_in_stdout("\nSe imprimió el archivo Dump correctamente.");
-
-			txt_close_file(archivoDump);
-	}else{
-		puts("\nError.");
-	}
-}
-
-
