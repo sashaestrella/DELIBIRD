@@ -45,7 +45,11 @@ int puerto;
 char* algoritmoMemoria;
 char* algoritmoParticionLibre;
 char* algoritmoReemplazo;
+busquedasFallidasPreviasACompactacionOriginal;
 int busquedasFallidasPreviasACompactacion;
+int tamanioMemoria;
+int yaCompacte =0;
+
 
 t_log* logger;
 t_config* config;

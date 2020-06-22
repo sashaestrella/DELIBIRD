@@ -30,7 +30,7 @@ int main(void)
 
 	config= config_create("/home/utnso/tp-2020-1c-BOMP/broker/Debug/broker.config");
 	tamanioMinimoParticion = atoi(config_get_string_value(config, "TAMANIO_MINIMO_PARTICION"));
-	int tamanioMemoria = atoi(config_get_string_value(config, "TAMANIO_MEMORIA"));
+	tamanioMemoria = atoi(config_get_string_value(config, "TAMANIO_MEMORIA"));
 	memoriaInterna = malloc(tamanioMemoria);
 	PosicionLibre* primerPosicionLibre = malloc(sizeof(PosicionLibre));
 	list_add(listaPosicionesLibres,primerPosicionLibre);
@@ -52,6 +52,7 @@ int main(void)
 	puerto = atoi(config_get_string_value(config, "PUERTO_BROKER"));
 	printf("PUERTO_BROKER = %d\n",puerto);
 	busquedasFallidasPreviasACompactacion = atoi(config_get_string_value(config, "FRECUENCIA_COMPACTACION"));
+	busquedasFallidasPreviasACompactacionOriginal = busquedasFallidasPreviasACompactacion;
 	printf("FRECUENCIA_COMPACTACION = %d\n",busquedasFallidasPreviasACompactacion);
 	char* pathDelLogger = config_get_string_value(config,"LOG_FILE");
 	printf("LOG_FILE = %s\n",pathDelLogger);
