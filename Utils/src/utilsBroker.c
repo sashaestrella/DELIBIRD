@@ -1160,15 +1160,15 @@ void compacta(){
 		posicionQueItera = list_get(listaPosicionesOcupadas,tamanioOcupados-1);
 		posicionLibreQueItera->posicion = posicionQueItera->posicion + posicionQueItera->tamanio;
 		posicionLibreQueItera->tamanio = tamanioMemoria - tamanioOcupadas();
-		printf("la memoria empieza en: %d y la primer posicion libre quedo en %d", memoriaInterna, posicionLibreQueItera->posicion);
+		printf("La memoria empieza en: %d y la primer posicion libre quedo en %d", memoriaInterna, posicionLibreQueItera->posicion);
 	}
 	busquedasFallidasPreviasACompactacion = busquedasFallidasPreviasACompactacionOriginal;
-	puts("acabo de compactar");
+	puts("Acabo de compactar");
 
 }
 
 PosicionLibre* pedirPosicion(int tamanio){
-
+	int senial = SIGUSR1;
 	PosicionLibre* posicionARetornar;
 	//algoritmoParticionLibre = config_get_string_value(config,"ALGORITMO_PARTICION_LIBRE");
 	if(!strcmp(algoritmoParticionLibre,"FF")){
@@ -1176,23 +1176,35 @@ PosicionLibre* pedirPosicion(int tamanio){
 	} else{
 		posicionARetornar = pedirPosicionBF(tamanio);
 	}
+
+	printf("BUSQUEDA 1 : %d",busquedasFallidasPreviasACompactacion);
 	if(posicionARetornar->tamanio == 0){
 		puts("me llego una pos falsa");
 		free(posicionARetornar);
 		if(busquedasFallidasPreviasACompactacionOriginal > 1){
 		//	pthread_mutex_lock(&mutexBusquedasFallidas);
 			busquedasFallidasPreviasACompactacion--;
+
 			if(busquedasFallidasPreviasACompactacion == 0){
 				compacta();
+
+				dumpEnCache(senial);
 				//	pthread_mutex_unlock(&mutexBusquedasFallidas);
 				return pedirPosicion(tamanio);
 			}
 
-		} else if ((busquedasFallidasPreviasACompactacionOriginal == 1 || busquedasFallidasPreviasACompactacion == 0) && yaCompacte==0){
-			compacta();
-			yaCompacte=1;
-			return pedirPosicion(tamanio);
-		} // -1 no lo contemplo porque es lo mismo que nada
+		} else{
+			if((busquedasFallidasPreviasACompactacionOriginal == 1 || busquedasFallidasPreviasACompactacionOriginal == 0) && yaCompacte==0){
+				compacta();
+				printf("BUSQUEDA: %d",busquedasFallidasPreviasACompactacion);
+				dumpEnCache(senial);
+				yaCompacte=1;
+
+				return pedirPosicion(tamanio);
+			} // -1 no lo contemplo porque es lo mismo que nada
+		}
+		puts("ENTRO BIEN");
+		dumpEnCache(senial);
 		borrarPosicion();
 		yaCompacte=0;
 		return pedirPosicion(tamanio);
@@ -2438,5 +2450,60 @@ void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Sus
 }
 
 //----------------------------------------------------PARTICIONES DINÁMICAS-----------------
+
+//----------------------------------------------------DUMP EN LA CACHE----------------------
+
+void dumpEnCache(int senial){
+	FILE *archivoDump;
+	PosicionLibre* unaPosicionLibre;
+	PosicionOcupada* unaPosicionOcupada;
+	int posicionInicioPosLib;
+	int posicionInicioPosOcup;
+	int tamanioListaPosicionesLibres = list_size(listaPosicionesLibres);
+	int tamanioListaPosicionesOcupadas = list_size(listaPosicionesOcupadas);
+	time_t tiempo;
+	struct tm* tm;
+	char fechaYHora[128];
+	int pid = getpid();
+
+	if(senial == 10){
+		printf("Proceso %d: señal %d recibida.\n",pid,senial);
+
+			archivoDump = txt_open_for_append("/home/utnso/tp-2020-1c-BOMP/broker/dumpDeLaCache.txt");
+			tiempo = time(NULL);
+			tm = localtime(&tiempo);
+
+			strftime(fechaYHora,128,"\nDump: %d/%m/%y %H:%M:%S",tm);
+			printf("%s\n",fechaYHora);
+			txt_write_in_file(archivoDump,fechaYHora);
+
+			for(int i=0;i<tamanioListaPosicionesLibres;i++){
+					unaPosicionLibre = list_get(listaPosicionesLibres,i);
+					posicionInicioPosLib = unaPosicionLibre->posicion - memoriaInterna;
+					fprintf(archivoDump,"\nPartición %d: %d-%p.",i,posicionInicioPosLib,unaPosicionLibre->posicion);
+					fputs("\t\t\t\t[L]",archivoDump);
+					fprintf(archivoDump,"\t\tSize: %db",unaPosicionLibre->tamanio);
+
+				for(int j=0;j<tamanioListaPosicionesOcupadas;j++){
+					unaPosicionOcupada = list_get(listaPosicionesOcupadas,j);
+					posicionInicioPosOcup = unaPosicionOcupada->posicion - memoriaInterna;
+
+					fprintf(archivoDump,"\nPartición %d: %p-%p.",j,&posicionInicioPosOcup,unaPosicionOcupada->posicion);
+
+					fputs("\t\t[X]",archivoDump);
+					fprintf(archivoDump,"\t\tSize: %db",unaPosicionOcupada->tamanio);
+					fprintf(archivoDump,"\t\tLRU: %d",unaPosicionOcupada->timestamp);
+					fprintf(archivoDump,"\t\tCola: %d",unaPosicionOcupada->colaALaQuePertenece);
+					fprintf(archivoDump,"\t\tID: %d",unaPosicionOcupada->ID);
+				}
+			}
+
+			txt_write_in_stdout("\nSe imprimió el archivo Dump correctamente.");
+
+			txt_close_file(archivoDump);
+	}else{
+		puts("\nError.");
+	}
+}
 
 

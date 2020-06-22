@@ -59,6 +59,9 @@ int main(void)
 	logger = log_create(pathDelLogger, "Broker-Log" , 1, LOG_LEVEL_INFO);
 
 	printf("------------FIN DE ARCHIVO DE CONFIGURACION BROKER\n");
+
+	//int senial = SIGUSR1;
+	//dumpEnCache(senial);
 /*
 	PosicionLibre* unaPosicionLibre1 = malloc(sizeof(PosicionLibre));
 	unaPosicionLibre1->posicion = 1;

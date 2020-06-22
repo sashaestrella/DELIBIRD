@@ -13,6 +13,8 @@
 #include<semaphore.h>
 #include"utilsEstructuras.h"
 #include"utilsGeneral.h"
+#include"time.h"
+#include<commons/txt.h>
 
 int generadorDeIDsMensaje = 0;
 int generadorDeIDsSuscriptor = 0;
@@ -45,7 +47,7 @@ int puerto;
 char* algoritmoMemoria;
 char* algoritmoParticionLibre;
 char* algoritmoReemplazo;
-busquedasFallidasPreviasACompactacionOriginal;
+int busquedasFallidasPreviasACompactacionOriginal;
 int busquedasFallidasPreviasACompactacion;
 int tamanioMemoria;
 int yaCompacte =0;
@@ -222,5 +224,7 @@ void buscarIDGetPokemonYBorrarlo(int id);
 void buscarIDAppearedPokemonYBorrarlo(int id);
 void buscarIDCatchPokemonYBorrarlo(int id);
 void buscarIDCaughtPokemonYBorrarlo(int id);
+
+void dumpEnCache(int senial);
 
 #endif /* CONEXIONES_H_ */
