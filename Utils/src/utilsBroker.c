@@ -765,7 +765,6 @@ void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID
 	} else {
 		unaPosicion->tamanio = tamanioMinimoParticion;
 	}
-	actualizarTimestamp(ID);
 
 	list_add(listaPosicionesOcupadas, unaPosicion);
 	printf("\nOcupe exitosamente una posicion del mensaje con ID %d\n", unaPosicion->ID);
@@ -774,6 +773,7 @@ void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID
 	printf("\nAhora tengo %d posiciones ocupadas", list_size(listaPosicionesOcupadas));
 	loQueVoyALoguear = "Almacené en memoria el mensaje con ID=%d,donde comienza en: %d";
 	log_info(logger, loQueVoyALoguear,unaPosicion->ID,posicionRelativa);
+	actualizarTimestamp(ID);
 
 
 }
@@ -1017,6 +1017,8 @@ void actualizarTimestamp(int ID){
 			contadorTimestamp++;
 			unaPosicionOcupada->timestamp = contadorTimestamp;
 			pthread_mutex_unlock(&mutexContadorTimestamp);
+			printf("el mensaje de ID %d tiene timestamp %d", unaPosicionOcupada->ID, unaPosicionOcupada->timestamp);
+			puts("jajaxd");
 			break;
 		}
 	}
@@ -1178,17 +1180,20 @@ PosicionLibre* pedirPosicion(int tamanio){
 	}
 
 	printf("BUSQUEDA 1 : %d",busquedasFallidasPreviasACompactacion);
+	dumpEnCache(senial);
+
 	if(posicionARetornar->tamanio == 0){
 		puts("me llego una pos falsa");
 		free(posicionARetornar);
 		if(busquedasFallidasPreviasACompactacionOriginal > 1){
 		//	pthread_mutex_lock(&mutexBusquedasFallidas);
 			busquedasFallidasPreviasACompactacion--;
+			puts("entra en el if");
 
 			if(busquedasFallidasPreviasACompactacion == 0){
 				compacta();
 
-				dumpEnCache(senial);
+				//dumpEnCache(senial);
 				//	pthread_mutex_unlock(&mutexBusquedasFallidas);
 				return pedirPosicion(tamanio);
 			}
@@ -1197,14 +1202,14 @@ PosicionLibre* pedirPosicion(int tamanio){
 			if((busquedasFallidasPreviasACompactacionOriginal == 1 || busquedasFallidasPreviasACompactacionOriginal == 0) && yaCompacte==0){
 				compacta();
 				printf("BUSQUEDA: %d",busquedasFallidasPreviasACompactacion);
-				dumpEnCache(senial);
+			//	dumpEnCache(senial);
 				yaCompacte=1;
 
 				return pedirPosicion(tamanio);
 			} // -1 no lo contemplo porque es lo mismo que nada
 		}
 		puts("ENTRO BIEN");
-		dumpEnCache(senial);
+		//dumpEnCache(senial);
 		borrarPosicion();
 		yaCompacte=0;
 		return pedirPosicion(tamanio);
@@ -2479,16 +2484,16 @@ void dumpEnCache(int senial){
 
 			for(int i=0;i<tamanioListaPosicionesLibres;i++){
 					unaPosicionLibre = list_get(listaPosicionesLibres,i);
-					posicionInicioPosLib = unaPosicionLibre->posicion - memoriaInterna;
-					fprintf(archivoDump,"\nPartición %d: %d-%p.",i,posicionInicioPosLib,unaPosicionLibre->posicion);
-					fputs("\t\t\t\t[L]",archivoDump);
+					//posicionInicioPosLib = unaPosicionLibre->posicion - memoriaInterna;
+					fprintf(archivoDump,"\nPartición %d: %p-%p.",i,unaPosicionLibre->posicion,unaPosicionLibre->posicion+(unaPosicionLibre->tamanio)-1);
+					fputs("\t\t[L]",archivoDump);
 					fprintf(archivoDump,"\t\tSize: %db",unaPosicionLibre->tamanio);
 
 				for(int j=0;j<tamanioListaPosicionesOcupadas;j++){
 					unaPosicionOcupada = list_get(listaPosicionesOcupadas,j);
-					posicionInicioPosOcup = unaPosicionOcupada->posicion - memoriaInterna;
+				//	posicionInicioPosOcup = unaPosicionOcupada->posicion - memoriaInterna;
 
-					fprintf(archivoDump,"\nPartición %d: %p-%p.",j,&posicionInicioPosOcup,unaPosicionOcupada->posicion);
+					fprintf(archivoDump,"\nPartición %d: %p-%p.",j,unaPosicionOcupada->posicion,unaPosicionOcupada->posicion+(unaPosicionOcupada->tamanio)-1);
 
 					fputs("\t\t[X]",archivoDump);
 					fprintf(archivoDump,"\t\tSize: %db",unaPosicionOcupada->tamanio);
