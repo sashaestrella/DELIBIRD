@@ -3,20 +3,24 @@
 int main(int argc,char* argv[])
 {
 
-	sem_init(&sem[0], 0, 0);
-	sem_init(&sem[1], 0, 0);
-	sem_init(&sem[2], 0, 0);
+	sem_init(&ejecutate[0], 0, 0);
+	sem_init(&ejecutate[1], 0, 0);
+	sem_init(&ejecutate[2], 0, 0);
 
 	sem_init(&suscripciones, 0, 1);
 
-	sem_init(&sem2[0], 0, 0);
-	sem_init(&sem2[1], 0, 0);
-	sem_init(&sem2[2], 0, 0);
+	sem_init(&finEjecucion[0], 0, 0);
+	sem_init(&finEjecucion[1], 0, 0);
+	sem_init(&finEjecucion[2], 0, 0);
+
+	sem_init(&confirmacion_caught[0], 0, 0);
+	sem_init(&confirmacion_caught[1], 0, 0);
+	sem_init(&confirmacion_caught[2], 0, 0);
+
 
 	sem_init(&mensajesCaught, 0, 0);
 	sem_init(&nuevosPokemons, 0, 0);
 
-	int hiloCreado;
 	algoritmoPlanificacion = "FIFO";
 
 	entrenadores = list_create();
@@ -29,7 +33,9 @@ int main(int argc,char* argv[])
 	nuevosCaught = list_create();
 
 	blocked_new= list_create();
+	blocked_caught = list_create();
 	ready= list_create();
+	ejecutando = list_create();
 	pokemones_en_mapa= list_create();
 
 	leer_config();
@@ -110,108 +116,79 @@ int main(int argc,char* argv[])
 	hiloEntrenador = malloc(list_size(entrenadores) * sizeof(pthread_t));
 
 	for(int j=0; j<list_size(entrenadores);j++){
-
 		pthread_create(&hiloEntrenador[j],NULL, planificar,list_get(entrenadores, j));
-		hiloCreado = j;
 	}
 
-	if(hiloCreado ==2){
-	sleep(1);
+
+	//generarConexiones(0);
 	int i;
-	Entrenador* entrenador = malloc(sizeof(Entrenador));
-	entrenador = list_get (entrenadores, 0);
-	 printf("\nEntrenador1 posicion (%d, %d)", entrenador->posicion.posicionX, entrenador->posicion.posicionY);
-	 puts("\nMi objetivo: ");
-	for(i=0; i<list_size(entrenador->objetivos);i++){
-		printf("%s,", list_get(entrenador->objetivos, i));
-	}
-	//-------------Le dice al hilo del entrenador que se mueva
-
-	sem_post(&sem[0]);
-	//--------------------------------------------------------
-
-	//------------Espera que se mueva para mostrarlo
-
-
-	sem_wait(&sem2[0]);
-
-	printf("Entrenador1 nueva posicion (%d, %d)", entrenador->posicion.posicionX, entrenador->posicion.posicionY);
-
-
-	Entrenador* entrenador1 = malloc(sizeof(Entrenador));
-	entrenador1 = list_get (entrenadores, 1);
-	printf("\n\nEntrenador2 posicion (%d, %d)", entrenador1->posicion.posicionX, entrenador1->posicion.posicionY);
-	puts("\nMi objetivo: ");
-
-	for(i=0; i<list_size(entrenador1->objetivos);i++){
-	 		printf("%s,", list_get(entrenador1->objetivos, i));
-	}
-
-	sem_post(&sem[1]);
-
-	sem_wait(&sem2[1]);
-	printf("Entrenador2 nueva posicion (%d, %d)", entrenador1->posicion.posicionX, entrenador1->posicion.posicionY);
-
-
-
-	Entrenador* entrenador2 = malloc(sizeof(Entrenador));
-	entrenador2 = list_get (entrenadores, 2);
-	printf("\n\nEntrenador3 posicion (%d, %d)", entrenador2->posicion.posicionX, entrenador2->posicion.posicionY);
-	puts("\nMi objetivo: ");
-	for(i=0; i<list_size(entrenador2->objetivos);i++){
-	 		printf("%s, ", list_get(entrenador2->objetivos, i));
-	}
-
-	sem_post(&sem[2]);
-
-	sem_wait(&sem2[2]);
-	printf("Entrenador3 nueva posicion (%d, %d)", entrenador2->posicion.posicionX, entrenador2->posicion.posicionY);
-
-
-
 	puts("\n\nObjetivo Global");
 	for(i=0; i<list_size(objetivoGlobal);i++){
 		 		printf("%s,", list_get(objetivoGlobal, i));
 		}
+	Entrenador* entrenador =malloc(sizeof(Entrenador));
+	for(i=0; i<list_size(entrenadores);i++){
+	entrenador= list_get (entrenadores, i);
+		 printf("\nEntrenador1 posicion (%d, %d)", entrenador->posicion.posicionX, entrenador->posicion.posicionY);
+		 puts("\nMi objetivo: ");
+		for(int j=0; j<list_size(entrenador->objetivos);j++){
+			printf("%s,", list_get(entrenador->objetivos, j));
+		}
 
 	}
 
-	for(int j=0; j<list_size(entrenadores);j++)
-			pthread_join(hiloEntrenador[j], NULL);
-
-
-	//generarConexiones(0);
 
 	pasar_a_ready_por_cercania();
-	int i;
+
+	list_clean(blocked_new);
 
 	Entrenador* entrenadorReady1 = malloc(sizeof(Entrenador));
-		entrenadorReady1 = list_get (ready, 0);
-		 printf("\nEntrenador1 posicion (%d, %d)", entrenadorReady1->posicion.posicionX, entrenadorReady1->posicion.posicionY);
+	puts("\n\nLa cola ready quedo:");
+	for(i=0; i<list_size(ready);i++){
+	entrenadorReady1 = list_get (ready, i);
+		 printf("\nEntrenador %d posicion (%d, %d)",entrenadorReady1->ID, entrenadorReady1->posicion.posicionX, entrenadorReady1->posicion.posicionY);
 		 puts("\nMi objetivo: ");
-		for(i=0; i<list_size(entrenadorReady1->objetivos);i++){
-			printf("%s,", list_get(entrenadorReady1->objetivos, i));
+		for(int j=0; j<list_size(entrenadorReady1->objetivos);j++){
+			printf("%s,", list_get(entrenadorReady1->objetivos, j));
 		}
 
+	}
 
-		Entrenador* entrenadorReady2 = malloc(sizeof(Entrenador));
-		entrenadorReady2 = list_get (ready, 1);
-		printf("\n\nEntrenador2 posicion (%d, %d)", entrenadorReady2->posicion.posicionX, entrenadorReady2->posicion.posicionY);
-		puts("\nMi objetivo: ");
 
-		for(i=0; i<list_size(entrenadorReady2->objetivos);i++){
-		 		printf("%s,", list_get(entrenadorReady2->objetivos, i));
+	void planificadorFIFO(){
+
+		Entrenador* entrenador = malloc(sizeof(Entrenador));
+		puts("\n");
+		while(list_size(ready) != 0){
+
+		entrenador = list_remove(ready, 0);
+
+		if(list_size(ejecutando) == 0){
+			list_add(ejecutando, entrenador);
 		}
 
+		sem_post(&ejecutate[entrenador->ID - 1]);
+		printf("\nDesperte a %d", entrenador->ID);
 
-		Entrenador* entrenadorReady3 = malloc(sizeof(Entrenador));
-		entrenadorReady3 = list_get (ready, 2);
-		printf("\n\nEntrenador3 posicion (%d, %d)", entrenadorReady3->posicion.posicionX, entrenadorReady3->posicion.posicionY);
-		puts("\nMi objetivo: ");
-		for(i=0; i<list_size(entrenadorReady3->objetivos);i++){
-		 		printf("%s, ", list_get(entrenadorReady3->objetivos, i));
+		printf("\nEspero a %d", entrenador->ID);
+		sem_wait(&finEjecucion[entrenador->ID - 1]);
+
 		}
 
+	}
+
+planificadorFIFO();
+
+Pokemon* pokemon = malloc(sizeof(Pokemon));
+
+
+for(i=0; i<list_size(blocked_new);i++){
+	entrenadorReady1 = list_get(blocked_new,i);
+	for(int j=0; j< list_size(entrenadorReady1->pokemonesQueTiene);j++){
+	pokemon = list_get(entrenadorReady1->pokemonesQueTiene,j);
+	printf("\nSoy %d y agarre a %s ",entrenadorReady1->ID, pokemon->nombre);
+	}
+}
 	//abrirEscuchas();
 
 	/*puts("\Voy a crear el hilo");
@@ -228,6 +205,9 @@ int main(int argc,char* argv[])
 
 	//pthread_join(hiloConexionGameboy,NULL);
 
+
+for(int j=0; j<list_size(entrenadores);j++)
+	pthread_join(hiloEntrenador[j], NULL);
 
 	t_log* logger;
 

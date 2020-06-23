@@ -37,28 +37,58 @@ int calcularDistancia(Entrenador* entrenador, Pokemon* pokemon){
 }
 
 void planificacionFifo(Entrenador* entrenador){
+	puts("\nEstoy esperando");
+	sem_wait(&ejecutate[entrenador->ID - 1]);
+	printf("\nRecibi la señal soy %d",entrenador->ID );
+	Pokemon* pokemon = malloc(sizeof(Pokemon));
 
-	printf("\nSoy el entrenador %d y se creo mi hilo.\n", entrenador->ID);
+	bool buscarMiPokemon(Pokemon* pokemon){
+		return pokemon->IdEntrenadorQueLoVaAatrapar == entrenador->ID;
+	}
+	pokemon = list_find(pokemones_en_mapa, (void*)buscarMiPokemon);
 
-	//-----------------Espera que el hilo main le diga que se puede mover
+	while(noLlegoAlPokemon(entrenador, pokemon) == true){
 
-	printf("Estoy esperando entrenador %d\n",entrenador->ID );
+		moverseUnaPosicion(entrenador, pokemon);
 
-	sem_wait(&sem[entrenador->ID-1]);
+	}
 
-	//-------------------------------------------------------------------
+	//enviarCatch
+
+	entrenador = list_remove(ejecutando, 0);
+
+	list_add(blocked_caught, entrenador );
+
+	sem_post(&finEjecucion[entrenador->ID-1]);
+
+	//sem_wait(&confirmacion_caught[entrenador->ID-1]);
+
+	//asumo que lo agarro por ahora
+
+	bool sacarEntrenador(Entrenador* e){
+		return e->ID == entrenador->ID;
+	}
+
+	entrenador = list_remove_by_condition(blocked_caught,(void*)sacarEntrenador);
+
+	list_add(ready, entrenador);
+
+	sem_wait(&ejecutate[entrenador->ID - 1]);
+
+	list_add(entrenador->pokemonesQueTiene, pokemon);
+
+	bool buscarPokemon(Pokemon* p){
+		return p->nombre == pokemon->nombre && p->IdEntrenadorQueLoVaAatrapar == pokemon->IdEntrenadorQueLoVaAatrapar;
+	}
+
+	list_remove_by_condition(pokemones_en_mapa, (void*)buscarPokemon);
+
+	entrenador->tieneAsignadoUnPokemon = false;
+
+	list_add(blocked_new,list_remove(ejecutando, 0) );
 
 
-	//---------------Le dice al hilo main que ya se movio
-
-
-
-	entrenador->posicion.posicionX = entrenador->posicion.posicionX + 1;
-	entrenador->posicion.posicionY = entrenador->posicion.posicionY + 1;
-	puts("\nSe movio 1 en cada eje");
-	sem_post(&sem2[entrenador->ID-1]);
-	//--------------------------------------------------------------------
-	pthread_exit(NULL);
+	sem_post(&finEjecucion[entrenador->ID - 1]);
 
 }
 
@@ -71,6 +101,37 @@ void planificacionSJF_CD(Entrenador* entrenador){
 }
 
 void planificacionSJF_SD(Entrenador* entrenador){
+
+}
+
+bool noLlegoAlPokemon(Entrenador* entrenador, Pokemon* pokemon){
+
+	return !(entrenador->posicion.posicionX == pokemon->posicion.posicionX &&
+		   entrenador->posicion.posicionY == pokemon->posicion.posicionY);
+
+}
+
+void moverseUnaPosicion(Entrenador* entrenador, Pokemon* pokemon){
+
+
+	if(entrenador->posicion.posicionX > pokemon->posicion.posicionX){
+		entrenador->posicion.posicionX--;
+
+	}
+
+	if(entrenador->posicion.posicionX < pokemon->posicion.posicionX){
+		entrenador->posicion.posicionX++;
+	}
+
+	if(entrenador->posicion.posicionX == pokemon->posicion.posicionX){
+		if(entrenador->posicion.posicionY > pokemon->posicion.posicionY){
+			entrenador->posicion.posicionY--;
+
+		}else{
+			entrenador->posicion.posicionY++;
+
+		}
+	}
 
 }
 
@@ -123,36 +184,38 @@ int elegirMejorEntrenador(Pokemon* nuevoPokemon){
 
 	int mejor;
 
-	int menorDistancia;
+	int menorDistancia=9999;
 	int distancia = 0;
 
 	int cursorEntrenadores = 0;
 	int cantidadEntrenadores = list_size(entrenadores);
 
-	paraProbar = (Entrenador*)list_get(entrenadores, cursorEntrenadores);
+	/*paraProbar = (Entrenador*)list_get(entrenadores, cursorEntrenadores);
 
-	//if(paraProbar->tieneAsignadoUnPokemon == false){
+	if(paraProbar->tieneAsignadoUnPokemon == false){
 	distancia = calcularDistancia(paraProbar, nuevoPokemon);
 	menorDistancia = distancia;
 	mejorEntrenador = paraProbar;
-	//}
+	}*/
 	while(cursorEntrenadores < cantidadEntrenadores){
+
+		paraProbar = (Entrenador*)list_get(entrenadores, cursorEntrenadores);
+
+		if(paraProbar->tieneAsignadoUnPokemon == false){
+		distancia = calcularDistancia(paraProbar, nuevoPokemon);
+
 
 		if(menorDistancia > distancia){
 			menorDistancia = distancia;
 			mejorEntrenador = paraProbar;
 		}
 
-		paraProbar = (Entrenador*)list_get(entrenadores, cursorEntrenadores);
-
-		//if(paraProbar->tieneAsignadoUnPokemon == false){
-		distancia = calcularDistancia(paraProbar, nuevoPokemon);
-		//}
+		}
 		cursorEntrenadores++;
 	}
 
-	printf("El mejor entrenador es ID %d en la posicion (%d , %d)\n\n", mejorEntrenador -> ID, mejorEntrenador -> posicion.posicionX, mejorEntrenador -> posicion.posicionY);
-	//mejorEntrenador->tieneAsignadoUnPokemon = true;
+	//printf("\nEl mejor entrenador es ID %d en la posicion (%d , %d) para el pokemon %s en (%d,%d) \n", mejorEntrenador -> ID, mejorEntrenador -> posicion.posicionX, mejorEntrenador -> posicion.posicionY, nuevoPokemon->nombre, nuevoPokemon->posicion.posicionX, nuevoPokemon->posicion.posicionY);
+
 	return mejorEntrenador -> ID;
 }
 

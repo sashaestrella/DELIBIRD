@@ -37,7 +37,7 @@ void leer_config()
 
 void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
 
-	pthread_t hilo_entrenador;
+
 	int cantidad_entrenadores = cantidad(posiciones); //calcula cuantos entrenadores hay para el for segun la cantidad de posiciones
 	int i;
 
@@ -59,7 +59,15 @@ void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
 
 		entrenador->objetivos = list_create();
 
+		entrenador->pokemonesQueTiene = list_create();
+
+		/*for(i=0; i<cantidad(pokemones_separados);i++){
+		list_add(entrenador->pokemonesQueTiene, pokemones_separados[i]);
+		}*/
+
 		obtener_objetivos(pokemones_separados, objetivos_separados, entrenador->objetivos);
+
+		entrenador->tieneAsignadoUnPokemon = false;
 
 		list_add(entrenadores, entrenador); //mete al entrenador en la lista
 	}

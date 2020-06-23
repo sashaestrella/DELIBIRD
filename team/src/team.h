@@ -13,8 +13,10 @@
 #include<src/utilsGeneral.h>
 #include "adminMensajes.h"
 
-sem_t sem[3];
-sem_t sem2[3];
+sem_t ejecutate[3];
+sem_t ejecutate2[3];
+sem_t finEjecucion[3];
+sem_t confirmacion_caught[3];
 sem_t mensajesCaught;
 sem_t nuevosPokemons;
 sem_t suscripciones;
@@ -47,6 +49,7 @@ typedef struct entrenador{
 	bool tieneAsignadoUnPokemon;
 	CoordenadasXY posicion;
 	t_list* objetivos;
+	t_list* pokemonesQueTiene;
 }Entrenador;
 
 typedef struct pokemon{
@@ -74,7 +77,9 @@ t_list* mensajesRecibidos;
 t_list* nuevosPokemon;
 
 t_list* blocked_new;
+t_list* blocked_caught;
 t_list* ready;
+t_list* ejecutando;
 t_list* pokemones_en_mapa;
 
 //----------------- Variables para los algoritmos de planificacion ----------------- //

@@ -20,5 +20,6 @@ void* esperarCaught();
 void* entrenadoresReadyLocalizedAppeared();
 
 void pokemonesParaPrueba();
+bool hayEntrenadorSinPokemon();
 
 #endif /* PLANIFICACION_H_ */
