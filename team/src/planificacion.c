@@ -109,7 +109,6 @@ void pasar_a_ready_por_cercania(){//se ejecutaria al comienzo y cuando aparecen 
 	Pokemon* pokemon = malloc(sizeof(Pokemon));
 	Entrenador* entrenador = malloc(sizeof(Entrenador));//ver si esto va aca o en el for
 
-	list_add_all(blocked_new, entrenadores);
 
 	int idEntrenador, distancia, menorDistancia;
 

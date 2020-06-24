@@ -17,5 +17,6 @@ int elegirMejorEntrenador(Pokemon*);
 
 void moverseUnaPosicion(Entrenador*, Pokemon*);
 bool noLlegoAlPokemon(Entrenador*, Pokemon* );
+bool noPuedeSeguirAtrapando(int, int);
 
 #endif /* FUNCIONESENTRENADOR_H_ */

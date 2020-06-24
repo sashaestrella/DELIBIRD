@@ -69,6 +69,8 @@ void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
 
 		entrenador->tieneAsignadoUnPokemon = false;
 
+		entrenador->cantidad = list_size(entrenador->objetivos);
+
 		list_add(entrenadores, entrenador); //mete al entrenador en la lista
 	}
 }

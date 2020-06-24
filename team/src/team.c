@@ -21,6 +21,11 @@ int main(int argc,char* argv[])
 	sem_init(&mensajesCaught, 0, 0);
 	sem_init(&nuevosPokemons, 0, 0);
 
+
+	pthread_mutex_init(&colaReady, NULL);
+	pthread_mutex_init(&colaBlocked_new, NULL);
+	pthread_mutex_init(&mutex_mapa, NULL);
+
 	algoritmoPlanificacion = "FIFO";
 
 	entrenadores = list_create();
@@ -36,6 +41,7 @@ int main(int argc,char* argv[])
 	blocked_caught = list_create();
 	ready= list_create();
 	ejecutando = list_create();
+	terminados = list_create();
 	pokemones_en_mapa= list_create();
 
 	leer_config();
@@ -138,11 +144,14 @@ int main(int argc,char* argv[])
 	}
 
 
+	list_add_all(blocked_new, entrenadores);
 	pasar_a_ready_por_cercania();
 
 	list_clean(blocked_new);
 
 	Entrenador* entrenadorReady1 = malloc(sizeof(Entrenador));
+
+
 	puts("\n\nLa cola ready quedo:");
 	for(i=0; i<list_size(ready);i++){
 	entrenadorReady1 = list_get (ready, i);
@@ -155,23 +164,33 @@ int main(int argc,char* argv[])
 	}
 
 
+
 	void planificadorFIFO(){
 
 		Entrenador* entrenador = malloc(sizeof(Entrenador));
 		puts("\n");
 		while(list_size(ready) != 0){
 
+
+		//pthread_mutex_lock(&colaReady);
 		entrenador = list_remove(ready, 0);
+		//pthread_mutex_unlock(&colaReady);
 
 		if(list_size(ejecutando) == 0){
 			list_add(ejecutando, entrenador);
-		}
+
 
 		sem_post(&ejecutate[entrenador->ID - 1]);
-		printf("\nDesperte a %d", entrenador->ID);
+		printf("\n\nDesperte a %d", entrenador->ID);
 
-		printf("\nEspero a %d", entrenador->ID);
+		printf("\nEspero a %d,", entrenador->ID);
 		sem_wait(&finEjecucion[entrenador->ID - 1]);
+		}
+		//printf("\nTamaño blocked_new %d", list_size(blocked_new));
+
+		if(list_size(blocked_new) != 0)
+			pasar_a_ready_por_cercania();
+
 
 		}
 
@@ -179,11 +198,12 @@ int main(int argc,char* argv[])
 
 planificadorFIFO();
 
+sleep(1);
 Pokemon* pokemon = malloc(sizeof(Pokemon));
 
 
-for(i=0; i<list_size(blocked_new);i++){
-	entrenadorReady1 = list_get(blocked_new,i);
+for(i=0; i<list_size(terminados);i++){
+	entrenadorReady1 = list_get(terminados,i);
 	for(int j=0; j< list_size(entrenadorReady1->pokemonesQueTiene);j++){
 	pokemon = list_get(entrenadorReady1->pokemonesQueTiene,j);
 	printf("\nSoy %d y agarre a %s ",entrenadorReady1->ID, pokemon->nombre);

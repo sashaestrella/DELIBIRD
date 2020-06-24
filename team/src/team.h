@@ -14,13 +14,16 @@
 #include "adminMensajes.h"
 
 sem_t ejecutate[3];
-sem_t ejecutate2[3];
 sem_t finEjecucion[3];
 sem_t confirmacion_caught[3];
+
 sem_t mensajesCaught;
 sem_t nuevosPokemons;
 sem_t suscripciones;
 
+pthread_mutex_t colaReady;
+pthread_mutex_t colaBlocked_new;
+pthread_mutex_t mutex_mapa;;
 
 // ----------------- Estructuras ----------------- //
 
@@ -47,6 +50,7 @@ typedef struct entrenador{
 	uint32_t ID;
 	Estado estado;
 	bool tieneAsignadoUnPokemon;
+	int cantidad; //temporal para probar fifo
 	CoordenadasXY posicion;
 	t_list* objetivos;
 	t_list* pokemonesQueTiene;
@@ -80,6 +84,7 @@ t_list* blocked_new;
 t_list* blocked_caught;
 t_list* ready;
 t_list* ejecutando;
+t_list* terminados;
 t_list* pokemones_en_mapa;
 
 //----------------- Variables para los algoritmos de planificacion ----------------- //

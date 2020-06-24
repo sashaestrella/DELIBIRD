@@ -37,9 +37,13 @@ int calcularDistancia(Entrenador* entrenador, Pokemon* pokemon){
 }
 
 void planificacionFifo(Entrenador* entrenador){
-	puts("\nEstoy esperando");
+
+	int atrapados=0;//temporal
+	while(entrenador->estado != EXIT){
+
+	printf("\nSoy %d y estoy esperando a empezar", entrenador->ID);
 	sem_wait(&ejecutate[entrenador->ID - 1]);
-	printf("\nRecibi la señal soy %d",entrenador->ID );
+
 	Pokemon* pokemon = malloc(sizeof(Pokemon));
 
 	bool buscarMiPokemon(Pokemon* pokemon){
@@ -71,27 +75,48 @@ void planificacionFifo(Entrenador* entrenador){
 
 	entrenador = list_remove_by_condition(blocked_caught,(void*)sacarEntrenador);
 
+	//pthread_mutex_lock(&colaReady);
 	list_add(ready, entrenador);
+	//pthread_mutex_unlock(&colaReady);
 
 	sem_wait(&ejecutate[entrenador->ID - 1]);
 
 	list_add(entrenador->pokemonesQueTiene, pokemon);
-
+	atrapados++;
 	bool buscarPokemon(Pokemon* p){
 		return p->nombre == pokemon->nombre && p->IdEntrenadorQueLoVaAatrapar == pokemon->IdEntrenadorQueLoVaAatrapar;
 	}
 
+	//pthread_mutex_lock(&mutex_mapa);
 	list_remove_by_condition(pokemones_en_mapa, (void*)buscarPokemon);
+	//pthread_mutex_unlock(&mutex_mapa);
 
 	entrenador->tieneAsignadoUnPokemon = false;
 
-	list_add(blocked_new,list_remove(ejecutando, 0) );
 
+	if(noPuedeSeguirAtrapando(entrenador->cantidad, atrapados)){// si atrapo todos los que tenia que atrapar
+		entrenador->estado = EXIT;
+		list_add(terminados, list_remove(ejecutando,0));
+		printf("\nSoy %d y termine", entrenador->ID);
+		list_clean(blocked_new);
+	}else{
+	//pthread_mutex_lock(&colaBlocked_new);
+	list_add(blocked_new, list_remove(ejecutando, 0));
+
+	//pthread_mutex_lock(&colaBlocked_new);
+
+	}
 
 	sem_post(&finEjecucion[entrenador->ID - 1]);
 
+	}
+
 }
 
+bool noPuedeSeguirAtrapando(int necesita, int losQueYaAtrapo){
+	return necesita == losQueYaAtrapo;
+
+}
 void planificacionRR(Entrenador* entrenador){
 
 }
@@ -188,7 +213,7 @@ int elegirMejorEntrenador(Pokemon* nuevoPokemon){
 	int distancia = 0;
 
 	int cursorEntrenadores = 0;
-	int cantidadEntrenadores = list_size(entrenadores);
+	int cantidadEntrenadores = list_size(blocked_new);
 
 	/*paraProbar = (Entrenador*)list_get(entrenadores, cursorEntrenadores);
 
@@ -199,7 +224,7 @@ int elegirMejorEntrenador(Pokemon* nuevoPokemon){
 	}*/
 	while(cursorEntrenadores < cantidadEntrenadores){
 
-		paraProbar = (Entrenador*)list_get(entrenadores, cursorEntrenadores);
+		paraProbar = (Entrenador*)list_get(blocked_new, cursorEntrenadores);
 
 		if(paraProbar->tieneAsignadoUnPokemon == false){
 		distancia = calcularDistancia(paraProbar, nuevoPokemon);
