@@ -782,7 +782,7 @@ void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID
 
 int insertarOrdenadoEnListaPosicionesLibres(PosicionLibre* unaPosicionLibre){
 	PosicionLibre* posicionQueItera;
-	puts("anda");
+	puts("anda1");
 
 	int tamanioListaLibres = list_size(listaPosicionesLibres);
 	if(tamanioListaLibres == 0){
@@ -794,6 +794,9 @@ int insertarOrdenadoEnListaPosicionesLibres(PosicionLibre* unaPosicionLibre){
 
 		if(posicionQueItera->posicion > unaPosicionLibre->posicion){
 			list_add_in_index(listaPosicionesLibres,i,unaPosicionLibre);
+			return i;
+		} else if(i == tamanioListaLibres-1){
+			list_add_in_index(listaPosicionesLibres,i+1,unaPosicionLibre);
 			return i;
 		}
 	}
@@ -1109,25 +1112,64 @@ PosicionLibre* pedirPosicionBF(int tamanio) {
 			puts("\nNinguna posicion potable para asignarle.");
 			return posicionFalsa;
 		}
-		posicionQueVoyARetornar= list_get(posicionesPotablesAElegir,0);
-		for(int i=1;i<tamanioListaPosicionesPotables;i++){
+		int indicePosicionARetornar = 0;
+		for(int i=0;i<tamanioListaPosicionesPotables;i++){
 			printf("\nEntre al segundo for %d vez/veces",i);
 			otraPosicionLibreBis = list_get(posicionesPotablesAElegir,i);
+			posicionQueVoyARetornar = list_get(posicionesPotablesAElegir,indicePosicionARetornar);
 			variableAux = posicionQueVoyARetornar->tamanio - tamanio;
 			otraVariableAux = otraPosicionLibreBis->tamanio - tamanio;
-			if(variableAux < otraVariableAux){
+			if(variableAux > otraVariableAux){
 				printf("\nTamaño de posicion elegida: %d\n",posicionQueVoyARetornar->tamanio);
-
 				puts("Posicion asignada correctamente.");
-				return posicionQueVoyARetornar;
+				indicePosicionARetornar= i;
 			}
 		}
+		posicionQueVoyARetornar = list_get(posicionesPotablesAElegir,indicePosicionARetornar);
 		list_destroy(posicionesPotablesAElegir);
 		free(posicionFalsa);
 		printf("\nTamaño de posicion elegida: %d\n",posicionQueVoyARetornar->tamanio);
 		puts("Posicion asignada correctamente.");
 
 		return posicionQueVoyARetornar;
+}
+
+PosicionLibre* pedirPosicionBFBS(int tamanio){
+	PosicionLibre* posicionQueItera;
+	PosicionLibre* posicionQueAjusta;
+	t_list* posicionesQueCumplenElTamanioMinimo = list_create();
+	if(tamanio < tamanioMinimoParticion){
+		tamanio = tamanioMinimoParticion;
+	}
+	int tamanioPosicionesLibres = list_size(listaPosicionesLibres);
+	for (int i=0;i<tamanioPosicionesLibres;i++){
+		posicionQueItera = list_get(listaPosicionesLibres,i);
+		if(posicionQueItera->tamanio >= tamanio){
+			list_add(posicionesQueCumplenElTamanioMinimo,posicionQueItera);
+		}
+
+	}
+	int indicePosicionQueAjusta = 0;
+	int tamanioPosicionesQueCumplen = list_size(posicionesQueCumplenElTamanioMinimo);
+	for(int i=0;i<tamanioPosicionesQueCumplen;i++){
+		posicionQueItera = list_get(posicionesQueCumplenElTamanioMinimo,i);
+		posicionQueAjusta = list_get(posicionesQueCumplenElTamanioMinimo,indicePosicionQueAjusta);
+		if(posicionQueItera->tamanio < posicionQueAjusta->tamanio){
+			indicePosicionQueAjusta = i;
+		}
+	}
+	posicionQueAjusta = list_get(posicionesQueCumplenElTamanioMinimo,indicePosicionQueAjusta);
+	list_destroy(posicionesQueCumplenElTamanioMinimo);
+	while((posicionQueAjusta->tamanio)/2 > tamanio){
+		posicionQueAjusta->tamanio = (posicionQueAjusta->tamanio)/2;
+		PosicionLibre* posicionBuddy = malloc(sizeof(PosicionLibre));
+		posicionBuddy->tamanio = posicionQueAjusta->tamanio;
+		posicionBuddy->posicion = posicionQueAjusta->posicion + posicionQueAjusta->tamanio;
+		insertarOrdenadoEnListaPosicionesLibres(posicionBuddy);
+	}
+	return posicionQueAjusta;
+
+
 }
 
 int tamanioOcupadas(){
@@ -1183,41 +1225,48 @@ void compacta(){
 
 }
 
+
+
 PosicionLibre* pedirPosicion(int tamanio){
 	PosicionLibre* posicionARetornar;
 	//algoritmoParticionLibre = config_get_string_value(config,"ALGORITMO_PARTICION_LIBRE");
-	if(!strcmp(algoritmoParticionLibre,"FF")){
-		posicionARetornar = pedirPosicionFF(tamanio);
+	if(!strcmp(algoritmoMemoria,"BS")){
+		posicionARetornar = pedirPosicionBFBS(tamanio); //falta toda la magia de la posicion falsa y borrar
+		return posicionARetornar;
 	} else{
-		posicionARetornar = pedirPosicionBF(tamanio);
-	}
-
-	if(posicionARetornar->tamanio == 0){
-		puts("Me llego una pos falsa");
-		free(posicionARetornar);
-		if(busquedasFallidasPreviasACompactacionOriginal > 1){
-		//	pthread_mutex_lock(&mutexBusquedasFallidas);
-			busquedasFallidasPreviasACompactacion--;
-			puts("entra en el if");
-
-			if(busquedasFallidasPreviasACompactacion == 0){
-				compacta();
-				//	pthread_mutex_unlock(&mutexBusquedasFallidas);
-				return pedirPosicion(tamanio);
-			}
-
+		if(!strcmp(algoritmoParticionLibre,"FF")){
+			posicionARetornar = pedirPosicionFF(tamanio);
 		} else{
-			if((busquedasFallidasPreviasACompactacionOriginal == 1 || busquedasFallidasPreviasACompactacionOriginal == 0) && yaCompacte==0){
-				compacta();
-				yaCompacte=1;
-				return pedirPosicion(tamanio);
-			} // -1 no lo contemplo porque es lo mismo que nada
+			posicionARetornar = pedirPosicionBF(tamanio);
 		}
-		borrarPosicion();
-		yaCompacte=0;
-		return pedirPosicion(tamanio);
+
+		if(posicionARetornar->tamanio == 0){
+			puts("Me llego una pos falsa");
+			free(posicionARetornar);
+			if(busquedasFallidasPreviasACompactacionOriginal > 1){
+		//	pthread_mutex_lock(&mutexBusquedasFallidas);
+				busquedasFallidasPreviasACompactacion--;
+				puts("entra en el if");
+
+				if(busquedasFallidasPreviasACompactacion == 0){
+					compacta();
+				//	pthread_mutex_unlock(&mutexBusquedasFallidas);
+					return pedirPosicion(tamanio);
+				}
+
+			} else{
+				if((busquedasFallidasPreviasACompactacionOriginal == 1 || busquedasFallidasPreviasACompactacionOriginal == 0) && yaCompacte==0){
+					compacta();
+					yaCompacte=1;
+					return pedirPosicion(tamanio);
+				} // -1 no lo contemplo porque es lo mismo que nada
+			}
+			borrarPosicion();
+			yaCompacte=0;
+			return pedirPosicion(tamanio);
+		}
+		return posicionARetornar;
 	}
-	return posicionARetornar;
 	/*}else {
 		puts("estoy en el else de pedirPosicion");
 		posicionARetornar = pedirPosicionBF(tamanio);
@@ -1269,7 +1318,9 @@ void grabarNewPokemonAMemoriaInterna(NewPokemon* unNewPokemon, int tamanio, Posi
 	unaPosicionLibre->posicion+=sizeof(uint32_t);
 	memcpy(unaPosicionLibre->posicion,&(unNewPokemon->cantidad),sizeof(uint32_t));
 	unaPosicionLibre->posicion+=sizeof(uint32_t);
-	if(tamanio>=tamanioMinimoParticion){
+	if(!strcmp(algoritmoMemoria,"BS")){
+		unaPosicionLibre->tamanio = 0;
+	} else if(tamanio>=tamanioMinimoParticion){
 		unaPosicionLibre->tamanio-= tamanio;
 		puts("soy mayor que el tamanio minimo de particion");
 	} else{
@@ -1348,7 +1399,9 @@ void grabarLocalizedPokemonAMemoriaInterna(LocalizedPokemon* unLocalizedPokemon,
 		memcpy(unaPosicionLibre->posicion,&(coordenadas->posicionY),sizeof(uint32_t));
 		unaPosicionLibre->posicion+= sizeof(uint32_t);
 	}
-	if(tamanio>=tamanioMinimoParticion){
+	if(!strcmp(algoritmoMemoria,"BS")){
+			unaPosicionLibre->tamanio = 0;
+	} else if(tamanio>=tamanioMinimoParticion){
 		unaPosicionLibre->tamanio-= tamanio;
 	} else{
 		unaPosicionLibre->tamanio-= tamanioMinimoParticion;
@@ -1420,7 +1473,9 @@ void grabarGetPokemonAMemoriaInterna(GetPokemon* unGetPokemon, int tamanio, Posi
 	memcpy(unaPosicionLibre->posicion,unGetPokemon->nombre,unGetPokemon->tamanioNombrePokemon);
 	unaPosicionLibre->posicion+= unGetPokemon->tamanioNombrePokemon;
 
-	if(tamanio>=tamanioMinimoParticion){
+	if(!strcmp(algoritmoMemoria,"BS")){
+			unaPosicionLibre->tamanio = 0;
+	} else if(tamanio>=tamanioMinimoParticion){
 		unaPosicionLibre->tamanio-= tamanio;
 	} else{
 		unaPosicionLibre->tamanio-= tamanioMinimoParticion;
@@ -1494,7 +1549,9 @@ void grabarAppearedPokemonAMemoriaInterna(AppearedPokemon* unAppearedPokemon, in
 	memcpy(unaPosicionLibre->posicion,&(unAppearedPokemon->coordenadas.posicionY),sizeof(uint32_t));
 	unaPosicionLibre->posicion+= sizeof(uint32_t);
 
-	if(tamanio>=tamanioMinimoParticion){
+	if(!strcmp(algoritmoMemoria,"BS")){
+			unaPosicionLibre->tamanio = 0;
+	} else if(tamanio>=tamanioMinimoParticion){
 		unaPosicionLibre->tamanio-= tamanio;
 	} else{
 		unaPosicionLibre->tamanio-= tamanioMinimoParticion;
@@ -1563,7 +1620,9 @@ void grabarCatchPokemonAMemoriaInterna(CatchPokemon* unCatchPokemon, int tamanio
 	memcpy(unaPosicionLibre->posicion,&(unCatchPokemon->coordenadas.posicionY),sizeof(uint32_t));
 	unaPosicionLibre->posicion+= sizeof(uint32_t);
 
-	if(tamanio>=tamanioMinimoParticion){
+	if(!strcmp(algoritmoMemoria,"BS")){
+			unaPosicionLibre->tamanio = 0;
+	} else if(tamanio>=tamanioMinimoParticion){
 		unaPosicionLibre->tamanio-= tamanio;
 	} else{
 		unaPosicionLibre->tamanio-= tamanioMinimoParticion;
@@ -1627,7 +1686,9 @@ void grabarCaughtPokemonAMemoriaInterna(CaughtPokemon* unCaughtPokemon, int tama
 	memcpy(unaPosicionLibre->posicion,&(unCaughtPokemon->atrapar),sizeof(uint32_t));
 	unaPosicionLibre->posicion+= sizeof(uint32_t);
 
-	if(tamanio>=tamanioMinimoParticion){
+	if(!strcmp(algoritmoMemoria,"BS")){
+			unaPosicionLibre->tamanio = 0;
+	} else if(tamanio>=tamanioMinimoParticion){
 		unaPosicionLibre->tamanio-= tamanio;
 	} else{
 		unaPosicionLibre->tamanio-= tamanioMinimoParticion;
