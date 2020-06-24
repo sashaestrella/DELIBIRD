@@ -808,7 +808,7 @@ void consolidar(int posicion){
 	int borreAIzquierda = 0;
 	if(posicion>0){ //consolidacion a izquierda
 		PosicionLibre* posicionAIzquierda = list_get(listaPosicionesLibres,posicion-1);
-		printf("la posicion de la izquierda arranca en %i y termina en %i. la posicion base empieza en %i",posicionAIzquierda->posicion,posicionAIzquierda->posicion + posicionAIzquierda->tamanio,posicionBase->posicion);
+		printf("La posicion de la izquierda arranca en %i y termina en %i. la posicion base empieza en %i",posicionAIzquierda->posicion,posicionAIzquierda->posicion + posicionAIzquierda->tamanio,posicionBase->posicion);
 		if((posicionAIzquierda->posicion + posicionAIzquierda->tamanio) == ((posicionBase->posicion))){
 			posicionAIzquierda->tamanio+= posicionBase->tamanio;
 			free(posicionBase);
@@ -1135,40 +1135,60 @@ PosicionLibre* pedirPosicionBF(int tamanio) {
 }
 
 PosicionLibre* pedirPosicionBFBS(int tamanio){
+	puts("Estoy en pedir posicion Buddy System");
 	PosicionLibre* posicionQueItera;
+	PosicionLibre* posicionQueItera2;
 	PosicionLibre* posicionQueAjusta;
+	PosicionLibre* posicionQueAjusta2;
+	PosicionLibre* posicionFalsa = malloc(sizeof(PosicionLibre));
+	posicionFalsa->tamanio = 0;
 	t_list* posicionesQueCumplenElTamanioMinimo = list_create();
 	if(tamanio < tamanioMinimoParticion){
 		tamanio = tamanioMinimoParticion;
 	}
+	puts("ACA 1");
 	int tamanioPosicionesLibres = list_size(listaPosicionesLibres);
+	printf("Tamaño de posiciones libres: %d\n",tamanioPosicionesLibres);
 	for (int i=0;i<tamanioPosicionesLibres;i++){
 		posicionQueItera = list_get(listaPosicionesLibres,i);
 		if(posicionQueItera->tamanio >= tamanio){
 			list_add(posicionesQueCumplenElTamanioMinimo,posicionQueItera);
 		}
-
 	}
+	printf("Tamaño de la lista de posiciones que cumplen con el tamaño minimo: %d\n",list_size(posicionesQueCumplenElTamanioMinimo));
+	if(list_size(posicionesQueCumplenElTamanioMinimo) == 0){
+		puts("\nNinguna posicion potable para asignarle.");
+		return posicionFalsa;
+	}
+	puts("ACA 2");
 	int indicePosicionQueAjusta = 0;
 	int tamanioPosicionesQueCumplen = list_size(posicionesQueCumplenElTamanioMinimo);
 	for(int i=0;i<tamanioPosicionesQueCumplen;i++){
-		posicionQueItera = list_get(posicionesQueCumplenElTamanioMinimo,i);
+		posicionQueItera2 = list_get(posicionesQueCumplenElTamanioMinimo,i);
 		posicionQueAjusta = list_get(posicionesQueCumplenElTamanioMinimo,indicePosicionQueAjusta);
-		if(posicionQueItera->tamanio < posicionQueAjusta->tamanio){
+		if(posicionQueItera2->tamanio < posicionQueAjusta->tamanio){
 			indicePosicionQueAjusta = i;
 		}
 	}
-	posicionQueAjusta = list_get(posicionesQueCumplenElTamanioMinimo,indicePosicionQueAjusta);
+	puts("ACA 3");
+	posicionQueAjusta2 = list_get(posicionesQueCumplenElTamanioMinimo,indicePosicionQueAjusta);
+	printf("Tamaño de posicion que ajusta: %d\n",posicionQueAjusta2->tamanio);
 	list_destroy(posicionesQueCumplenElTamanioMinimo);
-	while((posicionQueAjusta->tamanio)/2 > tamanio){
-		posicionQueAjusta->tamanio = (posicionQueAjusta->tamanio)/2;
-		PosicionLibre* posicionBuddy = malloc(sizeof(PosicionLibre));
-		posicionBuddy->tamanio = posicionQueAjusta->tamanio;
-		posicionBuddy->posicion = posicionQueAjusta->posicion + posicionQueAjusta->tamanio;
-		insertarOrdenadoEnListaPosicionesLibres(posicionBuddy);
-	}
-	return posicionQueAjusta;
+	free(posicionFalsa);
+	puts("ACA 4");
 
+	while((posicionQueAjusta2->tamanio)/2 > tamanio){
+		posicionQueAjusta2->tamanio = (posicionQueAjusta2->tamanio)/2;
+		puts("ACA 5");
+		PosicionLibre* posicionBuddy = malloc(sizeof(PosicionLibre));
+		posicionBuddy->tamanio = posicionQueAjusta2->tamanio;
+		posicionBuddy->posicion = posicionQueAjusta2->posicion + posicionQueAjusta2->tamanio;
+		insertarOrdenadoEnListaPosicionesLibres(posicionBuddy);
+		puts("ACA 6");
+	}
+
+	printf("Posicion elegida: %d\n",posicionQueAjusta2->tamanio);
+	return posicionQueAjusta2;
 
 }
 
@@ -1232,7 +1252,14 @@ PosicionLibre* pedirPosicion(int tamanio){
 	//algoritmoParticionLibre = config_get_string_value(config,"ALGORITMO_PARTICION_LIBRE");
 	if(!strcmp(algoritmoMemoria,"BS")){
 		posicionARetornar = pedirPosicionBFBS(tamanio); //falta toda la magia de la posicion falsa y borrar
-		return posicionARetornar;
+		//return posicionARetornar;
+		if(posicionARetornar->tamanio == 0){
+			puts("Me llego una pos falsa");
+			free(posicionARetornar);
+			borrarPosicion();
+			return pedirPosicion(tamanio);
+		}
+			return posicionARetornar;
 	} else{
 		if(!strcmp(algoritmoParticionLibre,"FF")){
 			posicionARetornar = pedirPosicionFF(tamanio);
@@ -1475,11 +1502,13 @@ void grabarGetPokemonAMemoriaInterna(GetPokemon* unGetPokemon, int tamanio, Posi
 
 	if(!strcmp(algoritmoMemoria,"BS")){
 			unaPosicionLibre->tamanio = 0;
-	} else if(tamanio>=tamanioMinimoParticion){
-		unaPosicionLibre->tamanio-= tamanio;
-	} else{
-		unaPosicionLibre->tamanio-= tamanioMinimoParticion;
-		unaPosicionLibre->posicion+= (tamanioMinimoParticion-tamanio);
+	} else {
+			if(tamanio>=tamanioMinimoParticion){
+			unaPosicionLibre->tamanio-= tamanio;
+		} else{
+			unaPosicionLibre->tamanio-= tamanioMinimoParticion;
+			unaPosicionLibre->posicion+= (tamanioMinimoParticion-tamanio);
+		}
 	}
 
 }

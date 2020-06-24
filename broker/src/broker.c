@@ -22,6 +22,7 @@ void dumpEnCache(){
 	time_t tiempo;
 	struct tm* tm;
 	char fechaYHora[128];
+	char* loQueVoyALoguear;
 
 	archivoDump = txt_open_for_append("/home/utnso/tp-2020-1c-BOMP/broker/dumpDeLaCache.txt");
 	tiempo = time(NULL);
@@ -32,23 +33,24 @@ void dumpEnCache(){
 	txt_write_in_file(archivoDump,fechaYHora);
 
 	for(int i=0;i<tamanioListaPosicionesLibres;i++){
-			unaPosicionLibre = list_get(listaPosicionesLibres,i);
-			fprintf(archivoDump,"\nPartición %d: %p-%p.",i,unaPosicionLibre->posicion,unaPosicionLibre->posicion+(unaPosicionLibre->tamanio)-1);
-			fputs("\t\t[L]",archivoDump);
-			fprintf(archivoDump,"\t\tSize: %db",unaPosicionLibre->tamanio);
-
-		for(int j=0;j<tamanioListaPosicionesOcupadas;j++){
-			unaPosicionOcupada = list_get(listaPosicionesOcupadas,j);
-			fprintf(archivoDump,"\nPartición %d: %p-%p.",j,unaPosicionOcupada->posicion,unaPosicionOcupada->posicion+(unaPosicionOcupada->tamanio)-1);
-			fputs("\t\t[X]",archivoDump);
-			fprintf(archivoDump,"\t\tSize: %db",unaPosicionOcupada->tamanio);
-			fprintf(archivoDump,"\t\tLRU: %d",unaPosicionOcupada->timestamp);
-			fprintf(archivoDump,"\t\tCola: %d",unaPosicionOcupada->colaALaQuePertenece);
-			fprintf(archivoDump,"\t\tID: %d",unaPosicionOcupada->ID);
-		}
+		unaPosicionLibre = list_get(listaPosicionesLibres,i);
+		fprintf(archivoDump,"\nPartición %d: %p-%p.",i,unaPosicionLibre->posicion,unaPosicionLibre->posicion+(unaPosicionLibre->tamanio)-1);
+		fputs("\t\t[L]",archivoDump);
+		fprintf(archivoDump,"\t\tSize: %db",unaPosicionLibre->tamanio);
 	}
 
-	txt_write_in_stdout("\nSe imprimió el archivo Dump correctamente.");
+	for(int j=0;j<tamanioListaPosicionesOcupadas;j++){
+		unaPosicionOcupada = list_get(listaPosicionesOcupadas,j);
+		fprintf(archivoDump,"\nPartición %d: %p-%p.",j,unaPosicionOcupada->posicion,unaPosicionOcupada->posicion+(unaPosicionOcupada->tamanio)-1);
+		fputs("\t\t[X]",archivoDump);
+		fprintf(archivoDump,"\t\tSize: %db",unaPosicionOcupada->tamanio);
+		fprintf(archivoDump,"\t\tLRU: %d",unaPosicionOcupada->timestamp);
+		fprintf(archivoDump,"\t\tCola: %d",unaPosicionOcupada->colaALaQuePertenece);
+		fprintf(archivoDump,"\t\tID: %d",unaPosicionOcupada->ID);
+	}
+
+	loQueVoyALoguear = "Se solicitó ejecución de Dump de Caché.";
+	log_info(logger, loQueVoyALoguear);
 
 	txt_close_file(archivoDump);
 
