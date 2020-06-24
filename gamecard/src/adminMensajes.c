@@ -265,7 +265,17 @@ void* crearDirectorioTG(){
 }
 
 void* crearMetadata(){
+	FILE* metadata;
+
 	mkdir("../../TALL_GRASS/Metadata", 0777);
+	metadata = fopen("../../TALL_GRASS/Metadata/Metadata.bin", "wrb");
+	fclose(metadata);
+
+	t_config* md = config_create("../../TALL_GRASS/Metadata/Metadata.bin");
+	config_set_value(md, "BLOCK_SIZE", "64");
+	config_set_value(md, "BLOCKS", "5192");
+	config_set_value(md, "MAGIC_NUMBER", "TALL_GRASS");
+	config_save(md);
 }
 
 void* crearFiles(){
