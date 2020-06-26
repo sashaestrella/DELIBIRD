@@ -15,8 +15,11 @@ void planificacionSJF_SD(Entrenador*);
 Pokemon* elegirMejorUbicacion(LocalizedPokemonConIDs*);
 int elegirMejorEntrenador(Pokemon*);
 
-void moverseUnaPosicion(Entrenador*, Pokemon*);
-bool noLlegoAlPokemon(Entrenador*, Pokemon* );
+void moverseUnaPosicion(Entrenador*, CoordenadasXY);
+bool noLlegoADestino(Entrenador*, CoordenadasXY );
 bool noPuedeSeguirAtrapando(int, int);
+void realizarIntercambio(Entrenador*, Entrenador* );
+Entrenador* buscarConQuienIntercambiar(Entrenador* entrenador);
+bool cumplioSusObjetivos(Entrenador* entrenador);
 
 #endif /* FUNCIONESENTRENADOR_H_ */

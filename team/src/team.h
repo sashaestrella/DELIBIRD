@@ -16,11 +16,15 @@
 sem_t ejecutate[3];
 sem_t finEjecucion[3];
 sem_t confirmacion_caught[3];
+sem_t solucionar_deadlock[3];
+//estos deberian declararse en main porque su tamaño depende de la cantidad de entrenadores
+
 
 sem_t mensajesCaught;
 sem_t nuevosPokemons;
 sem_t suscripciones;
 sem_t aparicion_pokemon;
+
 
 pthread_mutex_t colaReady;
 pthread_mutex_t colaBlocked_new;
@@ -86,6 +90,7 @@ t_list* blocked_caught;
 t_list* ready;
 t_list* ejecutando;
 t_list* terminados;
+t_list* deadlock;
 t_list* pokemones_en_mapa;
 
 //----------------- Variables para los algoritmos de planificacion ----------------- //

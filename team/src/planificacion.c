@@ -79,13 +79,13 @@ void pokemonesParaPrueba(){
 	gengar->posicion.posicionX = 7;
 	gengar->posicion.posicionY = 5;
 	gengar->IdEntrenadorQueLoVaAatrapar=0;
-	//list_add(pokemones_en_mapa, pikachu1);
+	list_add(pokemones_en_mapa, pikachu1);
 	//list_add(pokemones_en_mapa, pikachu2);
 	//list_add(pokemones_en_mapa, charmander);
-	//list_add(pokemones_en_mapa, squirtle);
-	//list_add(pokemones_en_mapa, squirtle2);
-	//list_add(pokemones_en_mapa, onix);
-	//list_add(pokemones_en_mapa, gengar);
+	list_add(pokemones_en_mapa, squirtle);
+	list_add(pokemones_en_mapa, squirtle2);
+	list_add(pokemones_en_mapa, onix);
+	list_add(pokemones_en_mapa, gengar);
 }
 
 
