@@ -702,6 +702,27 @@ CaughtPokemon* parsearCaughtPokemon(char* atrapar){
 	return caughtPokemon;
 }
 
+LocalizedPokemon* parsearLocalizedPokemon(char* nombre,char* cantParesOrd,char* pares[]){
+	LocalizedPokemon* localizedPokemon = malloc(sizeof(LocalizedPokemon));
+	t_list* lista = list_create();
+
+	int j = 0;
+	localizedPokemon->nombre = nombre;
+	localizedPokemon->tamanioNombrePokemon = strlen(nombre)+1;
+	localizedPokemon->cantidadParesOrdenados = atoi(cantParesOrd);
+	for(int i=0;i<atoi(cantParesOrd);i++){
+		CoordenadasXY* coordenadas = malloc(sizeof(CoordenadasXY));
+		coordenadas->posicionX = atoi(pares[i]);
+		i = j;
+		coordenadas->posicionY = atoi(pares[j]);
+		list_add(lista,coordenadas);
+	}
+	localizedPokemon->paresOrdenados = lista;
+	list_destroy(lista);
+
+	return localizedPokemon;
+}
+
 /*void enviarNewPokemon(NewPokemon* newPokemon, int conexion)
 {
 	uint32_t codigo = NEW_POKEMON;

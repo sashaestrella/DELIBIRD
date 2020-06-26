@@ -1005,6 +1005,7 @@ void borrarLRU(){
 		}
 	}
 	unaPosicionOcupada = list_get(listaPosicionesOcupadas,posicionABorrar);
+
 	PosicionLibre* unaPosicionLibre = malloc(sizeof(PosicionLibre));
 	unaPosicionLibre->posicion = unaPosicionOcupada->posicion;
 	unaPosicionLibre->tamanio = unaPosicionOcupada->tamanio;
@@ -1013,6 +1014,7 @@ void borrarLRU(){
 	log_info(logger, loQueVoyALoguear,unaPosicionOcupada->posicion);
 	free(unaPosicionOcupada);
 	list_remove(listaPosicionesOcupadas,posicionABorrar);
+
 	int posicionQueQuedo = insertarOrdenadoEnListaPosicionesLibres(unaPosicionLibre);
 	consolidar(posicionQueQuedo);
 }
@@ -1056,10 +1058,10 @@ PosicionLibre* pedirPosicionFF(int tamanio){
 		tamanio= tamanioMinimoParticion;
 	}
 	int tamanioPosicionesLibres = list_size(listaPosicionesLibres);
-	printf("el tamanio de las posiciones libres esw %d\n", tamanioPosicionesLibres);
+	printf("El tamaño de las posiciones libres es: %d\n", tamanioPosicionesLibres);
 	for(int i=0;i<tamanioPosicionesLibres;i++){
 		unaPosicionLibre = list_get(listaPosicionesLibres,i);
-		printf("el tamanio de la posiciones libre que encontre es %d y el tamanio que yo quiero es %d", unaPosicionLibre->tamanio, tamanio);
+		printf("El tamaño de la posicione libre que encontre es: %d y el tamaño que yo quiero es: %d", unaPosicionLibre->tamanio, tamanio);
 		if(unaPosicionLibre->tamanio >= tamanio){
 			free(posicionFalsa);
 			puts("\nVoy a retornar una posicion buena");
@@ -1135,7 +1137,7 @@ PosicionLibre* pedirPosicionBF(int tamanio) {
 }
 
 PosicionLibre* pedirPosicionBFBS(int tamanio){
-	puts("Estoy en pedir posicion Buddy System");
+	puts("Estoy en pedir posicion por Buddy System.");
 	PosicionLibre* posicionQueItera;
 	PosicionLibre* posicionQueItera2;
 	PosicionLibre* posicionQueAjusta;
@@ -1146,7 +1148,7 @@ PosicionLibre* pedirPosicionBFBS(int tamanio){
 	if(tamanio < tamanioMinimoParticion){
 		tamanio = tamanioMinimoParticion;
 	}
-	puts("ACA 1");
+
 	int tamanioPosicionesLibres = list_size(listaPosicionesLibres);
 	printf("Tamaño de posiciones libres: %d\n",tamanioPosicionesLibres);
 	for (int i=0;i<tamanioPosicionesLibres;i++){
@@ -1160,7 +1162,7 @@ PosicionLibre* pedirPosicionBFBS(int tamanio){
 		puts("\nNinguna posicion potable para asignarle.");
 		return posicionFalsa;
 	}
-	puts("ACA 2");
+
 	int indicePosicionQueAjusta = 0;
 	int tamanioPosicionesQueCumplen = list_size(posicionesQueCumplenElTamanioMinimo);
 	for(int i=0;i<tamanioPosicionesQueCumplen;i++){
@@ -1170,21 +1172,18 @@ PosicionLibre* pedirPosicionBFBS(int tamanio){
 			indicePosicionQueAjusta = i;
 		}
 	}
-	puts("ACA 3");
+
 	posicionQueAjusta2 = list_get(posicionesQueCumplenElTamanioMinimo,indicePosicionQueAjusta);
 	printf("Tamaño de posicion que ajusta: %d\n",posicionQueAjusta2->tamanio);
 	list_destroy(posicionesQueCumplenElTamanioMinimo);
 	free(posicionFalsa);
-	puts("ACA 4");
 
 	while((posicionQueAjusta2->tamanio)/2 >= tamanio){
 		posicionQueAjusta2->tamanio = (posicionQueAjusta2->tamanio)/2;
-		puts("ACA 5");
 		PosicionLibre* posicionBuddy = malloc(sizeof(PosicionLibre));
 		posicionBuddy->tamanio = posicionQueAjusta2->tamanio;
 		posicionBuddy->posicion = posicionQueAjusta2->posicion + posicionQueAjusta2->tamanio;
 		insertarOrdenadoEnListaPosicionesLibres(posicionBuddy);
-		puts("ACA 6");
 	}
 
 	printf("Posicion elegida: %d\n",posicionQueAjusta2->tamanio);
@@ -1261,6 +1260,7 @@ PosicionLibre* pedirPosicion(int tamanio){
 		}
 			return posicionARetornar;
 	} else{
+		puts("Estoy en pedir posicion por Particiones.");
 		if(!strcmp(algoritmoParticionLibre,"FF")){
 			posicionARetornar = pedirPosicionFF(tamanio);
 		} else{
