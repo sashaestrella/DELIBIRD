@@ -465,13 +465,15 @@ void process_request_team(int cod_op, int cliente){
 		//pthread_detach(hiloAppeared);
 		//con la funcion recibirMensajesAppeared me tira segmentation fault
 
-		/*appeared = recibir_APPEARED_POKEMON(cliente,0,0,0);
+		appeared = recibir_APPEARED_POKEMON(cliente,0,0,0);
 
 		pokemon->nombre = appeared->appearedPokemon->nombre;
 		pokemon->posicion.posicionX = appeared->appearedPokemon->coordenadas.posicionX;
 		pokemon->posicion.posicionY = appeared->appearedPokemon->coordenadas.posicionY;
-		list_add(nuevosPokemon, pokemon);
-		puts("\nAgregue un pokemon a la lista");*/
+		pokemon->IdEntrenadorQueLoVaAatrapar = 0;
+		list_add(pokemones_en_mapa, pokemon);
+		sem_post(&aparicion_pokemon);
+		puts("\nAgregue un pokemon a la lista");
 		break;
 
 	case CAUGHT_POKEMON:

@@ -20,7 +20,7 @@ int main(int argc,char* argv[])
 
 	sem_init(&mensajesCaught, 0, 0);
 	sem_init(&nuevosPokemons, 0, 0);
-
+	sem_init(&aparicion_pokemon, 0, 0);
 
 	pthread_mutex_init(&colaReady, NULL);
 	pthread_mutex_init(&colaBlocked_new, NULL);
@@ -48,6 +48,12 @@ int main(int argc,char* argv[])
 	obtener_objetivo_global();
 
 	pokemonesParaPrueba();
+
+	Pokemon* a=malloc(sizeof(Pokemon));
+	for(int i=0;i<list_size(pokemones_en_mapa);i++){
+		a=list_get(pokemones_en_mapa,i);
+		printf("%s", a->nombre);
+	}
 
 	// Agrego Localized de Prueba //
 	LocalizedPokemon * localized = malloc(sizeof(LocalizedPokemon));
@@ -143,11 +149,18 @@ int main(int argc,char* argv[])
 
 	}
 
+	puts("\Voy a crear el hilo");
+	pthread_t hiloConexionGameboy;
+	pthread_create(&hiloConexionGameboy, NULL, (void*)noHayBroker, NULL);
+
+	pthread_detach(hiloConexionGameboy);
 
 	list_add_all(blocked_new, entrenadores);
+
+
 	pasar_a_ready_por_cercania();
 
-	list_clean(blocked_new);
+	//list_clean(blocked_new);
 
 	Entrenador* entrenadorReady1 = malloc(sizeof(Entrenador));
 
@@ -169,9 +182,24 @@ int main(int argc,char* argv[])
 
 		Entrenador* entrenador = malloc(sizeof(Entrenador));
 		puts("\n");
-		while(list_size(ready) != 0){
+
+		while(list_size(terminados) != list_size(entrenadores)){
+
+			if(list_size(ready)==0){
+				puts("\nEspero");
+				sem_wait(&aparicion_pokemon);
+				puts("\nLlego un pokemon boludo");
+				pasar_a_ready_por_cercania();
+				puts("\nLo pase a ready boludo");
+
+				printf("\ntamaño ready %d", list_size(ready));
+			}
 
 
+			for(i=0; i<list_size(ready);i++){
+				entrenadorReady1 = list_get (ready, i);
+					 printf("\nReady %d)",entrenadorReady1->ID);
+			}
 		//pthread_mutex_lock(&colaReady);
 		entrenador = list_remove(ready, 0);
 		//pthread_mutex_unlock(&colaReady);
@@ -188,12 +216,21 @@ int main(int argc,char* argv[])
 		}
 		//printf("\nTamaño blocked_new %d", list_size(blocked_new));
 
-		if(list_size(blocked_new) != 0)
-			pasar_a_ready_por_cercania();
+		if(list_size(blocked_new) != 0){
+
+			bool buscarPOkemon(Pokemon* pokemon){
+			return pokemon->IdEntrenadorQueLoVaAatrapar == 0;
+		}
+			if(list_any_satisfy(pokemones_en_mapa,(void*)buscarPOkemon) ==1 ){
+				pasar_a_ready_por_cercania();
+
+
 
 
 		}
 
+		}
+	}
 	}
 
 planificadorFIFO();
@@ -211,11 +248,8 @@ for(i=0; i<list_size(terminados);i++){
 }
 	//abrirEscuchas();
 
-	/*puts("\Voy a crear el hilo");
-	pthread_t hiloConexionGameboy;
-	pthread_create(&hiloConexionGameboy, NULL, (void*)noHayBroker, NULL);
 
-	pthread_detach(hiloConexionGameboy);
+	/*
 	sleep(20);//puse esto para no poner semaforos porque paja
 	for(int i=0; i<list_size(nuevosPokemon); i++){
 		Pokemon* pokemon = list_get(nuevosPokemon, i);
@@ -227,8 +261,10 @@ for(i=0; i<list_size(terminados);i++){
 
 
 for(int j=0; j<list_size(entrenadores);j++)
-	pthread_join(hiloEntrenador[j], NULL);
+	pthread_detach(hiloEntrenador[j]);
+	//pthread_join(hiloEntrenador[j], NULL);
 
+sleep(5);
 	t_log* logger;
 
 	logger = iniciar_logger();

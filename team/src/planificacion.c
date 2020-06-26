@@ -40,8 +40,8 @@ void pokemonesParaPrueba(){
 
 	Pokemon* pikachu1 = malloc(sizeof(Pokemon));
 	pikachu1->nombre = "Pikachu";
-	pikachu1->posicion.posicionX = 9;
-	pikachu1->posicion.posicionY = 2;
+	pikachu1->posicion.posicionX = 1;
+	pikachu1->posicion.posicionY = 1;
 	pikachu1->IdEntrenadorQueLoVaAatrapar=0;
 
 	Pokemon* pikachu2 = malloc(sizeof(Pokemon));
@@ -58,49 +58,34 @@ void pokemonesParaPrueba(){
 
 	Pokemon* squirtle = malloc(sizeof(Pokemon));
 	squirtle->nombre = "Squirtle";
-	squirtle->posicion.posicionX = 6;
-	squirtle->posicion.posicionY = 2;
+	squirtle->posicion.posicionX = 9;
+	squirtle->posicion.posicionY = 7;
 	squirtle->IdEntrenadorQueLoVaAatrapar=0;
 
-	list_add(pokemones_en_mapa, pikachu1);
-	list_add(pokemones_en_mapa, pikachu2);
-	list_add(pokemones_en_mapa, charmander);
-	list_add(pokemones_en_mapa, squirtle);
-	//casos de prueba
-	/*Pokemon* pikachu1 = malloc(sizeof(Pokemon));
-	pikachu1->nombre = "Pikachu";
-	pikachu1->posicion.posicionX = 12;
-	pikachu1->posicion.posicionY = 10;
-	pikachu1->IdEntrenadorQueLoVaAatrapar=0;
+	Pokemon* squirtle2 = malloc(sizeof(Pokemon));
+		squirtle2->nombre = "Squirtle";
+		squirtle2->posicion.posicionX = 3;
+		squirtle2->posicion.posicionY = 5;
+		squirtle2->IdEntrenadorQueLoVaAatrapar=0;
 
-	Pokemon* bulbasaur = malloc(sizeof(Pokemon));
-	bulbasaur->nombre = "Bulbasaur";
-	bulbasaur->posicion.posicionX = 15;
-	bulbasaur->posicion.posicionY = 3;
-	bulbasaur->IdEntrenadorQueLoVaAatrapar=0;
+	Pokemon* onix = malloc(sizeof(Pokemon));
+		onix->nombre = "Onix";
+		onix->posicion.posicionX = 2;
+		onix->posicion.posicionY = 2;
+		onix->IdEntrenadorQueLoVaAatrapar=0;
 
-	Pokemon* ratata = malloc(sizeof(Pokemon));
-	ratata->nombre = "Ratata";
-	ratata->posicion.posicionX = 7;
-	ratata->posicion.posicionY = 5;
-	ratata->IdEntrenadorQueLoVaAatrapar=0;
-
-	Pokemon* charmander1 = malloc(sizeof(Pokemon));
-	charmander1->nombre = "Charmander1";
-	charmander1->posicion.posicionX = 4;
-	charmander1->posicion.posicionY = 7;
-	charmander1->IdEntrenadorQueLoVaAatrapar=0;
-
-	Pokemon* charmander2 = malloc(sizeof(Pokemon));
-	charmander2->nombre = "Charmander2";
-	charmander2->posicion.posicionX = 12;
-	charmander2->posicion.posicionY = 7;
-	charmander2->IdEntrenadorQueLoVaAatrapar=0;
-	list_add(pokemones_en_mapa, bulbasaur);
-	list_add(pokemones_en_mapa, pikachu1);
-	list_add(pokemones_en_mapa, ratata);
-	list_add(pokemones_en_mapa, charmander1);*/
-
+	Pokemon* gengar = malloc(sizeof(Pokemon));
+	gengar->nombre = "Gengar";
+	gengar->posicion.posicionX = 7;
+	gengar->posicion.posicionY = 5;
+	gengar->IdEntrenadorQueLoVaAatrapar=0;
+	//list_add(pokemones_en_mapa, pikachu1);
+	//list_add(pokemones_en_mapa, pikachu2);
+	//list_add(pokemones_en_mapa, charmander);
+	//list_add(pokemones_en_mapa, squirtle);
+	//list_add(pokemones_en_mapa, squirtle2);
+	//list_add(pokemones_en_mapa, onix);
+	//list_add(pokemones_en_mapa, gengar);
 }
 
 
@@ -147,6 +132,7 @@ for(int i = 0; i<list_size(pokemones_en_mapa); i++){
 		if(i == list_size(pokemones_en_mapa)-1){
 			entrenadorAready->tieneAsignadoUnPokemon = true;
 			pokemonAasignar->IdEntrenadorQueLoVaAatrapar = entrenadorAready->ID;
+			quitar_de_bloqueados_new(entrenadorAready);
 			list_add(ready, entrenadorAready);
 		}
 
@@ -156,6 +142,14 @@ for(int i = 0; i<list_size(pokemones_en_mapa); i++){
 		contador++;
 	}
 
+}
+
+
+void quitar_de_bloqueados_new(Entrenador* entrenador){
+	bool buscarEntrenador(Entrenador* e){
+		return e->ID == entrenador->ID;
+	}
+	list_remove_by_condition(blocked_new, (void*)buscarEntrenador);
 }
 
 bool hayEntrenadorSinPokemon(){

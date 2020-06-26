@@ -20,6 +20,7 @@ sem_t confirmacion_caught[3];
 sem_t mensajesCaught;
 sem_t nuevosPokemons;
 sem_t suscripciones;
+sem_t aparicion_pokemon;
 
 pthread_mutex_t colaReady;
 pthread_mutex_t colaBlocked_new;
