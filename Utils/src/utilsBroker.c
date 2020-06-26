@@ -1177,7 +1177,7 @@ PosicionLibre* pedirPosicionBFBS(int tamanio){
 	free(posicionFalsa);
 	puts("ACA 4");
 
-	while((posicionQueAjusta2->tamanio)/2 > tamanio){
+	while((posicionQueAjusta2->tamanio)/2 >= tamanio){
 		posicionQueAjusta2->tamanio = (posicionQueAjusta2->tamanio)/2;
 		puts("ACA 5");
 		PosicionLibre* posicionBuddy = malloc(sizeof(PosicionLibre));
@@ -1358,7 +1358,7 @@ void grabarNewPokemonAMemoriaInterna(NewPokemon* unNewPokemon, int tamanio, Posi
 
 MensajeNewPokemon2* guardarMensajeNewPokemon(NewPokemon* unNewPokemon) {
 		MensajeNewPokemon2* mensaje = malloc(sizeof(MensajeNewPokemon2));
-
+		int tamanioBuddy;
 		pthread_mutex_lock(&mutexGeneradorIDMensaje);
 		generadorDeIDsMensaje++;
 		mensaje->ID = generadorDeIDsMensaje;
@@ -1373,15 +1373,25 @@ MensajeNewPokemon2* guardarMensajeNewPokemon(NewPokemon* unNewPokemon) {
 
 		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
 		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
+		if(!strcmp(algoritmoMemoria,"BS")){
+			tamanioBuddy = unaPosicionLibre->tamanio;
+		}
 		grabarNewPokemonAMemoriaInterna(unNewPokemon,tamanioDeNew,unaPosicionLibre);
-		ocuparPosicion(tamanioDeNew,mensaje->contenidoDelMensaje,2,mensaje->ID);
+		if(!strcmp(algoritmoMemoria,"BS")){
+			ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,2,mensaje->ID);
+		} else{
+			ocuparPosicion(tamanioDeNew,mensaje->contenidoDelMensaje,2,mensaje->ID);
+		}
 		limpiarPosicionesEn0();
 		pthread_mutex_unlock(&mutexMemoriaInterna);
-
-		if(tamanioDeNew>=tamanioMinimoParticion){
-			mensaje->tamanioEnMemoria-= tamanioDeNew;
+		if(!strcmp(algoritmoMemoria,"BS")){
+			mensaje->tamanioEnMemoria = tamanioBuddy;
+			printf("el tamanio en memoria es %d",mensaje->tamanioEnMemoria);
+		} else if(tamanioDeNew>=tamanioMinimoParticion){
+			mensaje->tamanioEnMemoria= tamanioDeNew;
+			printf("el tamanio en memoria es %d",mensaje->tamanioEnMemoria);
 		} else{
-			mensaje->tamanioEnMemoria-= tamanioMinimoParticion;
+			mensaje->tamanioEnMemoria= tamanioMinimoParticion;
 		}
 
 		pthread_mutex_lock(&mutexColaNewPokemon);
@@ -1439,6 +1449,7 @@ void grabarLocalizedPokemonAMemoriaInterna(LocalizedPokemon* unLocalizedPokemon,
 
 MensajeLocalizedPokemon2* guardarMensajeLocalizedPokemon(LocalizedPokemon* unLocalizedPokemon,int idCorrelativo){
 		MensajeLocalizedPokemon2* mensaje = malloc(sizeof(MensajeLocalizedPokemon2));
+		int tamanioBuddy;
 		pthread_mutex_lock(&mutexGeneradorIDMensaje);
 			generadorDeIDsMensaje++;
 			mensaje->ID = generadorDeIDsMensaje;
@@ -1456,16 +1467,26 @@ MensajeLocalizedPokemon2* guardarMensajeLocalizedPokemon(LocalizedPokemon* unLoc
 
 		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
 		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
+		if(!strcmp(algoritmoMemoria,"BS")){
+			tamanioBuddy = unaPosicionLibre->tamanio;
+		}
 		grabarLocalizedPokemonAMemoriaInterna(unLocalizedPokemon,tamanioDeLocalized,unaPosicionLibre);
-		ocuparPosicion(tamanioDeLocalized,mensaje->contenidoDelMensaje,3,mensaje->ID);
+
+		if(!strcmp(algoritmoMemoria,"BS")){
+			ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,3,mensaje->ID);
+		} else{
+			ocuparPosicion(tamanioDeLocalized,mensaje->contenidoDelMensaje,3,mensaje->ID);
+		}
 		limpiarPosicionesEn0();
 		pthread_mutex_unlock(&mutexMemoriaInterna);
 
 
-		if(tamanioDeLocalized>=tamanioMinimoParticion){
-			mensaje->tamanioEnMemoria-= tamanioDeLocalized;
+		if(!strcmp(algoritmoMemoria,"BS")){
+			mensaje->tamanioEnMemoria = tamanioBuddy;
+		} else if(tamanioDeLocalized>=tamanioMinimoParticion){
+			mensaje->tamanioEnMemoria= tamanioDeLocalized;
 		} else{
-			mensaje->tamanioEnMemoria-= tamanioMinimoParticion;
+			mensaje->tamanioEnMemoria= tamanioMinimoParticion;
 		}
 
 
@@ -1502,19 +1523,18 @@ void grabarGetPokemonAMemoriaInterna(GetPokemon* unGetPokemon, int tamanio, Posi
 
 	if(!strcmp(algoritmoMemoria,"BS")){
 			unaPosicionLibre->tamanio = 0;
-	} else {
-			if(tamanio>=tamanioMinimoParticion){
-			unaPosicionLibre->tamanio-= tamanio;
-		} else{
-			unaPosicionLibre->tamanio-= tamanioMinimoParticion;
-			unaPosicionLibre->posicion+= (tamanioMinimoParticion-tamanio);
-		}
+	} else if(tamanio>=tamanioMinimoParticion){
+		unaPosicionLibre->tamanio-= tamanio;
+	} else{
+		unaPosicionLibre->tamanio-= tamanioMinimoParticion;
+		unaPosicionLibre->posicion+= (tamanioMinimoParticion-tamanio);
 	}
-
 }
+
 
 MensajeGetPokemon2* guardarMensajeGetPokemon(GetPokemon* unGetPokemon){
 		MensajeGetPokemon2* mensaje = malloc(sizeof(MensajeGetPokemon2));
+		int tamanioBuddy;
 		pthread_mutex_lock(&mutexGeneradorIDMensaje);
 				generadorDeIDsMensaje++;
 				mensaje->ID = generadorDeIDsMensaje;
@@ -1529,15 +1549,24 @@ MensajeGetPokemon2* guardarMensajeGetPokemon(GetPokemon* unGetPokemon){
 
 		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
 		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
+		if(!strcmp(algoritmoMemoria,"BS")){
+			tamanioBuddy = unaPosicionLibre->tamanio;
+		}
 		grabarGetPokemonAMemoriaInterna(unGetPokemon,tamanioDeGet,unaPosicionLibre);
-		ocuparPosicion(tamanioDeGet,mensaje->contenidoDelMensaje,4,mensaje->ID);
+		if(!strcmp(algoritmoMemoria,"BS")){
+			ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,4,mensaje->ID);
+		} else{
+			ocuparPosicion(tamanioDeGet,mensaje->contenidoDelMensaje,4,mensaje->ID);
+		}
 		limpiarPosicionesEn0();
 		pthread_mutex_unlock(&mutexMemoriaInterna);
 
-		if(tamanioDeGet>=tamanioMinimoParticion){
-			mensaje->tamanioEnMemoria-= tamanioDeGet;
+		if(!strcmp(algoritmoMemoria,"BS")){
+			mensaje->tamanioEnMemoria = tamanioBuddy;
+		} else if(tamanioDeGet>=tamanioMinimoParticion){
+			mensaje->tamanioEnMemoria= tamanioDeGet;
 		} else{
-			mensaje->tamanioEnMemoria-= tamanioMinimoParticion;
+			mensaje->tamanioEnMemoria= tamanioMinimoParticion;
 		}
 
 
@@ -1591,6 +1620,7 @@ void grabarAppearedPokemonAMemoriaInterna(AppearedPokemon* unAppearedPokemon, in
 
 MensajeAppearedPokemon2* guardarMensajeAppearedPokemon(AppearedPokemon* unAppearedPokemon){
 		MensajeAppearedPokemon2* mensaje = malloc(sizeof(MensajeAppearedPokemon2));
+		int tamanioBuddy;
 		pthread_mutex_lock(&mutexGeneradorIDMensaje);
 				generadorDeIDsMensaje++;
 				mensaje->ID = generadorDeIDsMensaje;
@@ -1604,14 +1634,23 @@ MensajeAppearedPokemon2* guardarMensajeAppearedPokemon(AppearedPokemon* unAppear
 
 		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
 		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
+		if(!strcmp(algoritmoMemoria,"BS")){
+			tamanioBuddy = unaPosicionLibre->tamanio;
+		}
 		grabarAppearedPokemonAMemoriaInterna(unAppearedPokemon,tamanioDeAppeared,unaPosicionLibre);
-		ocuparPosicion(tamanioDeAppeared,mensaje->contenidoDelMensaje,5,mensaje->ID);
+		if(!strcmp(algoritmoMemoria,"BS")){
+			ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,5,mensaje->ID);
+		} else{
+			ocuparPosicion(tamanioDeAppeared,mensaje->contenidoDelMensaje,5,mensaje->ID);
+		}
 		limpiarPosicionesEn0();
 		pthread_mutex_unlock(&mutexMemoriaInterna);
-		if(tamanioDeAppeared>=tamanioMinimoParticion){
-			mensaje->tamanioEnMemoria-= tamanioDeAppeared;
+		if(!strcmp(algoritmoMemoria,"BS")){
+			mensaje->tamanioEnMemoria = tamanioBuddy;
+		} else if(tamanioDeAppeared>=tamanioMinimoParticion){
+			mensaje->tamanioEnMemoria= tamanioDeAppeared;
 		} else{
-			mensaje->tamanioEnMemoria-= tamanioMinimoParticion;
+			mensaje->tamanioEnMemoria= tamanioMinimoParticion;
 		}
 
 
@@ -1662,6 +1701,7 @@ void grabarCatchPokemonAMemoriaInterna(CatchPokemon* unCatchPokemon, int tamanio
 
 MensajeCatchPokemon2* guardarMensajeCatchPokemon(CatchPokemon* unCatchPokemon){
 		MensajeCatchPokemon2* mensaje = malloc(sizeof(MensajeCatchPokemon2));
+		int tamanioBuddy;
 		pthread_mutex_lock(&mutexGeneradorIDMensaje);
 		generadorDeIDsMensaje++;
 		mensaje->ID = generadorDeIDsMensaje;
@@ -1675,11 +1715,20 @@ MensajeCatchPokemon2* guardarMensajeCatchPokemon(CatchPokemon* unCatchPokemon){
 
 		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
 		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
+		if(!strcmp(algoritmoMemoria,"BS")){
+			tamanioBuddy = unaPosicionLibre->tamanio;
+		}
 		grabarCatchPokemonAMemoriaInterna(unCatchPokemon,tamanioDeCatch,unaPosicionLibre);
-		ocuparPosicion(tamanioDeCatch,mensaje->contenidoDelMensaje,6,mensaje->ID);
+		if(!strcmp(algoritmoMemoria,"BS")){
+			ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,6,mensaje->ID);
+		} else{
+			ocuparPosicion(tamanioDeCatch,mensaje->contenidoDelMensaje,6,mensaje->ID);
+		}
 		limpiarPosicionesEn0();
 		pthread_mutex_unlock(&mutexMemoriaInterna);
-		if(tamanioDeCatch>=tamanioMinimoParticion){
+		if(!strcmp(algoritmoMemoria,"BS")){
+			mensaje->tamanioEnMemoria = tamanioBuddy;
+		} else if(tamanioDeCatch>=tamanioMinimoParticion){
 			mensaje->tamanioEnMemoria-= tamanioDeCatch;
 		} else{
 			mensaje->tamanioEnMemoria-= tamanioMinimoParticion;
@@ -1729,6 +1778,7 @@ void grabarCaughtPokemonAMemoriaInterna(CaughtPokemon* unCaughtPokemon, int tama
 MensajeCaughtPokemon2* guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemon,int idCorrelativo){
 
 		MensajeCaughtPokemon2* mensaje = malloc(sizeof(MensajeCaughtPokemon2));
+		int tamanioBuddy;
 		pthread_mutex_lock(&mutexGeneradorIDMensaje);
 				generadorDeIDsMensaje++;
 				mensaje->ID = generadorDeIDsMensaje;
@@ -1744,13 +1794,22 @@ MensajeCaughtPokemon2* guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemo
 
 		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
 		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
+		if(!strcmp(algoritmoMemoria,"BS")){
+			tamanioBuddy = unaPosicionLibre->tamanio;
+		}
 
 		grabarCaughtPokemonAMemoriaInterna(unCaughtPokemon,tamanioDeCaught,unaPosicionLibre);
-		ocuparPosicion(tamanioDeCaught,mensaje->contenidoDelMensaje,CAUGHT_POKEMON,mensaje->ID);
+		if(!strcmp(algoritmoMemoria,"BS")){
+			ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,7,mensaje->ID);
+		} else{
+			ocuparPosicion(tamanioDeCaught,mensaje->contenidoDelMensaje,7,mensaje->ID);
+		}
 		limpiarPosicionesEn0();
 		pthread_mutex_unlock(&mutexMemoriaInterna);
 
-		if(tamanioDeCaught>=tamanioMinimoParticion){
+		if(!strcmp(algoritmoMemoria,"BS")){
+			mensaje->tamanioEnMemoria = tamanioBuddy;
+		} else if(tamanioDeCaught>=tamanioMinimoParticion){
 			mensaje->tamanioEnMemoria-= tamanioDeCaught;
 		} else{
 			mensaje->tamanioEnMemoria-= tamanioMinimoParticion;
