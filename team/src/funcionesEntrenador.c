@@ -99,35 +99,56 @@ void planificacionFifo(Entrenador* entrenador){
 
 	if(noPuedeSeguirAtrapando(entrenador->cantidad, atrapados)){// si atrapo todos los que tenia que atrapar
 		int i=0;
-		//if(cumplioSusObjetivos(entrenador)){
-			while(!cumplioSusObjetivos(entrenador)){
-				printf("\nSoy %d y estoy en deadlock", entrenador->ID);
-				list_add(deadlock,list_remove(ejecutando,0));
-				sem_post(&finEjecucion[entrenador->ID - 1]);
-				printf("\nSoy %d y espero resolucion deadlock", entrenador->ID);
-							sem_wait(&solucionar_deadlock[entrenador->ID]);
+		if(!cumplioSusObjetivos(entrenador)){
+			list_remove(ejecutando,0);
+			sem_post(&finEjecucion[entrenador->ID - 1]);
+		}
 
-							entrenadorDeadlock = buscarConQuienIntercambiar(entrenador);
+			while(!cumplioSusObjetivos(entrenador)){
+				//intf("\nSoy %d y estoy en deadlock", entrenador->ID);
+				list_add(deadlock,entrenador);
+
+				//intf("\nSoy %d y espero resolucion deadlock", entrenador->ID);
+							sem_wait(&solucionar_deadlock[entrenador->ID -1]);
+
+							if(cumplioSusObjetivos(entrenador)){
+								i++;
+								break;
+							}
+							//intf("\nSoy %d y empece a resolver deadlock", entrenador->ID);
+							entrenadorDeadlock = buscarConQuienIntercambiar(entrenador);//aca rompe
+							printf("\nEncontre a %d para intercambiar", entrenadorDeadlock->ID);
 							posicion = entrenadorDeadlock->posicion;
 
 							while(noLlegoADestino(entrenador, posicion) == true){
 
 								moverseUnaPosicion(entrenador, posicion);
-
+								puts("\nMe movi");
 							}
 
 							realizarIntercambio(entrenador, entrenadorDeadlock);
+							puts("\nIntercambie, ahora tengo:");
+
+							for(int i=0; i<list_size(entrenador->pokemonesQueTiene);i++){
+								pokemon=list_get(entrenador->pokemonesQueTiene,i);
+								printf("\n %s", pokemon->nombre);
+							}
+
 							i++;
+
+							if(!cumplioSusObjetivos(entrenador)){
+								sem_post(&solucione_deadlock[entrenador->ID -1]);
+							}
 			}
 
 		entrenador->estado = EXIT;
-
 		list_add(terminados, list_remove(ejecutando,0));
 		printf("\nSoy %d y termine", entrenador->ID);
 		if(i==0){
 		sem_post(&finEjecucion[entrenador->ID - 1]);
 		}else{
-		sem_post(&solucionar_deadlock[entrenador->ID -1]);
+		list_remove(ejecutando,0);
+		sem_post(&solucione_deadlock[entrenador->ID -1]);
 		}
 
 
@@ -159,7 +180,7 @@ void planificacionFifo(Entrenador* entrenador){
 
 void realizarIntercambio(Entrenador* entrenador, Entrenador* entrenadorDeadlock){
 
-	Pokemon* pokemon1 = malloc(sizeof(Pokemon));
+	char* pokemon1;
 		Pokemon* pokemon2 = malloc(sizeof(Pokemon));
 	Pokemon* pokemonParaDar = malloc(sizeof(Pokemon));
 	Pokemon* pokemonArecibir = malloc(sizeof(Pokemon));
@@ -168,41 +189,44 @@ void realizarIntercambio(Entrenador* entrenador, Entrenador* entrenadorDeadlock)
 				pokemon1 = list_get(entrenador->objetivos,i);
 				for(int j=0; j<list_size(entrenadorDeadlock->pokemonesQueTiene);j++){
 					pokemon2 = list_get(entrenadorDeadlock->pokemonesQueTiene,j);
-					resultado = pokemon1->nombre == pokemon2->nombre;
-					if(resultado){
+					resultado = strcmp(pokemon1 ,pokemon2->nombre);
+					if(resultado==0){
 					pokemonArecibir = pokemon2;
 					break;
 					}
 				}
-					if(resultado)
+					if(resultado==0)
 					break;
 			}
 
+
 	for(int i=0; i<list_size(entrenador->pokemonesQueTiene);i++){
-				pokemon1 = list_get(entrenador->pokemonesQueTiene,i);
+				pokemon2 = list_get(entrenador->pokemonesQueTiene,i);
 				for(int j=0; j<list_size(entrenador->objetivos);j++){
-					pokemon2 = list_get(entrenador->objetivos,j);
-					resultado = pokemon1->nombre == pokemon2->nombre;
-					if(!resultado){
-					pokemonParaDar = pokemon1;
+					pokemon1 = list_get(entrenador->objetivos,j);
+					resultado = strcmp(pokemon1, pokemon2->nombre);
+					if(resultado==0){
 					break;
+					}else{
+					pokemonParaDar = pokemon2;
 					}
 				}
-					if(!resultado)
+					if(resultado!=0)
 					break;
 			}
 
 	list_add(entrenadorDeadlock->pokemonesQueTiene, pokemonParaDar);
 
 	bool sacarElQueDoy(Pokemon* pokemon){
-		return pokemon->nombre == pokemonParaDar->nombre;
+		return !strcmp(pokemon->nombre, pokemonParaDar->nombre);
+
 	}
 	list_remove_by_condition(entrenador->pokemonesQueTiene, (void*)sacarElQueDoy);
 
 
 
 	bool sacarElQueRecibo(Pokemon* pokemon){
-		return pokemon->nombre == pokemonArecibir->nombre;
+		return !strcmp(pokemon->nombre,pokemonArecibir->nombre);
 	}
 	list_remove_by_condition(entrenadorDeadlock->pokemonesQueTiene, (void*)sacarElQueRecibo);
 
@@ -212,58 +236,108 @@ void realizarIntercambio(Entrenador* entrenador, Entrenador* entrenadorDeadlock)
 }
 
 Entrenador* buscarConQuienIntercambiar(Entrenador* entrenador){
-	Pokemon* pokemon1 = malloc(sizeof(Pokemon));
+	Entrenador* entre= malloc(sizeof(Entrenador));
+	char* pokemon1;
 	Pokemon* pokemon2 = malloc(sizeof(Pokemon));
 	bool resultado;
+
+	t_list* meFaltan = list_create();
+
+	obtener_los_que_faltan(entrenador->pokemonesQueTiene, entrenador->objetivos, meFaltan);
+	char*p;
+	for(int i=0; i<list_size(meFaltan);i++){
+		puts("\nMe faltan");
+		p=list_get(meFaltan,i);
+		printf("%s",p);
+	}
+
+
 
 	bool buscarEntrenadorQueTengaElQueNecesito(Entrenador* e){
 
-		for(int i=0; i<list_size(entrenador->objetivos);i++){
-			pokemon1 = list_get(entrenador->objetivos,i);
+		for(int i=0; i<list_size(meFaltan);i++){
+
+			pokemon1 = list_get(meFaltan,i);
+
 			for(int j=0; j<list_size(e->pokemonesQueTiene);j++){
 				pokemon2 = list_get(e->pokemonesQueTiene,j);
-				resultado = pokemon1->nombre == pokemon2->nombre;
-				if(resultado)
-					break;
+				resultado = strcmp(pokemon1 , pokemon2->nombre);
+				if(resultado == 0){
+					break;}
 			}
-			if(resultado)
-				break;
+			if(resultado == 0){
+				break;}
 		}
 
-		return resultado;
+		return !resultado;
 	}
 
-	return list_find(deadlock,(void*)buscarEntrenadorQueTengaElQueNecesito);
+	return  list_find(deadlock,(void*)buscarEntrenadorQueTengaElQueNecesito);
 }
+
+void obtener_los_que_faltan(t_list* yaTiene, t_list* objetivos, t_list* meFaltan){
+
+	t_list* temporal = list_create();
+
+	list_add_all(temporal, yaTiene);
+
+
+	char* pokemon1;
+	Pokemon* pokemon2 = malloc(sizeof(Pokemon));
+
+
+	for (int i =0; i<list_size(objetivos);i++){
+		pokemon1 = list_get(objetivos, i);
+
+		for(int j=0; j<list_size(temporal);j++){
+			pokemon2 = list_get(temporal,j);
+
+			if(strcmp(pokemon1, pokemon2->nombre) ==0){
+				list_remove(temporal,j);
+				break;
+			}else{
+				list_add(meFaltan, pokemon1);
+			}
+
+		}
+
+	}
+
+
+
+}
+
+
+
 
 bool cumplioSusObjetivos(Entrenador* entrenador){
 	Pokemon* pokemon1 = malloc(sizeof(Pokemon));
-	Pokemon* pokemon2 = malloc(sizeof(Pokemon));
+	char* pokemon2 ;
 	int contador=0;
 	bool resultado;
-	bool sonSuyos(Pokemon* pokemon){
+
+	if(list_size(entrenador->pokemonesQueTiene) == list_size(entrenador->objetivos)){
 
 		for(int i=0; i<list_size(entrenador->pokemonesQueTiene);i++){
 					pokemon1 = list_get(entrenador->pokemonesQueTiene,i);
 					for(int j=0; j<list_size(entrenador->objetivos);j++){
 						pokemon2 = list_get(entrenador->objetivos,j);
-						resultado = pokemon1->nombre == pokemon2->nombre;
-						if(resultado){
+						resultado = strcmp(pokemon1->nombre,pokemon2);
+						if(resultado == 0){
 						break;
 						}
 					}
-					if(resultado)
+					if(resultado == 0)
 					contador++;
 				}
 
-
+	}else{
+		return 0;
+	}
 		return contador == list_size(entrenador->objetivos);
 	}
 
-	return list_all_satisfy(entrenador->pokemonesQueTiene, (void*)sonSuyos);
 
-
-}
 
 bool noPuedeSeguirAtrapando(int necesita, int losQueYaAtrapo){
 	return necesita == losQueYaAtrapo;

@@ -17,6 +17,7 @@ sem_t ejecutate[3];
 sem_t finEjecucion[3];
 sem_t confirmacion_caught[3];
 sem_t solucionar_deadlock[3];
+sem_t solucione_deadlock[3];
 //estos deberian declararse en main porque su tamaño depende de la cantidad de entrenadores
 
 
@@ -133,5 +134,5 @@ void terminar_programa(int, t_log*, t_config*);
 void obtener_objetivo_global();
 void* planificar(Entrenador*);
 int obtenerCantidadObjetivo(char*);
-
+bool cumplioSusObjetivos(Entrenador* entrenador);
 #endif

@@ -21,6 +21,10 @@ int main(int argc,char* argv[])
 	sem_init(&solucionar_deadlock[1], 0, 0);
 	sem_init(&solucionar_deadlock[2], 0, 0);
 
+	sem_init(&solucione_deadlock[0], 0, 0);
+	sem_init(&solucione_deadlock[1], 0, 0);
+	sem_init(&solucione_deadlock[2], 0, 0);
+
 	sem_init(&mensajesCaught, 0, 0);
 	sem_init(&nuevosPokemons, 0, 0);
 	sem_init(&aparicion_pokemon, 0, 0);
@@ -153,11 +157,11 @@ int main(int argc,char* argv[])
 
 	}
 
-	puts("\Voy a crear el hilo");
+	/*puts("\Voy a crear el hilo");
 	pthread_t hiloConexionGameboy;
 	pthread_create(&hiloConexionGameboy, NULL, (void*)noHayBroker, NULL);
 
-	pthread_detach(hiloConexionGameboy);
+	pthread_detach(hiloConexionGameboy);*/
 
 	list_add_all(blocked_new, entrenadores);
 
@@ -232,14 +236,29 @@ int main(int argc,char* argv[])
 				}
 
 			}else{
+
+				printf("\nTAmaño deadlock %d", list_size(deadlock));
 				puts("\nEmṕieza a solucionar deadlock");
 				entrenador = list_remove(deadlock,0);
+
+				if(!cumplioSusObjetivos(entrenador)){
+
+				if(list_size(ejecutando) == 0){
 				list_add(ejecutando, entrenador);
+				sem_post(&solucionar_deadlock[entrenador->ID -1]);
+				printf("\nDesperte a %d", entrenador->ID);
 
-				sem_post(&solucionar_deadlock[entrenador->ID]);
+				puts("\nEspero");
+				sem_wait(&solucione_deadlock[entrenador->ID -1]);
+				printf("\nLlego %d", entrenador->ID);
+				}
+				}else{
 
-				sem_wait(&solucionar_deadlock[entrenador->ID]);
+					list_add(ejecutando, entrenador);
+					sem_post(&solucionar_deadlock[entrenador->ID -1]);
 
+					sem_wait(&solucione_deadlock[entrenador->ID -1]);
+				}
 			}
 
 
@@ -250,7 +269,7 @@ int main(int argc,char* argv[])
 
 planificadorFIFO();
 
-sleep(1);
+
 Pokemon* pokemon = malloc(sizeof(Pokemon));
 
 
@@ -264,22 +283,12 @@ for(i=0; i<list_size(terminados);i++){
 	//abrirEscuchas();
 
 
-	/*
-	sleep(20);//puse esto para no poner semaforos porque paja
-	for(int i=0; i<list_size(nuevosPokemon); i++){
-		Pokemon* pokemon = list_get(nuevosPokemon, i);
-		printf("Nombre %s, Posicion (%d,%d)", pokemon->nombre, pokemon->posicion.posicionX, pokemon->posicion.posicionY);
-		puts("\n");
-	}*/
-
-	//pthread_join(hiloConexionGameboy,NULL);
 
 
 for(int j=0; j<list_size(entrenadores);j++)
-	pthread_detach(hiloEntrenador[j]);
-	//pthread_join(hiloEntrenador[j], NULL);
+	pthread_join(hiloEntrenador[j], NULL);
+	//pthread_detach(hiloEntrenador[j]);
 
-sleep(5);
 	t_log* logger;
 
 	logger = iniciar_logger();

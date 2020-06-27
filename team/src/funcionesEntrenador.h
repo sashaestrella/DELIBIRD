@@ -20,6 +20,7 @@ bool noLlegoADestino(Entrenador*, CoordenadasXY );
 bool noPuedeSeguirAtrapando(int, int);
 void realizarIntercambio(Entrenador*, Entrenador* );
 Entrenador* buscarConQuienIntercambiar(Entrenador* entrenador);
-bool cumplioSusObjetivos(Entrenador* entrenador);
+
+void obtener_los_que_faltan(t_list* , t_list* , t_list* );
 
 #endif /* FUNCIONESENTRENADOR_H_ */
