@@ -13,11 +13,14 @@
 #include<src/utilsGeneral.h>
 #include "adminMensajes.h"
 
-sem_t ejecutate[3];
-sem_t finEjecucion[3];
-sem_t confirmacion_caught[3];
-sem_t solucionar_deadlock[3];
-sem_t solucione_deadlock[3];
+
+
+t_log* logger;
+
+sem_t **ejecutate;
+sem_t **finEjecucion;
+sem_t **confirmacion_caught;
+
 //estos deberian declararse en main porque su tamaño depende de la cantidad de entrenadores
 
 
@@ -29,7 +32,8 @@ sem_t aparicion_pokemon;
 
 pthread_mutex_t colaReady;
 pthread_mutex_t colaBlocked_new;
-pthread_mutex_t mutex_mapa;;
+pthread_mutex_t mutex_mapa;
+pthread_mutex_t ciclosTotales;
 
 // ----------------- Estructuras ----------------- //
 
@@ -60,6 +64,7 @@ typedef struct entrenador{
 	CoordenadasXY posicion;
 	t_list* objetivos;
 	t_list* pokemonesQueTiene;
+	int rafaga;
 }Entrenador;
 
 typedef struct pokemon{
@@ -102,6 +107,10 @@ int quantum;
 float alpha;
 int estimacionInicial;
 
+int ciclos_totales;
+int *ciclos_entrenadores;
+int *contadorCiclosPorEntrenador;
+
 // ----------------- Conexiones ----------------- //
 
 char* ip;
@@ -127,12 +136,18 @@ int msgGameBoy;
 
 t_log* iniciar_logger(void);
 void leer_config();
+void inicializarSemaforos();
 void armar_entrenadores(char**, char**, char**);
 int cantidad(char**);
 char** obtener_objetivos(char**, char**, t_list*);
 void terminar_programa(int, t_log*, t_config*);
 void obtener_objetivo_global();
-void* planificar(Entrenador*);
+void* flujoEntrenador(Entrenador*);
 int obtenerCantidadObjetivo(char*);
 bool cumplioSusObjetivos(Entrenador* entrenador);
+void reordenarSJF_SD();
+int estimarProximaRafaga(Entrenador*);
+
+void planificadorFIFO_RR();
+void planificadorSJF_SD();
 #endif

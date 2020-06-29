@@ -40,8 +40,8 @@ void pokemonesParaPrueba(){
 
 	Pokemon* pikachu1 = malloc(sizeof(Pokemon));
 	pikachu1->nombre = "Pikachu";
-	pikachu1->posicion.posicionX = 1;
-	pikachu1->posicion.posicionY = 1;
+	pikachu1->posicion.posicionX = 9;
+	pikachu1->posicion.posicionY = 2;
 	pikachu1->IdEntrenadorQueLoVaAatrapar=0;
 
 	Pokemon* pikachu2 = malloc(sizeof(Pokemon));
@@ -58,8 +58,8 @@ void pokemonesParaPrueba(){
 
 	Pokemon* squirtle = malloc(sizeof(Pokemon));
 	squirtle->nombre = "Squirtle";
-	squirtle->posicion.posicionX = 9;
-	squirtle->posicion.posicionY = 7;
+	squirtle->posicion.posicionX = 6;
+	squirtle->posicion.posicionY = 2;
 	squirtle->IdEntrenadorQueLoVaAatrapar=0;
 
 	Pokemon* squirtle2 = malloc(sizeof(Pokemon));
@@ -80,12 +80,12 @@ void pokemonesParaPrueba(){
 	gengar->posicion.posicionY = 5;
 	gengar->IdEntrenadorQueLoVaAatrapar=0;
 	list_add(pokemones_en_mapa, pikachu1);
-	//list_add(pokemones_en_mapa, pikachu2);
-	//list_add(pokemones_en_mapa, charmander);
+	list_add(pokemones_en_mapa, pikachu2);
+	list_add(pokemones_en_mapa, charmander);
 	list_add(pokemones_en_mapa, squirtle);
-	list_add(pokemones_en_mapa, squirtle2);
-	list_add(pokemones_en_mapa, onix);
-	list_add(pokemones_en_mapa, gengar);
+	//list_add(pokemones_en_mapa, squirtle2);
+	//list_add(pokemones_en_mapa, onix);
+	//list_add(pokemones_en_mapa, gengar);
 }
 
 
@@ -134,6 +134,7 @@ for(int i = 0; i<list_size(pokemones_en_mapa); i++){
 			pokemonAasignar->IdEntrenadorQueLoVaAatrapar = entrenadorAready->ID;
 			quitar_de_bloqueados_new(entrenadorAready);
 			list_add(ready, entrenadorAready);
+
 		}
 
 	}

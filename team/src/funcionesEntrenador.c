@@ -1,26 +1,6 @@
 #include "funcionesEntrenador.h"
 
 
-void* planificar(Entrenador* entrenador){
-
-	switch(algoritmoAUtilizar(algoritmoPlanificacion)){
-
-		case FIFO:
-			planificacionFifo (entrenador);
-			break;
-		case RR:
-			planificacionRR(entrenador);
-			break;
-		case SJF_CD:
-			planificacionSJF_CD(entrenador);
-			break;
-		case SJF_SD:
-			planificacionSJF_SD(entrenador);
-			break;
-	}
-
-}
-
 
 int calcularDistancia(Entrenador* entrenador, Pokemon* pokemon){
 
@@ -36,11 +16,13 @@ int calcularDistancia(Entrenador* entrenador, Pokemon* pokemon){
 
 }
 
-void planificacionFifo(Entrenador* entrenador){
+void* flujoEntrenador(Entrenador* entrenador){
 	Entrenador* entrenadorDeadlock = malloc(sizeof(Entrenador));
 	CoordenadasXY posicion;
-	int atrapados=0;//temporal
-	sem_wait(&ejecutate[entrenador->ID - 1]);
+	int atrapados=0;
+	ciclos_entrenadores[entrenador->ID -1]=0;
+	//int ciclo=0;
+	sem_wait(ejecutate[entrenador->ID - 1]);
 	while(entrenador->estado != EXIT){
 
 	printf("\nSoy %d y estoy esperando a empezar", entrenador->ID);
@@ -55,9 +37,17 @@ void planificacionFifo(Entrenador* entrenador){
 	posicion = pokemon->posicion;
 	while(noLlegoADestino(entrenador, posicion)){
 
-		moverseUnaPosicion(entrenador, posicion);
 
+		moverseUnaPosicion(entrenador, posicion);
+		//pthread_mutex_lock(&ciclosTotales);
+		ciclos_totales++;
+		ciclos_entrenadores[entrenador->ID -1]++;
+		//pthread_mutex_unlock(&ciclosTotales);
+		verificarCiclos(&ciclos_entrenadores[entrenador->ID -1], entrenador->ID);
 	}
+
+
+	log_info(logger, "Soy el entrenador %d y me movi hasta la posicion (%d, %d) de un pokemon." , entrenador->ID, posicion.posicionX, posicion.posicionY);
 
 	//enviarCatch
 
@@ -65,7 +55,7 @@ void planificacionFifo(Entrenador* entrenador){
 
 	list_add(blocked_caught, entrenador );
 
-	sem_post(&finEjecucion[entrenador->ID-1]);
+	sem_post(finEjecucion[entrenador->ID-1]);
 
 	//sem_wait(&confirmacion_caught[entrenador->ID-1]);
 
@@ -81,7 +71,7 @@ void planificacionFifo(Entrenador* entrenador){
 	list_add(ready, entrenador);
 	//pthread_mutex_unlock(&colaReady);
 
-	sem_wait(&ejecutate[entrenador->ID - 1]);
+	sem_wait(ejecutate[entrenador->ID - 1]);
 	printf("\nSoy %d segundo tramo", entrenador->ID);
 	list_add(entrenador->pokemonesQueTiene, pokemon);
 	printf("\nSoy %d y atrape a %s", entrenador->ID, pokemon->nombre);
@@ -101,7 +91,7 @@ void planificacionFifo(Entrenador* entrenador){
 		int i=0;
 		if(!cumplioSusObjetivos(entrenador)){
 			list_remove(ejecutando,0);
-			sem_post(&finEjecucion[entrenador->ID - 1]);
+			sem_post(finEjecucion[entrenador->ID - 1]);
 		}
 
 			while(!cumplioSusObjetivos(entrenador)){
@@ -109,35 +99,43 @@ void planificacionFifo(Entrenador* entrenador){
 				list_add(deadlock,entrenador);
 
 				//intf("\nSoy %d y espero resolucion deadlock", entrenador->ID);
-							sem_wait(&solucionar_deadlock[entrenador->ID -1]);
-
+							//sem_wait(solucionar_deadlock[entrenador->ID -1]);
+							sem_wait(ejecutate[entrenador->ID - 1]);
 							if(cumplioSusObjetivos(entrenador)){
 								i++;
 								break;
 							}
 							//intf("\nSoy %d y empece a resolver deadlock", entrenador->ID);
 							entrenadorDeadlock = buscarConQuienIntercambiar(entrenador);//aca rompe
-							printf("\nEncontre a %d para intercambiar", entrenadorDeadlock->ID);
-							posicion = entrenadorDeadlock->posicion;
 
+							posicion = entrenadorDeadlock->posicion;
+							ciclos_entrenadores[entrenador->ID -1]=0;
 							while(noLlegoADestino(entrenador, posicion) == true){
 
 								moverseUnaPosicion(entrenador, posicion);
 								puts("\nMe movi");
-							}
+								//pthread_mutex_lock(&ciclosTotales);
+								ciclos_totales++;
+								ciclos_entrenadores[entrenador->ID -1]++;
 
+								//pthread_mutex_unlock(&ciclosTotales);
+								verificarCiclos(&ciclos_entrenadores[entrenador->ID -1], entrenador->ID);
+							}
+							log_info(logger, "Soy el entrenador %d y me movi hasta la posicion (%d, %d) de un entrenador." , entrenador->ID, posicion.posicionX, posicion.posicionY);
 							realizarIntercambio(entrenador, entrenadorDeadlock);
-							puts("\nIntercambie, ahora tengo:");
+							//pthread_mutex_lock(&ciclosTotales);
+							ciclos_totales += 5;
+							ciclos_entrenadores[entrenador->ID -1]=0;
+							for(int i=0;i<5;i++){
+							ciclos_entrenadores[entrenador->ID -1]++;
 
-							for(int i=0; i<list_size(entrenador->pokemonesQueTiene);i++){
-								pokemon=list_get(entrenador->pokemonesQueTiene,i);
-								printf("\n %s", pokemon->nombre);
+							//pthread_mutex_unlock(&ciclosTotales);
+							verificarCiclos(&ciclos_entrenadores[entrenador->ID -1], entrenador->ID);
 							}
-
 							i++;
 
 							if(!cumplioSusObjetivos(entrenador)){
-								sem_post(&solucione_deadlock[entrenador->ID -1]);
+								sem_post(finEjecucion[entrenador->ID -1]);
 							}
 			}
 
@@ -145,10 +143,10 @@ void planificacionFifo(Entrenador* entrenador){
 		list_add(terminados, list_remove(ejecutando,0));
 		printf("\nSoy %d y termine", entrenador->ID);
 		if(i==0){
-		sem_post(&finEjecucion[entrenador->ID - 1]);
+		sem_post(finEjecucion[entrenador->ID - 1]);
 		}else{
 		list_remove(ejecutando,0);
-		sem_post(&solucione_deadlock[entrenador->ID -1]);
+		sem_post(finEjecucion[entrenador->ID -1]);
 		}
 
 
@@ -160,14 +158,14 @@ void planificacionFifo(Entrenador* entrenador){
 
 		if(list_find(pokemones_en_mapa, (void*)buscarMiPokemon) == NULL){
 			list_add(blocked_new, list_remove(ejecutando, 0));
-			sem_post(&finEjecucion[entrenador->ID - 1]);
-			sem_wait(&ejecutate[entrenador->ID -1]);
+			sem_post(finEjecucion[entrenador->ID - 1]);
+			sem_wait(ejecutate[entrenador->ID -1]);
 		}else{
 
 				//pthread_mutex_lock(&colaBlocked_new);
 				list_add(blocked_new, list_remove(ejecutando, 0));
 				//pthread_mutex_lock(&colaBlocked_new);
-				sem_post(&finEjecucion[entrenador->ID - 1]);
+				sem_post(finEjecucion[entrenador->ID - 1]);
 
 			}
 	}
@@ -177,6 +175,21 @@ void planificacionFifo(Entrenador* entrenador){
 
 }
 
+
+void verificarCiclos(int* cicloEntrenador, int id){
+
+	if(algoritmoAUtilizar(algoritmoPlanificacion) == RR){
+
+		if(*cicloEntrenador >= quantum){
+			*cicloEntrenador=0;
+
+			list_add(ready,list_remove(ejecutando,0));
+			puts("\nCorte por quantum");
+			sem_post(finEjecucion[id -1]);
+			sem_wait(ejecutate[id -1]);
+		}
+	}
+}
 
 void realizarIntercambio(Entrenador* entrenador, Entrenador* entrenadorDeadlock){
 
@@ -232,6 +245,7 @@ void realizarIntercambio(Entrenador* entrenador, Entrenador* entrenadorDeadlock)
 
 	list_add(entrenador->pokemonesQueTiene, pokemonArecibir);
 
+	log_info(logger, "Soy el entrenador %d, intercambio con entrenador %d. Le doy a %s y me da a %s." , entrenador->ID, entrenadorDeadlock->ID, pokemonParaDar->nombre, pokemonArecibir->nombre);
 
 }
 
@@ -272,7 +286,9 @@ Entrenador* buscarConQuienIntercambiar(Entrenador* entrenador){
 		return !resultado;
 	}
 
-	return  list_find(deadlock,(void*)buscarEntrenadorQueTengaElQueNecesito);
+	entre = list_find(deadlock,(void*)buscarEntrenadorQueTengaElQueNecesito);
+	log_info(logger, "Se detecto deadlock entre entrenador %d y %d", entrenador->ID, entre->ID);
+	return  entre;
 }
 
 void obtener_los_que_faltan(t_list* yaTiene, t_list* objetivos, t_list* meFaltan){
@@ -365,15 +381,6 @@ bool noLlegoADestino(Entrenador* entrenador, CoordenadasXY posicion){
 void moverseUnaPosicion(Entrenador* entrenador, CoordenadasXY posicion){
 
 
-	if(entrenador->posicion.posicionX > posicion.posicionX){
-		entrenador->posicion.posicionX--;
-
-	}
-
-	if(entrenador->posicion.posicionX < posicion.posicionX){
-		entrenador->posicion.posicionX++;
-	}
-
 	if(entrenador->posicion.posicionX == posicion.posicionX){
 		if(entrenador->posicion.posicionY > posicion.posicionY){
 			entrenador->posicion.posicionY--;
@@ -383,6 +390,16 @@ void moverseUnaPosicion(Entrenador* entrenador, CoordenadasXY posicion){
 
 		}
 	}
+
+	if(entrenador->posicion.posicionX > posicion.posicionX){
+		entrenador->posicion.posicionX--;
+
+	}
+
+	if(entrenador->posicion.posicionX < posicion.posicionX){
+		entrenador->posicion.posicionX++;
+	}
+
 
 }
 

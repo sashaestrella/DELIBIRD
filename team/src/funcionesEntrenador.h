@@ -7,7 +7,7 @@
 int calcularDistancia(Entrenador*, Pokemon*);
 void* planificar(Entrenador*);
 
-void planificacionFifo (Entrenador*);
+void* flujoEntrenador (Entrenador*);
 void planificacionRR(Entrenador*);
 void planificacionSJF_CD(Entrenador*);
 void planificacionSJF_SD(Entrenador*);
@@ -20,6 +20,7 @@ bool noLlegoADestino(Entrenador*, CoordenadasXY );
 bool noPuedeSeguirAtrapando(int, int);
 void realizarIntercambio(Entrenador*, Entrenador* );
 Entrenador* buscarConQuienIntercambiar(Entrenador* entrenador);
+void verificarCiclos(int*, int );
 
 void obtener_los_que_faltan(t_list* , t_list* , t_list* );
 

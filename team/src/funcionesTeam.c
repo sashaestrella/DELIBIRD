@@ -61,6 +61,8 @@ void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
 
 		entrenador->pokemonesQueTiene = list_create();
 
+		entrenador->rafaga = estimacionInicial;
+
 		/*for(i=0; i<cantidad(pokemones_separados);i++){
 		list_add(entrenador->pokemonesQueTiene, pokemones_separados[i]);
 		}*/
