@@ -797,49 +797,94 @@ int insertarOrdenadoEnListaPosicionesLibres(PosicionLibre* unaPosicionLibre){
 			return i;
 		} else if(i == tamanioListaLibres-1){
 			list_add_in_index(listaPosicionesLibres,i+1,unaPosicionLibre);
-			return i;
+			return i+1;
+		}
+	}
+}
+
+
+void consolidarParticiones(int posicion){
+	PosicionLibre* posicionBase = list_get(listaPosicionesLibres,posicion);
+		int tamanioPosicionesLibres = list_size(listaPosicionesLibres);
+		int borreAIzquierda = 0;
+		if(posicion>0){ //consolidacion a izquierda
+			PosicionLibre* posicionAIzquierda = list_get(listaPosicionesLibres,posicion-1);
+			printf("\nLa posicion de la izquierda arranca en %i y termina en %i. la posicion base empieza en %i",posicionAIzquierda->posicion,posicionAIzquierda->posicion + posicionAIzquierda->tamanio,posicionBase->posicion);
+			if((posicionAIzquierda->posicion + posicionAIzquierda->tamanio) == ((posicionBase->posicion))){
+				posicionAIzquierda->tamanio+= posicionBase->tamanio;
+				free(posicionBase);
+				list_remove(listaPosicionesLibres,posicion);
+				borreAIzquierda = 1;
+			}
+			if(borreAIzquierda == 1){ //consolidacion a derecha si ya consolide a izquierda
+				if(posicion != tamanioPosicionesLibres-1){ //me fijio si tengo algo a la derecha
+					PosicionLibre* posicionADerecha = list_get(listaPosicionesLibres,posicion);
+					if((posicionAIzquierda->posicion + posicionAIzquierda->tamanio) == posicionADerecha->posicion){
+						posicionAIzquierda->tamanio+= posicionADerecha->tamanio;
+						free(posicionADerecha);
+						list_remove(listaPosicionesLibres,posicion);
+					}
+
+				}
+			}
+
+		}
+		if(borreAIzquierda == 0){
+			if(posicion != tamanioPosicionesLibres-1){ //me fijo si tengo algo a la derecha
+				PosicionLibre* posicionADerecha = list_get(listaPosicionesLibres,posicion+1);
+				//consolido a derecha
+				if((posicionBase->posicion + posicionBase->tamanio) == posicionADerecha->posicion){
+					posicionBase->tamanio+= posicionADerecha->tamanio;
+					free(posicionADerecha);
+					list_remove(listaPosicionesLibres,posicion+1);
+				}
+			}
+		}
+		//consolidacion a derecha si no consolide a izuqierda
+}
+
+void consolidarBS(int posicion){
+	PosicionLibre* posicionBase = list_get(listaPosicionesLibres,posicion);
+	int tamanioPosicionesLibres = list_size(listaPosicionesLibres);
+	printf("\n llego a esta funcion? la posicion es %i",posicion);
+
+	if(posicion>0){ //primero va posicion a izquierda
+		puts("tengo algo a izquierda");
+		PosicionLibre* posicionAIzquierda = list_get(listaPosicionesLibres,posicion-1);
+		printf("\nLa posicion de la izquierda arranca en %p, la memoria interna arranca en %p, el tamanio de la posicion izquierda es %i",posicionAIzquierda->posicion, memoriaInterna, posicionAIzquierda->tamanio);
+		printf("\nLa posicion de la izquierda arranca en %i y termina en %i. la posicion base empieza en %i",posicionAIzquierda->posicion-memoriaInterna,posicionAIzquierda->posicion-memoriaInterna + posicionAIzquierda->tamanio,posicionBase->posicion-memoriaInterna);
+		printf("\nEL tamanio de las posiciones es %i y %i",posicionAIzquierda->tamanio,posicionBase->tamanio);
+		if((posicionAIzquierda->posicion + posicionAIzquierda->tamanio) == ((posicionBase->posicion)) && (posicionAIzquierda->tamanio == posicionBase->tamanio) && ((int)posicionAIzquierda->posicion-(int)memoriaInterna == ((int)posicionBase->posicion-(int)memoriaInterna^posicionAIzquierda->tamanio))){
+						puts("efectivamente puedo consolidar a izquierda");
+						posicionAIzquierda->tamanio+= posicionBase->tamanio;
+						free(posicionBase);
+						list_remove(listaPosicionesLibres,posicion);
+						puts("acabo de consolidar a izquierda en BS");
+						consolidarBS(posicion-1);
+		}
+	}
+	if(posicion != tamanioPosicionesLibres-1){ //me fijo si tengo algo a la derecha
+		PosicionLibre* posicionADerecha = list_get(listaPosicionesLibres,posicion+1);
+		puts("\ntengo algo a derecha");
+		printf("\nLa posicion de la derecha arranca en %i y termina en %i. la posicion base empieza en %i",posicionADerecha->posicion-memoriaInterna,posicionADerecha->posicion-memoriaInterna + posicionADerecha->tamanio,posicionBase->posicion-memoriaInterna);
+		printf("\nEL tamanio de las posiciones es %i y %i",posicionADerecha->tamanio,posicionBase->tamanio);
+		if(((posicionBase->posicion + posicionBase->tamanio) == posicionADerecha->posicion) && posicionBase->tamanio == posicionADerecha->tamanio && ((int)posicionADerecha->posicion-(int)memoriaInterna == ((int)posicionBase->posicion-(int)memoriaInterna^posicionADerecha->tamanio))){
+			puts("\nvoy a consolidar a derecha");
+			posicionBase->tamanio+= posicionADerecha->tamanio;
+			free(posicionADerecha);
+			list_remove(listaPosicionesLibres,posicion+1);
+			puts("\nacabo de consolidar a derecha en BS");
+			consolidarBS(posicion);
 		}
 	}
 }
 
 void consolidar(int posicion){
-	PosicionLibre* posicionBase = list_get(listaPosicionesLibres,posicion);
-	int tamanioPosicionesLibres = list_size(listaPosicionesLibres);
-	int borreAIzquierda = 0;
-	if(posicion>0){ //consolidacion a izquierda
-		PosicionLibre* posicionAIzquierda = list_get(listaPosicionesLibres,posicion-1);
-		printf("La posicion de la izquierda arranca en %i y termina en %i. la posicion base empieza en %i",posicionAIzquierda->posicion,posicionAIzquierda->posicion + posicionAIzquierda->tamanio,posicionBase->posicion);
-		if((posicionAIzquierda->posicion + posicionAIzquierda->tamanio) == ((posicionBase->posicion))){
-			posicionAIzquierda->tamanio+= posicionBase->tamanio;
-			free(posicionBase);
-			list_remove(listaPosicionesLibres,posicion);
-			borreAIzquierda = 1;
-		}
-		if(borreAIzquierda == 1){ //consolidacion a derecha si ya consolide a izquierda
-			if(posicion != tamanioPosicionesLibres-1){ //me fijio si tengo algo a la derecha
-				PosicionLibre* posicionADerecha = list_get(listaPosicionesLibres,posicion);
-				if((posicionAIzquierda->posicion + posicionAIzquierda->tamanio) == posicionADerecha->posicion){
-					posicionAIzquierda->tamanio+= posicionADerecha->tamanio;
-					free(posicionADerecha);
-					list_remove(listaPosicionesLibres,posicion);
-				}
-
-			}
-		}
-
+	if(!strcmp(algoritmoMemoria,"BS")){
+		consolidarBS(posicion);
+	} else{
+		consolidarParticiones(posicion);
 	}
-	if(borreAIzquierda == 0){
-		if(posicion != tamanioPosicionesLibres-1){ //me fijo si tengo algo a la derecha
-			PosicionLibre* posicionADerecha = list_get(listaPosicionesLibres,posicion+1);
-			//consolido a derecha
-			if((posicionBase->posicion + posicionBase->tamanio) == posicionADerecha->posicion){
-				posicionBase->tamanio+= posicionADerecha->tamanio;
-				free(posicionADerecha);
-				list_remove(listaPosicionesLibres,posicion+1);
-			}
-		}
-	}
-	//consolidacion a derecha si no consolide a izuqierda
 }
 
 void borrarFIFO(){
@@ -866,6 +911,7 @@ void borrarFIFO(){
 	free(unaPosicionOcupada);
 	list_remove(listaPosicionesOcupadas,posicionABorrar);
 	int posicionQueQuedo = insertarOrdenadoEnListaPosicionesLibres(unaPosicionLibre);
+	printf("\nla posicion que quedo es %i: ",posicionQueQuedo);
 	consolidar(posicionQueQuedo);
 }
 

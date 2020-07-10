@@ -1,131 +1,20 @@
-Dump: 24/06/20 17:58:56
-Partición 0: 0x8951318-0x8951327.		[L]		Size: 16b
-Partición 1: 0x8951328-0x8951347.		[L]		Size: 32b
-Partición 2: 0x8951348-0x8951387.		[L]		Size: 64b
-Partición 3: 0x8951388-0x8951407.		[L]		Size: 128b
-Partición 4: 0x8951408-0x8951507.		[L]		Size: 256b
-Partición 5: 0x8951508-0x8951707.		[L]		Size: 512b
-Partición 0: 0x8951308-0x8951313.		[X]		Size: 12b		LRU: 1		Cola: 4		ID: 1
-Dump: 24/06/20 18:08:56
-Partición 0: 0x9311318-0x9311327.		[L]		Size: 16b
-Partición 1: 0x9311328-0x9311347.		[L]		Size: 32b
-Partición 2: 0x9311348-0x9311387.		[L]		Size: 64b
-Partición 3: 0x9311388-0x9311407.		[L]		Size: 128b
-Partición 4: 0x9311408-0x9311507.		[L]		Size: 256b
-Partición 5: 0x9311508-0x9311707.		[L]		Size: 512b
-Partición 0: 0x9311308-0x9311313.		[X]		Size: 12b		LRU: 1		Cola: 4		ID: 1
-Dump: 24/06/20 18:46:55
-Partición 0: 0x9494318-0x9494327.		[L]		Size: 16b
-Partición 1: 0x9494328-0x9494347.		[L]		Size: 32b
-Partición 2: 0x9494348-0x9494387.		[L]		Size: 64b
-Partición 3: 0x9494388-0x9494407.		[L]		Size: 128b
-Partición 4: 0x9494408-0x9494507.		[L]		Size: 256b
-Partición 5: 0x9494508-0x9494707.		[L]		Size: 512b
-Partición 0: 0x9494308-0x9494313.		[X]		Size: 12b		LRU: 1		Cola: 4		ID: 1
-Dump: 24/06/20 20:53:04
-Partición 0: 0x9fc20f8-0x9fc2103.		[X]		Size: 12b		LRU: 2		Cola: 4		ID: 2
-Partición 1: 0x9fc2108-0x9fc2113.		[X]		Size: 12b		LRU: 3		Cola: 4		ID: 3
-Partición 2: 0x9fc2118-0x9fc2123.		[X]		Size: 12b		LRU: 4		Cola: 4		ID: 4
-Partición 3: 0x9fc2128-0x9fc2133.		[X]		Size: 12b		LRU: 5		Cola: 4		ID: 5
-Partición 4: 0x9fc2138-0x9fc2143.		[X]		Size: 12b		LRU: 6		Cola: 4		ID: 6
-Partición 5: 0x9fc2148-0x9fc2153.		[X]		Size: 12b		LRU: 7		Cola: 4		ID: 7
-Partición 6: 0x9fc2158-0x9fc2163.		[X]		Size: 12b		LRU: 8		Cola: 4		ID: 8
-Partición 7: 0x9fc20e8-0x9fc20f3.		[X]		Size: 12b		LRU: 9		Cola: 4		ID: 9
-Dump: 26/06/20 00:16:51
-Partición 0: 0x81b613d-0x81b6147.		[L]		Size: 11b
-Partición 1: 0x81b6148-0x81b6167.		[L]		Size: 32b
-Partición 0: 0x81b60e8-0x81b60fe.		[X]		Size: 23b		LRU: 1		Cola: 2		ID: 1
-Partición 1: 0x81b6108-0x81b611e.		[X]		Size: 23b		LRU: 2		Cola: 2		ID: 2
-Partición 2: 0x81b6128-0x81b613c.		[X]		Size: 21b		LRU: 3		Cola: 6		ID: 3
-Dump: 26/06/20 00:17:48
-Partición 0: 0x9737108-0x9737127.		[L]		Size: 32b
-Partición 1: 0x9737128-0x9737167.		[L]		Size: 64b
-Partición 0: 0x97370e8-0x97370fe.		[X]		Size: 23b		LRU: 1		Cola: 2		ID: 1
-Dump: 26/06/20 00:18:16
-Partición 0: 0x9737128-0x9737167.		[L]		Size: 64b
-Partición 0: 0x97370e8-0x97370fe.		[X]		Size: 23b		LRU: 1		Cola: 2		ID: 1
-Partición 1: 0x9737108-0x973711e.		[X]		Size: 23b		LRU: 2		Cola: 2		ID: 2
-Dump: 26/06/20 00:18:35
-Partición 0: 0x9737148-0x9737167.		[L]		Size: 32b
-Partición 0: 0x97370e8-0x97370fe.		[X]		Size: 23b		LRU: 1		Cola: 2		ID: 1
-Partición 1: 0x9737108-0x973711e.		[X]		Size: 23b		LRU: 2		Cola: 2		ID: 2
-Partición 2: 0x9737128-0x973713e.		[X]		Size: 23b		LRU: 3		Cola: 2		ID: 3
-Dump: 26/06/20 00:19:07
-Partición 0: 0x97370e8-0x97370fe.		[X]		Size: 23b		LRU: 1		Cola: 2		ID: 1
-Partición 1: 0x9737108-0x973711e.		[X]		Size: 23b		LRU: 2		Cola: 2		ID: 2
-Partición 2: 0x9737128-0x973713e.		[X]		Size: 23b		LRU: 3		Cola: 2		ID: 3
-Partición 3: 0x9737148-0x973715e.		[X]		Size: 23b		LRU: 4		Cola: 2		ID: 4
-Dump: 26/06/20 00:20:10
-Partición 0: 0x996e0fd-0x996e107.		[L]		Size: 11b
-Partición 1: 0x996e108-0x996e127.		[L]		Size: 32b
-Partición 2: 0x996e128-0x996e167.		[L]		Size: 64b
-Partición 0: 0x996e0e8-0x996e0fc.		[X]		Size: 21b		LRU: 1		Cola: 6		ID: 1
-Dump: 26/06/20 00:26:59
-Partición 0: 0x8b65108-0x8b65127.		[L]		Size: 32b
-Partición 1: 0x8b65128-0x8b65167.		[L]		Size: 64b
-Partición 0: 0x8b650e8-0x8b650fc.		[X]		Size: 21b		LRU: 1		Cola: 6		ID: 1
-Dump: 26/06/20 00:32:20
-Partición 0: 0x904e108-0x904e127.		[L]		Size: 32b
-Partición 1: 0x904e128-0x904e167.		[L]		Size: 64b
-Partición 0: 0x904e0e8-0x904e0eb.		[X]		Size: 4b		LRU: 1		Cola: 2		ID: 1
-Dump: 26/06/20 00:35:16
-Partición 0: 0x8134108-0x8134127.		[L]		Size: 32b
-Partición 1: 0x8134128-0x8134167.		[L]		Size: 64b
-Partición 0: 0x81340e8-0x8134107.		[X]		Size: 32b		LRU: 1		Cola: 2		ID: 1
-Dump: 26/06/20 00:56:14
-Partición 0: 0x8723328-0x8723347.		[L]		Size: 32b
-Partición 1: 0x8723348-0x8723387.		[L]		Size: 64b
-Partición 2: 0x8723388-0x8723407.		[L]		Size: 128b
-Partición 3: 0x8723408-0x8723507.		[L]		Size: 256b
-Partición 0: 0x8723308-0x8723327.		[X]		Size: 32b		LRU: 1		Cola: 2		ID: 1
-Dump: 26/06/20 00:56:35
-Partición 0: 0x8723330-0x8723337.		[L]		Size: 8b
-Partición 1: 0x8723338-0x8723347.		[L]		Size: 16b
-Partición 2: 0x8723348-0x8723387.		[L]		Size: 64b
-Partición 3: 0x8723388-0x8723407.		[L]		Size: 128b
-Partición 4: 0x8723408-0x8723507.		[L]		Size: 256b
-Partición 0: 0x8723308-0x8723327.		[X]		Size: 32b		LRU: 1		Cola: 2		ID: 1
-Partición 1: 0x8723328-0x872332b.		[X]		Size: 4b		LRU: 2		Cola: 7		ID: 2
-Dump: 26/06/20 00:57:03
-Partición 0: 0x8723348-0x8723387.		[L]		Size: 64b
-Partición 1: 0x8723388-0x8723407.		[L]		Size: 128b
-Partición 2: 0x8723408-0x8723507.		[L]		Size: 256b
-Partición 0: 0x8723308-0x8723327.		[X]		Size: 32b		LRU: 1		Cola: 2		ID: 1
-Partición 1: 0x8723328-0x872332b.		[X]		Size: 4b		LRU: 2		Cola: 7		ID: 2
-Partición 2: 0x8723330-0x8723337.		[X]		Size: 8b		LRU: 3		Cola: 4		ID: 3
-Partición 3: 0x8723338-0x872333f.		[X]		Size: 8b		LRU: 4		Cola: 4		ID: 4
-Dump: 26/06/20 01:04:41
-Partición 0: 0x831f340-0x831f347.		[L]		Size: 8b
-Partición 1: 0x831f388-0x831f407.		[L]		Size: 128b
-Partición 2: 0x831f408-0x831f507.		[L]		Size: 256b
-Partición 0: 0x831f308-0x831f327.		[X]		Size: 32b		LRU: 1		Cola: 5		ID: 1
-Partición 1: 0x831f328-0x831f337.		[X]		Size: 16b		LRU: 2		Cola: 4		ID: 2
-Partición 2: 0x831f338-0x831f33f.		[X]		Size: 8b		LRU: 3		Cola: 7		ID: 3
-Partición 3: 0x831f348-0x831f367.		[X]		Size: 32b		LRU: 4		Cola: 2		ID: 4
-Partición 4: 0x831f368-0x831f387.		[X]		Size: 32b		LRU: 5		Cola: 6		ID: 5
-Dump: 26/06/20 01:05:25
-Partición 0: 0x831f388-0x831f407.		[L]		Size: 128b
-Partición 1: 0x831f408-0x831f507.		[L]		Size: 256b
-Partición 0: 0x831f308-0x831f327.		[X]		Size: 32b		LRU: 1		Cola: 5		ID: 1
-Partición 1: 0x831f328-0x831f337.		[X]		Size: 16b		LRU: 2		Cola: 4		ID: 2
-Partición 2: 0x831f338-0x831f33f.		[X]		Size: 8b		LRU: 3		Cola: 7		ID: 3
-Partición 3: 0x831f348-0x831f367.		[X]		Size: 32b		LRU: 4		Cola: 2		ID: 4
-Partición 4: 0x831f368-0x831f387.		[X]		Size: 32b		LRU: 5		Cola: 6		ID: 5
-Partición 5: 0x831f340-0x831f347.		[X]		Size: 8b		LRU: 6		Cola: 7		ID: 6
-Dump: 26/06/20 01:07:16
-Partición 0: 0x8807310-0x8807317.		[L]		Size: 8b
-Partición 1: 0x8807318-0x8807327.		[L]		Size: 16b
-Partición 2: 0x8807328-0x8807347.		[L]		Size: 32b
-Partición 3: 0x8807348-0x8807387.		[L]		Size: 64b
-Partición 4: 0x8807388-0x8807407.		[L]		Size: 128b
-Partición 5: 0x8807408-0x8807507.		[L]		Size: 256b
-Partición 0: 0x8807308-0x880730f.		[X]		Size: 8b		LRU: 1		Cola: 7		ID: 1
-Dump: 26/06/20 01:11:38
-Partición 0: 0x9b7230c-0x9b7230f.		[L]		Size: 4b
-Partición 1: 0x9b72310-0x9b72317.		[L]		Size: 8b
-Partición 2: 0x9b72318-0x9b72327.		[L]		Size: 16b
-Partición 3: 0x9b72328-0x9b72347.		[L]		Size: 32b
-Partición 4: 0x9b72348-0x9b72387.		[L]		Size: 64b
-Partición 5: 0x9b72388-0x9b72407.		[L]		Size: 128b
-Partición 6: 0x9b72408-0x9b72507.		[L]		Size: 256b
-Partición 0: 0x9b72308-0x9b7230b.		[X]		Size: 4b		LRU: 1		Cola: 7		ID: 1
+
+
+Dump: 09/07/20 02:28:12
+Partición 0: 0x8208108-0x8208127.		[L]		Size: 32b
+Partición 0: 0x82080e8-0x8208107.		[X]		Size: 32b		LRU: 5		Cola: 2		ID: 5
+Partición 1: 0x8208128-0x8208167.		[X]		Size: 64b		LRU: 6		Cola: 2		ID: 6
+Dump: 10/07/20 16:27:15
+Partición 0: 0x8263128-0x8263147.		[X]		Size: 32b		LRU: 3		Cola: 2		ID: 3
+Partición 1: 0x8263148-0x8263167.		[X]		Size: 32b		LRU: 4		Cola: 2		ID: 4
+Partición 2: 0x82630e8-0x8263127.		[X]		Size: 64b		LRU: 5		Cola: 2		ID: 5
+Dump: 10/07/20 16:29:12
+Partición 0: 0x8698108-0x8698127.		[L]		Size: 32b
+Partición 0: 0x86980e8-0x8698107.		[X]		Size: 32b		LRU: 5		Cola: 2		ID: 5
+Partición 1: 0x8698128-0x8698167.		[X]		Size: 64b		LRU: 6		Cola: 2		ID: 6
+Dump: 10/07/20 17:32:17
+Partición 0: 0x9fa60e8-0x9fa6167.		[X]		Size: 128b		LRU: 6		Cola: 2		ID: 6
+Dump: 10/07/20 17:32:53
+Partición 0: 0x9fa6108-0x9fa6127.		[L]		Size: 32b
+Partición 1: 0x9fa6128-0x9fa6167.		[L]		Size: 64b
+Partición 0: 0x9fa60e8-0x9fa6107.		[X]		Size: 32b		LRU: 7		Cola: 2		ID: 7
