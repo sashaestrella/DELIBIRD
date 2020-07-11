@@ -43,7 +43,7 @@ void* flujoEntrenador(Entrenador* entrenador){
 		ciclos_totales++;
 		ciclos_entrenadores[entrenador->ID -1]++;
 		//pthread_mutex_unlock(&ciclosTotales);
-		verificarCiclos(&ciclos_entrenadores[entrenador->ID -1], entrenador->ID);
+		verificarCiclos(&ciclos_entrenadores[entrenador->ID -1], entrenador);
 	}
 
 
@@ -55,8 +55,10 @@ void* flujoEntrenador(Entrenador* entrenador){
 
 	list_add(blocked_caught, entrenador );
 
-	sem_post(finEjecucion[entrenador->ID-1]);
+	finDeRafaga(&ciclos_entrenadores[entrenador->ID -1], entrenador);
 
+	sem_post(finEjecucion[entrenador->ID-1]);
+//---------------------------------------------------------------------------------------------rafaga
 	//sem_wait(&confirmacion_caught[entrenador->ID-1]);
 
 	//asumo que lo agarro por ahora
@@ -119,7 +121,7 @@ void* flujoEntrenador(Entrenador* entrenador){
 								ciclos_entrenadores[entrenador->ID -1]++;
 
 								//pthread_mutex_unlock(&ciclosTotales);
-								verificarCiclos(&ciclos_entrenadores[entrenador->ID -1], entrenador->ID);
+								verificarCiclos(&ciclos_entrenadores[entrenador->ID -1], entrenador);
 							}
 							log_info(logger, "Soy el entrenador %d y me movi hasta la posicion (%d, %d) de un entrenador." , entrenador->ID, posicion.posicionX, posicion.posicionY);
 							realizarIntercambio(entrenador, entrenadorDeadlock);
@@ -130,11 +132,12 @@ void* flujoEntrenador(Entrenador* entrenador){
 							ciclos_entrenadores[entrenador->ID -1]++;
 
 							//pthread_mutex_unlock(&ciclosTotales);
-							verificarCiclos(&ciclos_entrenadores[entrenador->ID -1], entrenador->ID);
+							verificarCiclos(&ciclos_entrenadores[entrenador->ID -1], entrenador);
 							}
 							i++;
 
 							if(!cumplioSusObjetivos(entrenador)){
+								finDeRafaga(&ciclos_entrenadores[entrenador->ID -1], entrenador);
 								sem_post(finEjecucion[entrenador->ID -1]);
 							}
 			}
@@ -142,16 +145,15 @@ void* flujoEntrenador(Entrenador* entrenador){
 		entrenador->estado = EXIT;
 		list_add(terminados, list_remove(ejecutando,0));
 		printf("\nSoy %d y termine", entrenador->ID);
+
 		if(i==0){
+		finDeRafaga(&ciclos_entrenadores[entrenador->ID -1], entrenador);
 		sem_post(finEjecucion[entrenador->ID - 1]);
 		}else{
 		list_remove(ejecutando,0);
+		finDeRafaga(&ciclos_entrenadores[entrenador->ID -1], entrenador);
 		sem_post(finEjecucion[entrenador->ID -1]);
 		}
-
-
-
-
 
 
 	}else{
@@ -175,8 +177,17 @@ void* flujoEntrenador(Entrenador* entrenador){
 
 }
 
+void finDeRafaga(int* cicloEntrenador, Entrenador* entrenador ){
+	if(algoritmoAUtilizar(algoritmoPlanificacion) == SJF_SD){
 
-void verificarCiclos(int* cicloEntrenador, int id){
+		entrenador->rafaga = estimarProximaRafaga(entrenador);
+		*cicloEntrenador=0;
+
+	}
+
+}
+
+void verificarCiclos(int* cicloEntrenador, Entrenador* entrenador ){
 
 	if(algoritmoAUtilizar(algoritmoPlanificacion) == RR){
 
@@ -185,10 +196,47 @@ void verificarCiclos(int* cicloEntrenador, int id){
 
 			list_add(ready,list_remove(ejecutando,0));
 			puts("\nCorte por quantum");
-			sem_post(finEjecucion[id -1]);
-			sem_wait(ejecutate[id -1]);
+			sem_post(finEjecucion[entrenador->ID -1]);
+			sem_wait(ejecutate[entrenador->ID -1]);
 		}
 	}
+
+	if (algoritmoAUtilizar(algoritmoPlanificacion) == SJF_CD){
+
+		entrenador->rafaga = estimarProximaRafaga(entrenador);
+		printf("\nSoy %d y proxima rafaga %f", entrenador->ID,entrenador->rafaga);
+
+
+		if(entroNuevoAReady()){
+
+		if(hayAlgunoEnReadyConMenosRafaga(entrenador->rafaga)){
+
+			list_add(ready,list_remove(ejecutando,0));
+			puts("\nSali por sjfCD");
+			*cicloEntrenador=0;
+			sem_post(finEjecucion[entrenador->ID -1]);
+			sem_wait(ejecutate[entrenador->ID -1]);
+
+		}
+
+		}
+
+	}
+}
+
+bool entroNuevoAReady(){
+
+
+
+}
+
+bool hayAlgunoEnReadyConMenosRafaga(float rafaga){
+
+	bool tieneMenorRafaga(Entrenador* entrenadorLista){
+		return estimarProximaRafaga(entrenadorLista) < rafaga;
+	}
+
+	return list_any_satisfy(ready, tieneMenorRafaga);
 }
 
 void realizarIntercambio(Entrenador* entrenador, Entrenador* entrenadorDeadlock){
@@ -357,17 +405,6 @@ bool cumplioSusObjetivos(Entrenador* entrenador){
 
 bool noPuedeSeguirAtrapando(int necesita, int losQueYaAtrapo){
 	return necesita == losQueYaAtrapo;
-
-}
-void planificacionRR(Entrenador* entrenador){
-
-}
-
-void planificacionSJF_CD(Entrenador* entrenador){
-
-}
-
-void planificacionSJF_SD(Entrenador* entrenador){
 
 }
 

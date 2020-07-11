@@ -11,9 +11,12 @@ int main(int argc,char* argv[])
 	pthread_mutex_init(&mutex_mapa, NULL);
 	pthread_mutex_init(&ciclosTotales, NULL);
 
+
+	sem_init (&agregar_ready,0,0);
+
 	ciclos_totales=0;
 
-	algoritmoPlanificacion = "SJF-SD";
+	algoritmoPlanificacion = "SJF-CD";
 
 	entrenadores = list_create();
 	objetivoGlobal = list_create();
@@ -162,6 +165,8 @@ int main(int argc,char* argv[])
 
 
 	pasar_a_ready_por_cercania();
+	sem_getvalue(&agregar_ready, &valorAnteriorReady);
+
 
 	//list_clean(blocked_new);
 
@@ -191,7 +196,7 @@ int main(int argc,char* argv[])
 				planificadorFIFO_RR();
 				break;
 			case SJF_CD:
-				//planificadorSJF_CD();
+				planificadorSJF_SD();
 				break;
 			case SJF_SD:
 				planificadorSJF_SD();
@@ -282,7 +287,7 @@ void planificadorFIFO_RR(){
 					pasar_a_ready_por_cercania();
 
 				}
-				reordenarSJF_SD();
+
 
 				for(int i=0; i<list_size(ready);i++){
 					entrenador = list_get(ready,i);
@@ -363,11 +368,11 @@ void planificadorSJF_SD(){
 					pasar_a_ready_por_cercania();
 
 				}
-				reordenarSJF_SD();
+				reordenarSJF_SD(1);
 
 				for(int i=0; i<list_size(ready);i++){
 					entrenador = list_get(ready,i);
-					printf("\n%d)", entrenador->ID);
+					printf("\n%d) raf %f", entrenador->ID, entrenador->rafaga);
 				}
 
 
@@ -403,6 +408,13 @@ void planificadorSJF_SD(){
 
 				log_info(logger, "Empieza a solucionar deadlock.");
 
+				for(int i=0; i<list_size(deadlock);i++){
+					entrenador = list_get(deadlock,i);
+					printf("\n%d) raf %f", entrenador->ID, entrenador->rafaga);
+				}
+
+				reordenarSJF_SD(2);
+
 				entrenador = list_remove(deadlock,0);
 
 				if(!cumplioSusObjetivos(entrenador)){
@@ -431,22 +443,25 @@ void planificadorSJF_SD(){
 	}
 
 
-int estimarProximaRafaga(Entrenador* entrenador){
+float estimarProximaRafaga(Entrenador* entrenador){
 
  return alpha * ciclos_entrenadores[entrenador->ID -1] + (1-alpha) * entrenador->rafaga;
 
 
 }
 
-void reordenarSJF_SD(){
+void reordenarSJF_SD(int lista){
 
 	bool ordenarPorRafaga(Entrenador* entrenador1, Entrenador* entrenador2){
 
-		entrenador1->rafaga = estimarProximaRafaga(entrenador1);
-		entrenador2->rafaga = estimarProximaRafaga(entrenador2);
+		return (estimarProximaRafaga(entrenador1) < estimarProximaRafaga(entrenador2));
 
-		return (entrenador1->rafaga < entrenador2->rafaga);
 	}
+	if(lista==1)
+		list_sort(ready, (void*)ordenarPorRafaga);
 
-	list_sort(ready, (void*)ordenarPorRafaga);
+	if(lista==2)
+		list_sort(ready, (void*)ordenarPorRafaga);
 }
+
+

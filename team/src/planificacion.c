@@ -134,7 +134,7 @@ for(int i = 0; i<list_size(pokemones_en_mapa); i++){
 			pokemonAasignar->IdEntrenadorQueLoVaAatrapar = entrenadorAready->ID;
 			quitar_de_bloqueados_new(entrenadorAready);
 			list_add(ready, entrenadorAready);
-
+			sem_post(&agregar_ready);
 		}
 
 	}

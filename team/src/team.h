@@ -28,7 +28,7 @@ sem_t mensajesCaught;
 sem_t nuevosPokemons;
 sem_t suscripciones;
 sem_t aparicion_pokemon;
-
+sem_t agregar_ready;
 
 pthread_mutex_t colaReady;
 pthread_mutex_t colaBlocked_new;
@@ -64,7 +64,7 @@ typedef struct entrenador{
 	CoordenadasXY posicion;
 	t_list* objetivos;
 	t_list* pokemonesQueTiene;
-	int rafaga;
+	float rafaga;
 }Entrenador;
 
 typedef struct pokemon{
@@ -111,6 +111,8 @@ int ciclos_totales;
 int *ciclos_entrenadores;
 int *contadorCiclosPorEntrenador;
 
+int* valorAnteriorReady;
+
 // ----------------- Conexiones ----------------- //
 
 char* ip;
@@ -145,8 +147,8 @@ void obtener_objetivo_global();
 void* flujoEntrenador(Entrenador*);
 int obtenerCantidadObjetivo(char*);
 bool cumplioSusObjetivos(Entrenador* entrenador);
-void reordenarSJF_SD();
-int estimarProximaRafaga(Entrenador*);
+void reordenarSJF_SD(int);
+float estimarProximaRafaga(Entrenador*);
 
 void planificadorFIFO_RR();
 void planificadorSJF_SD();

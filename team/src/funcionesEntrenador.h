@@ -18,9 +18,12 @@ int elegirMejorEntrenador(Pokemon*);
 void moverseUnaPosicion(Entrenador*, CoordenadasXY);
 bool noLlegoADestino(Entrenador*, CoordenadasXY );
 bool noPuedeSeguirAtrapando(int, int);
+bool hayAlgunoEnReadyConMenosRafaga(float);
+bool entroNuevoAReady();
 void realizarIntercambio(Entrenador*, Entrenador* );
 Entrenador* buscarConQuienIntercambiar(Entrenador* entrenador);
-void verificarCiclos(int*, int );
+void verificarCiclos(int*, Entrenador* );
+void finDeRafaga(int* , Entrenador*  );
 
 void obtener_los_que_faltan(t_list* , t_list* , t_list* );
 
