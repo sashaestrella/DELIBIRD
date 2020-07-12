@@ -2,14 +2,9 @@
 
 void recibirSenial(int senial){
 	int pid = getpid();
-	switch(senial){
-		case SIGINT:
-			printf("No sé,estoy de colado");
-			break;
-		case SIGUSR1:
-			printf("Proceso %d: señal SIGUSR1 recibida.\n",pid);
-			dumpEnCache();
-			break;
+	if(senial == SIGUSR1){
+		printf("\n\nProceso %d: señal SIGUSR1 recibida.\n",pid);
+		dumpEnCache();
 	}
 }
 
@@ -144,8 +139,6 @@ int main(void){
 	unaPosicionLibre3->tamanio = 400;
 	list_add(listaPosicionesLibres,unaPosicionLibre3);
 
-
-
 	PosicionOcupada* unaPosicionOcupada1 = malloc(sizeof(PosicionOcupada));
 	unaPosicionOcupada1->tamanio = 150;
 	unaPosicionOcupada1->posicion = 0;
@@ -166,8 +159,8 @@ int main(void){
 	unaPosicionOcupada3->colaALaQuePertenece = 2;
 	unaPosicionOcupada3->ID = 3;
 	list_add(listaPosicionesOcupadas,unaPosicionOcupada3);
-
-
+*/
+/*
 	puts("------------Agrego posiciones libres cualquiera\n");
 	printf("Tamaño de posiciones libres: %d\n", list_size(listaPosicionesLibres));
 	PosicionLibre* unaPosicion = list_get(listaPosicionesLibres,0);

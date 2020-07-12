@@ -1,11 +1,8 @@
 
-
 #include "game-boy.h"
 
 int pruebas(void)
 {
-
-	/*---------------------------------------------------PARTE 2-------------------------------------------------------------*/
 	int conexion;
 	char* ip;
 	char* puerto;
@@ -21,16 +18,13 @@ int pruebas(void)
 	log_info(logger, primerLog);
 
 	//Loggear "soy un log"
-
+/*
 	config = leer_config();
 
 	config_set_value(config, "IP", "127.0.0.1");
 	config_set_value(config, "PUERTO", "4444");
 	config_save(config);
-
-
-	/*---------------------------------------------------PARTE 3-------------------------------------------------------------*/
-
+*/
 	//antes de continuar, tenemos que asegurarnos que el servidor esté corriendo porque lo necesitaremos para lo que sigue.
 
 	//crear conexion
@@ -406,7 +400,8 @@ int pruebas(void)
 	log_info(logger, "Se recibio el mensaje: %s " ,mensajeRecibido);
 */
 
-	terminar_programa(conexion, logger, config);
+	//terminar_programa(conexion, logger, config);
+
 }
 /*
 //TODO

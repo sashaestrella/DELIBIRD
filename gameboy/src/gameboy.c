@@ -1,11 +1,9 @@
 #include "game-boy.h"
 #include <src/utilsGeneral.h>
+#include <src/utilsBroker.h>
 
 int main(int argc, char *argv[])
 {
-
-
-	/*---------------------------------------------------PARTE 2-------------------------------------------------------------*/
 
 	int conexion;
 	char* ip;
@@ -20,7 +18,6 @@ int main(int argc, char *argv[])
 
 	log_info(logger, primerLog);
 
-
 	config = leer_config();
 
 	config_set_value(config, "IP", "127.0.0.1");
@@ -28,17 +25,14 @@ int main(int argc, char *argv[])
 	config_save(config);
 
 
-	/*---------------------------------------------------PARTE 3-------------------------------------------------------------*/
-
-	//antes de continuar, tenemos que asegurarnos que el servidor esté corriendo porque lo necesitaremos para lo que sigue.
-
-	//crear conexion
+	//Rear conexion
 
 	ip = config_get_string_value(config, "IP");
 	puerto = config_get_string_value(config, "PUERTO");
 	conexion = crear_conexion(ip, puerto);
 
-	printf( "\nSe creo la conexion con el valor %d \n", conexion);
+	char* loQueVoyALoguear = "\nSe creo la conexion con el valor %d";
+	log_info(logger,loQueVoyALoguear,conexion);
 
 	if(!strcmp(argv[1],"SUSCRIPTOR")){
 		if(!strcmp(argv[2],"NEW_POKEMON")){
@@ -326,6 +320,7 @@ int main(int argc, char *argv[])
 			int id_correlativo = atoi(argv[6]);
 			enviarAppearedPokemon(unAppearedPokemon,conexion,0,id_correlativo);
 		}
+
 	}
 	//Recibir mensaje
 
