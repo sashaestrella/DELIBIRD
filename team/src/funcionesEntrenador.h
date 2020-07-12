@@ -20,6 +20,7 @@ bool noLlegoADestino(Entrenador*, CoordenadasXY );
 bool noPuedeSeguirAtrapando(int, int);
 bool hayAlgunoEnReadyConMenosRafaga(float);
 bool entroNuevoAReady();
+bool seDesbloqueoEntrenador();
 void realizarIntercambio(Entrenador*, Entrenador* );
 Entrenador* buscarConQuienIntercambiar(Entrenador* entrenador);
 void verificarCiclos(int*, Entrenador* );

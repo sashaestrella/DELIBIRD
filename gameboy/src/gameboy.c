@@ -45,11 +45,21 @@ int main(int argc, char *argv[])
 
 	if(!strcmp(argv[2], "APPEARED_POKEMON")){
 	AppearedPokemon* appearedPokemon;
-	appearedPokemon = parsearAppearedPokemon(argv[3], argv[4], argv[5]);
+	appearedPokemon =  parsearAppearedPokemon(argv[3], argv[4], argv[5]);
 	enviarAppearedPokemon(appearedPokemon, conexion, 0,0);
 	puts("Mande un appeared");
 	}
 
+	if(!strcmp(argv[2], "CAUGHT_POKEMON")){
+	CaughtPokemon* caughtPokemon ;
+	int correlativo = atoi(argv[3]);
+	caughtPokemon = parsearCaughtPokemon(argv[4]);
+
+	printf("\nID %d", correlativo);
+	printf("\natrape %d", caughtPokemon->atrapar);
+	enviarCaughtPokemon(caughtPokemon, conexion, 0,correlativo);
+	puts("Mande un caught");
+	}
 
 	terminar_programa(conexion, logger, config);
 }

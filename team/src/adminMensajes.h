@@ -8,7 +8,7 @@ void abrirEscuchas();
 void empezarAnalizadoresDeMensajes();
 
 void enviar_getPokemon(GetPokemon*);
-void enviar_catchPokemon(CatchPokemon*);
+CatchPokemonConIDs* enviar_catchPokemon(CatchPokemon*);
 bool descartar_localized_no_deseados(LocalizedPokemonConIDs*);
 bool descartar_caught_no_deseados(CaughtPokemonConIDs*);
 bool descartar_appeared_no_deseados(AppearedPokemonConIDs*);
@@ -24,7 +24,7 @@ void* suscribirseAColaCaught();
 void* administradorMensajesColas(int, int, int);
 void enviarACK(int, int, int, int);
 
-void recibirMensajesAppeared();
+void* recibirMensajesAppeared();
 void* recibirMensajesLocalized();
 void* recibirMensajesCaught();
 void adminMensajeAppeared(AppearedPokemonConIDs*);

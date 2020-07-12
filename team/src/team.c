@@ -16,7 +16,7 @@ int main(int argc,char* argv[])
 
 	ciclos_totales=0;
 
-	algoritmoPlanificacion = "SJF-CD";
+	algoritmoPlanificacion = "FIFO";
 
 	entrenadores = list_create();
 	objetivoGlobal = list_create();
@@ -34,6 +34,8 @@ int main(int argc,char* argv[])
 	terminados = list_create();
 	deadlock = list_create();
 	pokemones_en_mapa= list_create();
+
+	readyAnterior = list_create();
 
 	leer_config();
 
@@ -128,7 +130,7 @@ int main(int argc,char* argv[])
 	mensajeCatch->catchPokemon = CatchPokemon;
 
 	list_add(mensajesGetEnviados, mensajeGet);
-	list_add(mensajesCatchEnviados, mensajeCatch);
+	//list_add(mensajesCatchEnviados, mensajeCatch);
 
 
 	hiloEntrenador = malloc(list_size(entrenadores) * sizeof(pthread_t));
@@ -138,7 +140,10 @@ int main(int argc,char* argv[])
 	}
 
 
-	//generarConexiones(0);
+	generarConexiones(0);
+
+	sleep(2);
+
 	int i;
 	puts("\n\nObjetivo Global");
 	for(i=0; i<list_size(objetivoGlobal);i++){
@@ -165,13 +170,10 @@ int main(int argc,char* argv[])
 
 
 	pasar_a_ready_por_cercania();
-	sem_getvalue(&agregar_ready, &valorAnteriorReady);
+	list_add_all(readyAnterior, ready);
 
-
-	//list_clean(blocked_new);
 
 	Entrenador* entrenadorReady1 = malloc(sizeof(Entrenador));
-
 
 	puts("\n\nLa cola ready quedo:");
 
@@ -184,7 +186,6 @@ int main(int argc,char* argv[])
 		}
 
 	}
-
 
 
 		switch(algoritmoAUtilizar(algoritmoPlanificacion)){
@@ -283,7 +284,7 @@ void planificadorFIFO_RR(){
 			if(list_size(terminados)+list_size(deadlock) != list_size(entrenadores)){
 
 				if(list_size(ready)==0){
-					sem_wait(&aparicion_pokemon);
+					sem_wait(&aparicion_pokemon);//ponerle un nombre mas expresivo
 					pasar_a_ready_por_cercania();
 
 				}
@@ -444,6 +445,8 @@ void planificadorSJF_SD(){
 
 
 float estimarProximaRafaga(Entrenador* entrenador){
+
+
 
  return alpha * ciclos_entrenadores[entrenador->ID -1] + (1-alpha) * entrenador->rafaga;
 

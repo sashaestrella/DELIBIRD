@@ -146,7 +146,7 @@ void process_request(int cod_op, int cliente_fd) {
 					break;
 				case CATCH_POKEMON:
 					catchConIDs = recibir_CATCH_POKEMON(cliente_fd,&size,0);
-					devolverID(cliente_fd,catchConIDs->IDmensaje);
+					//devolverID(cliente_fd,catchConIDs->IDmensaje);
 					unCatchPokemon = catchConIDs->catchPokemon;
 					free(catchConIDs);
 					mensajeCatchPokemon2 = guardarMensajeCatchPokemon(unCatchPokemon);

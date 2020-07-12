@@ -673,6 +673,25 @@ AppearedPokemon* parsearAppearedPokemon(char* pokemon, char* posX, char* posY){
 	return appeared;
 }
 
+CaughtPokemon* parsearCaughtPokemon(char* confirmacion){
+
+	CaughtPokemon* caught = malloc(sizeof(CaughtPokemon));
+
+
+	if(!strcmp(confirmacion, "OK")){
+
+
+	caught->atrapar = 1;
+	}else{
+		caught->atrapar = 0;
+	}
+
+	/*if(!strcmp(confirmacion, "FAIL")){
+	caught->atrapar = 0;
+	}*/
+	return caught;
+}
+
 /*void enviarNewPokemon(NewPokemon* newPokemon, int conexion)
 {
 	uint32_t codigo = NEW_POKEMON;

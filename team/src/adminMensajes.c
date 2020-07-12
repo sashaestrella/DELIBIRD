@@ -2,11 +2,15 @@
 
 void generarConexiones(int tipoSuscriptor){
 
-	//suscribirseAColaAppeared();
 
-	//suscribirseAColaCaught();
+	// -- Hilo de suscripcion a cola caught -- //
+	ParametrosSuscripcion* caught = malloc(sizeof(ParametrosSuscripcion));
+	caught->colaASuscribirse = SUSCRIPTOR_CAUGHTPOKEMON;
+	caught->nuevoExistente = tipoSuscriptor;
 
-	//suscribirseAColaLocalized();
+	pthread_t hiloCaught;
+	pthread_create(&hiloCaught, NULL, suscribirseAColaCaught, NULL);
+
 
 	// -- Hilo de suscripcion a cola appeared -- //
 	ParametrosSuscripcion* appeared = malloc(sizeof(ParametrosSuscripcion));
@@ -15,6 +19,8 @@ void generarConexiones(int tipoSuscriptor){
 
 	pthread_t hiloAppeared;
 	pthread_create(&hiloAppeared, NULL, suscribirseAColaAppeared, NULL);
+
+
 
 	// -- Hilo de suscripcion a localized -- //
 	ParametrosSuscripcion* localized = malloc(sizeof(ParametrosSuscripcion));
@@ -25,20 +31,13 @@ void generarConexiones(int tipoSuscriptor){
 	pthread_create(&hiloLocalized, NULL, suscribirseAColaLocalized, NULL);
 
 
-	// -- Hilo de suscripcion a cola caught -- //
-	ParametrosSuscripcion* caught = malloc(sizeof(ParametrosSuscripcion));
-	caught->colaASuscribirse = SUSCRIPTOR_CAUGHTPOKEMON;
-	caught->nuevoExistente = tipoSuscriptor;
+	pthread_detach(hiloAppeared);
+	pthread_detach(hiloCaught);
+	pthread_detach(hiloLocalized);
+	//pthread_join(hiloAppeared,NULL);
+	//pthread_join(hiloCaught,NULL);
+	//pthread_join(hiloLocalized,NULL);
 
-	pthread_t hiloCaught;
-	pthread_create(&hiloCaught, NULL, suscribirseAColaCaught, NULL);
-
-	//pthread_detach(hiloAppeared);
-	//pthread_detach(hiloCaught);
-	//pthread_detach(hiloLocalized);
-	pthread_join(hiloAppeared,NULL);
-	pthread_join(hiloCaught,NULL);
-	pthread_join(hiloLocalized,NULL);
 	free(appeared);
 	free(localized);
 	free(caught);
@@ -49,21 +48,21 @@ void abrirEscuchaAppeared(){
 	pthread_t escuchaAppeared;
 	pthread_create(&escuchaAppeared, NULL, recibirMensajesAppeared, NULL);
 	printf("Ya estoy escuchando la cola appeared... \n\n");
-	pthread_join(escuchaAppeared, NULL);
+	pthread_detach(escuchaAppeared);
 }
 
 void abrirEscuchaLocalized(){
 	pthread_t escuchaLocalized;
 	pthread_create(&escuchaLocalized, NULL, recibirMensajesLocalized, NULL);
 	printf("Ya estoy escuchando la cola localized... \n\n");
-	pthread_join(escuchaLocalized, NULL);
+	pthread_detach(escuchaLocalized);
 }
 
 void abrirEscuchaCaught(){
 	pthread_t escuchaCaught;
 	pthread_create(&escuchaCaught, NULL, recibirMensajesCaught, NULL);
 	printf("Ya estoy escuchando la cola Caught... \n\n");
-	pthread_join(escuchaCaught, NULL);
+	pthread_detach(escuchaCaught);
 }
 
 // ------------------------------------ AUXILIARES ------------------------------------ //
@@ -172,10 +171,11 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 
 				recv(conexion, &cantidadCaughtPokemon, sizeof(int), MSG_WAITALL);
 				printf("Cantidad de Caught Pokemons: %d\n", cantidadCaughtPokemon);
-				recv(conexion, &codigo2, sizeof(op_code), MSG_WAITALL);
-				printf("Codigo de cola: %d\n", codigo2);
+
 				CaughtPokemonConIDs* nuevoCaughtPokemonConId;
 				for(int i = 0; i<cantidadCaughtPokemon; i++){
+					recv(conexion, &codigo2, sizeof(op_code), MSG_WAITALL);
+					printf("Codigo de cola: %d\n", codigo2);
 					nuevoCaughtPokemonConId = recibir_CAUGHT_POKEMON(conexion, 0, 1);
 					send(conexion, 1, sizeof(int), 0);
 					adminMensajeCaught(nuevoCaughtPokemonConId);
@@ -189,7 +189,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 }
 // ------------------------------- Funciones Team ------------------------------------ //
 
-void recibirMensajesAppeared(){
+void* recibirMensajesAppeared(){
 	pthread_t admin;
 	AppearedPokemonConIDs* nuevoAppeared;
 
@@ -299,7 +299,19 @@ void* adminMensajeCaught(CaughtPokemonConIDs* nuevoCaught){
 
 		list_add(nuevosCaught, nuevoCaught);
 		printf("Guarde un mensaje Caught");
-		sem_post(&mensajesCaught);
+
+		Entrenador* entrenadorParaAvisar = malloc(sizeof(Entrenador));
+
+		bool esperaRespuesta(Entrenador* entrenador){
+			return entrenador->idMensaje == nuevoCaught->IDCorrelativo;
+		}
+
+		entrenadorParaAvisar = list_find(entrenadores, esperaRespuesta);
+
+		printf("\nLe avise a %d que llego su mensaje", entrenadorParaAvisar->ID);
+
+		sem_post(confirmacion_caught[entrenadorParaAvisar->ID-1]);
+
 
 	} else {
 		printf("Mensaje Caught que no es para nosotros\n");
@@ -328,22 +340,25 @@ void enviar_getPokemon(GetPokemon* get_pokemon){
 	//cerrar conexion
 }
 
-void enviar_catchPokemon(CatchPokemon* catch_pokemon){
+CatchPokemonConIDs* enviar_catchPokemon(CatchPokemon* catch_pokemon){
 
 	int id_mensaje;
 	CatchPokemonConIDs* catchPokemonConId = malloc(sizeof(CatchPokemonConIDs));
 
 	int conexion = crear_conexion(ip, puerto);
 
-	enviarGetPokemon(catch_pokemon, conexion ,0);
+	enviarCatchPokemon(catch_pokemon, conexion ,0);
 
 	recv(conexion, &id_mensaje, sizeof(int), MSG_WAITALL);
 
 	catchPokemonConId->IDmensaje = id_mensaje;
-
+	catchPokemonConId->catchPokemon = catch_pokemon;
 	list_add(mensajesCatchEnviados, catchPokemonConId);
+	puts("\nGuarde un enviado");
 
-	free(catchPokemonConId);
+	return catchPokemonConId;
+	//free(catchPokemonConId);
+	close(conexion);
 	//cerrar conexion
 }
 
@@ -367,7 +382,7 @@ bool descartar_localized_no_deseados(LocalizedPokemonConIDs* localizedPokemonRec
 			return idMensaje != localizedPokemonRecibido -> IDmensaje;
 	}
 
-	return list_any_satisfy(mensajesGetEnviados, (void*)compararIDcorrelativo) && list_all_satisfy(mensajesRecibidos, (void*)yaRecibi);
+	return list_any_satisfy(mensajesGetEnviados, (void*)compararIDcorrelativo);
 
 }
 
@@ -376,14 +391,15 @@ bool descartar_caught_no_deseados(CaughtPokemonConIDs* caughtPokemonRecibido){
 
 	bool compararIDcorrelativo (CatchPokemonConIDs* mensajeCatch){
 
+		printf("\nID del que esta %d, correlativo del que llega %d",  mensajeCatch->IDmensaje, caughtPokemonRecibido->IDCorrelativo );
 		return mensajeCatch->IDmensaje == caughtPokemonRecibido->IDCorrelativo;
 	}
 
-	bool yaRecibi(int idMensaje){
-			return idMensaje != caughtPokemonRecibido -> IDmensaje;
-	}
+	printf("\nTAmaño catch enviados %d", list_size(mensajesCatchEnviados));
 
-	return list_any_satisfy(mensajesCatchEnviados, (void*)compararIDcorrelativo) && list_all_satisfy(mensajesRecibidos, (void*)yaRecibi);
+
+
+	return list_any_satisfy(mensajesCatchEnviados, (void*)compararIDcorrelativo);
 
 }
 

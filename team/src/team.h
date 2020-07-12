@@ -65,6 +65,7 @@ typedef struct entrenador{
 	t_list* objetivos;
 	t_list* pokemonesQueTiene;
 	float rafaga;
+	int idMensaje;
 }Entrenador;
 
 typedef struct pokemon{
@@ -98,6 +99,9 @@ t_list* ejecutando;
 t_list* terminados;
 t_list* deadlock;
 t_list* pokemones_en_mapa;
+
+
+t_list* readyAnterior;
 
 //----------------- Variables para los algoritmos de planificacion ----------------- //
 

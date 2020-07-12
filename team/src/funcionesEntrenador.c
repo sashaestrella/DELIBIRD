@@ -51,6 +51,19 @@ void* flujoEntrenador(Entrenador* entrenador){
 
 	//enviarCatch
 
+	CatchPokemon* catchUnPokemon = malloc(sizeof(CatchPokemon));
+
+	catchUnPokemon->nombre = pokemon->nombre;
+	catchUnPokemon->tamanioNombrePokemon = strlen(pokemon->nombre +1);
+	catchUnPokemon->coordenadas.posicionX = pokemon->posicion.posicionX;
+	catchUnPokemon->coordenadas.posicionY = pokemon->posicion.posicionY;
+
+	CatchPokemonConIDs* catchPokemonConId = malloc(sizeof(CatchPokemonConIDs));
+
+	catchPokemonConId=enviar_catchPokemon(catchUnPokemon);
+
+	entrenador->idMensaje = catchPokemonConId->IDmensaje;
+	printf("\nSoy %d y mande %d", entrenador->ID,entrenador->idMensaje);
 	entrenador = list_remove(ejecutando, 0);
 
 	list_add(blocked_caught, entrenador );
@@ -59,7 +72,29 @@ void* flujoEntrenador(Entrenador* entrenador){
 
 	sem_post(finEjecucion[entrenador->ID-1]);
 //---------------------------------------------------------------------------------------------rafaga
-	//sem_wait(&confirmacion_caught[entrenador->ID-1]);
+
+	printf("\nSoy %d y espero confirmacion", entrenador->ID);
+
+	sem_wait(confirmacion_caught[entrenador->ID-1]);
+
+	printf("\nSoy %d me llego la confirmacion", entrenador->ID);
+
+
+	//buscar en los recibidos el id del que mande
+
+
+	bool miRespuesta(CaughtPokemonConIDs* recibido){
+
+		return recibido->IDCorrelativo == catchPokemonConId->IDmensaje;
+	}
+
+
+	CaughtPokemonConIDs* caughtPokemonConId = malloc(sizeof(CaughtPokemonConIDs));
+
+	caughtPokemonConId = list_find(nuevosCaught, miRespuesta);
+
+
+
 
 	//asumo que lo agarro por ahora
 
@@ -71,13 +106,21 @@ void* flujoEntrenador(Entrenador* entrenador){
 
 	//pthread_mutex_lock(&colaReady);
 	list_add(ready, entrenador);
+	sem_post(&aparicion_pokemon);
 	//pthread_mutex_unlock(&colaReady);
+	printf("\nSoy %d pase a ready", entrenador->ID);
 
 	sem_wait(ejecutate[entrenador->ID - 1]);
+
 	printf("\nSoy %d segundo tramo", entrenador->ID);
+
+	if(caughtPokemonConId->caughtPokemon->atrapar == 1){
 	list_add(entrenador->pokemonesQueTiene, pokemon);
 	printf("\nSoy %d y atrape a %s", entrenador->ID, pokemon->nombre);
 	atrapados++;
+	}else{
+		puts("No pude atrapar, se me escapo");
+	}
 	bool buscarPokemon(Pokemon* p){
 		return p->nombre == pokemon->nombre && p->IdEntrenadorQueLoVaAatrapar == pokemon->IdEntrenadorQueLoVaAatrapar;
 	}
@@ -178,7 +221,7 @@ void* flujoEntrenador(Entrenador* entrenador){
 }
 
 void finDeRafaga(int* cicloEntrenador, Entrenador* entrenador ){
-	if(algoritmoAUtilizar(algoritmoPlanificacion) == SJF_SD){
+	if(algoritmoAUtilizar(algoritmoPlanificacion) == SJF_CD){
 
 		entrenador->rafaga = estimarProximaRafaga(entrenador);
 		*cicloEntrenador=0;
@@ -203,13 +246,13 @@ void verificarCiclos(int* cicloEntrenador, Entrenador* entrenador ){
 
 	if (algoritmoAUtilizar(algoritmoPlanificacion) == SJF_CD){
 
-		entrenador->rafaga = estimarProximaRafaga(entrenador);
-		printf("\nSoy %d y proxima rafaga %f", entrenador->ID,entrenador->rafaga);
 
+		if(seDesbloqueoEntrenador()){ // aca poner las dos condiciones con ||
 
-		if(entroNuevoAReady()){
-
-		if(hayAlgunoEnReadyConMenosRafaga(entrenador->rafaga)){
+			printf("\nSoy %d y proxima rafaga %f", entrenador->ID,entrenador->rafaga);
+			entrenador->rafaga = estimarProximaRafaga(entrenador);
+			puts("\nEntro uno");
+		if(hayAlgunoEnReadyConMenosRafaga(entrenador->rafaga)){//este puede volar
 
 			list_add(ready,list_remove(ejecutando,0));
 			puts("\nSali por sjfCD");
@@ -224,9 +267,56 @@ void verificarCiclos(int* cicloEntrenador, Entrenador* entrenador ){
 	}
 }
 
-bool entroNuevoAReady(){
+bool entroNuevoAReady(){ //esta faltaria probar, debrias er cada vez que entre un entrenador nuevo al sistema.
+
+	Entrenador* entrenador1 = malloc(sizeof(Entrenador));
+	Entrenador* entrenador2 = malloc(sizeof(Entrenador));
+    int comp;
+    printf("\nTamaño anterior %d", list_size(readyAnterior));
+    printf("\nTamaño actual %d", list_size(ready));
+
+		for( int i=0; i<list_size(ready); i++){
+			entrenador1 = list_get(ready, i);
+			printf("\n %d))))", entrenador1->ID);
+			for(int j=0; j < list_size(readyAnterior);j++){
+
+				entrenador2=list_get(readyAnterior,j);
+				printf("\n %d)", entrenador2->ID);
+				if(entrenador1->ID == entrenador2->ID){
+					comp=0;
+					printf("\ncomp %d", comp);
+					break;
+				}else{
+					comp=1;
+					printf("\ncomp %d", comp);
+				}
+
+			}
+
+		}
+
+		//if(comp){
+		list_clean(readyAnterior);
+		list_add_all(readyAnterior, ready);
+		//}
 
 
+		return comp;
+
+}
+
+bool seDesbloqueoEntrenador(){//esta verifica que se haya llegago desde entrada salida a ready.
+
+	int tamanioAnterior = list_size(readyAnterior);
+
+	int tamanioActual=list_size(ready);
+
+	if(tamanioAnterior < tamanioActual){
+		tamanioAnterior = tamanioActual;
+		return true;
+	}else{
+		return false;
+	}
 
 }
 
