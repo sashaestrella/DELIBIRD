@@ -31,6 +31,7 @@ void dumpEnCache(){
 	strftime(fechaYHora,128,"\nDump: %d/%m/%y %H:%M:%S",tm);
 	printf("%s\n",fechaYHora);
 	txt_write_in_file(archivoDump,fechaYHora);
+	fprintf(archivoDump,"\nInicio de la memoria: %p",memoriaInterna);
 
 	for(int i=0;i<tamanioListaPosicionesLibres;i++){
 		unaPosicionLibre = list_get(listaPosicionesLibres,i);
@@ -42,6 +43,16 @@ void dumpEnCache(){
 	for(int j=0;j<tamanioListaPosicionesOcupadas;j++){
 		unaPosicionOcupada = list_get(listaPosicionesOcupadas,j);
 		fprintf(archivoDump,"\nPartición %d: %p-%p.",j,unaPosicionOcupada->posicion,unaPosicionOcupada->posicion+(unaPosicionOcupada->tamanio)-1);
+		fputs("\t\t[X]",archivoDump);
+		fprintf(archivoDump,"\t\tSize: %db",unaPosicionOcupada->tamanio);
+		fprintf(archivoDump,"\t\tLRU: %d",unaPosicionOcupada->timestamp);
+		fprintf(archivoDump,"\t\tCola: %d",unaPosicionOcupada->colaALaQuePertenece);
+		fprintf(archivoDump,"\t\tID: %d",unaPosicionOcupada->ID);
+	}
+	fprintf(archivoDump,"\nEn posiciones relativas: ");
+	for(int j=0;j<tamanioListaPosicionesOcupadas;j++){
+		unaPosicionOcupada = list_get(listaPosicionesOcupadas,j);
+		fprintf(archivoDump,"\nPartición %d: %i-%i.",j,unaPosicionOcupada->posicion-memoriaInterna,(unaPosicionOcupada->posicion-memoriaInterna)+(unaPosicionOcupada->tamanio)-1);
 		fputs("\t\t[X]",archivoDump);
 		fprintf(archivoDump,"\t\tSize: %db",unaPosicionOcupada->tamanio);
 		fprintf(archivoDump,"\t\tLRU: %d",unaPosicionOcupada->timestamp);

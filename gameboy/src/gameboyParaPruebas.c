@@ -127,7 +127,8 @@ int pruebas(void)
 		printf("\nEnvie el mensaje: %d\n",caughtPokemon1->atrapar);
 
 */
-/*	int idSuscriptorPosta;
+/*
+    int idSuscriptorPosta;
 	int cod_op = 13;
 
 	Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));

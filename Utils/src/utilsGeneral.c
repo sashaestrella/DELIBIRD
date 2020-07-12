@@ -164,7 +164,7 @@ GetPokemonConIDs* recibir_GET_POKEMON(int cliente_fd, int* size,int reciboID){
 		memcpy(unGetPokemon->nombre,stream,unGetPokemon->tamanioNombrePokemon);
 		stream+=unGetPokemon->tamanioNombrePokemon;
 
-		printf("\nMe llego el mensaje: %s\n",unGetPokemon->nombre);
+		printf("\nMe llego el mensaje: %i, %s\n",unGetPokemon->tamanioNombrePokemon, unGetPokemon->nombre);
 
 		free(buffer->stream);
 		free(buffer);
