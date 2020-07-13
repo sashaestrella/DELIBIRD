@@ -287,7 +287,7 @@ void* crearBlocks(char* path){
 	mkdir(path, 0777);
 }
 
-void* generarBitmap(){
+void* generarBitmap(char* path){
 }
 
 void* armarFolderPara(NewPokemonConIDs* newPokemon){
