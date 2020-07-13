@@ -31,15 +31,27 @@ void* recibirMensajesNew();
 void* recibirMensajesGet();
 void* recibirMensajesCatch();
 void* adminMensajeNewPokemon(NewPokemonConIDs*);
-void* armarFolderPara(NewPokemonConIDs*);
 void* adminMensajeGetPokemon(GetPokemonConIDs*);
 void* adminMensajeCatch(CatchPokemonConIDs*);
+
 void* crearDirectorioTG();
 void* crearMetadata();
 void* crearFiles();
 void* crearBlocks();
 void* generarBitmap();
+
+void* armarFolderPara(NewPokemonConIDs*);
 void* crearMetadataPara(NewPokemonConIDs*);
 void* crearMetadataDirPara(NewPokemonConIDs*);
+
+int archivoAbierto(char*);
+int existePokemon(char*);
+void agregarPokemon(NewPokemon*);
+void eliminarPokemon(CatchPokemon*);
+LocalizedPokemon* obtenerCantidadYPosiciones(char*);
+
+int enviarMensajeAppeared(AppearedPokemon* pokemon);
+int enviarMensajeCaught(CaughtPokemon*);
+int enviarMensajeLocalized(LocalizedPokemon*);
 
 #endif /* ADMINMENSAJES_H_ */

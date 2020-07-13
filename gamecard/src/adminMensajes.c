@@ -318,10 +318,22 @@ void eliminarPokemon(CatchPokemon* pokemon){
 
 }
 
+LocalizedPokemon* obtenerCantidadYPosiciones(char* nombre){
 
+}
 
 // --------------------- Enviar Mensajes --------------------- //
 
-enviarMensaje(){
+int enviarMensajeAppeared(AppearedPokemon* pokemon){
 
 }
+
+int enviarMensajeCaught(CaughtPokemon* pokemon){
+
+}
+
+int enviarMensajeLocalized(LocalizedPokemon* pokemon){
+
+}
+
+
