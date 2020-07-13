@@ -35,10 +35,10 @@ void* adminMensajeGetPokemon(GetPokemonConIDs*);
 void* adminMensajeCatch(CatchPokemonConIDs*);
 
 void* crearDirectorioTG();
-void* crearMetadata();
-void* crearFiles();
-void* crearBlocks();
-void* generarBitmap();
+void* crearMetadata(char*);
+void* crearFiles(char*);
+void* crearBlocks(char*);
+void* generarBitmap(char*);
 
 void* armarFolderPara(NewPokemonConIDs*);
 void* crearMetadataPara(NewPokemonConIDs*);

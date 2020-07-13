@@ -54,7 +54,7 @@ void abrirEscuchaCatch(){
 	pthread_join(escuchaCatch, NULL);
 }
 
-// ------------------------------------ AUXILIARES ------------------------------------ //
+// ------------------------------------ SUSCRIPCIONES ------------------------------------ //
 
 void noHayBroker(){
 
@@ -103,7 +103,7 @@ void* suscribirseAColaCatch(){
 	administradorMensajesColas(SUSCRIPTOR_CATCHPOKEMON, conexion, IDsuscripcion);
 }
 
-
+// ------------------------------------ RECEPCION MENSAJES ------------------------------------ //
 
 void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 
@@ -171,8 +171,6 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 	}
 }
 
-// ------------------------------- Funciones Game Card ------------------------------------ //
-
 void* recibirMensajesNew(){
 	pthread_t admin;
 	void* mensajeRecibido;
@@ -187,6 +185,37 @@ void* recibirMensajesNew(){
 		pthread_detach(admin);
 	}
 }
+
+void* recibirMensajesGet(){
+	pthread_t admin;
+	GetPokemonConIDs* nuevoGetPokemon;
+	while(1){
+		int cod_op;
+		recv(conexionGetPokemon, &cod_op, sizeof(int), 0);
+		nuevoGetPokemon = recibir_GET_POKEMON(conexionGetPokemon, 0, 1);
+		int ack = 1;
+		send(conexionNewPokemon, &ack, sizeof(int), 0);
+		pthread_create(&admin, NULL, adminMensajeGetPokemon, nuevoGetPokemon);
+		pthread_detach(admin);
+	}
+}
+
+void* recibirMensajesCatch(){
+	pthread_t admin;
+	CatchPokemonConIDs* nuevoCatch;
+
+	while(1){
+		int cod_op;
+		recv(conexionCatch, &cod_op, sizeof(int), 0);
+		nuevoCatch = recibir_CATCH_POKEMON(conexionCatch, 0, 1);
+		int ack = 1;
+		send(conexionNewPokemon, &ack, sizeof(int), 0);
+		pthread_create(&admin, NULL, adminMensajeCatch, nuevoCatch);
+		pthread_detach(admin);
+	}
+}
+
+// ------------------------------------ ADMIN MENSAJES ------------------------------------ //
 
 void* adminMensajeNewPokemon(NewPokemonConIDs* nuevoNewPokemon){
 	AppearedPokemon* appearedPokemon1 = malloc(sizeof(AppearedPokemon));
@@ -205,39 +234,10 @@ void* adminMensajeNewPokemon(NewPokemonConIDs* nuevoNewPokemon){
 	armarFolderPara(nuevoNewPokemon);
 }
 
-void* recibirMensajesGet(){
-	pthread_t admin;
-	GetPokemonConIDs* nuevoGetPokemon;
-	while(1){
-		int cod_op;
-		recv(conexionGetPokemon, &cod_op, sizeof(int), 0);
-		nuevoGetPokemon = recibir_GET_POKEMON(conexionGetPokemon, 0, 1);
-		int ack = 1;
-		send(conexionNewPokemon, &ack, sizeof(int), 0);
-		pthread_create(&admin, NULL, adminMensajeGetPokemon, nuevoGetPokemon);
-		pthread_detach(admin);
-	}
-}
-
 void* adminMensajeGetPokemon(GetPokemonConIDs* nuevoGetPokemon){
 	list_add(mensajesRecibidos, nuevoGetPokemon->IDmensaje);
 	list_add(nuevosGetPokemon, nuevoGetPokemon);
 	printf("Guarde un mensaje Get");
-}
-
-void* recibirMensajesCatch(){
-	pthread_t admin;
-	CatchPokemonConIDs* nuevoCatch;
-
-	while(1){
-		int cod_op;
-		recv(conexionCatch, &cod_op, sizeof(int), 0);
-		nuevoCatch = recibir_CATCH_POKEMON(conexionCatch, 0, 1);
-		int ack = 1;
-		send(conexionNewPokemon, &ack, sizeof(int), 0);
-		pthread_create(&admin, NULL, adminMensajeCatch, nuevoCatch);
-		pthread_detach(admin);
-	}
 }
 
 void* adminMensajeCatch(CatchPokemonConIDs* nuevoCatch){
@@ -250,36 +250,41 @@ void* adminMensajeCatch(CatchPokemonConIDs* nuevoCatch){
 
 void* crearDirectorioTG(){
 	char* path = string_new();
-	string_append(&path, "../../TALL_GRASS");
+	string_append(&path,puntoMontaje);
+	string_append(&path, "/TALL_GRASS");
 	mkdir(path, 0777);
 	crearMetadata(path);
 	crearFiles(path);
-	crearBlocks();
+	crearBlocks(path);
 }
 
-void* crearMetadata(){
+void* crearMetadata(char* path){
 	FILE* metadata;
 
-	mkdir("../../TALL_GRASS/Metadata", 0777);
-	metadata = fopen("../../TALL_GRASS/Metadata/Metadata.bin", "wrb");
+	mkdir(path, 0777);
+	string_append(&path, "/Metadata/Metadata.bin");
+	metadata = fopen(path, "wrb");
 	fclose(metadata);
 
-	t_config* md = config_create("../../TALL_GRASS/Metadata/Metadata.bin");
+	t_config* md = config_create(path);
 	config_set_value(md, "BLOCK_SIZE", "64");
 	config_set_value(md, "BLOCKS", "5192");
 	config_set_value(md, "MAGIC_NUMBER", "TALL_GRASS");
 	config_save(md);
 }
 
-void* crearFiles(){
-	mkdir("../../TALL_GRASS/Files", 0777);
-	t_config* md = config_create("../../TALL_GRASS/Files/Metadata.bin");
+void* crearFiles(char* path){
+	string_append(&path, "/Files");
+	mkdir(path, 0777);
+	string_append(&path, "/Metadata.bin");
+	t_config* md = config_create(path);
 	config_set_value(md, "DIRECTORY", "Y");
 	config_save(md);
 }
 
-void* crearBlocks(){
-	mkdir("../../TALL_GRASS/Blocks", 0777);
+void* crearBlocks(char* path){
+	string_append(&path, "/Blocks");
+	mkdir(path, 0777);
 }
 
 void* generarBitmap(){
@@ -287,7 +292,8 @@ void* generarBitmap(){
 
 void* armarFolderPara(NewPokemonConIDs* newPokemon){
 	char* path = string_new();
-	string_append(&path, "../../TALL_GRASS/Files/");
+	string_append(&path,puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files");
 	string_append(&path, newPokemon->newPokemon->nombre);
 	mkdir(path, 0777);
 }
