@@ -1,12 +1,9 @@
 
-
 #include "game-boy.h"
 
 int pruebas(void)
 {
-
-	/*---------------------------------------------------PARTE 2-------------------------------------------------------------*/
-/*	int conexion;
+	int conexion;
 	char* ip;
 	char* puerto;
 
@@ -21,20 +18,17 @@ int pruebas(void)
 	log_info(logger, primerLog);
 
 	//Loggear "soy un log"
-
+/*
 	config = leer_config();
 
 	config_set_value(config, "IP", "127.0.0.1");
 	config_set_value(config, "PUERTO", "4444");
 	config_save(config);
-
 */
-	/*---------------------------------------------------PARTE 3-------------------------------------------------------------*/
-
 	//antes de continuar, tenemos que asegurarnos que el servidor esté corriendo porque lo necesitaremos para lo que sigue.
 
 	//crear conexion
-/*
+
 	ip = config_get_string_value(config, "IP");
 	puerto = config_get_string_value(config, "PUERTO");
 
@@ -56,7 +50,7 @@ int pruebas(void)
 	enviarNewPokemon(unNewPokemon, conexion,idNewPokemon);
 
 	printf("\nEnvie el mensaje: %s, con id: %d\n",unNewPokemon->nombre,idNewPokemon);
-*/
+
 
 /*
 	LocalizedPokemon* localizedPokemon1 = malloc(sizeof(LocalizedPokemon));
@@ -127,7 +121,8 @@ int pruebas(void)
 		printf("\nEnvie el mensaje: %d\n",caughtPokemon1->atrapar);
 
 */
-/*	int idSuscriptorPosta;
+/*
+    int idSuscriptorPosta;
 	int cod_op = 13;
 
 	Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
@@ -404,9 +399,9 @@ int pruebas(void)
 
 	log_info(logger, "Se recibio el mensaje: %s " ,mensajeRecibido);
 */
-/*
-	terminar_programa(conexion, logger, config);
-*/
+
+	//terminar_programa(conexion, logger, config);
+
 }
 /*
 //TODO
@@ -431,5 +426,4 @@ void terminar_programa(int conexion, t_log* logger, t_config* config)
 	liberar_conexion(conexion);
 
 	//Y por ultimo, para cerrar, hay que liberar lo que utilizamos (conexion, log y config) con las funciones de las commons y del TP mencionadas en el enunciado
-}
-*/
+}*/

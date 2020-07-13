@@ -10,6 +10,7 @@ void* serializarSuscripcion(int idSuscriptor,int bytes){
 		return buffer;
 }
 
+
 void enviarSuscripcion(int idSuscriptor,int socket_servidor, int cod_op){
 		t_buffer* buffer = malloc(sizeof(t_buffer));
 
@@ -26,6 +27,7 @@ void enviarSuscripcion(int idSuscriptor,int socket_servidor, int cod_op){
 		void* a_enviar = serializar_paquete(paquete,bytes);
 
 		send(socket_servidor, a_enviar, bytes, 0);
+
 		free(a_enviar);
 		free(buffer->stream);
 		free(paquete->buffer);
@@ -162,7 +164,7 @@ GetPokemonConIDs* recibir_GET_POKEMON(int cliente_fd, int* size,int reciboID){
 		memcpy(unGetPokemon->nombre,stream,unGetPokemon->tamanioNombrePokemon);
 		stream+=unGetPokemon->tamanioNombrePokemon;
 
-		printf("\nMe llego el mensaje: %s\n",unGetPokemon->nombre);
+		printf("\nMe llego el mensaje: %i, %s\n",unGetPokemon->tamanioNombrePokemon, unGetPokemon->nombre);
 
 		free(buffer->stream);
 		free(buffer);
@@ -260,7 +262,6 @@ CaughtPokemonConIDs* recibir_CAUGHT_POKEMON(int cliente_fd,int* size,int reciboI
 		unCaughtPokemonConIDCorrelativo->caughtPokemon = unCaughtPokemon;
 
 		recv(cliente_fd,&(buffer->size),sizeof(int),MSG_WAITALL);
-
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
 		recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
@@ -478,6 +479,7 @@ void enviarNewPokemon(NewPokemon* unNewPokemon, int socket_suscriptor,int id){
 	free(paquete->buffer);
 	free(paquete);
 
+
 }
 
 void enviarLocalizedPokemon(LocalizedPokemon* localized_pokemon,int socket_suscriptor,int id, int idCorrelativo){
@@ -661,35 +663,64 @@ NewPokemon* parsearNewPokemon(char* pokemon
 	return newPokemon;
 }
 
-AppearedPokemon* parsearAppearedPokemon(char* pokemon, char* posX, char* posY){
-
-	AppearedPokemon* appeared = malloc(sizeof(AppearedPokemon));
-
-	appeared->nombre = pokemon;
-	appeared->tamanioNombrePokemon = strlen(pokemon +1);
-	appeared->coordenadas.posicionX = atoi(posX);
-	appeared->coordenadas.posicionY = atoi(posY);
-
-	return appeared;
+GetPokemon* parsearGetPokemon(char* pokemon){
+	GetPokemon* unGetPokemon = malloc(sizeof(GetPokemon));
+	unGetPokemon->nombre = pokemon;
+	return unGetPokemon;
 }
 
-CaughtPokemon* parsearCaughtPokemon(char* confirmacion){
+CatchPokemon* parsearCatchPokemon(char* nombrePokemon,char* posicionX,char* posicionY){
+	CatchPokemon* catchPokemon = malloc(sizeof(CatchPokemon));
 
-	CaughtPokemon* caught = malloc(sizeof(CaughtPokemon));
+	catchPokemon->nombre = nombrePokemon;
+	catchPokemon->tamanioNombrePokemon = strlen(nombrePokemon)+1;
+	catchPokemon->coordenadas.posicionX = atoi(posicionX);
+	catchPokemon->coordenadas.posicionY = atoi(posicionY);
 
+	return catchPokemon;
+}
+AppearedPokemon* parsearAppearedPokemon(char* nombrePokemon,char* posicionX,char* posicionY){
+	AppearedPokemon* appearedPokemon = malloc(sizeof(AppearedPokemon));
 
-	if(!strcmp(confirmacion, "OK")){
+	appearedPokemon->nombre = nombrePokemon;
+	appearedPokemon->tamanioNombrePokemon = strlen(nombrePokemon)+1;
+	appearedPokemon->coordenadas.posicionX = atoi(posicionX);
+	appearedPokemon->coordenadas.posicionY = atoi(posicionY);
 
-
-	caught->atrapar = 1;
-	}else{
-		caught->atrapar = 0;
+	return appearedPokemon;
+}
+CaughtPokemon* parsearCaughtPokemon(char* atrapar){
+	CaughtPokemon* caughtPokemon = malloc(sizeof(CaughtPokemon));
+	uint32_t loAtrape;
+	if(!strcmp(atrapar,"OK")){
+		loAtrape = 1;
+	} else {
+		loAtrape = 0;
 	}
+	caughtPokemon->atrapar = loAtrape;
 
-	/*if(!strcmp(confirmacion, "FAIL")){
-	caught->atrapar = 0;
-	}*/
-	return caught;
+	return caughtPokemon;
+}
+
+LocalizedPokemon* parsearLocalizedPokemon(char* nombre,char* cantParesOrd,char* pares[]){
+	LocalizedPokemon* localizedPokemon = malloc(sizeof(LocalizedPokemon));
+	t_list* lista = list_create();
+
+	int j = 0;
+	localizedPokemon->nombre = nombre;
+	localizedPokemon->tamanioNombrePokemon = strlen(nombre)+1;
+	localizedPokemon->cantidadParesOrdenados = atoi(cantParesOrd);
+	for(int i=0;i<atoi(cantParesOrd);i++){
+		CoordenadasXY* coordenadas = malloc(sizeof(CoordenadasXY));
+		coordenadas->posicionX = atoi(pares[i]);
+		i = j;
+		coordenadas->posicionY = atoi(pares[j]);
+		list_add(lista,coordenadas);
+	}
+	localizedPokemon->paresOrdenados = lista;
+	list_destroy(lista);
+
+	return localizedPokemon;
 }
 
 /*void enviarNewPokemon(NewPokemon* newPokemon, int conexion)

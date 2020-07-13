@@ -7,7 +7,7 @@
 /*
 #include "gamecard.h"
 
-int main(void)
+int mainPruebas(void)
 {
 
 	---------------------------------------------------PARTE 2-------------------------------------------------------------
@@ -251,21 +251,21 @@ int main(void)
 /*
 
 //TODO
-t_log* iniciar_logger(void)
+t_log* iniciar_loggerpruebas(void)
 {
 	return log_create("gamecard.log", "Log de Game Card" , 1, LOG_LEVEL_INFO);
 
 }
 
 //TODO
-t_config* leer_config(void)
+t_config* leer_configpruebas(void)
 {
 	return config_create("gamecard.config");
 
 }
 
 //TODO
-void terminar_programa(int conexion, t_log* logger, t_config* config)
+void terminar_programapruebas(int conexion, t_log* logger, t_config* config)
 {
 	log_destroy(logger);
 	config_destroy(config);
