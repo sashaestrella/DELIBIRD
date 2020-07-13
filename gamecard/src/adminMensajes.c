@@ -253,16 +253,22 @@ void* crearDirectorioTG(){
 	string_append(&path,puntoMontaje);
 	string_append(&path, "/TALL_GRASS");
 	mkdir(path, 0777);
+
+	printf("Llego: %s\n", path);
 	crearMetadata(path);
+	printf("Llego: %s\n", path);
 	crearFiles(path);
+	printf("Llego: %s\n", path);
 	crearBlocks(path);
 }
 
-void* crearMetadata(char* path){
+void* crearMetadata(char* pathOrigin){
 	FILE* metadata;
+	char* path = string_duplicate(pathOrigin);
 
+	string_append(&path,"/Metadata");
 	mkdir(path, 0777);
-	string_append(&path, "/Metadata/Metadata.bin");
+	string_append(&path, "/Metadata.bin");
 	metadata = fopen(path, "wrb");
 	fclose(metadata);
 
@@ -273,10 +279,16 @@ void* crearMetadata(char* path){
 	config_save(md);
 }
 
-void* crearFiles(char* path){
+void* crearFiles(char* pathOrigin){
+	FILE* metadata;
+	char* path = string_duplicate(pathOrigin);
+
 	string_append(&path, "/Files");
 	mkdir(path, 0777);
 	string_append(&path, "/Metadata.bin");
+	metadata = fopen(path, "wrb");
+	fclose(metadata);
+
 	t_config* md = config_create(path);
 	config_set_value(md, "DIRECTORY", "Y");
 	config_save(md);

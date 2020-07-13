@@ -7,7 +7,8 @@ int main(void)
 	sem_init(&suscripciones, 0, 1);
 	leerConfig();
 	cantidadArchivos = 0;
-	generarConexiones(0);
+	crearDirectorioTG();
+	/*generarConexiones(0);
 	t_log* logger;
 
 	logger = iniciar_logger();
@@ -15,6 +16,7 @@ int main(void)
 	char* primerLog = "Log de Gamecard";
 
 	log_info(logger, primerLog);
+	*/
 
 }
 
