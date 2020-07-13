@@ -141,7 +141,6 @@ int main(int argc,char* argv[])
 
 
 	generarConexiones(0);
-
 	sleep(2);
 
 	int i;
@@ -164,8 +163,8 @@ int main(int argc,char* argv[])
 	pthread_t hiloConexionGameboy;
 	pthread_create(&hiloConexionGameboy, NULL, (void*)noHayBroker, NULL);
 
-	pthread_detach(hiloConexionGameboy);*/
-
+	pthread_detach(hiloConexionGameboy);
+   */
 	list_add_all(blocked_new, entrenadores);
 
 
@@ -294,7 +293,6 @@ void planificadorFIFO_RR(){
 					entrenador = list_get(ready,i);
 					printf("\n%d)", entrenador->ID);
 				}
-
 
 				//pthread_mutex_lock(&colaReady);
 				entrenador = list_remove(ready, 0);

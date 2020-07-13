@@ -39,10 +39,10 @@ void* flujoEntrenador(Entrenador* entrenador){
 
 
 		moverseUnaPosicion(entrenador, posicion);
-		//pthread_mutex_lock(&ciclosTotales);
+
 		ciclos_totales++;
 		ciclos_entrenadores[entrenador->ID -1]++;
-		//pthread_mutex_unlock(&ciclosTotales);
+
 		verificarCiclos(&ciclos_entrenadores[entrenador->ID -1], entrenador);
 	}
 
@@ -95,7 +95,6 @@ void* flujoEntrenador(Entrenador* entrenador){
 
 
 
-
 	//asumo que lo agarro por ahora
 
 	bool sacarEntrenador(Entrenador* e){
@@ -104,10 +103,10 @@ void* flujoEntrenador(Entrenador* entrenador){
 
 	entrenador = list_remove_by_condition(blocked_caught,(void*)sacarEntrenador);
 
-	//pthread_mutex_lock(&colaReady);
+
 	list_add(ready, entrenador);
 	sem_post(&aparicion_pokemon);
-	//pthread_mutex_unlock(&colaReady);
+
 	printf("\nSoy %d pase a ready", entrenador->ID);
 
 	sem_wait(ejecutate[entrenador->ID - 1]);
@@ -125,9 +124,9 @@ void* flujoEntrenador(Entrenador* entrenador){
 		return p->nombre == pokemon->nombre && p->IdEntrenadorQueLoVaAatrapar == pokemon->IdEntrenadorQueLoVaAatrapar;
 	}
 
-	//pthread_mutex_lock(&mutex_mapa);
+
 	list_remove_by_condition(pokemones_en_mapa, (void*)buscarPokemon);
-	//pthread_mutex_unlock(&mutex_mapa);
+
 
 	entrenador->tieneAsignadoUnPokemon = false;
 
@@ -201,18 +200,10 @@ void* flujoEntrenador(Entrenador* entrenador){
 
 	}else{
 
-		if(list_find(pokemones_en_mapa, (void*)buscarMiPokemon) == NULL){
 			list_add(blocked_new, list_remove(ejecutando, 0));
 			sem_post(finEjecucion[entrenador->ID - 1]);
 			sem_wait(ejecutate[entrenador->ID -1]);
-		}else{
 
-				//pthread_mutex_lock(&colaBlocked_new);
-				list_add(blocked_new, list_remove(ejecutando, 0));
-				//pthread_mutex_lock(&colaBlocked_new);
-				sem_post(finEjecucion[entrenador->ID - 1]);
-
-			}
 	}
 
 
