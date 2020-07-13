@@ -261,9 +261,10 @@ int main(void){
 	borrarLRU();
 	puts("\n------------Fin Pruebas borrar por LRU");
 */
+
 /*
+	MensajeNewPokemon2* mensaje2;
 	NewPokemon* unNewPokemon2 = malloc(sizeof(NewPokemon));
-	MensajeNewPokemon* mensaje2;
 		char* nombre2 = malloc(9);
 		nombre2 = "ALAKAZAM";
 		unNewPokemon2->nombre = nombre2;
@@ -271,7 +272,8 @@ int main(void){
 		unNewPokemon2->coordenadas.posicionY = 3;
 		unNewPokemon2->cantidad = 3;
 
-		mensaje2 = guardarMensajeNewPokemon(unNewPokemon2);*/
+		mensaje2 = guardarMensajeNewPokemon(unNewPokemon2);
+*/
 /*
 
 	LocalizedPokemon* localizedPokemon1 = malloc(sizeof(LocalizedPokemon));

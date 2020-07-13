@@ -856,13 +856,13 @@ void consolidarBS(int posicion){
 		printf("\nLa posicion de la izquierda arranca en %i y termina en %i. la posicion base empieza en %i",posicionAIzquierda->posicion-memoriaInterna,posicionAIzquierda->posicion-memoriaInterna + posicionAIzquierda->tamanio,posicionBase->posicion-memoriaInterna);
 		printf("\nEL tamanio de las posiciones es %i y %i",posicionAIzquierda->tamanio,posicionBase->tamanio);
 		if((posicionAIzquierda->posicion + posicionAIzquierda->tamanio) == ((posicionBase->posicion)) && (posicionAIzquierda->tamanio == posicionBase->tamanio) && ((int)posicionAIzquierda->posicion-(int)memoriaInterna == ((int)posicionBase->posicion-(int)memoriaInterna^posicionAIzquierda->tamanio))){
-						puts("efectivamente puedo consolidar a izquierda");
-						posicionAIzquierda->tamanio+= posicionBase->tamanio;
-						free(posicionBase);
-						list_remove(listaPosicionesLibres,posicion);
-						puts("acabo de consolidar a izquierda en BS");
-						yaConsolide = 1;
-						consolidarBS(posicion-1);
+			puts("efectivamente puedo consolidar a izquierda");
+			posicionAIzquierda->tamanio+= posicionBase->tamanio;
+			free(posicionBase);
+			list_remove(listaPosicionesLibres,posicion);
+			puts("acabo de consolidar a izquierda en BS");
+			yaConsolide = 1;
+			consolidarBS(posicion-1);
 		}
 	}
 	if(posicion != tamanioPosicionesLibres-1 && yaConsolide==0){ //me fijo si tengo algo a la derecha
@@ -1076,8 +1076,7 @@ void actualizarTimestamp(int ID){
 			contadorTimestamp++;
 			unaPosicionOcupada->timestamp = contadorTimestamp;
 			pthread_mutex_unlock(&mutexContadorTimestamp);
-			printf("el mensaje de ID %d tiene timestamp %d", unaPosicionOcupada->ID, unaPosicionOcupada->timestamp);
-			puts("jajaxd");
+			printf("El mensaje de ID %d tiene timestamp %d", unaPosicionOcupada->ID, unaPosicionOcupada->timestamp);
 			break;
 		}
 	}
