@@ -57,10 +57,7 @@ void abrirEscuchaCatch(){
 // ------------------------------------ AUXILIARES ------------------------------------ //
 
 void noHayBroker(){
-	//suscribirseACola(conexionGameBoy, 0, 0, msgGameBoy);
-	//pthread_t hiloGameBoy;
-	//pthread_create(&hiloGameBoy, NULL, recibirMensaje, conexionGameBoy);
-	//pthread_join(hiloGameBoy,NULL);
+
 }
 
 
@@ -208,13 +205,6 @@ void* adminMensajeNewPokemon(NewPokemonConIDs* nuevoNewPokemon){
 	armarFolderPara(nuevoNewPokemon);
 }
 
-void* armarFolderPara(NewPokemonConIDs* newPokemon){
-	char* path = string_new();
-	string_append(&path, "../../TALL_GRASS/Files/");
-	string_append(&path, newPokemon->newPokemon->nombre);
-	mkdir(path, 0777);
-}
-
 void* recibirMensajesGet(){
 	pthread_t admin;
 	GetPokemonConIDs* nuevoGetPokemon;
@@ -256,12 +246,15 @@ void* adminMensajeCatch(CatchPokemonConIDs* nuevoCatch){
 	printf("Guarde un mensaje Catch");
 }
 
+// --------------------- FILE SYSTEM --------------------- //
+
 void* crearDirectorioTG(){
 	char* path = string_new();
 	string_append(&path, "../../TALL_GRASS");
 	mkdir(path, 0777);
 	crearMetadata(path);
 	crearFiles(path);
+	crearBlocks();
 }
 
 void* crearMetadata(){
@@ -280,6 +273,55 @@ void* crearMetadata(){
 
 void* crearFiles(){
 	mkdir("../../TALL_GRASS/Files", 0777);
+	t_config* md = config_create("../../TALL_GRASS/Files/Metadata.bin");
+	config_set_value(md, "DIRECTORY", "Y");
+	config_save(md);
+}
+
+void* crearBlocks(){
+	mkdir("../../TALL_GRASS/Blocks", 0777);
+}
+
+void* generarBitmap(){
+}
+
+void* armarFolderPara(NewPokemonConIDs* newPokemon){
+	char* path = string_new();
+	string_append(&path, "../../TALL_GRASS/Files/");
+	string_append(&path, newPokemon->newPokemon->nombre);
+	mkdir(path, 0777);
+}
+
+void* crearMetadataPara(NewPokemonConIDs* newPokemon){
+
+}
+
+void* crearMetadataDirPara(NewPokemonConIDs* newPokemon){
+
+}
+
+// --------------------- INTERACCION CON FS --------------------- //
+
+int archivoAbierto(char* path){
+
+}
+
+int existePokemon(char* nombre){
+
+}
+
+void agregarPokemon(NewPokemon* nuevoPokemon){
+
+}
+
+void eliminarPokemon(CatchPokemon* pokemon){
+
 }
 
 
+
+// --------------------- Enviar Mensajes --------------------- //
+
+enviarMensaje(){
+
+}

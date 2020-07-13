@@ -37,5 +37,9 @@ void* adminMensajeCatch(CatchPokemonConIDs*);
 void* crearDirectorioTG();
 void* crearMetadata();
 void* crearFiles();
+void* crearBlocks();
+void* generarBitmap();
+void* crearMetadataPara(NewPokemonConIDs*);
+void* crearMetadataDirPara(NewPokemonConIDs*);
 
 #endif /* ADMINMENSAJES_H_ */

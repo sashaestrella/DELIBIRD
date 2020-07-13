@@ -19,7 +19,14 @@
 
 char* ip;
 char* puerto;
+int cantidadArchivos;
+char* puntoMontaje;
+int tiempoReintento;
+int tiempoReconexion;
+int tiempoRetardo;
 sem_t suscripciones;
+
+void leerConfig();
 
 // ----------------- Conexiones ----------------- //
 
