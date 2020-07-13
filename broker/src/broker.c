@@ -1,5 +1,9 @@
 #include "broker.h"
 
+void errorExit(char* strerr){
+	perror(strerr);
+	exit(1);
+}
 
 int main(void)
 {
@@ -14,53 +18,112 @@ int main(void)
 	Appeared_Pokemon = list_create();
 	Catch_Pokemon = list_create();
 	Caught_Pokemon = list_create();
+	suscriptores_new_pokemon = list_create();
+	suscriptores_localized_pokemon = list_create();
+	suscriptores_get_pokemon = list_create();
+	suscriptores_appeared_pokemon = list_create();
+	suscriptores_catch_pokemon = list_create();
+	suscriptores_caught_pokemon = list_create();
+	listaPosicionesLibres=list_create();
+	listaPosicionesOcupadas=list_create();
 
-	pthread_create(&hiloConexion, NULL,(void*)&iniciar_servidor,NULL);
 
 
+	t_config* config;
+	config= config_create("broker.config");
+	tamanioMinimoParticion = atoi(config_get_string_value(config, "TAMANIO_MINIMO_PARTICION"));
+	printf("el tamanio minimo de particion es: %d",tamanioMinimoParticion);
+	puts("a");
+	int tamanioMemoria = atoi(config_get_string_value(config, "TAMANIO_MEMORIA"));
+	memoriaInterna = malloc(tamanioMemoria);
+	PosicionLibre* primerPosicionLibre = malloc(sizeof(PosicionLibre));
+	list_add(listaPosicionesLibres,primerPosicionLibre);
+	primerPosicionLibre->posicion = memoriaInterna;
+	primerPosicionLibre->tamanio = tamanioMemoria;
 
+
+/*		NewPokemon* unNewPokemon1 = malloc(sizeof(NewPokemon));
+		MensajeNewPokemon* mensaje1;
+		char* nombre = malloc(8);
+		nombre = "PIKACHU";
+		unNewPokemon1->nombre = nombre;
+		unNewPokemon1->coordenadas.posicionX = 2;
+		unNewPokemon1->coordenadas.posicionY = 3;
+		unNewPokemon1->cantidad = 3;
+
+		mensaje1 = guardarMensajeNewPokemon(unNewPokemon1);
+
+	NewPokemon* unNewPokemon2 = malloc(sizeof(NewPokemon));
+	MensajeNewPokemon* mensaje2;
+		char* nombre2 = malloc(9);
+		nombre2 = "ALAKAZAM";
+		unNewPokemon2->nombre = nombre2;
+		unNewPokemon2->coordenadas.posicionX = 2;
+		unNewPokemon2->coordenadas.posicionY = 3;
+		unNewPokemon2->cantidad = 3;
+
+		mensaje2 = guardarMensajeNewPokemon(unNewPokemon2);*/
+/*
+
+	LocalizedPokemon* localizedPokemon1 = malloc(sizeof(LocalizedPokemon));
+	MensajeLocalizedPokemon* mensaje3;
+		localizedPokemon1->nombre = "LOCALIZED1";
+		localizedPokemon1->cantidadParesOrdenados = 2;
+		int numero = 1;
+		int idCorrelativo = 1;
+		t_list* pares = list_create();
+		list_add(pares,&numero);
+		list_add(pares,&numero);
+		list_add(pares,&numero);
+		list_add(pares,&numero);
+		localizedPokemon1->paresOrdenados = pares;
+		int tamanioLista = list_size(localizedPokemon1->paresOrdenados);
+		printf("\nEl tamaño de pares ordenados de localized es: %d",tamanioLista);
+
+		mensaje3 = guardarMensajeLocalizedPokemon(localizedPokemon1,idCorrelativo);
+
+
+	GetPokemon* unGetPokemon1 = malloc(sizeof(GetPokemon));
+	MensajeGetPokemon* mensaje4;
+		unGetPokemon1->nombre = "GET";
+
+		mensaje4 = guardarMensajeGetPokemon(unGetPokemon1);
+
+	AppearedPokemon* unAppearedPokemon1 = malloc(sizeof(AppearedPokemon));
+	MensajeAppearedPokemon* mensaje5;
+		unAppearedPokemon1->nombre = "APPEARED1";
+		unAppearedPokemon1->coordenadas.posicionX = 2;
+		unAppearedPokemon1->coordenadas.posicionY = 4;
+
+		mensaje5 = guardarMensajeAppearedPokemon(unAppearedPokemon1);
+
+	CatchPokemon* unCatchPokemon1 = malloc(sizeof(CatchPokemon));
+	MensajeCatchPokemon* mensaje6;
+		unCatchPokemon1->nombre = "CATCH1";
+		unCatchPokemon1->coordenadas.posicionX = 5;
+		unCatchPokemon1->coordenadas.posicionY = 6;
+		printf("Coordenadas catch: %d %d\n",unCatchPokemon1->coordenadas.posicionX,unCatchPokemon1->coordenadas.posicionY);
+
+		mensaje6 = guardarMensajeCatchPokemon(unCatchPokemon1);
+
+	CaughtPokemon* unCaughtPokemon1 = malloc(sizeof(CaughtPokemon));
+	MensajeCaughtPokemon* mensaje7;
+		int idCorrelativoCaught = 1;
+		unCaughtPokemon1->atrapar = 1;
+
+		mensaje7 = guardarMensajeCaughtPokemon(unCaughtPokemon1,idCorrelativoCaught);
+
+*/
+
+	//El sistema tira un error si no se creó correctamente el hilo
+		if(pthread_create(&hiloConexion, NULL,(void*)&iniciar_servidor,NULL) != 0){
+				errorExit("El hilo no pudo ser creado");
+		}
 
 
 	pthread_join(hiloConexion, NULL); //Puede cambiarse por Detach
-/*
-	int mensaje;
 
-while(0){
-	switch(mensaje){
-		case NEW_POKEMON:
-			list_add(suscriptoresNewPokemon,&suscriptor);
-			break;
-		case LOCALIZED_POKEMON:
-			list_add(suscriptoresLocalizedPokemon,&suscriptor);
-			break;
-		case GET_POKEMON:
-			list_add(suscriptoresGetPokemon,&suscriptor);
-			break;
-		case APPEARED_POKEMON:
-			list_add(suscriptoresAppearedPokemon,&suscriptor);
-			break;
-		case CATCH_POKEMON:
-			list_add(suscriptoresCatchPokemon,&suscriptor);
-			break;
-		case CAUGHT_POKEMON:
-			list_add(suscriptoresCaughtPokemon,&suscriptor);
-			break;
-	}
-}
-
-
-
-
-	pthread_join(hiloColaNewPokemon, NULL);
-	pthread_join(hiloColaLocalizedPokemon, NULL);
-	pthread_join(hiloColaGetPokemon, NULL);
-	pthread_join(hiloColaAppearedPokemon, NULL);
-	pthread_join(hiloColaCatchPokemon, NULL);
-	pthread_join(hiloColaCaughtPokemon, NULL);
-*/
 	printf("Han finalizado los thread.\n");
-
-	//mostrar como quedaron todas las listas de suscriptores
 
 	return EXIT_SUCCESS;
 }

@@ -2,7 +2,7 @@
 #define SERVIDOR_H_
 
 //aca irian includes que son solo del broker
-#include<src/utilsGeneral.h>
+#include<src/utilsBroker.h>
 
 
 #endif /* SERVIDOR_H_ */

@@ -14,9 +14,30 @@
 #include<commons/string.h>
 #include<commons/config.h>
 #include<readline/readline.h>
-
 #include<src/utilsGeneral.h>
+#include<semaphore.h>
 
+char* ip;
+char* puerto;
+sem_t suscripciones;
+
+// ----------------- Conexiones ----------------- //
+
+int conexionGetPokemon;
+int IDsuscripcionGet;
+int idGetPokemon;
+
+int conexionNewPokemon;
+int IDsuscripcionNew;
+int idNewPokemon;
+
+int conexionCatch;
+int IDsuscripcionCatch;
+int idCatch;
+
+int conexionGameBoy;
+int idGameBoy;
+int msgGameBoy;
 
 t_log* iniciar_logger(void);
 t_config* leer_config(void);

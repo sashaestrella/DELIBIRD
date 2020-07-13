@@ -7,18 +7,21 @@ C_SRCS += \
 ../src/adminMensajes.c \
 ../src/funcionesEntrenador.c \
 ../src/funcionesTeam.c \
+../src/planificacion.c \
 ../src/team.c 
 
 OBJS += \
 ./src/adminMensajes.o \
 ./src/funcionesEntrenador.o \
 ./src/funcionesTeam.o \
+./src/planificacion.o \
 ./src/team.o 
 
 C_DEPS += \
 ./src/adminMensajes.d \
 ./src/funcionesEntrenador.d \
 ./src/funcionesTeam.d \
+./src/planificacion.d \
 ./src/team.d 
 
 
