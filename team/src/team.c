@@ -32,7 +32,6 @@ int main(int argc,char* argv[])
 	pokemones_en_mapa= list_create();
 
 	readyAnterior = list_create();
-
 	leer_config();
 
 	inicializarSemaforos();
@@ -71,14 +70,19 @@ int main(int argc,char* argv[])
 		pthread_create(&hiloEntrenador[j],NULL, flujoEntrenador,list_get(entrenadores, j));
 	}
 
-
 	generarConexiones(0);
 	sleep(2);
 
-	sem_wait(&pruebaLocalized);
-	sem_wait(&pruebaLocalized);
-	sem_wait(&pruebaLocalized);
-	sem_wait(&pruebaLocalized);
+	puts("\Voy a crear el hilo");
+	/*pthread_t hiloConexionGameboy;
+	pthread_create(&hiloConexionGameboy, NULL, (void*)noHayBroker, NULL);
+
+	pthread_detach(hiloConexionGameboy);*/
+
+	//sem_wait(&pruebaLocalized);
+	//sem_wait(&pruebaLocalized);
+	//sem_wait(&pruebaLocalized);
+	//sem_wait(&pruebaLocalized);
 
 
 	int i;
@@ -110,12 +114,7 @@ int main(int argc,char* argv[])
 
 	}
 
-	/*puts("\Voy a crear el hilo");
-	pthread_t hiloConexionGameboy;
-	pthread_create(&hiloConexionGameboy, NULL, (void*)noHayBroker, NULL);
 
-	pthread_detach(hiloConexionGameboy);
-   */
 	list_add_all(blocked_new, entrenadores);
 
 

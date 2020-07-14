@@ -1,5 +1,6 @@
 #include "utilsBroker.h"
 
+
 void iniciar_servidor(void){
 	int socket_servidor;
 
@@ -9,8 +10,7 @@ void iniciar_servidor(void){
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
-
-    getaddrinfo(IP, PUERTO, &hints, &servinfo);
+    getaddrinfo(IP_BROKER, PUERTO_BROKER, &hints, &servinfo);
 
     for (p=servinfo; p != NULL; p = p->ai_next)
     {
@@ -848,6 +848,7 @@ void consolidarBS(int posicion){
 	int tamanioPosicionesLibres = list_size(listaPosicionesLibres);
 	printf("\n llego a esta funcion? la posicion es %i",posicion);
 	int yaConsolide =0;
+	char* loQueVoyALoggear;
 
 	if(posicion>0){ //primero va posicion a izquierda
 		puts("tengo algo a izquierda");
@@ -857,10 +858,13 @@ void consolidarBS(int posicion){
 		printf("\nEL tamanio de las posiciones es %i y %i",posicionAIzquierda->tamanio,posicionBase->tamanio);
 		if((posicionAIzquierda->posicion + posicionAIzquierda->tamanio) == ((posicionBase->posicion)) && (posicionAIzquierda->tamanio == posicionBase->tamanio) && ((int)posicionAIzquierda->posicion-(int)memoriaInterna == ((int)posicionBase->posicion-(int)memoriaInterna^posicionAIzquierda->tamanio))){
 						puts("efectivamente puedo consolidar a izquierda");
+						loQueVoyALoggear = "consolide las particiones con inicio %i, %i";
+						log_info(logger,loQueVoyALoggear, (int)posicionAIzquierda->posicion-(int)memoriaInterna, (int)posicionBase->posicion-(int)memoriaInterna);
 						posicionAIzquierda->tamanio+= posicionBase->tamanio;
 						free(posicionBase);
 						list_remove(listaPosicionesLibres,posicion);
 						puts("acabo de consolidar a izquierda en BS");
+
 						yaConsolide = 1;
 						consolidarBS(posicion-1);
 		}
@@ -872,6 +876,8 @@ void consolidarBS(int posicion){
 		printf("\nEL tamanio de las posiciones es %i y %i",posicionADerecha->tamanio,posicionBase->tamanio);
 		if(((posicionBase->posicion + posicionBase->tamanio) == posicionADerecha->posicion) && posicionBase->tamanio == posicionADerecha->tamanio && ((int)posicionADerecha->posicion-(int)memoriaInterna == ((int)posicionBase->posicion-(int)memoriaInterna^posicionADerecha->tamanio))){
 			puts("\nvoy a consolidar a derecha");
+			loQueVoyALoggear = "consolide las particiones con inicio %i, %i";
+			log_info(logger,loQueVoyALoggear, (int)posicionBase->posicion-(int)memoriaInterna, (int)posicionADerecha->posicion-(int)memoriaInterna);
 			posicionBase->tamanio+= posicionADerecha->tamanio;
 			free(posicionADerecha);
 			list_remove(listaPosicionesLibres,posicion+1);
@@ -909,7 +915,7 @@ void borrarFIFO(){
 	unaPosicionLibre->tamanio = unaPosicionOcupada->tamanio;
 	borrarDeColaDeMensajes(unaPosicionOcupada->colaALaQuePertenece,unaPosicionOcupada->ID);
 	loQueVoyALoguear = "Eliminé por FIFO la posicion ocupada que comienza en: %d";
-	log_info(logger, loQueVoyALoguear,unaPosicionOcupada->posicion);
+	log_info(logger, loQueVoyALoguear,(int)unaPosicionOcupada->posicion-(int)memoriaInterna);
 	free(unaPosicionOcupada);
 	list_remove(listaPosicionesOcupadas,posicionABorrar);
 	int posicionQueQuedo = insertarOrdenadoEnListaPosicionesLibres(unaPosicionLibre);
@@ -1059,7 +1065,7 @@ void borrarLRU(){
 	unaPosicionLibre->tamanio = unaPosicionOcupada->tamanio;
 	borrarDeColaDeMensajes(unaPosicionOcupada->colaALaQuePertenece,unaPosicionOcupada->ID);
 	loQueVoyALoguear = "Eliminé por LRU la posicion ocupada que comienza en: %d";
-	log_info(logger, loQueVoyALoguear,unaPosicionOcupada->posicion);
+	log_info(logger, loQueVoyALoguear,(int)unaPosicionOcupada->posicion-(int)memoriaInterna);
 	free(unaPosicionOcupada);
 	list_remove(listaPosicionesOcupadas,posicionABorrar);
 
@@ -1315,8 +1321,8 @@ void compacta(){
 		printf("La memoria empieza en: %d y la primer posicion libre quedo en %d", memoriaInterna, posicionLibreQueItera->posicion);
 	}
 
-	loQueVoyALoguear = "Se asociaron las particiones con ID: %d y %d, las cuales la primera comienza en %d y la segunda comienza en %d";
-	log_info(logger, loQueVoyALoguear,posicionAnterior->ID,posicionQueItera->ID,posicionAnterior->posicion,posicionQueItera->posicion);
+	loQueVoyALoguear = "Se acaba de compactar";
+	log_info(logger, loQueVoyALoguear);
 
 	busquedasFallidasPreviasACompactacion = busquedasFallidasPreviasACompactacionOriginal;
 

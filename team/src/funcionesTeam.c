@@ -28,9 +28,18 @@ void leer_config()
 
 	//archivoLog = config_get_array_value(archivo_config, "LOG_FILE");
 
+
 	ip = config_get_string_value(archivo_config,"IP");
 
 	puerto = config_get_string_value(archivo_config,"PUERTO");
+
+	printf("ip y puerto de broker %s %s", ip, puerto);
+
+	IP_TEAM = config_get_string_value(archivo_config,"IP_TEAM");
+
+	PUERTO_TEAM = config_get_string_value(archivo_config,"PUERTO_TEAM");
+
+
 
 	free(archivo_config);
 }

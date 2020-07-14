@@ -3,6 +3,9 @@
 
 #include "team.h"
 
+char* IP_TEAM;
+char* PUERTO_TEAM;
+
 void generarConexiones();
 void abrirEscuchas();
 void empezarAnalizadoresDeMensajes();

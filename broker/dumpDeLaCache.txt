@@ -1,1 +1,13 @@
 
+
+Dump: 14/07/20 20:47:30
+Inicio de la memoria: 0x86f00e8
+Partición 0: 0x86f0118-0x86f0127.		[L]		Size: 16b
+Partición 1: 0x86f0128-0x86f0167.		[L]		Size: 64b
+Partición 0: 0x86f00e8-0x86f00f7.		[X]		Size: 16b		LRU: 1		Cola: 4		ID: 1
+Partición 1: 0x86f00f8-0x86f0107.		[X]		Size: 16b		LRU: 2		Cola: 4		ID: 2
+Partición 2: 0x86f0108-0x86f0117.		[X]		Size: 16b		LRU: 3		Cola: 4		ID: 3
+En posiciones relativas: 
+Partición 0: 0-15.		[X]		Size: 16b		LRU: 1		Cola: 4		ID: 1
+Partición 1: 16-31.		[X]		Size: 16b		LRU: 2		Cola: 4		ID: 2
+Partición 2: 32-47.		[X]		Size: 16b		LRU: 3		Cola: 4		ID: 3

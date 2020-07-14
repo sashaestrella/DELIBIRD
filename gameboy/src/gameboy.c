@@ -12,7 +12,7 @@ void suscribirNewPokemon(){
 	puerto = config_get_string_value(config, "PUERTO");
 	printf("el ip y el puerto son: %s %s", ip, puerto);
 	conexion = crear_conexion(ip, puerto);
-	char* loQueVoyALoguear = "\nSe creo la conexion con el valor %d";
+	char* loQueVoyALoguear = "\n[GAMEBOY]Se creo la conexion con broker con el valor %d";
 	log_info(logger,loQueVoyALoguear,conexion);
 
 
@@ -21,6 +21,8 @@ void suscribirNewPokemon(){
 
 
 	enviarSuscripcion(0,conexion,cod_op);
+	loQueVoyALoguear = "\n[GAMEBOY]Me suscribi a la cola NEW_POKEMON";
+	log_info(logger,loQueVoyALoguear);
 	printf("Envie suscripcion para la cola de mensajes %d",cod_op);
 	recv(conexion,&idSuscriptorPosta,sizeof(int),MSG_WAITALL);
 	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptorPosta);
@@ -75,16 +77,17 @@ void suscribirLocalizedPokemon(){
 	puerto = config_get_string_value(config, "PUERTO");
 	printf("el ip y el puerto son: %s %s", ip, puerto);
 	conexion = crear_conexion(ip, puerto);
-	char* loQueVoyALoguear = "\nSe creo la conexion con el valor %d";
+	char* loQueVoyALoguear = "\n[GAMEBOY]Se creo la conexion con broker con el valor %d";
 	log_info(logger,loQueVoyALoguear,conexion);
 
 	int idSuscriptorPosta;
 	int cod_op = 9;
 	Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
-	unSuscriptor1->socketSuscriptor = 4;
 	unSuscriptor1->IDsuscriptor = 0;
 	enviarSuscripcion(unSuscriptor1->IDsuscriptor,conexion,cod_op);
 	printf("Envie suscripcion para la cola de mensajes %d",cod_op);
+	loQueVoyALoguear = "\n[GAMEBOY]Me suscribi a la cola LOCALIZED_POKEMON";
+	log_info(logger,loQueVoyALoguear);
 	recv(conexion,&idSuscriptorPosta,sizeof(int),MSG_WAITALL);
 	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptorPosta);
 
@@ -135,7 +138,7 @@ void suscribirGetPokemon(){
 	puts("estoy en suscribir get");
 	printf("el ip y el puerto son: %s %s", ip, puerto);
 	conexion = crear_conexion(ip, puerto);
-	char* loQueVoyALoguear = "\nSe creo la conexion con el valor %d";
+	char* loQueVoyALoguear = "\n[GAMEBOY]Se creo la conexion con broker con el valor %d";
 	log_info(logger,loQueVoyALoguear,conexion);
 
 	int idSuscriptorPosta;
@@ -145,6 +148,8 @@ void suscribirGetPokemon(){
 	unSuscriptor1->IDsuscriptor = 0;
 
 	enviarSuscripcion(unSuscriptor1->IDsuscriptor,conexion,cod_op);
+	loQueVoyALoguear = "\n[GAMEBOY]Me suscribi a la cola GET_POKEMON";
+	log_info(logger,loQueVoyALoguear);
 	printf("Envie suscripcion para la cola de mensajes %d",cod_op);
 	recv(conexion,&idSuscriptorPosta,sizeof(int),MSG_WAITALL);
 	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptorPosta);
@@ -198,20 +203,20 @@ void suscribirAppearedPokemon(){
 	char* puerto;
 	ip = config_get_string_value(config, "IP");
 	puerto = config_get_string_value(config, "PUERTO");
-	puts("estoy en suscribir get");
 	printf("el ip y el puerto son: %s %s", ip, puerto);
 	conexion = crear_conexion(ip, puerto);
-	char* loQueVoyALoguear = "\nSe creo la conexion con el valor %d";
+	char* loQueVoyALoguear = "\n[GAMEBOY]Se creo la conexion con broker con el valor %d";
 	log_info(logger,loQueVoyALoguear,conexion);
 
 	int idSuscriptorPosta;
 	int cod_op = 11;
 
 	Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
-	unSuscriptor1->socketSuscriptor = 4;
 	unSuscriptor1->IDsuscriptor = 0;
 
 	enviarSuscripcion(unSuscriptor1->IDsuscriptor,conexion,cod_op);
+	loQueVoyALoguear = "\n[GAMEBOY]Me suscribi a la cola APPEARED_POKEMON";
+	log_info(logger,loQueVoyALoguear);
 	printf("Envie suscripcion para la cola de mensajes %d",cod_op);
 	recv(conexion,&idSuscriptorPosta,sizeof(int),MSG_WAITALL);
 	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptorPosta);
@@ -260,20 +265,20 @@ void suscribirCatchPokemon(){
 	char* puerto;
 	ip = config_get_string_value(config, "IP");
 	puerto = config_get_string_value(config, "PUERTO");
-	puts("estoy en suscribir get");
 	printf("el ip y el puerto son: %s %s", ip, puerto);
 	conexion = crear_conexion(ip, puerto);
-	char* loQueVoyALoguear = "\nSe creo la conexion con el valor %d";
+	char* loQueVoyALoguear = "\n[GAMEBOY]Se creo la conexion con broker con el valor %d";
 	log_info(logger,loQueVoyALoguear,conexion);
 
 	int cod_op = 12;
 	int idSuscriptorPosta;
 
 	Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
-	unSuscriptor1->socketSuscriptor = 4;
 	unSuscriptor1->IDsuscriptor = 0;
 
 	enviarSuscripcion(unSuscriptor1->IDsuscriptor,conexion,cod_op);
+	loQueVoyALoguear = "\n[GAMEBOY]Me suscribi a la cola CATCH_POKEMON";
+	log_info(logger,loQueVoyALoguear);
 	printf("Envie suscripcion para la cola de mensajes %d",cod_op);
 	recv(conexion,&idSuscriptorPosta,sizeof(int),MSG_WAITALL);
 	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptorPosta);
@@ -326,17 +331,18 @@ void suscribirCaughtPokemon(){
 	puts("estoy en suscribir get");
 	printf("el ip y el puerto son: %s %s", ip, puerto);
 	conexion = crear_conexion(ip, puerto);
-	char* loQueVoyALoguear = "\nSe creo la conexion con el valor %d";
+	char* loQueVoyALoguear = "\n[GAMEBOY]Se creo la conexion con broker con el valor %d";
 	log_info(logger,loQueVoyALoguear,conexion);
 
     int idSuscriptorPosta;
 	int cod_op = 13;
 
 	Suscriptor* unSuscriptor1 = malloc(sizeof(Suscriptor));
-	unSuscriptor1->socketSuscriptor = 4;
 	unSuscriptor1->IDsuscriptor = 0;
 
 	enviarSuscripcion(unSuscriptor1->IDsuscriptor,conexion,cod_op);
+	loQueVoyALoguear = "\n[GAMEBOY]Me suscribi a la cola CAUGHT_POKEMON";
+	log_info(logger,loQueVoyALoguear);
 	printf("Envie suscripcion para la cola de mensajes %d",cod_op);
 	recv(conexion,&idSuscriptorPosta,sizeof(int),MSG_WAITALL);
 	printf("\nRecibi mi id como suscriptor: %d\n",idSuscriptorPosta);
@@ -387,31 +393,21 @@ int main(int argc, char *argv[])
 {
 
 	int conexion;
-	char* ip;
-	char* puerto;
+
 
 
 	logger = iniciar_logger();
 
-	//Loggear "soy un log"
 	char* primerLog = "Soy game-boy";
 
 	log_info(logger, primerLog);
 
 	config = leer_config();
 
-	config_set_value(config, "IP", "127.0.0.1");
-	config_set_value(config, "PUERTO", "4444");
-	config_save(config);
-
-
 	//Rear conexion
 
-	ip = config_get_string_value(config, "IP");
-	puerto = config_get_string_value(config, "PUERTO");
 	pthread_t hiloSuscripcion;
-	//char* loQueVoyALoguear = "\nSe creo la conexion con el valor %d";
-	//log_info(logger,loQueVoyALoguear,conexion);
+
 
 	if(!strcmp(argv[1],"SUSCRIPTOR")){
 		if(!strcmp(argv[2],"NEW_POKEMON")){
@@ -449,8 +445,10 @@ int main(int argc, char *argv[])
 
 	if(!strcmp(argv[1],"BROKER")){
 		//Enviar mensaje
-		conexion = crear_conexion(ip, puerto);
-		char* loQueVoyALoguear = "\nSe creo la conexion con el valor %d";
+		char* ipBroker = config_get_string_value(config,"IP_BROKER");
+		char* puertoBroker = config_get_string_value(config,"PUERTO_BROKER");
+		conexion = crear_conexion(ipBroker, puertoBroker);
+		char* loQueVoyALoguear = "\n[GAMEBOY]Se creo la conexion con broker con el valor %d";
 		log_info(logger,loQueVoyALoguear,conexion);
 
 		if(!strcmp(argv[2],"NEW_POKEMON")){
@@ -495,8 +493,11 @@ int main(int argc, char *argv[])
 
 	if(!strcmp(argv[1],"TEAM")){
 		//Enviar mensaje
-			conexion = crear_conexion(ip, puerto);
-			char* loQueVoyALoguear = "\nSe creo la conexion con el valor %d";
+			char* ipTeam = config_get_string_value(config,"IP_TEAM");
+			char* puertoTeam = config_get_string_value(config,"PUERTO_TEAM");
+			printf("\nip y puerto de team %s %s", ipTeam, puertoTeam);
+			conexion = crear_conexion(ipTeam, puertoTeam);
+			char* loQueVoyALoguear = "\n[GAMEBOY]Se creo la conexion con TEAM con el valor %d";
 			log_info(logger,loQueVoyALoguear,conexion);
 
 			if(!strcmp(argv[2],"APPEARED_POKEMON")){
@@ -529,7 +530,7 @@ int main(int argc, char *argv[])
 	if(!strcmp(argv[1],"GAMECARD")){
 		//Enviar mensaje
 		conexion = crear_conexion(ip, puerto);
-		char* loQueVoyALoguear = "\nSe creo la conexion con el valor %d";
+		char* loQueVoyALoguear = "\n[GAMEBOY]Se creo la conexion con GAMECARD con el valor %d";
 		log_info(logger,loQueVoyALoguear,conexion);
 		if(!strcmp(argv[2],"NEW_POKEMON")){
 				puts("entre a new pokemon");
@@ -585,6 +586,4 @@ void terminar_programa(int conexion, t_log* logger, t_config* config)
 	log_destroy(logger);
 	config_destroy(config);
 	liberar_conexion(conexion);
-
-	//Y por ultimo, para cerrar, hay que liberar lo que utilizamos (conexion, log y config) con las funciones de las commons y del TP mencionadas en el enunciado
 }

@@ -16,6 +16,8 @@
 #include"time.h"
 #include<commons/txt.h>
 
+char* IP_BROKER;
+char* PUERTO_BROKER;
 int generadorDeIDsMensaje = 0;
 int generadorDeIDsSuscriptor = 0;
 int contadorTimestamp = 0;
