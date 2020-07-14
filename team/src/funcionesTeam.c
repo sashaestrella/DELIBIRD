@@ -152,17 +152,31 @@ void enviar_gets(){
 
 	GetPokemon* getPokemon = malloc(sizeof(getPokemon));
 	char* pokemon;
+	t_list* especies_repetidas = list_create();
 
 	for(int i=0; i<list_size(objetivoGlobal);i++){
 
+		pokemon = list_get(objetivoGlobal,i);
+
+		if(noEstaEnLaLista(especies_repetidas, pokemon)){
+
+		list_add(especies_repetidas, pokemon);
 		pokemon = list_get(objetivoGlobal,i);
 
 		getPokemon->nombre = pokemon;
 		getPokemon->tamanioNombrePokemon = strlen(pokemon) +1;
 
 		enviar_getPokemon(getPokemon);
-
+		}
 	}
 
+}
 
+bool noEstaEnLaLista(t_list* lista, char* pokemon){
+
+	bool buscarEspecie(char* especie){
+		return !strcmp(especie, pokemon);
+	}
+
+	return ! list_any_satisfy(lista, buscarEspecie);
 }

@@ -255,13 +255,12 @@ void* adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
 	int cantidadPokemonLocalizados = list_size(nuevoLocalized -> localizedPokemon -> paresOrdenados);// se encontraron n
 	Pokemon* nuevo = malloc(sizeof(Pokemon));
 	CoordenadasXY* coor=malloc(sizeof(CoordenadasXY));
+	printf("\nLLego localized con ID %d", nuevoLocalized->IDcorrelativo);
 	if(descartar_localized_no_deseados(nuevoLocalized)){
-		puts("\n Llega");
 		for(int i=0; i<cantidadObjetivos && j < cantidadPokemonLocalizados; i++){
 		nuevo = elegirMejorUbicacion(nuevoLocalized);
 		nuevo->IdEntrenadorQueLoVaAatrapar = 0;
-		puts("\n Llega");
-		//list_add(nuevosPokemon, nuevo);
+
 		list_add(pokemones_en_mapa, nuevo);
 		printf("Guarde un Pokemon %s de localized con el ID de mensaje %d\n", nuevo->nombre, nuevoLocalized->IDmensaje);
 
@@ -270,10 +269,24 @@ void* adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
 		}
 		list_remove_by_condition(nuevoLocalized -> localizedPokemon -> paresOrdenados, (void*)compararCoordenadas);
 		//lo saca para que no lo vuelva a comparar por esas coordenadas
-		sem_post(&nuevosPokemons);
+
+		//sem_post(&nuevosPokemons);
 		sem_post(&pruebaLocalized);
 
 		j++;
+		}
+
+
+		for(int i=0; i<list_size(nuevoLocalized->localizedPokemon->paresOrdenados);i++){
+		Pokemon* poke = malloc(sizeof(Pokemon));
+		poke->nombre = nuevoLocalized->localizedPokemon->nombre;
+		printf("\nCantidad de pares %d", list_size(nuevoLocalized->localizedPokemon->paresOrdenados));
+		coor = list_get(nuevoLocalized->localizedPokemon->paresOrdenados,i);
+		poke->posicion.posicionX = coor->posicionX;
+
+		poke->posicion.posicionY = coor->posicionY;
+
+		list_add(mapa_auxiliar, poke);
 		}
 
 	} else {
@@ -298,6 +311,7 @@ void* recibirMensajesCaught(){
 		send(conexionCaught, &ack, sizeof(int), 0);
 		pthread_create(&admin, NULL, adminMensajeCaught, nuevoCaught);
 		pthread_detach(admin);
+
 	}
 	//free(nuevoCaught);
 }
