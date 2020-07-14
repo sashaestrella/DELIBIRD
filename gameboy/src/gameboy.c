@@ -95,8 +95,9 @@ void recibirColaGetPokemon(int conexion){
 	if(tamanioLista == 0){
 		puts("\nNo puedo recibir la lista porque esta vacia");
 		printf("Tamaño lista: %d",tamanioLista);
+	}else {
+		printf("El tamaño de la lista que voy a recibir es: %d\n",tamanioLista);
 	}
-	printf("El tamaño de la lista que voy a recibir es: %d\n",tamanioLista);
 
 	for(int i = 0; i<tamanioLista;i++){
 		recv(conexion,&variableQueNoUsoxd,sizeof(int),MSG_WAITALL);
@@ -137,13 +138,15 @@ void recibirColaLocalizedPokemon(int conexion){
 	free(localizedConIDs);
 }
 
-void recibirColaNewPokemon(int conexion){
+void recibirColaNewPokemon(int conexion,int tiempo){
 	int size;
 	int variableQueNoUsoxd;
 	int ack = 1;
 	int tamanioListaNP;
 	NewPokemonConIDs* newConIDs;
 	NewPokemon* unNewPokemonTemporal;
+	clock_t t_ini, t_fin;
+	t_ini = clock();
 
 	recv(conexion,&tamanioListaNP,sizeof(int),MSG_WAITALL);
 	if(tamanioListaNP == 0){
@@ -153,6 +156,7 @@ void recibirColaNewPokemon(int conexion){
 		printf("El tamaño de la lista que voy a recibir es: %d\n",tamanioListaNP);
 	}
 
+	int contador;
 	for(int i = 0; i<tamanioListaNP;i++){
 		recv(conexion,&variableQueNoUsoxd,sizeof(int),MSG_WAITALL);
 		newConIDs = recibir_NEW_POKEMON(conexion,&size,1);
@@ -160,7 +164,19 @@ void recibirColaNewPokemon(int conexion){
 		printf("[gameboy] Recibi un %s,%i,%i,%i con ID: %d\n",unNewPokemonTemporal->nombre,unNewPokemonTemporal->coordenadas.posicionX, unNewPokemonTemporal->coordenadas.posicionY, unNewPokemonTemporal->cantidad, newConIDs->IDmensaje);
 		send(conexion,&ack,sizeof(int),0);
 		printf("[gameboy]ACK=%d del mensaje %d fue enviado\n",ack,newConIDs->IDmensaje);
+
+		contador = i;
 	}
+	/*
+	if(contador == tamanioListaNP - 1 && tiempo > 0){
+		recv(conexion,&variableQueNoUsoxd,sizeof(int),MSG_WAITALL);
+		newConIDs = recibir_NEW_POKEMON(conexion,&size,1);
+		unNewPokemonTemporal = newConIDs->newPokemon;
+		printf("[gameboy] Recibi un %s,%i,%i,%i con ID: %d\n",unNewPokemonTemporal->nombre,unNewPokemonTemporal->coordenadas.posicionX, unNewPokemonTemporal->coordenadas.posicionY, unNewPokemonTemporal->cantidad, newConIDs->IDmensaje);
+		send(conexion,&ack,sizeof(int),0);
+		printf("[gameboy]ACK=%d del mensaje %d fue enviado\n",ack,newConIDs->IDmensaje);
+	}*/
+
 	free(newConIDs);
  }
 
@@ -186,7 +202,7 @@ int main(int argc, char *argv[]){
 	config_set_value(config, "PUERTO_BROKER", "4444");
 	config_save(config);
 
-	//Crear conexion
+	//Crear conexion con BROKER
 	ip = config_get_string_value(config, "IP_BROKER");
 	puerto = config_get_string_value(config, "PUERTO_BROKER");
 	conexion = crear_conexion(ip, puerto);
@@ -209,8 +225,9 @@ int main(int argc, char *argv[]){
 			recv(conexion,&idSuscriptorPosta,sizeof(int),MSG_WAITALL);
 			printf("Recibi mi id como suscriptor: %d.\n",idSuscriptorPosta);
 
-			recibirColaNewPokemon(conexion);
+			recibirColaNewPokemon(conexion,tiempo);
 			sleep(tiempo);
+
 		}
 
 		if(!strcmp(argv[2],"LOCALIZED_POKEMON")){
@@ -237,7 +254,7 @@ int main(int argc, char *argv[]){
 			printf("Recibi mi id como suscriptor: %d.\n",idSuscriptorPosta);
 
 			recibirColaGetPokemon(conexion);
-			sleep(tiempo*0.001);
+			sleep(tiempo);
 		}
 		if(!strcmp(argv[2],"APPEARED_POKEMON")){
 			tiempo = atoi(argv[3]);
@@ -286,6 +303,7 @@ int main(int argc, char *argv[]){
 		if(!strcmp(argv[2],"NEW_POKEMON")){
 			NewPokemon* newPokemon;
 			newPokemon = parsearNewPokemon(argv[3], argv[4], argv[5], argv[6]);
+
 			enviarNewPokemon(newPokemon, conexion,0);
 		}
 		if(!strcmp(argv[2],"GET_POKEMON")){
@@ -294,6 +312,7 @@ int main(int argc, char *argv[]){
 			enviarGetPokemon(unGetPokemon,conexion,0);
 			int idMensaje;
 			recv(conexion,&idMensaje,sizeof(int),0);
+			printf("Recibi el ID=%d del mensaje GET_POKEMON.\n",idMensaje);
 		}
 
 		if(!strcmp(argv[2],"CATCH_POKEMON")){
@@ -302,6 +321,7 @@ int main(int argc, char *argv[]){
 			enviarCatchPokemon(unCatchPokemon,conexion,0);
 			int idMensaje;
 			recv(conexion,&idMensaje,sizeof(int),0);
+			printf("Recibi el ID=%d del mensaje CATCH_POKEMON.\n",idMensaje);
 		}
 
 		if(!strcmp(argv[2],"CAUGHT_POKEMON")){
@@ -317,6 +337,7 @@ int main(int argc, char *argv[]){
 			AppearedPokemon* unAppearedPokemon;
 			unAppearedPokemon = parsearAppearedPokemon(argv[3],argv[4],argv[5]);
 			int id_correlativo = atoi(argv[6]);
+
 			enviarAppearedPokemon(unAppearedPokemon,conexion,0,id_correlativo);
 		}
 
@@ -327,6 +348,7 @@ int main(int argc, char *argv[]){
 			AppearedPokemon* unAppearedPokemon;
 			unAppearedPokemon = parsearAppearedPokemon(argv[3],argv[4],argv[5]);
 			int id_correlativo = atoi(argv[6]);
+
 			enviarAppearedPokemon(unAppearedPokemon,conexion,0,id_correlativo);
 		}
 	}
@@ -336,6 +358,7 @@ int main(int argc, char *argv[]){
 			puts("entre a new pokemon");
 			NewPokemon* newPokemon;
 			newPokemon = parsearNewPokemon(argv[3], argv[4], argv[5], argv[6]);
+
 			enviarNewPokemon(newPokemon, conexion,0);
 		}
 		if(!strcmp(argv[2],"GET_POKEMON")){
@@ -344,6 +367,7 @@ int main(int argc, char *argv[]){
 			enviarGetPokemon(unGetPokemon,conexion,0);
 			int idMensaje;
 			recv(conexion,&idMensaje,sizeof(int),0);
+			printf("Recibi el ID=%d del mensaje GET_POKEMON.\n",idMensaje);
 		}
 
 		if(!strcmp(argv[2],"CATCH_POKEMON")){
@@ -352,6 +376,8 @@ int main(int argc, char *argv[]){
 			enviarCatchPokemon(unCatchPokemon,conexion,0);
 			int idMensaje;
 			recv(conexion,&idMensaje,sizeof(int),0);
+			printf("Recibi el ID=%d del mensaje CATCH_POKEMON.\n",idMensaje);
+
 		}
 	}
 

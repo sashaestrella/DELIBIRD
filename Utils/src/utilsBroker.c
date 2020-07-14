@@ -2094,7 +2094,6 @@ void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 					actualizarTimestamp(mensaje->ID);
 					unNewPokemon = sacarDeMemoriaElNewPokemon(mensaje);
 					pthread_mutex_unlock(&mutexMemoriaInterna);
-
 					loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
 					log_info(logger, loQueVoyALoguear,mensaje->ID,unSuscriptor->IDsuscriptor);
 

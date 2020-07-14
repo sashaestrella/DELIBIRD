@@ -7,7 +7,7 @@
 
 #include "gamecard.h"
 
-int main(void)
+int main(int argc, char *argv[])
 {
 
 	/*---------------------------------------------------PARTE 2-------------------------------------------------------------*/
@@ -46,6 +46,13 @@ int main(void)
 
 	conexion = crear_conexion(ip, puerto);
 
+	if(!strcmp(argv[2],"NEW_POKEMON")){
+				NewPokemon* newPokemon;
+				newPokemon = parsearNewPokemon(argv[3], argv[4], argv[5], argv[6]);
+
+				enviarNewPokemon(newPokemon, conexion,0);
+			}
+/*
 	//TEST
 	int idSuscriptorPosta;
 	int cod_op = 8;
@@ -90,6 +97,7 @@ int main(void)
 	}
 
 	free(newConIDs);
+	*/
 	//TEST
 
 /*
