@@ -105,7 +105,7 @@ void* flujoEntrenador(Entrenador* entrenador){
 
 
 	list_add(ready, entrenador);
-	sem_post(&aparicion_pokemon);
+	sem_post(&agregar_ready);
 
 	printf("\nSoy %d pase a ready", entrenador->ID);
 

@@ -712,13 +712,14 @@ LocalizedPokemon* parsearLocalizedPokemon(char* nombre,char* cantParesOrd,char* 
 	localizedPokemon->cantidadParesOrdenados = atoi(cantParesOrd);
 	for(int i=0;i<atoi(cantParesOrd);i++){
 		CoordenadasXY* coordenadas = malloc(sizeof(CoordenadasXY));
-		coordenadas->posicionX = atoi(pares[i]);
-		i = j;
+		coordenadas->posicionX = atoi(pares[j]);
+		j++;
 		coordenadas->posicionY = atoi(pares[j]);
+		j++;
 		list_add(lista,coordenadas);
 	}
 	localizedPokemon->paresOrdenados = lista;
-	list_destroy(lista);
+	//list_destroy(lista);
 
 	return localizedPokemon;
 }

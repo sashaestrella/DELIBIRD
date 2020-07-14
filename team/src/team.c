@@ -47,8 +47,13 @@ int main(int argc,char* argv[])
 
 	obtener_objetivo_global();
 
-	pokemonesParaPrueba();
+	//aca mandar gets
 
+	enviar_gets();
+
+	//pokemonesParaPrueba(); //aca armo con los localized
+
+	sem_init(&pruebaLocalized, 0, 0);
 
 
 	ciclos_entrenadores = malloc(sizeof(int)*list_size(entrenadores));
@@ -118,7 +123,6 @@ int main(int argc,char* argv[])
 	mensajeGet->IDmensaje =1;
 	mensajeGet->getPokemon = getPokemon;
 
-	list_add(mensajesGetEnviados, mensajeGet);
 
 	CatchPokemonConIDs* mensajeCatch = malloc(sizeof(CatchPokemonConIDs));
 
@@ -129,7 +133,7 @@ int main(int argc,char* argv[])
 	mensajeCatch->IDmensaje =1;
 	mensajeCatch->catchPokemon = CatchPokemon;
 
-	list_add(mensajesGetEnviados, mensajeGet);
+	//list_add(mensajesGetEnviados, mensajeGet);
 	//list_add(mensajesCatchEnviados, mensajeCatch);
 
 
@@ -143,7 +147,22 @@ int main(int argc,char* argv[])
 	generarConexiones(0);
 	sleep(2);
 
+	sem_wait(&pruebaLocalized);
+	sem_wait(&pruebaLocalized);
+	sem_wait(&pruebaLocalized);
+	sem_wait(&pruebaLocalized);
+
+
 	int i;
+		puts("\n\nPokemones en Mapa");
+		Pokemon* pokemon1 = malloc(sizeof(Pokemon));
+		for(i=0; i<list_size(pokemones_en_mapa);i++){
+			pokemon1 = list_get(pokemones_en_mapa, i);
+			 		printf("%s,", pokemon1->nombre );
+			}
+
+
+
 	puts("\n\nObjetivo Global");
 	for(i=0; i<list_size(objetivoGlobal);i++){
 		 		printf("%s,", list_get(objetivoGlobal, i));
@@ -270,22 +289,29 @@ void inicializarSemaforos(){
 		sem_init(&mensajesCaught, 0, 0);
 		sem_init(&nuevosPokemons, 0, 0);
 		sem_init(&aparicion_pokemon, 0, 0);
+		sem_init(&agregar_ready, 0, 0);
 
 }
 
 void planificadorFIFO_RR(){
 
 		Entrenador* entrenador = malloc(sizeof(Entrenador));
-
+		int* valor;
 
 		while(list_size(terminados) != list_size(entrenadores)){
 
 			if(list_size(terminados)+list_size(deadlock) != list_size(entrenadores)){
 
 				if(list_size(ready)==0){
-					sem_wait(&aparicion_pokemon);//ponerle un nombre mas expresivo
-					pasar_a_ready_por_cercania();
 
+					if(list_size(pokemones_en_mapa)==0){
+					sem_wait(&aparicion_pokemon);//ponerle un nombre mas expresivo
+					puts("\nPase el sem appeared");
+					pasar_a_ready_por_cercania();
+					sem_post(&agregar_ready);
+					}
+					sem_wait(&agregar_ready);
+					puts("\nPase el sem ready");
 				}
 
 
@@ -312,7 +338,7 @@ void planificadorFIFO_RR(){
 
 
 				if(list_size(blocked_new) != 0){
-
+					printf("\nCantidad pokemones en mapa %d", list_size(pokemones_en_mapa));
 					bool buscarPOkemon(Pokemon* pokemon){
 					return pokemon->IdEntrenadorQueLoVaAatrapar == 0;
 					}

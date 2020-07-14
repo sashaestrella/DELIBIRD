@@ -322,16 +322,68 @@ int main(int argc, char *argv[])
 		}
 
 	}
-	//Recibir mensaje
 
-	//char* mensajeRecibido;
+	if(!strcmp(argv[1],"TEAM")){
+		//Enviar mensaje
 
-//	mensajeRecibido=recibir_mensaje(conexion);
 
-	//Loguear mensaje recibido
-/*
-	log_info(logger, "Se recibio el mensaje: %s " ,mensajeRecibido);
-*/
+			if(!strcmp(argv[2],"APPEARED_POKEMON")){
+				AppearedPokemon* unAppearedPokemon;
+				unAppearedPokemon = parsearAppearedPokemon(argv[3],argv[4],argv[5]);
+				enviarAppearedPokemon(unAppearedPokemon,conexion,0,0);
+			}
+
+			if(!strcmp(argv[2],"LOCALIZED_POKEMON")){
+				LocalizedPokemon* unLocalizedPokemon;
+
+				int cantidadPares = atoi(argv[4]);
+				char* pares[cantidadPares*2];
+				int ultimoArgumento = 5;
+				for(int i=0; i<cantidadPares*2; i++){
+					pares[i]= argv[5 + i];
+					ultimoArgumento += i;
+				}
+
+				unLocalizedPokemon = parsearLocalizedPokemon(argv[3],argv[4],pares);
+
+				int correlativo=atoi(argv[ultimoArgumento + 1]);
+				printf("\nMande %d %s ", unLocalizedPokemon->cantidadParesOrdenados, unLocalizedPokemon->nombre );
+				enviarLocalizedPokemon(unLocalizedPokemon,conexion,0,correlativo);
+			}
+
+		}
+
+	if(!strcmp(argv[1],"GAMECARD")){
+		//Enviar mensaje
+
+		if(!strcmp(argv[2],"NEW_POKEMON")){
+				puts("entre a new pokemon");
+				NewPokemon* newPokemon;
+				newPokemon = parsearNewPokemon(argv[3], argv[4], argv[5], argv[6]);
+				int correlativo = atoi(argv[7]);
+				enviarNewPokemon(newPokemon, conexion,correlativo);
+			}
+
+		if(!strcmp(argv[2],"CATCH_POKEMON")){
+				CatchPokemon* unCatchPokemon;
+				unCatchPokemon = parsearCatchPokemon(argv[3],argv[4],argv[5]);
+				int correlativo = atoi(argv[6]);
+				enviarCatchPokemon(unCatchPokemon,conexion,correlativo);
+				int idMensaje;
+				recv(conexion,&idMensaje,sizeof(int),0);
+			}
+
+
+		if(!strcmp(argv[2],"GET_POKEMON")){
+				GetPokemon* unGetPokemon;
+				unGetPokemon = parsearGetPokemon(argv[3]);
+				int correlativo = atoi(argv[4]);
+				enviarGetPokemon(unGetPokemon,conexion,correlativo);
+				int idMensaje;
+				recv(conexion,&idMensaje,sizeof(int),0);
+			}
+
+		}
 
 
 	terminar_programa(conexion, logger, config);

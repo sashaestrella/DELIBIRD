@@ -148,4 +148,21 @@ Algoritmos algoritmoAUtilizar(char* algoritmoPlanificacion){
 }
 
 
+void enviar_gets(){
 
+	GetPokemon* getPokemon = malloc(sizeof(getPokemon));
+	char* pokemon;
+
+	for(int i=0; i<list_size(objetivoGlobal);i++){
+
+		pokemon = list_get(objetivoGlobal,i);
+
+		getPokemon->nombre = pokemon;
+		getPokemon->tamanioNombrePokemon = strlen(pokemon) +1;
+
+		enviar_getPokemon(getPokemon);
+
+	}
+
+
+}

@@ -30,6 +30,8 @@ sem_t suscripciones;
 sem_t aparicion_pokemon;
 sem_t agregar_ready;
 
+sem_t pruebaLocalized; //eliminar
+
 pthread_mutex_t colaReady;
 pthread_mutex_t colaBlocked_new;
 pthread_mutex_t mutex_mapa;
@@ -153,6 +155,7 @@ int obtenerCantidadObjetivo(char*);
 bool cumplioSusObjetivos(Entrenador* entrenador);
 void reordenarSJF_SD(int);
 float estimarProximaRafaga(Entrenador*);
+void enviar_gets();
 
 void planificadorFIFO_RR();
 void planificadorSJF_SD();
