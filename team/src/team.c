@@ -6,10 +6,6 @@ int main(int argc,char* argv[])
 	alpha = 0.5;
 	logger = iniciar_logger();
 
-	pthread_mutex_init(&colaReady, NULL);
-	pthread_mutex_init(&colaBlocked_new, NULL);
-	pthread_mutex_init(&mutex_mapa, NULL);
-	pthread_mutex_init(&ciclosTotales, NULL);
 
 
 	sem_init (&agregar_ready,0,0);
@@ -24,7 +20,7 @@ int main(int argc,char* argv[])
 	mensajesGetEnviados= list_create();
 	mensajesCatchEnviados= list_create();
 	mensajesRecibidos = list_create();
-	nuevosPokemon = list_create();
+	mapa_auxiliar= list_create();
 	nuevosCaught = list_create();
 
 	blocked_new= list_create();
@@ -68,74 +64,6 @@ int main(int argc,char* argv[])
 	contadorCiclosPorEntrenador [i]=malloc(sizeof(int));
 
 
-	// Agrego Localized de Prueba //
-	LocalizedPokemon * localized = malloc(sizeof(LocalizedPokemon));
-	localized->tamanioNombrePokemon = strlen("Pikachu")+1;
-	localized->nombre = "Pikachu";
-	localized->cantidadParesOrdenados = 3;
-	localized->paresOrdenados=list_create();
-
-	LocalizedPokemonConIDs* localizedNuevo = malloc(sizeof(LocalizedPokemonConIDs));
-	localizedNuevo -> IDcorrelativo = 0;
-	localizedNuevo -> IDmensaje = 0;
-	localizedNuevo->localizedPokemon = localized;
-
-
-	CoordenadasXY* coordenadas1 = malloc(sizeof(CoordenadasXY));
-	coordenadas1->posicionX = 2;
-	coordenadas1->posicionY = 3;
-	list_add(localizedNuevo ->localizedPokemon ->paresOrdenados, coordenadas1);
-
-
-	CoordenadasXY* coordenadas2 = malloc(sizeof(CoordenadasXY));
-	coordenadas2->posicionX = 1;
-	coordenadas2->posicionY = 1;
-	list_add(localizedNuevo ->localizedPokemon ->paresOrdenados, coordenadas2);
-
-
-	CoordenadasXY* coordenadas3 = malloc(sizeof(CoordenadasXY));
-	coordenadas3->posicionX = 3;
-	coordenadas3->posicionY = 2;
-	list_add(localizedNuevo ->localizedPokemon ->paresOrdenados, coordenadas3);
-
-
-	char* nombre = "Pikachu";
-
-	AppearedPokemon* appearedPokemon = malloc(sizeof(AppearedPokemon));
-	appearedPokemon -> nombre = nombre;
-	//appearedPokemon ->tamanioNombrePokemon = sizeof("Pikachu");
-
-	AppearedPokemonConIDs* nuevoAppeared = malloc(sizeof(AppearedPokemonConIDs));
-	nuevoAppeared -> IDcorrelativo = 0;
-	nuevoAppeared -> IDmensaje = 0;
-	nuevoAppeared -> appearedPokemon = appearedPokemon;
-
-	if(descartar_appeared_no_deseados(nuevoAppeared)){
-		printf("Funciona\n");
-	}
-
-	GetPokemonConIDs* mensajeGet = malloc(sizeof(GetPokemonConIDs));
-
-	GetPokemon* getPokemon= malloc(sizeof(GetPokemon));
-	getPokemon->nombre = "Pikachu";
-	getPokemon->tamanioNombrePokemon=strlen("Pikachu") +1;
-
-	mensajeGet->IDmensaje =1;
-	mensajeGet->getPokemon = getPokemon;
-
-
-	CatchPokemonConIDs* mensajeCatch = malloc(sizeof(CatchPokemonConIDs));
-
-	CatchPokemon* CatchPokemon= malloc(sizeof(CatchPokemon));
-	CatchPokemon->nombre = "Pikachu";
-	CatchPokemon->tamanioNombrePokemon=strlen("Pikachu") +1;
-
-	mensajeCatch->IDmensaje =1;
-	mensajeCatch->catchPokemon = CatchPokemon;
-
-	//list_add(mensajesGetEnviados, mensajeGet);
-	//list_add(mensajesCatchEnviados, mensajeCatch);
-
 
 	hiloEntrenador = malloc(list_size(entrenadores) * sizeof(pthread_t));
 
@@ -158,10 +86,14 @@ int main(int argc,char* argv[])
 		Pokemon* pokemon1 = malloc(sizeof(Pokemon));
 		for(i=0; i<list_size(pokemones_en_mapa);i++){
 			pokemon1 = list_get(pokemones_en_mapa, i);
-			 		printf("%s,", pokemon1->nombre );
+			printf("%s, (%d, %d)", pokemon1->nombre, pokemon1->posicion.posicionX, pokemon1->posicion.posicionY );
 			}
 
-
+		puts("\n\nMapa auxiliar");
+			for(i=0; i<list_size(mapa_auxiliar);i++){
+				pokemon1 = list_get(mapa_auxiliar, i);
+				 printf("%s, (%d, %d)", pokemon1->nombre, pokemon1->posicion.posicionX, pokemon1->posicion.posicionY );
+				}
 
 	puts("\n\nObjetivo Global");
 	for(i=0; i<list_size(objetivoGlobal);i++){
@@ -281,10 +213,7 @@ void inicializarSemaforos(){
 		sem_init(confirmacion_caught[i], 0, 0);
 		}
 
-
-
 		sem_init(&suscripciones, 0, 1);
-
 
 		sem_init(&mensajesCaught, 0, 0);
 		sem_init(&nuevosPokemons, 0, 0);

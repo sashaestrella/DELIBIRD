@@ -508,18 +508,19 @@ int main(int argc, char *argv[])
 			if(!strcmp(argv[2],"LOCALIZED_POKEMON")){
 				LocalizedPokemon* unLocalizedPokemon;
 
+
 				int cantidadPares = atoi(argv[4]);
 				char* pares[cantidadPares*2];
-				int ultimoArgumento = 5;
+
 				for(int i=0; i<cantidadPares*2; i++){
 					pares[i]= argv[5 + i];
-					ultimoArgumento += i;
+
 				}
 
 				unLocalizedPokemon = parsearLocalizedPokemon(argv[3],argv[4],pares);
 
-				int correlativo=atoi(argv[ultimoArgumento + 1]);
-				printf("\nMande %d %s ", unLocalizedPokemon->cantidadParesOrdenados, unLocalizedPokemon->nombre );
+				int correlativo=atoi(argv[5 + cantidadPares*2 ]);
+				printf("\nMande %d %s con id %d", unLocalizedPokemon->cantidadParesOrdenados, unLocalizedPokemon->nombre , correlativo);
 				enviarLocalizedPokemon(unLocalizedPokemon,conexion,0,correlativo);
 			}
 

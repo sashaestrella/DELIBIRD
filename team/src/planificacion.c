@@ -22,7 +22,7 @@ void* entrenadoresReadyLocalizedAppeared(){
 	nuevoPokemon = malloc(sizeof(Pokemon));
 	int id;
 
-	while(1){
+	/*while(1){
 		sem_wait(&nuevosPokemons);
 
 		nuevoPokemon = (Pokemon*)list_get(nuevosPokemon, 0);
@@ -32,7 +32,7 @@ void* entrenadoresReadyLocalizedAppeared(){
 
 		//Enviar señal al entrenador con el Pokemon
 
-	}
+	}*/
 	free(nuevoPokemon);
 }
 

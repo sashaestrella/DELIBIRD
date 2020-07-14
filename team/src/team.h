@@ -92,7 +92,7 @@ t_list* mensajesCatchEnviados;
 
 t_list* nuevosCaught;
 t_list* mensajesRecibidos;
-t_list* nuevosPokemon;
+t_list* mapa_auxiliar;
 
 t_list* blocked_new;
 t_list* blocked_caught;
@@ -153,6 +153,7 @@ void obtener_objetivo_global();
 void* flujoEntrenador(Entrenador*);
 int obtenerCantidadObjetivo(char*);
 bool cumplioSusObjetivos(Entrenador* entrenador);
+bool noEstaEnLaLista(t_list* lista, char* pokemon);
 void reordenarSJF_SD(int);
 float estimarProximaRafaga(Entrenador*);
 void enviar_gets();
