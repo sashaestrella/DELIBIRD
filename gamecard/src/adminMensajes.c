@@ -323,7 +323,7 @@ void* crearMetadataPara(char* nombre){
 	t_config* md = config_create(path);
 	config_set_value(md, "DIRECTORY", "N");
 	config_set_value(md, "SIZE", "0");
-	config_set_value(md, "BLOCKS", "[1,2,3]");
+	config_set_value(md, "BLOCKS", "[]");
 	config_set_value(md, "OPEN", "N");
 	config_save(md);
 }
@@ -353,7 +353,7 @@ int existePokemon(char* nombre){
 }
 
 int existePosicion(char** bloques, CoordenadasXY coordenadas){
-	return 1; // VERIFICAR EXISTENCIA EN ARCHIVO ----------- !!
+	return 1; // VERIFICAR EXISTENCIA ---------------------------------------- !!
 }
 
 void agregarPokemon(NewPokemonConIDs* newPokemon){
@@ -376,22 +376,24 @@ void agregarPokemon(NewPokemonConIDs* newPokemon){
 		// Chequear si existen posiciones ------------- !!
 		//AgregarPosiciones --------------------------- !!
 		sleep(tiempoRetardo);
-		// DEBATIR COMO HACER EL ENVIO ---------------- !!
+		enviarMensajeAppeared(newPokemon->IDmensaje, newPokemon->newPokemon->nombre, newPokemon->newPokemon->coordenadas);
 	}
 }
 
-void eliminarPokemon(CatchPokemon* pokemon){
+void eliminarPokemon(CatchPokemonConIDs* pokemon){
 	FILE* metadata;
 	char* path = string_new();
 	string_append(&path, puntoMontaje);
 	string_append(&path, "/TALL_GRASS/Files/");
-	string_append(&path, pokemon->nombre);
+	string_append(&path, pokemon->catchPokemon->nombre);
 	string_append(&path, "/Metadata.bin");
+	int encontrado = 0;
 
-	if(!existePokemon(pokemon->nombre)){
-		char* error = string_new;
-		string_append(&error ,"No existe el pokemon ");
-		string_append(&error ,pokemon->nombre);
+	char* error = string_new;
+	string_append(&error ,"No existe el pokemon ");
+	string_append(&error ,pokemon->catchPokemon->nombre);
+
+	if(!existePokemon(pokemon->catchPokemon->nombre)){
 		log_info(logger,error);
 	} else {
 		t_config* md = config_create(path);
@@ -401,14 +403,25 @@ void eliminarPokemon(CatchPokemon* pokemon){
 		config_set_value(md,"OPEN","Y");
 		config_save(md);
 		char** bloques = config_get_array_value(md, "BLOCKS");
-		while(bloques!=NULL){								 // Recontra debatible
-			existePosicion(bloques, pokemon->coordenadas);
+		int i = 0;
+		while(bloques[i]!=NULL && !existePosicion(bloques[i], pokemon->catchPokemon->coordenadas)){
+			i++;
 		}
+		if(bloques[i] == NULL){
+			log_info(logger,error);
 
+		} else {
+			// Disminuir cantidad ---------------------- !!
+			encontrado = 1;
+		}
+	sleep(tiempoRetardo);
+	config_set_value(md,"OPEN","N");
+	config_save(md);
 	}
+	enviarMensajeCaught(pokemon->IDmensaje, encontrado);
 }
 
-LocalizedPokemon* obtenerCantidadYPosiciones(char* nombre){
+LocalizedPokemon* obtenerCantidadYPosiciones(GetPokemonConIDs* pokemon){
 
 }
 
@@ -416,15 +429,15 @@ LocalizedPokemon* obtenerCantidadYPosiciones(char* nombre){
 
 // --------------------- Enviar Mensajes --------------------- //
 
-int enviarMensajeAppeared(AppearedPokemon* pokemon){
+int enviarMensajeAppeared(int idMensaje, char* pokemon, CoordenadasXY coordenadas){
 
 }
 
-int enviarMensajeCaught(CaughtPokemon* pokemon){
+int enviarMensajeCaught(int idMensaje, int resultado){
 
 }
 
-int enviarMensajeLocalized(LocalizedPokemon* pokemon){
+int enviarMensajeLocalized(int idMensaje, char* pokemon, CoordenadasXY coordenadas, int cantidad){
 
 }
 

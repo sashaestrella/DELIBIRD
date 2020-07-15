@@ -18,9 +18,11 @@ int main(void)
 
 	char** bloques = config_get_array_value(md, "BLOCKS");
 
-	prtinf("Llego: %s\n", bloques);
-
-
+	int i = 0;
+	while(bloques[i]!=NULL){
+		printf("Llego: %s\n", bloques[i]);
+		i++;
+	}
 
 
 

@@ -47,11 +47,11 @@ int existePokemon(char*);
 int existePosicion(char**, CoordenadasXY);
 
 void agregarPokemon(NewPokemonConIDs*);
-void eliminarPokemon(CatchPokemon*);
-LocalizedPokemon* obtenerCantidadYPosiciones(char*);
+void eliminarPokemon(CatchPokemonConIDs*);
+LocalizedPokemon* obtenerCantidadYPosiciones(GetPokemonConIDs*);
 
-int enviarMensajeAppeared(AppearedPokemon* pokemon);
-int enviarMensajeCaught(CaughtPokemon*);
-int enviarMensajeLocalized(LocalizedPokemon*);
+int enviarMensajeAppeared(int idMensaje, char* pokemon, CoordenadasXY coordenadas);
+int enviarMensajeCaught(int idMensaje, int resultado);
+int enviarMensajeLocalized(int idMensaje, char* pokemon, CoordenadasXY coordenadas, int cantidad);
 
 #endif /* ADMINMENSAJES_H_ */
