@@ -4,25 +4,39 @@
 
 int main(void)
 {
+
 	sem_init(&suscripciones, 0, 1);
 	leerConfig();
 	cantidadArchivos = 0;
 	crearDirectorioTG();
-	/*generarConexiones(0);
-	t_log* logger;
+
+
+
+	crearMetadataPara("pikachu");
+
+	t_config* md = config_create("/home/utnso/TALL_GRASS/Files/pikachu/Metadata.bin");
+
+	char** bloques = config_get_array_value(md, "BLOCKS");
+
+	prtinf("Llego: %s\n", bloques);
+
+
+
+
+
+	//generarConexiones(0);
 
 	logger = iniciar_logger();
 
 	char* primerLog = "Log de Gamecard";
 
 	log_info(logger, primerLog);
-	*/
 
 }
 
 t_log* iniciar_logger(void)
 {
-	return log_create("team.log", "Log de team" , 1, LOG_LEVEL_INFO);
+	return log_create("gamecard.log", "Log de gamecard" , 1, LOG_LEVEL_INFO);
 }
 
 void leerConfig(){
@@ -30,14 +44,8 @@ void leerConfig(){
 	ip = config_get_string_value(config,"IP");
 	puerto = config_get_string_value(config,"PUERTO");
 	puntoMontaje = config_get_string_value(config,"PUNTO_MONTAJE_TALLGRASS");
-	char* tiempoRein;
-	char* tiempoReco;
-	char* tiempoReta;
-	tiempoRein = config_get_string_value(config,"TIEMPO_DE_REINTENTO_OPERACION");
-	tiempoReco = config_get_string_value(config,"TIEMPO_DE_REINTENTO_CONEXION");
-	tiempoReta = config_get_string_value(config,"TIEMPO_DE_RETARDO_OPERACION");
-	tiempoReintento = atoi(tiempoRein);
-	tiempoReconexion = atoi(tiempoReco);
-	tiempoRetardo = atoi(tiempoReta);
+	tiempoReintento = config_get_int_value(config,"TIEMPO_DE_REINTENTO_OPERACION");
+	tiempoReconexion = config_get_int_value(config,"TIEMPO_DE_REINTENTO_CONEXION");
+	tiempoRetardo = config_get_int_value(config,"TIEMPO_DE_RETARDO_OPERACION");
 	//close(config);
 }

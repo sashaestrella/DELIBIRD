@@ -25,6 +25,7 @@ int tiempoReintento;
 int tiempoReconexion;
 int tiempoRetardo;
 sem_t suscripciones;
+t_log* logger;
 
 void leerConfig();
 

@@ -40,13 +40,13 @@ void* crearFiles(char*);
 void* crearBlocks(char*);
 void* generarBitmap(char*);
 
-void* armarFolderPara(NewPokemonConIDs*);
-void* crearMetadataPara(NewPokemonConIDs*);
-void* crearMetadataDirPara(NewPokemonConIDs*);
-
+void* armarFolderPara(char*);
+void* crearMetadataPara(char*);
 int archivoAbierto(char*);
 int existePokemon(char*);
-void agregarPokemon(NewPokemon*);
+int existePosicion(char**, CoordenadasXY);
+
+void agregarPokemon(NewPokemonConIDs*);
 void eliminarPokemon(CatchPokemon*);
 LocalizedPokemon* obtenerCantidadYPosiciones(char*);
 

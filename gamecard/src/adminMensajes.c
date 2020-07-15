@@ -254,11 +254,8 @@ void* crearDirectorioTG(){
 	string_append(&path, "/TALL_GRASS");
 	mkdir(path, 0777);
 
-	printf("Llego: %s\n", path);
 	crearMetadata(path);
-	printf("Llego: %s\n", path);
 	crearFiles(path);
-	printf("Llego: %s\n", path);
 	crearBlocks(path);
 }
 
@@ -300,45 +297,122 @@ void* crearBlocks(char* path){
 }
 
 void* generarBitmap(char* path){
+	// GENERAR BITMAP ------------------------------------ !!!
 }
 
-void* armarFolderPara(NewPokemonConIDs* newPokemon){
+void* armarFolderPara(char* nombre){
 	char* path = string_new();
 	string_append(&path,puntoMontaje);
-	string_append(&path, "/TALL_GRASS/Files");
-	string_append(&path, newPokemon->newPokemon->nombre);
+	string_append(&path, "/TALL_GRASS/Files/");
+	string_append(&path, nombre);
 	mkdir(path, 0777);
 }
 
-void* crearMetadataPara(NewPokemonConIDs* newPokemon){
+void* crearMetadataPara(char* nombre){
+	FILE* metadata;
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files/");
+	string_append(&path, nombre);
+	string_append(&path, "/Metadata.bin");
 
-}
+	armarFolderPara(nombre);
+	metadata = fopen(path, "wrb");
+	fclose(metadata);
 
-void* crearMetadataDirPara(NewPokemonConIDs* newPokemon){
-
+	t_config* md = config_create(path);
+	config_set_value(md, "DIRECTORY", "N");
+	config_set_value(md, "SIZE", "0");
+	config_set_value(md, "BLOCKS", "[1,2,3]");
+	config_set_value(md, "OPEN", "N");
+	config_save(md);
 }
 
 // --------------------- INTERACCION CON FS --------------------- //
 
 int archivoAbierto(char* path){
-
+	t_config* md = config_create(path);
+	return config_get_string_value(md, "OPEN") == "Y";
 }
 
 int existePokemon(char* nombre){
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files/");
+	string_append(&path, nombre);
+	string_append(&path, "/Metadata.bin");
 
+	FILE* archivo = fopen(path, "r");
+	if (archivo) {
+		fclose(archivo);
+	    return 1;
+	} else {
+	    fclose(archivo);
+	    return 0;
+	}
 }
 
-void agregarPokemon(NewPokemon* nuevoPokemon){
+int existePosicion(char** bloques, CoordenadasXY coordenadas){
+	return 1; // VERIFICAR EXISTENCIA EN ARCHIVO ----------- !!
+}
 
+void agregarPokemon(NewPokemonConIDs* newPokemon){
+	FILE* metadata;
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files/");
+	string_append(&path, newPokemon->newPokemon->nombre);
+	string_append(&path, "/Metadata.bin");
+
+	if(!existePokemon(newPokemon->newPokemon->nombre)){
+		crearMetadataPara(newPokemon);
+	} else {
+		t_config* md = config_create(path);
+		while(archivoAbierto(path)){
+			sleep(tiempoReintento);
+		}
+		config_set_value(md,"OPEN","Y");
+		config_save(md);
+		// Chequear si existen posiciones ------------- !!
+		//AgregarPosiciones --------------------------- !!
+		sleep(tiempoRetardo);
+		// DEBATIR COMO HACER EL ENVIO ---------------- !!
+	}
 }
 
 void eliminarPokemon(CatchPokemon* pokemon){
+	FILE* metadata;
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files/");
+	string_append(&path, pokemon->nombre);
+	string_append(&path, "/Metadata.bin");
 
+	if(!existePokemon(pokemon->nombre)){
+		char* error = string_new;
+		string_append(&error ,"No existe el pokemon ");
+		string_append(&error ,pokemon->nombre);
+		log_info(logger,error);
+	} else {
+		t_config* md = config_create(path);
+		while(archivoAbierto(path)){
+			sleep(tiempoReintento);
+		}
+		config_set_value(md,"OPEN","Y");
+		config_save(md);
+		char** bloques = config_get_array_value(md, "BLOCKS");
+		while(bloques!=NULL){								 // Recontra debatible
+			existePosicion(bloques, pokemon->coordenadas);
+		}
+
+	}
 }
 
 LocalizedPokemon* obtenerCantidadYPosiciones(char* nombre){
 
 }
+
+
 
 // --------------------- Enviar Mensajes --------------------- //
 
