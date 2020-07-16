@@ -8,8 +8,8 @@ void suscribirNewPokemon(){
 	int conexion;
 	char* ip;
 	char* puerto;
-	ip = config_get_string_value(config, "IP");
-	puerto = config_get_string_value(config, "PUERTO");
+	ip = config_get_string_value(config, "IP_BROKER");
+	puerto = config_get_string_value(config, "PUERTO_BROKER");
 	printf("el ip y el puerto son: %s %s", ip, puerto);
 	conexion = crear_conexion(ip, puerto);
 	char* loQueVoyALoguear = "\n[GAMEBOY]Se creo la conexion con broker con el valor %d";
@@ -73,8 +73,8 @@ void suscribirLocalizedPokemon(){
 	int conexion;
 	char* ip;
 	char* puerto;
-	ip = config_get_string_value(config, "IP");
-	puerto = config_get_string_value(config, "PUERTO");
+	ip = config_get_string_value(config, "IP_BROKER");
+	puerto = config_get_string_value(config, "PUERTO_BROKER");
 	printf("el ip y el puerto son: %s %s", ip, puerto);
 	conexion = crear_conexion(ip, puerto);
 	char* loQueVoyALoguear = "\n[GAMEBOY]Se creo la conexion con broker con el valor %d";
@@ -133,8 +133,8 @@ void suscribirGetPokemon(){
 	int conexion;
 	char* ip;
 	char* puerto;
-	ip = config_get_string_value(config, "IP");
-	puerto = config_get_string_value(config, "PUERTO");
+	ip = config_get_string_value(config, "IP_BROKER");
+	puerto = config_get_string_value(config, "PUERTO_BROKER");
 	puts("estoy en suscribir get");
 	printf("el ip y el puerto son: %s %s", ip, puerto);
 	conexion = crear_conexion(ip, puerto);
@@ -201,8 +201,8 @@ void suscribirAppearedPokemon(){
 	int conexion;
 	char* ip;
 	char* puerto;
-	ip = config_get_string_value(config, "IP");
-	puerto = config_get_string_value(config, "PUERTO");
+	ip = config_get_string_value(config, "IP_BROKER");
+	puerto = config_get_string_value(config, "PUERTO_BROKER");
 	printf("el ip y el puerto son: %s %s", ip, puerto);
 	conexion = crear_conexion(ip, puerto);
 	char* loQueVoyALoguear = "\n[GAMEBOY]Se creo la conexion con broker con el valor %d";
@@ -263,8 +263,8 @@ void suscribirCatchPokemon(){
 	int conexion;
 	char* ip;
 	char* puerto;
-	ip = config_get_string_value(config, "IP");
-	puerto = config_get_string_value(config, "PUERTO");
+	ip = config_get_string_value(config, "IP_BROKER");
+	puerto = config_get_string_value(config, "PUERTO_BROKER");
 	printf("el ip y el puerto son: %s %s", ip, puerto);
 	conexion = crear_conexion(ip, puerto);
 	char* loQueVoyALoguear = "\n[GAMEBOY]Se creo la conexion con broker con el valor %d";
@@ -326,8 +326,8 @@ void suscribirCaughtPokemon(){
 	int conexion;
 	char* ip;
 	char* puerto;
-	ip = config_get_string_value(config, "IP");
-	puerto = config_get_string_value(config, "PUERTO");
+	ip = config_get_string_value(config, "IP_BROKER");
+	puerto = config_get_string_value(config, "PUERTO_BROKER");
 	puts("estoy en suscribir get");
 	printf("el ip y el puerto son: %s %s", ip, puerto);
 	conexion = crear_conexion(ip, puerto);

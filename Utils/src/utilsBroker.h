@@ -120,52 +120,7 @@ typedef struct{
 	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
 	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
 }MensajeCaughtPokemon2;
-/*
-//Mensajes 1
-typedef struct{
-	int ID;
-	NewPokemon* contenidoDelMensaje; //
-	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
-	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
-}MensajeNewPokemon;
 
-typedef struct{
-	int ID;
-	int IDCorrelativo;
-	LocalizedPokemon* contenidoDelMensaje;
-	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
-	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
-}MensajeLocalizedPokemon;
-
-typedef struct{
-	int ID;
-	GetPokemon* contenidoDelMensaje;
-	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
-	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
-}MensajeGetPokemon;
-
-typedef struct{
-	int ID;
-	AppearedPokemon* contenidoDelMensaje;
-	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
-	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
-}MensajeAppearedPokemon;
-
-typedef struct{
-	int ID;
-	CatchPokemon* contenidoDelMensaje;
-	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
-	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
-}MensajeCatchPokemon;
-
-typedef struct{
-	int ID;
-	int IDCorrelativo;
-	CaughtPokemon* contenidoDelMensaje;
-	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
-	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
-}MensajeCaughtPokemon;
-*/
 
 void iniciar_servidor(void);
 void esperar_cliente(int);

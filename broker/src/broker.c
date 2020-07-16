@@ -19,7 +19,7 @@ void dumpEnCache(){
 	char fechaYHora[128];
 	char* loQueVoyALoguear;
 
-	archivoDump = txt_open_for_append("/home/utnso/tp-2020-1c-BOMP/broker/dumpDeLaCache.txt");
+	archivoDump = txt_open_for_append("dumpDeLaCache.txt");
 	tiempo = time(NULL);
 	tm = localtime(&tiempo);
 
@@ -111,10 +111,10 @@ int main(void){
 	printf("ALGORITMO_REEMPLAZO = %s\n",algoritmoReemplazo);
 	algoritmoParticionLibre = config_get_string_value(config, "ALGORITMO_PARTICION_LIBRE");
 	printf("ALGORITMO_PARTICION_LIBRE = %s\n",algoritmoParticionLibre);
-	ip = atoi(config_get_string_value(config, "IP_BROKER"));
-	printf("IP_BROKER = %d\n",ip);
-	puerto = atoi(config_get_string_value(config, "PUERTO_BROKER"));
-	printf("PUERTO_BROKER = %d\n",puerto);
+	//ip = atoi(config_get_string_value(config, "IP_BROKER"));
+	//printf("IP_BROKER = %d\n",ip);
+	//puerto = atoi(config_get_string_value(config, "PUERTO_BROKER"));
+	//printf("PUERTO_BROKER = %d\n",puerto);
 	busquedasFallidasPreviasACompactacion = atoi(config_get_string_value(config, "FRECUENCIA_COMPACTACION"));
 	busquedasFallidasPreviasACompactacionOriginal = busquedasFallidasPreviasACompactacion;
 	printf("FRECUENCIA_COMPACTACION = %d\n",busquedasFallidasPreviasACompactacion);
