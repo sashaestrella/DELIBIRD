@@ -27,7 +27,7 @@ pthread_mutex_t mutexBusquedasFallidas = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexMemoriaInterna = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexGeneradorIDMensaje,mutexGeneradorIDSuscriptor, mutexListaSuscriptores = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexColaNewPokemon, mutexColaLocalizedPokemon, mutexColaGetPokemon,mutexColaAppearedPokemon, mutexColaCatchPokemon, mutexColaCaughtPokemon = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t no_vacioNP,no_vacioLP,no_vacioGP,no_vacioAP,no_vacioCP,no_vacioCAP = PTHREAD_COND_INITIALIZER;
+
 t_list* New_Pokemon;
 t_list* Localized_Pokemon;
 t_list* Get_Pokemon;
@@ -42,6 +42,7 @@ t_list* suscriptores_catch_pokemon;
 t_list* suscriptores_caught_pokemon;
 t_list* listaPosicionesLibres;
 t_list* listaPosicionesOcupadas;
+
 void* memoriaInterna;
 int tamanioMinimoParticion;
 int ip;
@@ -152,6 +153,8 @@ void recibirSuscripcionCaughtPokemon(int socket_suscriptor);
 void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor, Suscriptor* unSuscriptor);
 void enviarCaughtPokemonASuscriptores(MensajeCaughtPokemon2* unMensajeCaughtPokemon);
 
+void devolverID(int socket, int id);
+
 MensajeNewPokemon2* guardarMensajeNewPokemon(NewPokemon* unNewPokemon);
 MensajeLocalizedPokemon2* guardarMensajeLocalizedPokemon(LocalizedPokemon* unLocalizedPokemon,int idCorrelativo);
 MensajeGetPokemon2* guardarMensajeGetPokemon(GetPokemon* unGetPokemon);
@@ -170,7 +173,11 @@ CaughtPokemon* sacarDeMemoriaElCaughtPokemon(MensajeCaughtPokemon2* mensajeCaugh
 PosicionLibre* pedirPosicion(int tamanio);
 PosicionLibre* pedirPosicionFF(int tamanio);
 PosicionLibre* pedirPosicionBF(int tamanio);
+PosicionLibre* pedirPosicionBFBS(int tamanio);
+PosicionLibre* pedirPosicionFFBS(int tamanio);
 void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID);
+int tamanioOcupadas();
+void limpiarPosicionesEn0();
 void borrarFIFO();
 void borrarLRU();
 void borrarDeColaDeMensajes(int nroDeCola,int idMensaje);
@@ -181,6 +188,10 @@ void buscarIDAppearedPokemonYBorrarlo(int id);
 void buscarIDCatchPokemonYBorrarlo(int id);
 void buscarIDCaughtPokemonYBorrarlo(int id);
 void actualizarTimestamp(int ID);
+int insertarOrdenadoEnListaPosicionesLibres(PosicionLibre* unaPosicionLibre);
+void consolidar(int posicion);
+void consolidarParticiones(int posicion);
+void consolidarBS(int posicion);
 
 void recibirSenial(int senial);
 void dumpEnCache();
