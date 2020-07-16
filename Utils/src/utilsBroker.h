@@ -189,6 +189,8 @@ void buscarIDCatchPokemonYBorrarlo(int id);
 void buscarIDCaughtPokemonYBorrarlo(int id);
 void actualizarTimestamp(int ID);
 int insertarOrdenadoEnListaPosicionesLibres(PosicionLibre* unaPosicionLibre);
+void insertarOrdenadoEnListaPosicionesOcupadas(PosicionOcupada* unaPosicionOcupada);
+void compacta();
 void consolidar(int posicion);
 void consolidarParticiones(int posicion);
 void consolidarBS(int posicion);
