@@ -352,10 +352,6 @@ int existePokemon(char* nombre){
 	}
 }
 
-int existePosicion(char** bloques, CoordenadasXY coordenadas){
-	return 1; // VERIFICAR EXISTENCIA ---------------------------------------- !!
-}
-
 void agregarPokemon(NewPokemonConIDs* newPokemon){
 	FILE* metadata;
 	char* path = string_new();
@@ -373,9 +369,15 @@ void agregarPokemon(NewPokemonConIDs* newPokemon){
 		}
 		config_set_value(md,"OPEN","Y");
 		config_save(md);
-		// Chequear si existen posiciones ------------- !!
-		//AgregarPosiciones --------------------------- !!
+
+		char** bloques = config_get_array_value(md, "BLOCKS");
+		char* cursor = string_duplicate(path);
+
+		// Agregar Bloque -------------------------------_ !!
+
 		sleep(tiempoRetardo);
+		config_set_value(md,"OPEN","N");
+		config_save(md);
 		enviarMensajeAppeared(newPokemon->IDmensaje, newPokemon->newPokemon->nombre, newPokemon->newPokemon->coordenadas);
 	}
 }
@@ -411,7 +413,9 @@ void eliminarPokemon(CatchPokemonConIDs* pokemon){
 			log_info(logger,error);
 
 		} else {
+
 			// Disminuir cantidad ---------------------- !!
+
 			encontrado = 1;
 		}
 	sleep(tiempoRetardo);
@@ -422,23 +426,71 @@ void eliminarPokemon(CatchPokemonConIDs* pokemon){
 }
 
 LocalizedPokemon* obtenerCantidadYPosiciones(GetPokemonConIDs* pokemon){
+	FILE* metadata;
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files/");
+	string_append(&path, pokemon->getPokemon->nombre);
+	string_append(&path, "/Metadata.bin");
+	int encontrado = 0;
+	char** bloques;
 
+	char* error = string_new;
+	string_append(&error ,"No existe el pokemon ");
+	string_append(&error ,pokemon->getPokemon->nombre);
+
+	if(!existePokemon(pokemon->getPokemon->nombre)){
+		log_info(logger,error);
+		// Enviar mensaje sin posiciones ni cantidades ----------------------------- !!
+	} else {
+		t_config* md = config_create(path);
+			while(archivoAbierto(path)){
+				sleep(tiempoReintento);
+			}
+			config_set_value(md,"OPEN","Y");
+			config_save(md);
+			bloques = config_get_array_value(md, "BLOCKS");
+			sleep(tiempoRetardo);
+
+			config_set_value(md,"OPEN","N");
+			config_save(md);
+
+			int i = 0;
+			t_list* posiciones = list_create();
+			while(bloques[i]!=NULL){
+				i++;
+				obtenerPosiciones(pokemon->IDmensaje, pokemon->getPokemon->nombre, bloques[i]);
+			}
+	}
+
+}
+
+t_list* obtenerPosiciones(int IDmensaje, char* nombre, char* Bloque){
+	// ------------------------- Obtener posiciones y cantidad y enviarlas ------------------!!
 }
 
 
 
 // --------------------- Enviar Mensajes --------------------- //
 
-int enviarMensajeAppeared(int idMensaje, char* pokemon, CoordenadasXY coordenadas){
-
+int enviarMensajeAppeared(int IDmensaje, char* pokemon, CoordenadasXY coordenadas){
+	AppearedPokemon* nuevo = parsearAppearedPokemon(pokemon, coordenadas.posicionX, coordenadas.posicionY);
+	//enviarAppearedPokemon(nuevo, socket_suscriptor, 0, IDmensaje);
 }
 
-int enviarMensajeCaught(int idMensaje, int resultado){
-
+int enviarMensajeCaught(int IDmensaje, int resultado){
+	CaughtPokemon* nuevo = malloc(sizeof(CaughtPokemon));
+	nuevo->atrapar = resultado;
+	//enviarCaughtPokemon(nuevo, socket_suscriptor, 0, IDmensaje)
 }
 
-int enviarMensajeLocalized(int idMensaje, char* pokemon, CoordenadasXY coordenadas, int cantidad){
-
+int enviarMensajeLocalized(int IDmensaje, char* pokemon, CoordenadasXY coordenadas, int cantidad){
+	LocalizedPokemon* nuevo = malloc(sizeof(LocalizedPokemon));
+	nuevo->cantidadParesOrdenados = cantidad;
+	// ----------------------------------- Ver que hacemos con pares ordenados!!
+	nuevo->tamanioNombrePokemon = sizeof(pokemon)+1;
+	nuevo->nombre = pokemon;
+	//enviarLocalizedPokemon(nuevo, socket_suscriptor, 0, IDmensaje);
 }
 
 

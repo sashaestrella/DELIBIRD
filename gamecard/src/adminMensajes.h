@@ -45,6 +45,7 @@ void* crearMetadataPara(char*);
 int archivoAbierto(char*);
 int existePokemon(char*);
 int existePosicion(char**, CoordenadasXY);
+t_list* obtenerPosiciones(int, char*, char*);
 
 void agregarPokemon(NewPokemonConIDs*);
 void eliminarPokemon(CatchPokemonConIDs*);
