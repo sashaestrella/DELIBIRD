@@ -38,7 +38,7 @@ void* crearDirectorioTG();
 void* crearMetadata(char*);
 void* crearFiles(char*);
 void* crearBlocks(char*);
-void* generarBitmap(char*);
+void* generarBitmap(char*, t_config*);
 
 void* armarFolderPara(char*);
 void* crearMetadataPara(char*);

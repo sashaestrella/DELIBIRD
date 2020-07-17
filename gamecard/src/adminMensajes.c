@@ -264,16 +264,20 @@ void* crearMetadata(char* pathOrigin){
 	char* path = string_duplicate(pathOrigin);
 
 	string_append(&path,"/Metadata");
+	char* pathMetadata = string_duplicate(path);
 	mkdir(path, 0777);
 	string_append(&path, "/Metadata.bin");
 	metadata = fopen(path, "wrb");
 	fclose(metadata);
+
 
 	t_config* md = config_create(path);
 	config_set_value(md, "BLOCK_SIZE", "64");
 	config_set_value(md, "BLOCKS", "5192");
 	config_set_value(md, "MAGIC_NUMBER", "TALL_GRASS");
 	config_save(md);
+
+	generarBitmap(pathMetadata, md);
 }
 
 void* crearFiles(char* pathOrigin){
@@ -296,8 +300,31 @@ void* crearBlocks(char* path){
 	mkdir(path, 0777);
 }
 
-void* generarBitmap(char* path){
+void* generarBitmap(char* path, t_config* md){
 	// GENERAR BITMAP ------------------------------------ !!!
+	int cantidadDeBloques = 0;
+	FILE* bitmapFile;
+	char** bloques = config_get_array_value(md, "BLOCKS");
+
+	char* size = config_get_array_value(md, "BLOCK_SIZE");
+
+	int tamanioDeBloque = atoi(size);
+
+	while(bloques[cantidadDeBloques] != NULL){
+		cantidadDeBloques++;
+	}
+
+	string_append(&path, "/Bitmap.bin");
+	bitmapFile = fopen(path, "wrb");
+	fclose(bitmapFile);
+
+	t_bitarray* bitmap = bitarray_create(bitmapFile, cantidadDeBloques * tamanioDeBloque);
+
+	for(int i = 0; i < cantidadDeBloques; i++){
+		bitarray_set_bit(bitmap, i);
+	}
+
+	puts(bitarray_get_max_bit(bitmap));
 }
 
 void* armarFolderPara(char* nombre){
@@ -381,6 +408,11 @@ void agregarPokemon(NewPokemonConIDs* newPokemon){
 		enviarMensajeAppeared(newPokemon->IDmensaje, newPokemon->newPokemon->nombre, newPokemon->newPokemon->coordenadas);
 	}
 }
+
+int existePosicion(char** bloque, CoordenadasXY coordenadas){
+	return 1;
+}
+
 
 void eliminarPokemon(CatchPokemonConIDs* pokemon){
 	FILE* metadata;

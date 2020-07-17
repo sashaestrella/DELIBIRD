@@ -13,6 +13,7 @@
 #include<commons/log.h>
 #include<commons/string.h>
 #include<commons/config.h>
+#include<commons/bitarray.h>
 #include<readline/readline.h>
 #include<src/utilsGeneral.h>
 #include<semaphore.h>
