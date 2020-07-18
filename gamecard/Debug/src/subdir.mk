@@ -6,17 +6,14 @@
 C_SRCS += \
 ../src/adminMensajes.c \
 ../src/gamecard.c \
-../src/gamecardParaPruebas.c 
 
 OBJS += \
 ./src/adminMensajes.o \
 ./src/gamecard.o \
-./src/gamecardParaPruebas.o 
 
 C_DEPS += \
 ./src/adminMensajes.d \
 ./src/gamecard.d \
-./src/gamecardParaPruebas.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

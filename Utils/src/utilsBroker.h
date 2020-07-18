@@ -13,10 +13,15 @@
 #include<semaphore.h>
 #include"utilsEstructuras.h"
 #include"utilsGeneral.h"
+#include"time.h"
+#include<commons/txt.h>
 
 int generadorDeIDsMensaje = 0;
 int generadorDeIDsSuscriptor = 0;
+int contadorTimestamp = 0;
 
+pthread_mutex_t mutexContadorTimestamp = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexBusquedasFallidas = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexMemoriaInterna = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexGeneradorIDMensaje,mutexGeneradorIDSuscriptor, mutexListaSuscriptores = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexColaNewPokemon, mutexColaLocalizedPokemon, mutexColaGetPokemon,mutexColaAppearedPokemon, mutexColaCatchPokemon, mutexColaCaughtPokemon = PTHREAD_MUTEX_INITIALIZER;
@@ -37,8 +42,18 @@ t_list* listaPosicionesLibres;
 t_list* listaPosicionesOcupadas;
 void* memoriaInterna;
 int tamanioMinimoParticion;
+int ip;
+int puerto;
+char* algoritmoMemoria;
+char* algoritmoParticionLibre;
+char* algoritmoReemplazo;
+int busquedasFallidasPreviasACompactacionOriginal;
+int busquedasFallidasPreviasACompactacion;
+int tamanioMemoria;
+int yaCompacte = 0;
 
-
+t_log* logger;
+t_config* config;
 
 typedef struct{
 	void* posicion;
@@ -50,6 +65,7 @@ typedef struct{
 	void* posicion;
 	int colaALaQuePertenece;
 	int ID;
+	int timestamp;
 }PosicionOcupada;
 
 //Mensajes 2
@@ -155,7 +171,6 @@ int recibir_operacion(int);
 void process_request(int cod_op, int cliente_fd);
 void serve_client(int *socket);
 
-
 void recibirSuscripcionNewPokemon(int socket_suscriptor);
 void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor, Suscriptor* unSuscriptor);
 void enviarNewPokemonASuscriptores(MensajeNewPokemon2* unMensajeNewPokemon);
@@ -193,5 +208,24 @@ GetPokemon* sacarDeMemoriaElGetPokemon(MensajeGetPokemon2* mensajeGet2);
 AppearedPokemon* sacarDeMemoriaElAppearedPokemon(MensajeAppearedPokemon2* mensajeAppeared2);
 CatchPokemon* sacarDeMemoriaElCatchPokemon(MensajeCatchPokemon2* mensajeCatch2);
 CaughtPokemon* sacarDeMemoriaElCaughtPokemon(MensajeCaughtPokemon2* mensajeCaught2);
+
+
+PosicionLibre* pedirPosicion(int tamanio);
+PosicionLibre* pedirPosicionFF(int tamanio);
+PosicionLibre* pedirPosicionBF(int tamanio);
+void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID);
+void borrarFIFO();
+void borrarLRU();
+void borrarDeColaDeMensajes(int nroDeCola,int idMensaje);
+void buscarIDNewPokemonYBorrarlo(int id);
+void buscarIDLocalizedPokemonYBorrarlo(int id);
+void buscarIDGetPokemonYBorrarlo(int id);
+void buscarIDAppearedPokemonYBorrarlo(int id);
+void buscarIDCatchPokemonYBorrarlo(int id);
+void buscarIDCaughtPokemonYBorrarlo(int id);
+void actualizarTimestamp(int ID);
+
+void recibirSenial(int senial);
+void dumpEnCache();
 
 #endif /* CONEXIONES_H_ */

@@ -162,7 +162,7 @@ GetPokemonConIDs* recibir_GET_POKEMON(int cliente_fd, int* size,int reciboID){
 		memcpy(unGetPokemon->nombre,stream,unGetPokemon->tamanioNombrePokemon);
 		stream+=unGetPokemon->tamanioNombrePokemon;
 
-		printf("\nMe llego el mensaje: %s\n",unGetPokemon->nombre);
+		printf("\nMe llego el mensaje: %i, %s\n",unGetPokemon->tamanioNombrePokemon, unGetPokemon->nombre);
 
 		free(buffer->stream);
 		free(buffer);
@@ -661,53 +661,42 @@ NewPokemon* parsearNewPokemon(char* pokemon
 	return newPokemon;
 }
 
-AppearedPokemon* parsearAppearedPokemon(char* pokemon, char* posX, char* posY){
-
-	AppearedPokemon* appeared = malloc(sizeof(AppearedPokemon));
-
-	appeared->nombre = pokemon;
-	appeared->tamanioNombrePokemon = strlen(pokemon +1);
-	appeared->coordenadas.posicionX = atoi(posX);
-	appeared->coordenadas.posicionY = atoi(posY);
-
-	return appeared;
+GetPokemon* parsearGetPokemon(char* pokemon){
+	GetPokemon* unGetPokemon = malloc(sizeof(GetPokemon));
+	unGetPokemon->nombre = pokemon;
+	return unGetPokemon;
 }
 
-CaughtPokemon* parsearCaughtPokemon(char* confirmacion){
+CatchPokemon* parsearCatchPokemon(char* nombrePokemon,char* posicionX,char* posicionY){
+	CatchPokemon* catchPokemon = malloc(sizeof(CatchPokemon));
 
-	CaughtPokemon* caught = malloc(sizeof(CaughtPokemon));
+	catchPokemon->nombre = nombrePokemon;
+	catchPokemon->tamanioNombrePokemon = strlen(nombrePokemon)+1;
+	catchPokemon->coordenadas.posicionX = atoi(posicionX);
+	catchPokemon->coordenadas.posicionY = atoi(posicionY);
 
+	return catchPokemon;
+}
+AppearedPokemon* parsearAppearedPokemon(char* nombrePokemon,char* posicionX,char* posicionY){
+	AppearedPokemon* appearedPokemon = malloc(sizeof(AppearedPokemon));
 
-	if(!strcmp(confirmacion, "OK")){
+	appearedPokemon->nombre = nombrePokemon;
+	appearedPokemon->tamanioNombrePokemon = strlen(nombrePokemon)+1;
+	appearedPokemon->coordenadas.posicionX = atoi(posicionX);
+	appearedPokemon->coordenadas.posicionY = atoi(posicionY);
 
-
-	caught->atrapar = 1;
-	}else{
-		caught->atrapar = 0;
+	return appearedPokemon;
+}
+CaughtPokemon* parsearCaughtPokemon(char* atrapar){
+	CaughtPokemon* caughtPokemon = malloc(sizeof(CaughtPokemon));
+	uint32_t loAtrape;
+	if(!strcmp(atrapar,"OK")){
+		loAtrape = 1;
+	} else {
+		loAtrape = 0;
 	}
+	caughtPokemon->atrapar = loAtrape;
 
-	/*if(!strcmp(confirmacion, "FAIL")){
-	caught->atrapar = 0;
-	}*/
-	return caught;
+	return caughtPokemon;
 }
-
-/*void enviarNewPokemon(NewPokemon* newPokemon, int conexion)
-{
-	uint32_t codigo = NEW_POKEMON;
-	send(conexion, &codigo, sizeof(uint32_t), 0);
-	puts("te envie el codopeee");
-	char* nombrePokemon = newPokemon->nombre;
-	uint32_t tamanioNombre= strlen(newPokemon->tamanioNombrePokemon)+1;
-	uint32_t posX = newPokemon->coordenadas.posicionX;
-	uint32_t posY = newPokemon->coordenadas.posicionY;
-	uint32_t cant = newPokemon->cantidad;;
-
-	send(conexion,&tamanioNombre,sizeof(uint32_t),0);
-	send(conexion,nombrePokemon,tamanioNombre,0);
-	send(conexion,&posX,sizeof(uint32_t),0);
-	send(conexion,&posY,sizeof(uint32_t),0);
-	send(conexion,&cant,sizeof(uint32_t),0);
-	//send() de todo new pokemon
-}*/
 
