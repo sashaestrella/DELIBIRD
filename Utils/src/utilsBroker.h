@@ -8,6 +8,7 @@
 #include<netdb.h>
 #include<commons/log.h>
 #include<commons/config.h>
+#include<commons/collections/list.h>
 #include<string.h>
 #include<pthread.h>
 #include<semaphore.h>
@@ -27,7 +28,7 @@ pthread_mutex_t mutexBusquedasFallidas = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexMemoriaInterna = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexGeneradorIDMensaje,mutexGeneradorIDSuscriptor, mutexListaSuscriptores = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexColaNewPokemon, mutexColaLocalizedPokemon, mutexColaGetPokemon,mutexColaAppearedPokemon, mutexColaCatchPokemon, mutexColaCaughtPokemon = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t no_vacioNP,no_vacioLP,no_vacioGP,no_vacioAP,no_vacioCP,no_vacioCAP = PTHREAD_COND_INITIALIZER;
+
 t_list* New_Pokemon;
 t_list* Localized_Pokemon;
 t_list* Get_Pokemon;
@@ -42,6 +43,7 @@ t_list* suscriptores_catch_pokemon;
 t_list* suscriptores_caught_pokemon;
 t_list* listaPosicionesLibres;
 t_list* listaPosicionesOcupadas;
+
 void* memoriaInterna;
 int tamanioMinimoParticion;
 int ip;
@@ -120,52 +122,7 @@ typedef struct{
 	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
 	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
 }MensajeCaughtPokemon2;
-/*
-//Mensajes 1
-typedef struct{
-	int ID;
-	NewPokemon* contenidoDelMensaje; //
-	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
-	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
-}MensajeNewPokemon;
 
-typedef struct{
-	int ID;
-	int IDCorrelativo;
-	LocalizedPokemon* contenidoDelMensaje;
-	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
-	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
-}MensajeLocalizedPokemon;
-
-typedef struct{
-	int ID;
-	GetPokemon* contenidoDelMensaje;
-	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
-	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
-}MensajeGetPokemon;
-
-typedef struct{
-	int ID;
-	AppearedPokemon* contenidoDelMensaje;
-	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
-	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
-}MensajeAppearedPokemon;
-
-typedef struct{
-	int ID;
-	CatchPokemon* contenidoDelMensaje;
-	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
-	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
-}MensajeCatchPokemon;
-
-typedef struct{
-	int ID;
-	int IDCorrelativo;
-	CaughtPokemon* contenidoDelMensaje;
-	t_list* suscriptoresAtendidos; //suscriptores a los que fue enviado
-	t_list* suscriptoresACK; //suscriptores que retornaron ACK del mismo
-}MensajeCaughtPokemon;
-*/
 
 void iniciar_servidor(void);
 void esperar_cliente(int);
@@ -197,6 +154,8 @@ void recibirSuscripcionCaughtPokemon(int socket_suscriptor);
 void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor, Suscriptor* unSuscriptor);
 void enviarCaughtPokemonASuscriptores(MensajeCaughtPokemon2* unMensajeCaughtPokemon);
 
+void devolverID(int socket, int id);
+
 MensajeNewPokemon2* guardarMensajeNewPokemon(NewPokemon* unNewPokemon);
 MensajeLocalizedPokemon2* guardarMensajeLocalizedPokemon(LocalizedPokemon* unLocalizedPokemon,int idCorrelativo);
 MensajeGetPokemon2* guardarMensajeGetPokemon(GetPokemon* unGetPokemon);
@@ -215,7 +174,11 @@ CaughtPokemon* sacarDeMemoriaElCaughtPokemon(MensajeCaughtPokemon2* mensajeCaugh
 PosicionLibre* pedirPosicion(int tamanio);
 PosicionLibre* pedirPosicionFF(int tamanio);
 PosicionLibre* pedirPosicionBF(int tamanio);
+PosicionLibre* pedirPosicionBFBS(int tamanio);
+PosicionLibre* pedirPosicionFFBS(int tamanio);
 void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID);
+int tamanioOcupadas();
+void limpiarPosicionesEn0();
 void borrarFIFO();
 void borrarLRU();
 void borrarDeColaDeMensajes(int nroDeCola,int idMensaje);
@@ -226,6 +189,12 @@ void buscarIDAppearedPokemonYBorrarlo(int id);
 void buscarIDCatchPokemonYBorrarlo(int id);
 void buscarIDCaughtPokemonYBorrarlo(int id);
 void actualizarTimestamp(int ID);
+int insertarOrdenadoEnListaPosicionesLibres(PosicionLibre* unaPosicionLibre);
+void insertarOrdenadoEnListaPosicionesOcupadas(PosicionOcupada* unaPosicionOcupada);
+void compacta();
+void consolidar(int posicion);
+void consolidarParticiones(int posicion);
+void consolidarBS(int posicion);
 
 void recibirSenial(int senial);
 void dumpEnCache();

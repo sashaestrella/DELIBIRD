@@ -77,8 +77,6 @@ NewPokemonConIDs* recibir_NEW_POKEMON(int cliente_fd,int* size,int reciboID){
 		free(buffer->stream);
 		free(buffer);
 
-		printf("\nMe llego el mensaje: %s\n",unNewPokemon->nombre);
-
 		return newConIDs;
 }
 
@@ -129,8 +127,6 @@ LocalizedPokemonConIDs* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size,int r
 
 		unLocalizedPokemon->paresOrdenados = unasCoordenadas;
 
-		printf("\nMe llego el mensaje: %s\n",localizedConIdCorrelativo->localizedPokemon->nombre);
-
 		free(buffer->stream);
 		free(buffer);
 
@@ -163,8 +159,6 @@ GetPokemonConIDs* recibir_GET_POKEMON(int cliente_fd, int* size,int reciboID){
 		unGetPokemon->nombre = malloc(unGetPokemon->tamanioNombrePokemon);
 		memcpy(unGetPokemon->nombre,stream,unGetPokemon->tamanioNombrePokemon);
 		stream+=unGetPokemon->tamanioNombrePokemon;
-
-		printf("\nMe llego el mensaje: %i, %s\n",unGetPokemon->tamanioNombrePokemon, unGetPokemon->nombre);
 
 		free(buffer->stream);
 		free(buffer);
@@ -207,8 +201,6 @@ AppearedPokemonConIDs* recibir_APPEARED_POKEMON(int cliente_fd,int* size,int rec
 		memcpy(&(unAppearedPokemon->coordenadas.posicionY),stream,sizeof(uint32_t));
 		stream+=sizeof(uint32_t);
 
-		printf("\nMe llego el mensaje: %s\n",unAppearedPokemon->nombre);
-
 		free(buffer->stream);
 		free(buffer);
 
@@ -246,8 +238,6 @@ CatchPokemonConIDs* recibir_CATCH_POKEMON(int cliente_fd,int*size,int reciboID){
 		memcpy(&(unCatchPokemon->coordenadas.posicionY),stream,sizeof(uint32_t));
 		stream+=sizeof(uint32_t);
 
-		printf("\nMe llego el mensaje: %s\n",unCatchPokemon->nombre);
-
 		free(buffer->stream);
 		free(buffer);
 
@@ -280,8 +270,6 @@ CaughtPokemonConIDs* recibir_CAUGHT_POKEMON(int cliente_fd,int* size,int reciboI
 		memcpy(&(unCaughtPokemon->atrapar),stream,sizeof(uint32_t));
 		stream+=sizeof(uint32_t);
 
-		printf("\nEl pokemon fue atrapado?: %d\n",unCaughtPokemon->atrapar);
-
 		free(buffer->stream);
 		free(buffer);
 
@@ -291,10 +279,7 @@ CaughtPokemonConIDs* recibir_CAUGHT_POKEMON(int cliente_fd,int* size,int reciboI
 
 
 
-void* serializar_paquete(t_paquete* paquete, int bytes)
-{
-
-
+void* serializar_paquete(t_paquete* paquete, int bytes){
 	void * a_enviar = malloc(bytes);
 	int desplazamiento = 0;
 
@@ -306,10 +291,6 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
 	desplazamiento+= paquete->buffer->size;
 	return a_enviar;
 }
-
-
-
-
 
 void* serializarLocalizedPokemon(LocalizedPokemon* localizedPokemon,int bytes, int id,int idCorrelativo){
 
@@ -641,19 +622,13 @@ void devolver_mensaje(void* payload, int size, int socket_cliente)
 	free(paquete);
 }
 
-void liberar_conexion(int socket_cliente)
-{
+void liberar_conexion(int socket_cliente){
 	close(socket_cliente);
 }
 
 
-NewPokemon* parsearNewPokemon(char* pokemon
-							, char* posicionX
-							, char* posicionY
-							, char* cantidad)
-{
+NewPokemon* parsearNewPokemon(char* pokemon,char* posicionX,char* posicionY,char* cantidad){
 	NewPokemon* newPokemon = malloc(sizeof(NewPokemon));
-
 	newPokemon->nombre = pokemon;
 	newPokemon->tamanioNombrePokemon = strlen(pokemon)+1;
 	newPokemon->coordenadas.posicionX = atoi(posicionX);

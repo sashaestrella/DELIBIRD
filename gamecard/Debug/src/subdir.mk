@@ -5,18 +5,15 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../src/adminMensajes.c \
-../src/gamecard.c \
-../src/gamecardParaPruebas.c 
+../src/gamecard.c 
 
 OBJS += \
 ./src/adminMensajes.o \
-./src/gamecard.o \
-./src/gamecardParaPruebas.o 
+./src/gamecard.o 
 
 C_DEPS += \
 ./src/adminMensajes.d \
-./src/gamecard.d \
-./src/gamecardParaPruebas.d 
+./src/gamecard.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

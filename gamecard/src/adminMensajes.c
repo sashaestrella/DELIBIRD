@@ -36,31 +36,10 @@ void generarConexiones(int tipoSuscriptor){
 	free(catch);
 }
 
-void abrirEscuchaNew(){
-	pthread_t escuchaNew;
-	pthread_create(&escuchaNew, NULL, recibirMensajesNew, NULL);
-	pthread_join(escuchaNew, NULL);
-}
-
-void abrirEscuchaGet(){
-	pthread_t escuchaGet;
-	pthread_create(&escuchaGet, NULL, recibirMensajesGet, NULL);
-	pthread_join(escuchaGet, NULL);
-}
-
-void abrirEscuchaCatch(){
-	pthread_t escuchaCatch;
-	pthread_create(&escuchaCatch, NULL, recibirMensajesCatch, NULL);
-	pthread_join(escuchaCatch, NULL);
-}
-
-// ------------------------------------ AUXILIARES ------------------------------------ //
+// ------------------------------------ SUSCRIPCIONES ------------------------------------ //
 
 void noHayBroker(){
-	//suscribirseACola(conexionGameBoy, 0, 0, msgGameBoy);
-	//pthread_t hiloGameBoy;
-	//pthread_create(&hiloGameBoy, NULL, recibirMensaje, conexionGameBoy);
-	//pthread_join(hiloGameBoy,NULL);
+
 }
 
 
@@ -106,7 +85,7 @@ void* suscribirseAColaCatch(){
 	administradorMensajesColas(SUSCRIPTOR_CATCHPOKEMON, conexion, IDsuscripcion);
 }
 
-
+// ------------------------------------ RECEPCION MENSAJES ------------------------------------ //
 
 void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 
@@ -119,7 +98,6 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 	switch(op_code){
 
 			case SUSCRIPTOR_NEWPOKEMON:
-				conexionNewPokemon = conexion;
 				IDsuscripcionNew= IDsuscripcion;
 				recv(conexion, &cantidadNewPokemon, sizeof(int), MSG_WAITALL);
 				printf("Cantidad de New Pokemons: %d\n", cantidadNewPokemon);
@@ -132,41 +110,40 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 					adminMensajeNewPokemon(nuevoNewPokemonConId);
 					printf("Recibi mensaje com id: %d\n", nuevoNewPokemonConId->IDmensaje);
 				}
-				abrirEscuchaNew();
+				recibirMensajesNew(conexion);
 				break;
 
 			case SUSCRIPTOR_GETPOKEMON:
-				conexionGetPokemon = conexion;
 				IDsuscripcionGet= IDsuscripcion;
 
 				recv(conexion, &cantidadGetPokemon, sizeof(int), MSG_WAITALL);
 				printf("Cantidad de Get Pokemons: %d\n", cantidadGetPokemon);
-				recv(conexion, &codigo1, sizeof(op_code), MSG_WAITALL);
-				printf("Codigo de cola: %d\n", codigo1);
 				GetPokemonConIDs* nuevoGetPokemonConId;
 				for(int i = 0; i<cantidadGetPokemon; i++){
+					recv(conexion, &codigo1, sizeof(op_code), MSG_WAITALL);
+					printf("Codigo de cola: %d\n", codigo1);
 					nuevoGetPokemonConId = recibir_GET_POKEMON(conexion, 0, 1);
 					send(conexion, 1, sizeof(int), 0);
+					printf("%s", nuevoGetPokemonConId->getPokemon->nombre);
 					adminMensajeGetPokemon(nuevoGetPokemonConId);
 				}
-				abrirEscuchaGet();
+				recibirMensajesGet(conexion);
 				break;
 
 			case SUSCRIPTOR_CATCHPOKEMON:
-				conexionCatch = conexion;
 				IDsuscripcionCatch= IDsuscripcion;
 
 				recv(conexion, &cantidadCatchPokemon, sizeof(int), MSG_WAITALL);
 				printf("Cantidad de Catch Pokemons: %d\n", cantidadCatchPokemon);
-				recv(conexion, &codigo2, sizeof(op_code), MSG_WAITALL);
-				printf("Codigo de cola: %d\n", codigo2);
 				CatchPokemonConIDs* nuevoCatchPokemonConId;
 				for(int i = 0; i<cantidadCatchPokemon; i++){
+					recv(conexion, &codigo2, sizeof(op_code), MSG_WAITALL);
+					printf("Codigo de cola: %d\n", codigo2);
 					nuevoCatchPokemonConId = recibir_CATCH_POKEMON(conexion, 0, 1);
 					send(conexion, 1, sizeof(int), 0);
 					adminMensajeCatch(nuevoCatchPokemonConId);
 				}
-				abrirEscuchaCatch();
+				recibirMensajesCatch(conexion);
 				break;
 			default:
 				printf("Llego un mensaje invalido");
@@ -174,9 +151,7 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 	}
 }
 
-// ------------------------------- Funciones Game Card ------------------------------------ //
-
-void* recibirMensajesNew(){
+void* recibirMensajesNew(int conexionNewPokemon){
 	pthread_t admin;
 	void* mensajeRecibido;
 	NewPokemonConIDs* nuevoNewPokemon;
@@ -190,6 +165,37 @@ void* recibirMensajesNew(){
 		pthread_detach(admin);
 	}
 }
+
+void* recibirMensajesGet(int conexionGetPokemon){
+	pthread_t admin;
+	GetPokemonConIDs* nuevoGetPokemon;
+	while(1){
+		int cod_op;
+		recv(conexionGetPokemon, &cod_op, sizeof(int), 0);
+		nuevoGetPokemon = recibir_GET_POKEMON(conexionGetPokemon, 0, 1);
+		int ack = 1;
+		send(conexionGetPokemon, &ack, sizeof(int), 0);
+		pthread_create(&admin, NULL, adminMensajeGetPokemon, nuevoGetPokemon);
+		pthread_detach(admin);
+	}
+}
+
+void* recibirMensajesCatch(int conexionCatch){
+	pthread_t admin;
+	CatchPokemonConIDs* nuevoCatch;
+
+	while(1){
+		int cod_op;
+		recv(conexionCatch, &cod_op, sizeof(int), 0);
+		nuevoCatch = recibir_CATCH_POKEMON(conexionCatch, 0, 1);
+		int ack = 1;
+		send(conexionCatch, &ack, sizeof(int), 0);
+		pthread_create(&admin, NULL, adminMensajeCatch, nuevoCatch);
+		pthread_detach(admin);
+	}
+}
+
+// ------------------------------------ ADMIN MENSAJES ------------------------------------ //
 
 void* adminMensajeNewPokemon(NewPokemonConIDs* nuevoNewPokemon){
 	AppearedPokemon* appearedPokemon1 = malloc(sizeof(AppearedPokemon));
@@ -208,46 +214,20 @@ void* adminMensajeNewPokemon(NewPokemonConIDs* nuevoNewPokemon){
 	armarFolderPara(nuevoNewPokemon);
 }
 
-void* armarFolderPara(NewPokemonConIDs* newPokemon){
-	char* path = string_new();
-	string_append(&path, "../../TALL_GRASS/Files/");
-	string_append(&path, newPokemon->newPokemon->nombre);
-	mkdir(path, 0777);
-}
-
-void* recibirMensajesGet(){
-	pthread_t admin;
-	GetPokemonConIDs* nuevoGetPokemon;
-	while(1){
-		int cod_op;
-		recv(conexionGetPokemon, &cod_op, sizeof(int), 0);
-		nuevoGetPokemon = recibir_GET_POKEMON(conexionGetPokemon, 0, 1);
-		int ack = 1;
-		send(conexionNewPokemon, &ack, sizeof(int), 0);
-		pthread_create(&admin, NULL, adminMensajeGetPokemon, nuevoGetPokemon);
-		pthread_detach(admin);
-	}
-}
-
 void* adminMensajeGetPokemon(GetPokemonConIDs* nuevoGetPokemon){
-	list_add(mensajesRecibidos, nuevoGetPokemon->IDmensaje);
-	list_add(nuevosGetPokemon, nuevoGetPokemon);
-	printf("Guarde un mensaje Get");
-}
-
-void* recibirMensajesCatch(){
-	pthread_t admin;
-	CatchPokemonConIDs* nuevoCatch;
-
-	while(1){
-		int cod_op;
-		recv(conexionCatch, &cod_op, sizeof(int), 0);
-		nuevoCatch = recibir_CATCH_POKEMON(conexionCatch, 0, 1);
-		int ack = 1;
-		send(conexionNewPokemon, &ack, sizeof(int), 0);
-		pthread_create(&admin, NULL, adminMensajeCatch, nuevoCatch);
-		pthread_detach(admin);
-	}
+/*	LocalizedPokemon* localizedPokemon1 = malloc(sizeof(LocalizedPokemon));
+	char* nombre = malloc(9);
+	nombre = "GET1";
+	localizedPokemon1->nombre = nombre;
+	localizedPokemon1->cantidadParesOrdenados = 0;
+	localizedPokemon1->paresOrdenados = list_create();
+	int id = 0;
+	int idCorrelativo = nuevoGetPokemon->IDmensaje;
+	int conexion = crear_conexion(ip, puerto);
+	enviarLocalizedPokemon(localizedPokemon1,conexion,0,idCorrelativo);
+*/
+	obtenerCantidadYPosiciones(nuevoGetPokemon);
+	//printf("\nEnvie el mensaje: %s\n",localizedPokemon1->nombre);
 }
 
 void* adminMensajeCatch(CatchPokemonConIDs* nuevoCatch){
@@ -256,30 +236,298 @@ void* adminMensajeCatch(CatchPokemonConIDs* nuevoCatch){
 	printf("Guarde un mensaje Catch");
 }
 
+// --------------------- FILE SYSTEM --------------------- //
+
 void* crearDirectorioTG(){
 	char* path = string_new();
-	string_append(&path, "../../TALL_GRASS");
+	string_append(&path,puntoMontaje);
+	string_append(&path, "/TALL_GRASS");
 	mkdir(path, 0777);
+
 	crearMetadata(path);
 	crearFiles(path);
+	crearBlocks(path);
 }
 
-void* crearMetadata(){
+void* crearMetadata(char* pathOrigin){
 	FILE* metadata;
+	char* path = string_duplicate(pathOrigin);
 
-	mkdir("../../TALL_GRASS/Metadata", 0777);
-	metadata = fopen("../../TALL_GRASS/Metadata/Metadata.bin", "wrb");
+	string_append(&path,"/Metadata");
+	char* pathMetadata = string_duplicate(path);
+	mkdir(path, 0777);
+	string_append(&path, "/Metadata.bin");
+	metadata = fopen(path, "wrb");
 	fclose(metadata);
 
-	t_config* md = config_create("../../TALL_GRASS/Metadata/Metadata.bin");
+	t_config* md = config_create(path);
 	config_set_value(md, "BLOCK_SIZE", "64");
 	config_set_value(md, "BLOCKS", "5192");
 	config_set_value(md, "MAGIC_NUMBER", "TALL_GRASS");
 	config_save(md);
+
+	generarBitmap(pathMetadata, md);
 }
 
-void* crearFiles(){
-	mkdir("../../TALL_GRASS/Files", 0777);
+void* crearFiles(char* pathOrigin){
+	FILE* metadata;
+	char* path = string_duplicate(pathOrigin);
+
+	string_append(&path, "/Files");
+	mkdir(path, 0777);
+	string_append(&path, "/Metadata.bin");
+	metadata = fopen(path, "wrb");
+	fclose(metadata);
+
+	t_config* md = config_create(path);
+	config_set_value(md, "DIRECTORY", "Y");
+	config_save(md);
+}
+
+void* crearBlocks(char* path){
+	string_append(&path, "/Blocks");
+	mkdir(path, 0777);
+}
+
+void* generarBitmap(char* path, t_config* md){
+
+	int cantidadDeBloques = config_get_int_value(md, "BLOCKS");
+
+	int tamanioDeBloque = config_get_int_value(md, "BLOCK_SIZE");
+
+	string_append(&path, "/Bitmap.bin");
+	FILE* bitmapFile = fopen(path, "wrb");
+
+	void* punteroABitmap = malloc(cantidadDeBloques/8);
+
+	t_bitarray* bitmap = bitarray_create_with_mode(punteroABitmap, cantidadDeBloques, MSB_FIRST);
+
+	for(int i = 0; i < cantidadDeBloques; i++){
+		bitarray_clean_bit(bitmap,i);
+	}
+	fwrite(punteroABitmap, 1, cantidadDeBloques/8, bitmapFile);
+}
+
+void* armarFolderPara(char* nombre){
+	char* path = string_new();
+	string_append(&path,puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files/");
+	string_append(&path, nombre);
+	mkdir(path, 0777);
+}
+
+void* crearMetadataPara(char* nombre){
+	FILE* metadata;
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files/");
+	string_append(&path, nombre);
+	string_append(&path, "/Metadata.bin");
+
+	armarFolderPara(nombre);
+	metadata = fopen(path, "wrb");
+	fclose(metadata);
+
+	t_config* md = config_create(path);
+	config_set_value(md, "DIRECTORY", "N");
+	config_set_value(md, "SIZE", "0");
+	config_set_value(md, "BLOCKS", "[]");
+	config_set_value(md, "OPEN", "N");
+	config_save(md);
+}
+
+// --------------------- INTERACCION CON FS --------------------- //
+
+int archivoAbierto(char* path){
+	t_config* md = config_create(path);
+	return config_get_string_value(md, "OPEN") == "Y";
+}
+
+int existePokemon(char* nombreOriginal){
+	char* nombre = string_duplicate(nombreOriginal);
+	puts("estoy en existePokemon");
+	printf("el nombre es %s",nombre);
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files/");
+
+	string_append(&path, nombre);
+
+	string_append(&path, "/Metadata.bin");
+
+
+	FILE* archivo = fopen(path, "r");
+	if (archivo == NULL) {
+		//fclose(archivo);
+		puts("No existe el archivo");
+	    return 0;
+	} else {
+	    fclose(archivo);
+	    puts("Existe el archivo");
+	    return 1;
+	}
+}
+
+void agregarPokemon(NewPokemonConIDs* newPokemon){
+	FILE* metadata;
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files/");
+	string_append(&path, newPokemon->newPokemon->nombre);
+	string_append(&path, "/Metadata.bin");
+
+	if(!existePokemon(newPokemon->newPokemon->nombre)){
+		crearMetadataPara(newPokemon->newPokemon->nombre);
+	} else {
+		t_config* md = config_create(path);
+		while(archivoAbierto(path)){
+			sleep(tiempoReintento);
+		}
+		config_set_value(md,"OPEN","Y");
+		config_save(md);
+
+		char** bloques = config_get_array_value(md, "BLOCKS");
+		char* cursor = string_duplicate(path);
+
+		// Agregar Bloque -------------------------------_ !!
+
+		sleep(tiempoRetardo);
+		config_set_value(md,"OPEN","N");
+		config_save(md);
+		enviarMensajeAppeared(newPokemon->IDmensaje, newPokemon->newPokemon->nombre, newPokemon->newPokemon->coordenadas);
+	}
+}
+
+int existePosicion(char** bloque, CoordenadasXY coordenadas){
+	return 1;
+}
+
+
+void eliminarPokemon(CatchPokemonConIDs* pokemon){
+	FILE* metadata;
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files/");
+	string_append(&path, pokemon->catchPokemon->nombre);
+	string_append(&path, "/Metadata.bin");
+	int encontrado = 0;
+
+	char* error = string_new;
+	string_append(&error ,"No existe el pokemon ");
+	string_append(&error ,pokemon->catchPokemon->nombre);
+
+	if(!existePokemon(pokemon->catchPokemon->nombre)){
+		log_info(logger,error);
+	} else {
+		t_config* md = config_create(path);
+		while(archivoAbierto(path)){
+			sleep(tiempoReintento);
+		}
+		config_set_value(md,"OPEN","Y");
+		config_save(md);
+		char** bloques = config_get_array_value(md, "BLOCKS");
+		int i = 0;
+		while(bloques[i]!=NULL && !existePosicion(bloques[i], pokemon->catchPokemon->coordenadas)){
+			i++;
+		}
+		if(bloques[i] == NULL){
+			log_info(logger,error);
+
+		} else {
+
+			// Disminuir cantidad ---------------------- !!
+
+			encontrado = 1;
+		}
+	sleep(tiempoRetardo);
+	config_set_value(md,"OPEN","N");
+	config_save(md);
+	}
+	enviarMensajeCaught(pokemon->IDmensaje, encontrado);
+}
+
+LocalizedPokemon* obtenerCantidadYPosiciones(GetPokemonConIDs* pokemon){
+
+	FILE* metadata;
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files/");
+	string_append(&path, pokemon->getPokemon->nombre);
+	string_append(&path, "/Metadata.bin");
+	int encontrado = 0;
+	char** bloques;
+
+	char* error = string_new();
+	string_append(&error ,"No existe el pokemon ");
+	string_append(&error ,pokemon->getPokemon->nombre);
+	printf("%s", pokemon->getPokemon->nombre);
+	char* nombreTest = "elpoke";
+	if(!existePokemon(pokemon->getPokemon->nombre)){
+		//log_info(logger,"%s",error);
+		// Enviar mensaje sin posiciones ni cantidades ----------------------------- !!
+		puts("entro mi pana");
+		LocalizedPokemon* localizedVacio = malloc(sizeof(LocalizedPokemon));
+		localizedVacio->cantidadParesOrdenados = 0;
+		localizedVacio->paresOrdenados = list_create();
+		localizedVacio->tamanioNombrePokemon = strlen(pokemon->getPokemon->nombre) + 1;
+		localizedVacio->nombre = pokemon->getPokemon->nombre;
+
+		int conexionVacio = crear_conexion(ip, puerto);
+
+		enviarLocalizedPokemon(localizedVacio, conexionVacio, 0, pokemon->IDmensaje);
+		list_destroy(localizedVacio->paresOrdenados);
+		free(localizedVacio);
+	} else {
+		t_config* md = config_create(path);
+			while(archivoAbierto(path)){
+				sleep(tiempoReintento);
+			}
+			config_set_value(md,"OPEN","Y");
+			config_save(md);
+			bloques = config_get_array_value(md, "BLOCKS");
+			sleep(tiempoRetardo);
+
+			config_set_value(md,"OPEN","N");
+			config_save(md);
+
+			int i = 0;
+			t_list* posiciones = list_create();
+			while(bloques[i]!=NULL){
+				i++;
+				obtenerPosiciones(pokemon->IDmensaje, pokemon->getPokemon->nombre, bloques[i]);
+			}
+	}
+
+}
+
+t_list* obtenerPosiciones(int IDmensaje, char* nombre, char* Bloque){
+	// ------------------------- Obtener posiciones y cantidad y enviarlas ------------------!!
+}
+
+
+
+// --------------------- Enviar Mensajes --------------------- //
+
+int enviarMensajeAppeared(int IDmensaje, char* pokemon, CoordenadasXY coordenadas){
+	AppearedPokemon* nuevo = parsearAppearedPokemon(pokemon, coordenadas.posicionX, coordenadas.posicionY);
+	int socket_suscriptor = crear_conexion(ip, puerto);
+	enviarAppearedPokemon(nuevo, socket_suscriptor, 0, IDmensaje);
+}
+
+int enviarMensajeCaught(int IDmensaje, int resultado){
+	CaughtPokemon* nuevo = malloc(sizeof(CaughtPokemon));
+	nuevo->atrapar = resultado;
+	int socket_suscriptor = crear_conexion(ip, puerto);
+	enviarCaughtPokemon(nuevo, socket_suscriptor, 0, IDmensaje);
+}
+
+int enviarMensajeLocalized(int IDmensaje, char* pokemon, CoordenadasXY coordenadas, int cantidad){
+	LocalizedPokemon* nuevo = malloc(sizeof(LocalizedPokemon));
+	nuevo->cantidadParesOrdenados = cantidad;
+	nuevo->tamanioNombrePokemon = sizeof(pokemon)+1;
+	nuevo->nombre = pokemon;
+	int socket_suscriptor = crear_conexion(ip, puerto);
+	enviarLocalizedPokemon(nuevo, socket_suscriptor, 0, IDmensaje);
 }
 
 
