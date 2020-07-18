@@ -13,25 +13,31 @@
 #include<commons/log.h>
 #include<commons/string.h>
 #include<commons/config.h>
+#include<commons/bitarray.h>
 #include<readline/readline.h>
 #include<src/utilsGeneral.h>
 #include<semaphore.h>
 
 char* ip;
 char* puerto;
+int cantidadArchivos;
+char* puntoMontaje;
+int tiempoReintento;
+int tiempoReconexion;
+int tiempoRetardo;
 sem_t suscripciones;
+t_log* logger;
+
+void leerConfig();
 
 // ----------------- Conexiones ----------------- //
 
-int conexionGetPokemon;
 int IDsuscripcionGet;
 int idGetPokemon;
 
-int conexionNewPokemon;
 int IDsuscripcionNew;
 int idNewPokemon;
 
-int conexionCatch;
 int IDsuscripcionCatch;
 int idCatch;
 

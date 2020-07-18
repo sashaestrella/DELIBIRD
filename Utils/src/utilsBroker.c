@@ -872,6 +872,7 @@ void consolidarBS(int posicion){
 			list_remove(listaPosicionesLibres,posicion);
 			puts("\nAcabo de terminar de consolidar a izquierda en BS.");
 
+
 			yaConsolide = 1;
 			consolidarBS(posicion-1);
 		}
@@ -1102,6 +1103,7 @@ void actualizarTimestamp(int ID){
 			unaPosicionOcupada->timestamp = contadorTimestamp;
 			pthread_mutex_unlock(&mutexContadorTimestamp);
 			printf("El mensaje de ID %d tiene timestamp %d\n", unaPosicionOcupada->ID, unaPosicionOcupada->timestamp);
+
 			break;
 		}
 	}
@@ -2120,6 +2122,7 @@ void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 					pthread_mutex_unlock(&mutexMemoriaInterna);
 
 					loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
+
 					log_info(logger, loQueVoyALoguear,mensaje->ID,unSuscriptor->IDsuscriptor);
 
 					printf("\n\nNombre: %s",unNewPokemon->nombre);
