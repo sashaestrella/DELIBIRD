@@ -90,7 +90,7 @@ int main(void){
 	listaPosicionesLibres=list_create();
 	listaPosicionesOcupadas=list_create();
 
-	config= config_create("/home/utnso/tp-2020-1c-BOMP/broker/Debug/broker.config");
+	config= config_create("broker.config");
 	tamanioMinimoParticion = atoi(config_get_string_value(config, "TAMANIO_MINIMO_PARTICION"));
 	tamanioMemoria = atoi(config_get_string_value(config, "TAMANIO_MEMORIA"));
 	memoriaInterna = malloc(tamanioMemoria);

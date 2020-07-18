@@ -9,24 +9,11 @@ int main(void)
 	leerConfig();
 	cantidadArchivos = 0;
 	crearDirectorioTG();
-
-
-
 	crearMetadataPara("pikachu");
 
 	t_config* md = config_create("/home/utnso/TALL_GRASS/Files/pikachu/Metadata.bin");
 
-	char** bloques = config_get_array_value(md, "BLOCKS");
-
-	int i = 0;
-	while(bloques[i]!=NULL){
-		printf("Llego: %s\n", bloques[i]);
-		i++;
-	}
-
-
-
-	//generarConexiones(0);
+	generarConexiones(0);
 
 	logger = iniciar_logger();
 

@@ -32,15 +32,12 @@ void leerConfig();
 
 // ----------------- Conexiones ----------------- //
 
-int conexionGetPokemon;
 int IDsuscripcionGet;
 int idGetPokemon;
 
-int conexionNewPokemon;
 int IDsuscripcionNew;
 int idNewPokemon;
 
-int conexionCatch;
 int IDsuscripcionCatch;
 int idCatch;
 
