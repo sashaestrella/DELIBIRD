@@ -270,7 +270,6 @@ void* crearMetadata(char* pathOrigin){
 	metadata = fopen(path, "wrb");
 	fclose(metadata);
 
-
 	t_config* md = config_create(path);
 	config_set_value(md, "BLOCK_SIZE", "64");
 	config_set_value(md, "BLOCKS", "5192");
@@ -301,30 +300,22 @@ void* crearBlocks(char* path){
 }
 
 void* generarBitmap(char* path, t_config* md){
-	// GENERAR BITMAP ------------------------------------ !!!
-	int cantidadDeBloques = 0;
-	FILE* bitmapFile;
-	char** bloques = config_get_array_value(md, "BLOCKS");
 
-	char* size = config_get_array_value(md, "BLOCK_SIZE");
+	int cantidadDeBloques = config_get_int_value(md, "BLOCKS");
 
-	int tamanioDeBloque = atoi(size);
-
-	while(bloques[cantidadDeBloques] != NULL){
-		cantidadDeBloques++;
-	}
+	int tamanioDeBloque = config_get_int_value(md, "BLOCK_SIZE");
 
 	string_append(&path, "/Bitmap.bin");
-	bitmapFile = fopen(path, "wrb");
-	fclose(bitmapFile);
+	FILE* bitmapFile = fopen(path, "wrb");
 
-	t_bitarray* bitmap = bitarray_create(bitmapFile, cantidadDeBloques * tamanioDeBloque);
+	void* punteroABitmap = malloc(cantidadDeBloques/8);
+
+	t_bitarray* bitmap = bitarray_create_with_mode(punteroABitmap, cantidadDeBloques, MSB_FIRST);
 
 	for(int i = 0; i < cantidadDeBloques; i++){
-		bitarray_set_bit(bitmap, i);
+		bitarray_clean_bit(bitmap,i);
 	}
-
-	puts(bitarray_get_max_bit(bitmap));
+	fwrite(punteroABitmap, 1, cantidadDeBloques/8, bitmapFile);
 }
 
 void* armarFolderPara(char* nombre){
@@ -388,7 +379,7 @@ void agregarPokemon(NewPokemonConIDs* newPokemon){
 	string_append(&path, "/Metadata.bin");
 
 	if(!existePokemon(newPokemon->newPokemon->nombre)){
-		crearMetadataPara(newPokemon);
+		crearMetadataPara(newPokemon->newPokemon->nombre);
 	} else {
 		t_config* md = config_create(path);
 		while(archivoAbierto(path)){
@@ -474,6 +465,7 @@ LocalizedPokemon* obtenerCantidadYPosiciones(GetPokemonConIDs* pokemon){
 	if(!existePokemon(pokemon->getPokemon->nombre)){
 		log_info(logger,error);
 		// Enviar mensaje sin posiciones ni cantidades ----------------------------- !!
+		LocalizedPokemon* localizedVacio = malloc(sizeof(LocalizedPokemon));
 	} else {
 		t_config* md = config_create(path);
 			while(archivoAbierto(path)){
