@@ -40,25 +40,25 @@ void pokemonesParaPrueba(){
 
 	Pokemon* pikachu1 = malloc(sizeof(Pokemon));
 	pikachu1->nombre = "Pikachu";
-	pikachu1->posicion.posicionX = 9;
-	pikachu1->posicion.posicionY = 2;
+	pikachu1->posicion.posicionX = 3;
+	pikachu1->posicion.posicionY = 8;
 	pikachu1->IdEntrenadorQueLoVaAatrapar=0;
 
 	Pokemon* pikachu2 = malloc(sizeof(Pokemon));
 	pikachu2->nombre = "Pikachu";
-	pikachu2->posicion.posicionX = 4;
-	pikachu2->posicion.posicionY = 5;
+	pikachu2->posicion.posicionX = 3;
+	pikachu2->posicion.posicionY = 9;
 	pikachu2->IdEntrenadorQueLoVaAatrapar=0;
 
 	Pokemon* charmander = malloc(sizeof(Pokemon));
 	charmander->nombre = "Charmander";
-	charmander->posicion.posicionX = 1;
-	charmander->posicion.posicionY = 8;
+	charmander->posicion.posicionX = 6;
+	charmander->posicion.posicionY = 5;
 	charmander->IdEntrenadorQueLoVaAatrapar=0;
 
 	Pokemon* squirtle = malloc(sizeof(Pokemon));
 	squirtle->nombre = "Squirtle";
-	squirtle->posicion.posicionX = 6;
+	squirtle->posicion.posicionX = 2;
 	squirtle->posicion.posicionY = 2;
 	squirtle->IdEntrenadorQueLoVaAatrapar=0;
 
@@ -95,7 +95,7 @@ void pasar_a_ready_por_cercania(){//se ejecutaria al comienzo y cuando aparecen 
 	Entrenador* entrenador = malloc(sizeof(Entrenador));//ver si esto va aca o en el for
 
 
-	int idEntrenador, distancia, menorDistancia;
+	int idEntrenador, distancia, menorDistancia, anterior;
 
 		Entrenador* entrenadorAready = malloc(sizeof(Entrenador));
 		Pokemon* pokemonAasignar = malloc(sizeof(Pokemon));
@@ -130,17 +130,25 @@ for(int i = 0; i<list_size(pokemones_en_mapa); i++){
 		}
 		}
 		if(i == list_size(pokemones_en_mapa)-1){
+			bool buscar(Entrenador* e){
+				return e->ID == entrenador->ID;
+			}
+			if(list_any_satisfy(blocked_new,buscar)){
 			entrenadorAready->tieneAsignadoUnPokemon = true;
 			pokemonAasignar->IdEntrenadorQueLoVaAatrapar = entrenadorAready->ID;
 			quitar_de_bloqueados_new(entrenadorAready);
+			anterior = entrenadorAready->ID;
 			list_add(ready, entrenadorAready);
+			}
 			//sem_post(&agregar_ready);
 		}
 
 	}
 
 		}
+
 		contador++;
+
 	}
 
 }

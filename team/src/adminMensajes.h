@@ -21,18 +21,18 @@ bool descartar_appeared_no_deseados(AppearedPokemonConIDs*);
 
 
 void noHayBroker();
-void* suscribirseAColaAppeared();
-void* suscribirseAColaLocalized();
-void* suscribirseAColaCaught();
-void* administradorMensajesColas(int, int, int);
+void suscribirseAColaAppeared();
+void suscribirseAColaLocalized();
+void suscribirseAColaCaught();
+void administradorMensajesColas(int, int, int);
 void enviarACK(int, int, int, int);
 
-void* recibirMensajesAppeared();
-void* recibirMensajesLocalized();
-void* recibirMensajesCaught();
+void recibirMensajesAppeared();
+void recibirMensajesLocalized();
+void recibirMensajesCaught();
 void adminMensajeAppeared(AppearedPokemonConIDs*);
-void* adminMensajeLocalized(LocalizedPokemonConIDs*);
-void* adminMensajeCaught(CaughtPokemonConIDs*);
+void adminMensajeLocalized(LocalizedPokemonConIDs*);
+void adminMensajeCaught(CaughtPokemonConIDs*);
 
 
 pthread_t hiloServidorTeam;

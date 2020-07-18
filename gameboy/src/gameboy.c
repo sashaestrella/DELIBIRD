@@ -495,6 +495,7 @@ int main(int argc, char *argv[])
 		//Enviar mensaje
 			char* ipTeam = config_get_string_value(config,"IP_TEAM");
 			char* puertoTeam = config_get_string_value(config,"PUERTO_TEAM");
+			//puertoTeam = "6009";
 			printf("\nip y puerto de team %s %s", ipTeam, puertoTeam);
 			conexion = crear_conexion(ipTeam, puertoTeam);
 			char* loQueVoyALoguear = "\n[GAMEBOY]Se creo la conexion con TEAM con el valor %d";
@@ -508,7 +509,6 @@ int main(int argc, char *argv[])
 
 			if(!strcmp(argv[2],"LOCALIZED_POKEMON")){
 				LocalizedPokemon* unLocalizedPokemon;
-
 
 				int cantidadPares = atoi(argv[4]);
 				char* pares[cantidadPares*2];

@@ -25,7 +25,7 @@ void* flujoEntrenador(Entrenador* entrenador){
 	sem_wait(ejecutate[entrenador->ID - 1]);
 	while(entrenador->estado != EXIT){
 
-	printf("\nSoy %d y estoy esperando a empezar", entrenador->ID);
+	//printf("\nSoy %d y estoy esperando a empezar", entrenador->ID);
 
 
 	Pokemon* pokemon = malloc(sizeof(Pokemon));
@@ -39,7 +39,7 @@ void* flujoEntrenador(Entrenador* entrenador){
 
 
 		moverseUnaPosicion(entrenador, posicion);
-
+		sleep(retardoCicloCPU);
 		ciclos_totales++;
 		ciclos_entrenadores[entrenador->ID -1]++;
 
@@ -62,8 +62,18 @@ void* flujoEntrenador(Entrenador* entrenador){
 
 	catchPokemonConId=enviar_catchPokemon(catchUnPokemon);
 
+	ciclos_entrenadores[entrenador->ID -1]++;
+	verificarCiclos(&ciclos_entrenadores[entrenador->ID -1], entrenador);
+
+	CaughtPokemonConIDs* caughtPokemonConId = malloc(sizeof(CaughtPokemonConIDs));
+
+	if(catchPokemonConId == NULL)
+		printf("\nSoy %d y no me pude conectar", entrenador->ID);
+
+    if(catchPokemonConId != NULL){
 	entrenador->idMensaje = catchPokemonConId->IDmensaje;
-	printf("\nSoy %d y mande %d", entrenador->ID,entrenador->idMensaje);
+	//printf("\nSoy %d y mande %d", entrenador->ID,entrenador->idMensaje);
+
 	entrenador = list_remove(ejecutando, 0);
 
 	list_add(blocked_caught, entrenador );
@@ -89,11 +99,15 @@ void* flujoEntrenador(Entrenador* entrenador){
 	}
 
 
-	CaughtPokemonConIDs* caughtPokemonConId = malloc(sizeof(CaughtPokemonConIDs));
 
 	caughtPokemonConId = list_find(nuevosCaught, miRespuesta);
 
 
+
+	if(caughtPokemonConId->caughtPokemon->atrapar == 0){
+		//puts("\nvoy a poner repuesto");
+		agregarPokemonDeRepuesto(pokemon->nombre);
+	}
 
 	//asumo que lo agarro por ahora
 
@@ -107,18 +121,28 @@ void* flujoEntrenador(Entrenador* entrenador){
 	list_add(ready, entrenador);
 	sem_post(&agregar_ready);
 
-	printf("\nSoy %d pase a ready", entrenador->ID);
+	//printf("\nSoy %d pase a ready", entrenador->ID);
 
 	sem_wait(ejecutate[entrenador->ID - 1]);
 
-	printf("\nSoy %d segundo tramo", entrenador->ID);
+	//printf("\nSoy %d segundo tramo", entrenador->ID);
+
+    }else{
+//----------------------------------------------------------------------------fin caught
+    	CaughtPokemon* caughtDefault = malloc(sizeof(CaughtPokemon));
+    	caughtPokemonConId->caughtPokemon = caughtDefault;
+    	caughtPokemonConId->caughtPokemon->atrapar = 1;
+    	//printf("\nSoy %d y sigo como si nada", entrenador->ID);
+    }
 
 	if(caughtPokemonConId->caughtPokemon->atrapar == 1){
 	list_add(entrenador->pokemonesQueTiene, pokemon);
 	printf("\nSoy %d y atrape a %s", entrenador->ID, pokemon->nombre);
 	atrapados++;
 	}else{
-		puts("No pude atrapar, se me escapo");
+		puts("No pude atrapar");
+
+
 	}
 	bool buscarPokemon(Pokemon* p){
 		return p->nombre == pokemon->nombre && p->IdEntrenadorQueLoVaAatrapar == pokemon->IdEntrenadorQueLoVaAatrapar;
@@ -157,8 +181,9 @@ void* flujoEntrenador(Entrenador* entrenador){
 							while(noLlegoADestino(entrenador, posicion) == true){
 
 								moverseUnaPosicion(entrenador, posicion);
-								puts("\nMe movi");
+								//puts("\nMe movi");
 								//pthread_mutex_lock(&ciclosTotales);
+								sleep(retardoCicloCPU);
 								ciclos_totales++;
 								ciclos_entrenadores[entrenador->ID -1]++;
 
@@ -211,6 +236,23 @@ void* flujoEntrenador(Entrenador* entrenador){
 
 }
 
+
+void agregarPokemonDeRepuesto(char* nombre){
+
+	bool tengoRepuesto(Pokemon* pokemon){
+		return !strcmp(pokemon->nombre,nombre);
+	}
+	//puts("\nAntes de entrar al if");
+	if(list_any_satisfy(mapa_auxiliar, tengoRepuesto)){
+
+		list_add(pokemones_en_mapa,list_remove_by_condition(mapa_auxiliar, tengoRepuesto));
+	//	puts("\nAgregue repuesto");
+
+	}
+
+}
+
+
 void finDeRafaga(int* cicloEntrenador, Entrenador* entrenador ){
 	if(algoritmoAUtilizar(algoritmoPlanificacion) == SJF_CD){
 
@@ -229,7 +271,7 @@ void verificarCiclos(int* cicloEntrenador, Entrenador* entrenador ){
 			*cicloEntrenador=0;
 
 			list_add(ready,list_remove(ejecutando,0));
-			puts("\nCorte por quantum");
+			//puts("\nCorte por quantum");
 			sem_post(finEjecucion[entrenador->ID -1]);
 			sem_wait(ejecutate[entrenador->ID -1]);
 		}
@@ -242,8 +284,8 @@ void verificarCiclos(int* cicloEntrenador, Entrenador* entrenador ){
 
 			printf("\nSoy %d y proxima rafaga %f", entrenador->ID,entrenador->rafaga);
 			entrenador->rafaga = estimarProximaRafaga(entrenador);
-			puts("\nEntro uno");
-		if(hayAlgunoEnReadyConMenosRafaga(entrenador->rafaga)){//este puede volar
+			//puts("\nEntro uno");
+		if(hayAlgunoEnReadyConMenosRafaga(entrenador->rafaga)){//esto puede volar
 
 			list_add(ready,list_remove(ejecutando,0));
 			puts("\nSali por sjfCD");
@@ -275,11 +317,11 @@ bool entroNuevoAReady(){ //esta faltaria probar, debrias er cada vez que entre u
 				printf("\n %d)", entrenador2->ID);
 				if(entrenador1->ID == entrenador2->ID){
 					comp=0;
-					printf("\ncomp %d", comp);
+					//printf("\ncomp %d", comp);
 					break;
 				}else{
 					comp=1;
-					printf("\ncomp %d", comp);
+					//printf("\ncomp %d", comp);
 				}
 
 			}
@@ -463,23 +505,21 @@ bool cumplioSusObjetivos(Entrenador* entrenador){
 
 	if(list_size(entrenador->pokemonesQueTiene) == list_size(entrenador->objetivos)){
 
-		for(int i=0; i<list_size(entrenador->pokemonesQueTiene);i++){
-					pokemon1 = list_get(entrenador->pokemonesQueTiene,i);
-					for(int j=0; j<list_size(entrenador->objetivos);j++){
-						pokemon2 = list_get(entrenador->objetivos,j);
-						resultado = strcmp(pokemon1->nombre,pokemon2);
-						if(resultado == 0){
-						break;
-						}
-					}
-					if(resultado == 0)
-					contador++;
-				}
+
+		bool sonLosQueNecesita(char* p){
+
+			bool esta(Pokemon* poke){
+				return !strcmp(poke->nombre, p);
+			}
+
+			return list_any_satisfy(entrenador->pokemonesQueTiene, esta);
+		}
+		return list_all_satisfy(entrenador->objetivos, sonLosQueNecesita);
 
 	}else{
 		return 0;
 	}
-		return contador == list_size(entrenador->objetivos);
+
 	}
 
 

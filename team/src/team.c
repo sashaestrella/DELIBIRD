@@ -2,17 +2,16 @@
 
 int main(int argc,char* argv[])
 {
-	estimacionInicial = 1;
-	alpha = 0.5;
+
+	//estimacionInicial = 1;
+	//alpha = 0.5;
 	logger = iniciar_logger();
-
-
 
 	sem_init (&agregar_ready,0,0);
 
 	ciclos_totales=0;
 
-	algoritmoPlanificacion = "FIFO";
+	//algoritmoPlanificacion = "RR";
 
 	entrenadores = list_create();
 	objetivoGlobal = list_create();
@@ -21,6 +20,7 @@ int main(int argc,char* argv[])
 	mensajesCatchEnviados= list_create();
 	mensajesRecibidos = list_create();
 	mapa_auxiliar= list_create();
+	especies_localizadas = list_create();
 	nuevosCaught = list_create();
 
 	blocked_new= list_create();
@@ -37,18 +37,23 @@ int main(int argc,char* argv[])
 	inicializarSemaforos();
 
 
-	quantum =3;
+	//quantum =2;
 
+	pthread_t conexionBroker;
+
+
+
+	pthread_create(&conexionBroker, NULL, (void*)conexionConBroker, NULL);
+	pthread_detach(conexionBroker);
 
 	obtener_objetivo_global();
 
-	//aca mandar gets
 
-	enviar_gets();
 
-	//pokemonesParaPrueba(); //aca armo con los localized
 
-	sem_init(&pruebaLocalized, 0, 0);
+	//pokemonesParaPrueba();
+
+	//sem_init(&pruebaLocalized, 0, 0);
 
 
 	ciclos_entrenadores = malloc(sizeof(int)*list_size(entrenadores));
@@ -70,14 +75,14 @@ int main(int argc,char* argv[])
 		pthread_create(&hiloEntrenador[j],NULL, flujoEntrenador,list_get(entrenadores, j));
 	}
 
-	generarConexiones(0);
+
 	sleep(2);
 
-	puts("\Voy a crear el hilo");
-	/*pthread_t hiloConexionGameboy;
+	puts("\nInicio Servidor para Gameboy");
+	pthread_t hiloConexionGameboy;
 	pthread_create(&hiloConexionGameboy, NULL, (void*)noHayBroker, NULL);
 
-	pthread_detach(hiloConexionGameboy);*/
+	pthread_detach(hiloConexionGameboy);
 
 	//sem_wait(&pruebaLocalized);
 	//sem_wait(&pruebaLocalized);
@@ -93,11 +98,11 @@ int main(int argc,char* argv[])
 			printf("%s, (%d, %d)", pokemon1->nombre, pokemon1->posicion.posicionX, pokemon1->posicion.posicionY );
 			}
 
-		puts("\n\nMapa auxiliar");
+	/*	puts("\n\nMapa auxiliar");
 			for(i=0; i<list_size(mapa_auxiliar);i++){
 				pokemon1 = list_get(mapa_auxiliar, i);
 				 printf("%s, (%d, %d)", pokemon1->nombre, pokemon1->posicion.posicionX, pokemon1->posicion.posicionY );
-				}
+				}*/
 
 	puts("\n\nObjetivo Global");
 	for(i=0; i<list_size(objetivoGlobal);i++){
@@ -119,6 +124,7 @@ int main(int argc,char* argv[])
 
 
 	pasar_a_ready_por_cercania();
+
 	list_add_all(readyAnterior, ready);
 
 
@@ -135,6 +141,8 @@ int main(int argc,char* argv[])
 		}
 
 	}
+
+
 
 
 		switch(algoritmoAUtilizar(algoritmoPlanificacion)){
@@ -218,13 +226,15 @@ void inicializarSemaforos(){
 		sem_init(&nuevosPokemons, 0, 0);
 		sem_init(&aparicion_pokemon, 0, 0);
 		sem_init(&agregar_ready, 0, 0);
-
+		sem_init(&reintento_appeared, 0, 0);
+		sem_init(&reintento_localized, 0, 0);
+		sem_init(&reintento_caught, 0, 0);
 }
 
 void planificadorFIFO_RR(){
 
 		Entrenador* entrenador = malloc(sizeof(Entrenador));
-		int* valor;
+
 
 		while(list_size(terminados) != list_size(entrenadores)){
 
@@ -232,14 +242,20 @@ void planificadorFIFO_RR(){
 
 				if(list_size(ready)==0){
 
-					if(list_size(pokemones_en_mapa)==0){
-					sem_wait(&aparicion_pokemon);//ponerle un nombre mas expresivo
-					puts("\nPase el sem appeared");
-					pasar_a_ready_por_cercania();
-					sem_post(&agregar_ready);
-					}
+					//puts("\nEntre a ready vacio");
+
 					sem_wait(&agregar_ready);
-					puts("\nPase el sem ready");
+					bool tieneEntrenadorAsignado(Pokemon* pokemon){
+											return pokemon->IdEntrenadorQueLoVaAatrapar ==0;
+										}
+					if(list_any_satisfy(pokemones_en_mapa, tieneEntrenadorAsignado)){
+						//puts("\nEntre");
+						if(list_size(blocked_new) !=0)
+						pasar_a_ready_por_cercania();
+					}
+					if(list_size(blocked_caught) == list_size(entrenadores))
+						sem_wait(&agregar_ready);
+					//puts("\nPase el sem ready");
 				}
 
 
@@ -248,25 +264,24 @@ void planificadorFIFO_RR(){
 					printf("\n%d)", entrenador->ID);
 				}
 
-				//pthread_mutex_lock(&colaReady);
+
 				entrenador = list_remove(ready, 0);
-				//pthread_mutex_unlock(&colaReady);
 
 				if(list_size(ejecutando) == 0){
 					list_add(ejecutando, entrenador);
 
 
 					sem_post(ejecutate[entrenador->ID - 1]);
-					printf("\n\nDesperte a %d", entrenador->ID);
+					//printf("\n\nDesperte a %d", entrenador->ID);
 
-					printf("\nEspero a %d,", entrenador->ID);
+					//printf("\nEspero a %d,", entrenador->ID);
 					sem_wait(finEjecucion[entrenador->ID - 1]);
-					printf("\nMe llego %d,", entrenador->ID);
+					//printf("\nMe llego %d,", entrenador->ID);
 				}
 
 
 				if(list_size(blocked_new) != 0){
-					printf("\nCantidad pokemones en mapa %d", list_size(pokemones_en_mapa));
+					//printf("\nCantidad pokemones en mapa %d", list_size(pokemones_en_mapa));
 					bool buscarPOkemon(Pokemon* pokemon){
 					return pokemon->IdEntrenadorQueLoVaAatrapar == 0;
 					}
@@ -276,7 +291,16 @@ void planificadorFIFO_RR(){
 
 				}
 
+
+
+
 			}else{
+
+				int i;
+					if(i!=1){
+					detectarDeadlocks();
+					i=1;
+					}
 
 				log_info(logger, "Empieza a solucionar deadlock.");
 
@@ -288,9 +312,9 @@ void planificadorFIFO_RR(){
 				list_add(ejecutando, entrenador);
 
 				sem_post(ejecutate[entrenador->ID - 1]);
-				printf("\nDesperte a %d", entrenador->ID);
+				//printf("\nDesperte a %d", entrenador->ID);
 
-				puts("\nEspero");
+				//puts("\nEspero");
 				sem_wait(finEjecucion[entrenador->ID -1]);
 
 				}
@@ -325,7 +349,7 @@ void planificadorSJF_SD(){
 
 				for(int i=0; i<list_size(ready);i++){
 					entrenador = list_get(ready,i);
-					printf("\n%d) raf %f", entrenador->ID, entrenador->rafaga);
+					//printf("\n%d) raf %f", entrenador->ID, entrenador->rafaga);
 				}
 
 
@@ -338,11 +362,11 @@ void planificadorSJF_SD(){
 
 
 					sem_post(ejecutate[entrenador->ID - 1]);
-					printf("\n\nDesperte a %d", entrenador->ID);
+					//printf("\n\nDesperte a %d", entrenador->ID);
 
 					printf("\nEspero a %d,", entrenador->ID);
 					sem_wait(finEjecucion[entrenador->ID - 1]);
-					printf("\nMe llego %d,", entrenador->ID);
+					//printf("\nMe llego %d,", entrenador->ID);
 				}
 
 
@@ -363,7 +387,7 @@ void planificadorSJF_SD(){
 
 				for(int i=0; i<list_size(deadlock);i++){
 					entrenador = list_get(deadlock,i);
-					printf("\n%d) raf %f", entrenador->ID, entrenador->rafaga);
+					//printf("\n%d) raf %f", entrenador->ID, entrenador->rafaga);
 				}
 
 				reordenarSJF_SD(2);
@@ -376,9 +400,9 @@ void planificadorSJF_SD(){
 				list_add(ejecutando, entrenador);
 
 				sem_post(ejecutate[entrenador->ID - 1]);
-				printf("\nDesperte a %d", entrenador->ID);
+				//printf("\nDesperte a %d", entrenador->ID);
 
-				puts("\nEspero");
+				//puts("\nEspero");
 				sem_wait(finEjecucion[entrenador->ID -1]);
 
 				}

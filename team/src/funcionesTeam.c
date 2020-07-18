@@ -4,7 +4,7 @@
 
 void leer_config()
 {
-	t_config* archivo_config =  config_create("team.config"); //lee archivo de configuracion
+	archivo_config =  config_create("team.config"); //lee archivo de configuracion
 
 	char** posiciones_entrenadores =  config_get_array_value(archivo_config, "POSICIONES_ENTRENADORES");
 
@@ -14,26 +14,32 @@ void leer_config()
 
 	armar_entrenadores(posiciones_entrenadores, pokemon_entrenadores, objetivos_entrenadores); //les pasas los arrays y la lista
 
-	//tiempoDeReconexion = config_get_int_value(archivo_config, "TIEMPO_RECONEXION");
+	tiempoDeReconexion = config_get_int_value(archivo_config, "TIEMPO_RECONEXION");
 
-	//retardoCicloCPU = config_get_int_value(archivo_config, "RETARDO_CICLO_CPU");
+	retardoCicloCPU = config_get_int_value(archivo_config, "RETARDO_CICLO_CPU");
 
-	//algoritmoPlanificacion = config_get_array_value(archivo_config, "ALGORITMO_PLANIFICACION");
+	algoritmoPlanificacion = config_get_string_value(archivo_config, "ALGORITMO_PLANIFICACION");
 
-	//quantum = config_get_int_value(archivo_config, "QUANTUM");
+	quantum = config_get_int_value(archivo_config, "QUANTUM");
 
-	//alpha = config_get_array_value(archivo_config, "ALPHA");
+	//alpha = config_get_double_value(archivo_config, "ALPHA");
 
-	//estimacionInicial = config_get_int_value(archivo_config, "ESTIMACION_INICIAL");
+	estimacionInicial = config_get_double_value(archivo_config, "ESTIMACION_INICIAL");
 
-	//archivoLog = config_get_array_value(archivo_config, "LOG_FILE");
+	//archivoLog = config_get_string_value(archivo_config, "LOG_FILE");
+
+	IDsuscripcionAppeared = config_get_int_value(archivo_config, "ID_APPEARED");
+
+	IDsuscripcionCaught = config_get_int_value(archivo_config, "ID_CAUGHT");
+
+	IDsuscripcionLocalized = config_get_int_value(archivo_config, "ID_LOCALIZED");
 
 
 	ip = config_get_string_value(archivo_config,"IP");
 
 	puerto = config_get_string_value(archivo_config,"PUERTO");
 
-	printf("ip y puerto de broker %s %s", ip, puerto);
+	//printf("ip y puerto de broker %s %s", ip, puerto);
 
 	IP_TEAM = config_get_string_value(archivo_config,"IP_TEAM");
 
@@ -41,7 +47,7 @@ void leer_config()
 
 
 
-	free(archivo_config);
+	//free(archivo_config);
 }
 
 void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
@@ -178,6 +184,142 @@ void enviar_gets(){
 		enviar_getPokemon(getPokemon);
 		}
 	}
+
+}
+
+
+void conexionConBroker(){
+
+	enviar_gets();
+
+	generarConexiones();
+
+
+	while(1){
+		sem_wait(&reintento_appeared);
+		sem_wait(&reintento_localized);
+		sem_wait(&reintento_caught);
+
+		while(crear_conexion(ip, puerto) == -1){
+			puts("\nReintento");
+
+		sleep(tiempoDeReconexion);
+		}
+		IDsuscripcionAppeared =0;
+		IDsuscripcionLocalized =0;
+		IDsuscripcionCaught = 0;
+		generarConexiones();
+		puts("\nConexion exitosa");
+
+	}
+}
+
+
+void detectarDeadlocks(){
+
+	Entrenador* entrenador = malloc(sizeof(Entrenador));
+	Entrenador* entrenadorEncontrado = malloc(sizeof(Entrenador));
+	Entrenador* entrenadorPrimero = malloc(sizeof(Entrenador));
+	char* pokemon;
+	int id;
+	t_list* deadlockTemporal = list_create();
+	t_list* deadlockCircular = list_create();
+	list_add_all(deadlockTemporal, deadlock);
+
+while(list_size(deadlockTemporal) !=0){
+		entrenadorPrimero = list_remove(deadlockTemporal, 0);
+		if(list_size(deadlockTemporal) == 0)
+			break;
+		entrenador = entrenadorPrimero;
+		//puts("\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+		int i =1;
+		list_add(deadlockCircular, entrenador);
+		while(list_size(deadlockCircular) != 0 || i==1){ //no es distinto de 0
+			i=0;
+
+
+		//printf("\nTAmaño deadlock circular %d", list_size(deadlockCircular));
+		bool tieneUnoQueNecesito(Entrenador* e){
+			bool tiene;
+			char* poke1;
+
+			for(int k=0; k<list_size(entrenador->objetivos);k++){
+				poke1 = list_get(entrenador->objetivos, k);
+				bool esta(Pokemon* p){
+					return !strcmp(p->nombre, poke1);
+				}
+
+				tiene = list_any_satisfy(e->pokemonesQueTiene, esta) && e->ID != entrenador->ID;
+				if(tiene)
+					break;
+			}
+
+			return tiene;
+		}
+
+
+
+		entrenadorEncontrado = list_find(deadlockTemporal, tieneUnoQueNecesito);
+
+		//printf("\nEntrenador encontrado %d", entrenadorEncontrado->ID);
+
+		bool tengoUnoQueNecesita(char* poke){
+
+
+			bool esta(Pokemon* p){
+				return !strcmp(p->nombre, poke);
+			}
+
+			return list_any_satisfy(entrenadorPrimero->pokemonesQueTiene, esta);
+		}
+
+
+		if(list_any_satisfy(entrenadorEncontrado->objetivos, tengoUnoQueNecesita)){
+
+			bool quitar(Entrenador* e){
+				return e->ID == entrenadorEncontrado->ID;
+			}
+
+			//printf("\nMETI A %d", entrenadorEncontrado->ID);
+
+			if(list_size(entrenadorEncontrado->objetivos) ==1)
+			list_remove_by_condition(deadlockTemporal, quitar);
+
+			list_add(deadlockCircular, entrenadorEncontrado );
+
+			Entrenador* mostrar;// = malloc(sizeof(Entrenador));
+		//	printf("\nTAmaño deadlock circular %d", list_size(deadlockCircular));
+			//puts("\nSE DETECTO DEADLOCK ENTRE:");
+			for(int i=0; i<list_size(deadlockCircular); i++){
+				mostrar = list_get(deadlockCircular,i);
+				printf(" \n %d)", mostrar->ID);
+			}
+			list_clean(deadlockCircular);
+			break;
+
+
+		}else{
+			//puts("\nPAse por aqui");
+
+			bool quitar(Entrenador* e){
+				return e->ID == entrenadorEncontrado->ID;
+			}
+
+			if(list_size(entrenadorEncontrado->objetivos) ==1)
+			list_remove_by_condition(deadlockTemporal, quitar);
+
+		//	printf("\nMETI A %d", entrenadorEncontrado->ID);
+			list_add(deadlockCircular, entrenadorEncontrado);
+			//printf("\nTAmaño deadlock circular %d", list_size(deadlockCircular));
+			entrenador = entrenadorEncontrado;
+			entrenadorEncontrado = NULL;
+			}
+
+		}
+
+
+		}
+
 
 }
 

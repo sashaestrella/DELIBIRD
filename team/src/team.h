@@ -14,7 +14,7 @@
 #include "adminMensajes.h"
 
 
-
+t_config* archivo_config;
 t_log* logger;
 
 sem_t **ejecutate;
@@ -31,6 +31,10 @@ sem_t aparicion_pokemon;
 sem_t agregar_ready;
 
 sem_t pruebaLocalized; //eliminar
+
+sem_t reintento_appeared;
+sem_t reintento_localized;
+sem_t reintento_caught;
 
 pthread_mutex_t colaReady;
 pthread_mutex_t colaBlocked_new;
@@ -66,7 +70,7 @@ typedef struct entrenador{
 	CoordenadasXY posicion;
 	t_list* objetivos;
 	t_list* pokemonesQueTiene;
-	float rafaga;
+	double rafaga;
 	int idMensaje;
 }Entrenador;
 
@@ -93,6 +97,7 @@ t_list* mensajesCatchEnviados;
 t_list* nuevosCaught;
 t_list* mensajesRecibidos;
 t_list* mapa_auxiliar;
+t_list* especies_localizadas;
 
 t_list* blocked_new;
 t_list* blocked_caught;
@@ -110,8 +115,8 @@ t_list* readyAnterior;
 int retardoCicloCPU;
 char* algoritmoPlanificacion;
 int quantum;
-float alpha;
-int estimacionInicial;
+double alpha;
+double estimacionInicial;
 
 int ciclos_totales;
 int *ciclos_entrenadores;
@@ -145,6 +150,7 @@ int msgGameBoy;
 t_log* iniciar_logger(void);
 void leer_config();
 void inicializarSemaforos();
+void conexionConBroker();
 void armar_entrenadores(char**, char**, char**);
 int cantidad(char**);
 char** obtener_objetivos(char**, char**, t_list*);
@@ -156,6 +162,7 @@ bool cumplioSusObjetivos(Entrenador* entrenador);
 bool noEstaEnLaLista(t_list* lista, char* pokemon);
 void reordenarSJF_SD(int);
 float estimarProximaRafaga(Entrenador*);
+void detectarDeadlocks();
 void enviar_gets();
 
 void planificadorFIFO_RR();

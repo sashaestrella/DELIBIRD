@@ -34,10 +34,7 @@ typedef enum
 	SUSCRIPTOR_CAUGHTPOKEMON = 13
 }op_code;
 
-typedef struct parametrosSuscripcion{
-	op_code colaASuscribirse;
-	uint32_t nuevoExistente;
-}ParametrosSuscripcion;
+
 
 typedef struct
 {
