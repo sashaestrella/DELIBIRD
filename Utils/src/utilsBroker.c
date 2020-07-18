@@ -1,6 +1,7 @@
 #include "utilsBroker.h"
 
 
+
 void iniciar_servidor(void){
 	int socket_servidor;
 
@@ -49,11 +50,10 @@ void serve_client(int* socket)
 {
 	int cod_op;
 
-	char* loQueVoyALoguear = "Se creo una conexión.";
-	log_info(logger, loQueVoyALoguear);
-
 	if(recv(*socket, &cod_op, sizeof(int), MSG_WAITALL) == -1)
 		cod_op = -1;
+	char* loQueVoyALoguear = "Se creó una conexión. El código de operación recibido es: %d.";
+	log_info(logger, loQueVoyALoguear,cod_op);
 	process_request(cod_op, *socket);
 }
 
@@ -71,11 +71,9 @@ int crear_conexion(char *ip, char* puerto)
 
 	int socket_cliente = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
 
-	if(connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen) == -1){
-		printf("Error en la conexion");
-		freeaddrinfo(server_info);
-		return -1;
-	}
+	if(connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen) == -1)
+		printf("Error en la conexión con el socket %d.",socket_cliente);
+
 	freeaddrinfo(server_info);
 
 	return socket_cliente;
@@ -108,8 +106,7 @@ void process_request(int cod_op, int cliente_fd) {
 
 	char* loQueVoyALoguear;
 	int idCorrelativo;
-	printf("Recibi el cod op: %i\n",cod_op);
-
+	//printf("Recibi el cod op: %i\n",cod_op);
 		switch (cod_op) {
 				case MENSAJE:
 					algoARecibir = recibir_mensaje(cliente_fd, &size);
@@ -121,97 +118,97 @@ void process_request(int cod_op, int cliente_fd) {
 				case -1:
 					pthread_exit(NULL);
 				case NEW_POKEMON:
-					loQueVoyALoguear = "Recibi un mensaje NewPokemon.";
-					log_info(logger, loQueVoyALoguear);
 					newConIDs = recibir_NEW_POKEMON(cliente_fd, &size,0);
 					unNewPokemon = newConIDs->newPokemon;
+					loQueVoyALoguear = "Recibí un mensaje NewPokemon.Nombre: %s,Posición x: %d,Posición y: %d,Cantidad: %d.";
+					log_info(logger, loQueVoyALoguear,unNewPokemon->nombre,unNewPokemon->coordenadas.posicionX,unNewPokemon->coordenadas.posicionY,unNewPokemon->cantidad);
 					free(newConIDs);
 					mensajeNewPokemon2 = guardarMensajeNewPokemon(unNewPokemon);
 					enviarNewPokemonASuscriptores(mensajeNewPokemon2);
 					break;
 				case LOCALIZED_POKEMON:
-					loQueVoyALoguear = "Recibi un mensaje LocalizedPokemon.";
-					log_info(logger, loQueVoyALoguear);
 					unLocalizedPokemonConIDCorrelativo = recibir_LOCALIZED_POKEMON(cliente_fd,&size,0);
 					unLocalizedPokemon = unLocalizedPokemonConIDCorrelativo->localizedPokemon;
 					idCorrelativo = unLocalizedPokemonConIDCorrelativo->IDcorrelativo;
+					loQueVoyALoguear = "Recibí un mensaje LocalizedPokemon.Nombre: %s,Cantidad de pares ordenados: %d,IDCorrelativo: %d.";
+					log_info(logger, loQueVoyALoguear,unLocalizedPokemon->nombre,unLocalizedPokemon->cantidadParesOrdenados,idCorrelativo);
 					free(unLocalizedPokemonConIDCorrelativo);
 					mensajeLocalizedPokemon2 = guardarMensajeLocalizedPokemon(unLocalizedPokemon,idCorrelativo);
 					enviarLocalizedPokemonASuscriptores(mensajeLocalizedPokemon2);
 					break;
 				case GET_POKEMON:
-					loQueVoyALoguear = "Recibi un mensaje GetPokemon.";
-					log_info(logger, loQueVoyALoguear);
 					getConIDs = recibir_GET_POKEMON(cliente_fd,&size,0);
 					unGetPokemon = getConIDs->getPokemon;
+					loQueVoyALoguear = "Recibí un mensaje GetPokemon.Nombre: %s.";
+					log_info(logger, loQueVoyALoguear,unGetPokemon->nombre);
 					free(getConIDs);
 					unMensajeGetPokemon2 = guardarMensajeGetPokemon(unGetPokemon);
 					devolverID(cliente_fd,unMensajeGetPokemon2->ID);
 					enviarGetPokemonASuscriptores(unMensajeGetPokemon2);
 					break;
 				case APPEARED_POKEMON:
-					loQueVoyALoguear = "Recibi un mensaje AppearedPokemon.";
-					log_info(logger, loQueVoyALoguear);
 					appearedConIDs = recibir_APPEARED_POKEMON(cliente_fd,&size,0,1);
 					unAppearedPokemon = appearedConIDs->appearedPokemon;
+					loQueVoyALoguear = "Recibí un mensaje AppearedPokemon.Nombre: %s,Posición x: %d,Posición y: %d.";
+					log_info(logger, loQueVoyALoguear,unAppearedPokemon->nombre,unAppearedPokemon->coordenadas.posicionX,unAppearedPokemon->coordenadas.posicionY);
 					free(appearedConIDs);
 					mensajeAppearedPokemon2 = guardarMensajeAppearedPokemon(unAppearedPokemon);
 					enviarAppearedPokemonASuscriptores(mensajeAppearedPokemon2);
 					break;
 				case CATCH_POKEMON:
-					loQueVoyALoguear = "Recibi un mensaje CatchPokemon.";
-					log_info(logger, loQueVoyALoguear);
 					catchConIDs = recibir_CATCH_POKEMON(cliente_fd,&size,0);
 					unCatchPokemon = catchConIDs->catchPokemon;
+					loQueVoyALoguear = "Recibi un mensaje CatchPokemon.Nombre: %s,Posición x: %d,Posición y: %d.";
+					log_info(logger, loQueVoyALoguear,unCatchPokemon->nombre,unCatchPokemon->coordenadas.posicionX,unCatchPokemon->coordenadas.posicionY);
 					free(catchConIDs);
 					mensajeCatchPokemon2 = guardarMensajeCatchPokemon(unCatchPokemon);
 					devolverID(cliente_fd,mensajeCatchPokemon2->ID);
 					enviarCatchPokemonASuscriptores(mensajeCatchPokemon2);
 					break;
 				case CAUGHT_POKEMON:
-					loQueVoyALoguear = "Recibi un mensaje CaughtPokemon.";
-					log_info(logger, loQueVoyALoguear);
 					unCaughtPokemonConIDCorrelativo = recibir_CAUGHT_POKEMON(cliente_fd,&size,0);
 					unCaughtPokemon = unCaughtPokemonConIDCorrelativo->caughtPokemon;
 					idCorrelativo = unCaughtPokemonConIDCorrelativo->IDCorrelativo;
+					loQueVoyALoguear = "Recibí un mensaje CaughtPokemon.Atrapado(1/0): %d,IDCorrelativo: %d.";
+					log_info(logger, loQueVoyALoguear,unCaughtPokemon->atrapar,idCorrelativo);
 					free(unCaughtPokemonConIDCorrelativo);
 					mensajeCaughtPokemon2 = guardarMensajeCaughtPokemon(unCaughtPokemon,idCorrelativo);
 					enviarCaughtPokemonASuscriptores(mensajeCaughtPokemon2);
 					break;
 				case SUSCRIPTOR_NEWPOKEMON:
-					loQueVoyALoguear = "Recibi suscripción para la cola de mensajes NewPokemon.";
-					log_info(logger, loQueVoyALoguear);
+					loQueVoyALoguear = "Recibí suscripción para la cola de mensajes NewPokemon de socket: %d.";
+					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionNewPokemon(cliente_fd);
 					break;
 				case SUSCRIPTOR_LOCALIZEDPOKEMON:
-					loQueVoyALoguear = "Recibi suscripción para la cola de mensajes LocalizedPokemon.";
-					log_info(logger, loQueVoyALoguear);
+					loQueVoyALoguear = "Recibi suscripción para la cola de mensajes LocalizedPokemon de socket: %d.";
+					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionLocalizedPokemon(cliente_fd);
 					break;
 				case SUSCRIPTOR_GETPOKEMON:
-					loQueVoyALoguear = "Recibi suscripción para la cola de mensajes GetPokemon.";
-					log_info(logger, loQueVoyALoguear);
+					loQueVoyALoguear = "Recibi suscripción para la cola de mensajes GetPokemon de socket: %d.";
+					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionGetPokemon(cliente_fd);
 					break;
 				case SUSCRIPTOR_APPEAREDPOKEMON:
-					loQueVoyALoguear = "Recibi suscripción para la cola de mensajes AppearedPokemon.";
-					log_info(logger, loQueVoyALoguear);
+					loQueVoyALoguear = "Recibi suscripción para la cola de mensajes AppearedPokemon de socket: %d.";
+					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionAppearedPokemon(cliente_fd);
 					break;
 				case SUSCRIPTOR_CATCHPOKEMON:
-					loQueVoyALoguear = "Recibi suscripción para la cola de mensajes CatchPokemon.";
-					log_info(logger, loQueVoyALoguear);
+					loQueVoyALoguear = "Recibi suscripción para la cola de mensajes CatchPokemon de socket: %d.";
+					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionCatchPokemon(cliente_fd);
 					break;
 				case SUSCRIPTOR_CAUGHTPOKEMON:
 					loQueVoyALoguear = "Recibi suscripción para la cola de mensajes CaughtPokemon.";
-					log_info(logger, loQueVoyALoguear);
+					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionCaughtPokemon(cliente_fd);
 					break;
 	}
 }
 
-void devolverID (int socket, int id){
+void devolverID(int socket, int id){
 	send(socket,&id,sizeof(int),0);
 }
 
@@ -226,12 +223,12 @@ void enviarCaughtPokemonASuscriptores(MensajeCaughtPokemon2* unMensajeCaughtPoke
 		int tamanioSuscriptoresCaughtPokemon = list_size(suscriptores_caught_pokemon);
 		char* loQueVoyALoguear;
 		char* loQueVoyALoguear2;
-		printf("El tamaño de la lista suscriptores caught pokemon es %d",tamanioSuscriptoresCaughtPokemon);
+		printf("El tamaño de la lista suscriptores Caught_Pokemon es: %d",tamanioSuscriptoresCaughtPokemon);
 
 		for(int i=0;i<tamanioSuscriptoresCaughtPokemon;i++){
 			unSuscriptor = list_get(suscriptores_caught_pokemon,i);
 
-			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 			log_info(logger, loQueVoyALoguear,unMensajeCaughtPokemon->ID,unSuscriptor->IDsuscriptor);
 
 			enviarCaughtPokemon(unCaughtPokemon,unSuscriptor->socketSuscriptor,unMensajeCaughtPokemon->ID,unMensajeCaughtPokemon->IDCorrelativo);
@@ -239,11 +236,11 @@ void enviarCaughtPokemonASuscriptores(MensajeCaughtPokemon2* unMensajeCaughtPoke
 			actualizarTimestamp(unMensajeCaughtPokemon->ID);
 			loQueDevuelveElRecv = recv(unSuscriptor->socketSuscriptor,&ack,sizeof(int),MSG_WAITALL);
 			if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-				puts("Se cayó la conexion...");
+				puts("Se cayó la conexión...");
 			}
 			if(ack == 1){
 				list_add(unMensajeCaughtPokemon->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
-				loQueVoyALoguear2 = "El suscriptor con ID=%d fue agregado a la lista de SuscriptoresACK";
+				loQueVoyALoguear2 = "El suscriptor con ID=%d fue agregado a la lista de SuscriptoresACK.";
 				log_info(logger, loQueVoyALoguear2,unSuscriptor->IDsuscriptor);
 			}
 		}
@@ -262,7 +259,7 @@ void enviarCatchPokemonASuscriptores(MensajeCatchPokemon2* unMensajeCatchPokemon
 		for(int i=0;i<tamanioSuscriptoresCatchPokemon;i++){
 			unSuscriptor = list_get(suscriptores_catch_pokemon,i);
 
-			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 			log_info(logger, loQueVoyALoguear,unMensajeCatchPokemon->ID,unSuscriptor->IDsuscriptor);
 
 			enviarCatchPokemon(unCatchPokemon,unSuscriptor->socketSuscriptor,unMensajeCatchPokemon->ID);
@@ -271,11 +268,11 @@ void enviarCatchPokemonASuscriptores(MensajeCatchPokemon2* unMensajeCatchPokemon
 
 			loQueDevuelveElRecv = recv(unSuscriptor->socketSuscriptor,&ack,sizeof(int),MSG_WAITALL);
 			if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-				puts("Se cayó la conexion...");
+				puts("Se cayó la conexión...");
 			}
 			if(ack == 1){
 				list_add(unMensajeCatchPokemon->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
-				loQueVoyALoguear2 = "El suscriptor con ID=%d fue agregado a la lista de SuscriptoresACK";
+				loQueVoyALoguear2 = "El suscriptor con ID=%d fue agregado a la lista de SuscriptoresACK.";
 				log_info(logger, loQueVoyALoguear2,unSuscriptor->IDsuscriptor);
 			}
 		}
@@ -297,7 +294,7 @@ void enviarLocalizedPokemonASuscriptores(MensajeLocalizedPokemon2* unMensajeLoca
 		for(int i=0;i<tamanioSuscriptoresLocalizedPokemon;i++){
 			unSuscriptor = list_get(suscriptores_localized_pokemon,i);
 
-			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 			log_info(logger, loQueVoyALoguear,unMensajeLocalizedPokemon->ID,unSuscriptor->IDsuscriptor);
 
 			enviarLocalizedPokemon(unLocalizedPokemon,unSuscriptor->socketSuscriptor,unMensajeLocalizedPokemon->ID,unMensajeLocalizedPokemon->IDCorrelativo);
@@ -306,11 +303,11 @@ void enviarLocalizedPokemonASuscriptores(MensajeLocalizedPokemon2* unMensajeLoca
 
 			loQueDevuelveElRecv = recv(unSuscriptor->socketSuscriptor,&ack,sizeof(int),MSG_WAITALL);
 			if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-				puts("Se cayó la conexion...");
+				puts("Se cayó la conexión...");
 			}
 			if(ack == 1){
 				list_add(unMensajeLocalizedPokemon->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
-				loQueVoyALoguear2 = "El suscriptor con ID=%d fue agregado a la lista de SuscriptoresACK";
+				loQueVoyALoguear2 = "El suscriptor con ID=%d fue agregado a la lista de SuscriptoresACK.";
 				log_info(logger, loQueVoyALoguear2,unSuscriptor->IDsuscriptor);
 			}
 		}
@@ -339,7 +336,7 @@ void enviarGetPokemonASuscriptores(MensajeGetPokemon2* unMensajeGetPokemon){
 		for(int i=0;i<tamanioSuscriptoresGetPokemon;i++){
 			unSuscriptor = list_get(suscriptores_get_pokemon,i);
 
-			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 			log_info(logger, loQueVoyALoguear,unMensajeGetPokemon->ID,unSuscriptor->IDsuscriptor);
 
 			enviarGetPokemon(unGetPokemon,unSuscriptor->socketSuscriptor,unMensajeGetPokemon->ID);
@@ -348,11 +345,11 @@ void enviarGetPokemonASuscriptores(MensajeGetPokemon2* unMensajeGetPokemon){
 
 			loQueDevuelveElRecv = recv(unSuscriptor->socketSuscriptor,&ack,sizeof(int),MSG_WAITALL);
 			if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-				puts("Se cayó la conexion...");
+				puts("Se cayó la conexión...");
 			}
 			if(ack == 1){
 				list_add(unMensajeGetPokemon->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
-				loQueVoyALoguear2 = "El suscriptor con ID=%d fue agregado a la lista de SuscriptoresACK";
+				loQueVoyALoguear2 = "El suscriptor con ID=%d fue agregado a la lista de SuscriptoresACK.";
 				log_info(logger, loQueVoyALoguear2,unSuscriptor->IDsuscriptor);
 			}
 		}
@@ -374,7 +371,7 @@ void enviarAppearedPokemonASuscriptores(MensajeAppearedPokemon2* unMensajeAppear
 		for(int i=0;i<tamanioSuscriptoresAppearedPokemon;i++){
 			unSuscriptor = list_get(suscriptores_appeared_pokemon,i);
 
-			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 			log_info(logger, loQueVoyALoguear,unMensajeAppearedPokemon->ID,unSuscriptor->IDsuscriptor);
 
 			enviarAppearedPokemon(unAppearedPokemon,unSuscriptor->socketSuscriptor,unMensajeAppearedPokemon->ID,0);
@@ -383,11 +380,11 @@ void enviarAppearedPokemonASuscriptores(MensajeAppearedPokemon2* unMensajeAppear
 
 			loQueDevuelveElRecv = recv(unSuscriptor->socketSuscriptor,&ack,sizeof(int),MSG_WAITALL);
 			if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-				puts("Se cayó la conexion...");
+				puts("Se cayó la conexión...");
 			}
 			if(ack == 1){
 				list_add(unMensajeAppearedPokemon->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
-				loQueVoyALoguear2 = "El suscriptor con ID=%d fue agregado a la lista de SuscriptoresACK";
+				loQueVoyALoguear2 = "El suscriptor con ID=%d fue agregado a la lista de SuscriptoresACK.";
 				log_info(logger, loQueVoyALoguear2,unSuscriptor->IDsuscriptor);
 			}
 		}
@@ -408,7 +405,7 @@ void enviarNewPokemonASuscriptores(MensajeNewPokemon2* unMensajeNewPokemon){
 
 		for(int i=0;i<tamanioSuscriptoresNewPokemon;i++){
 			unSuscriptor = list_get(suscriptores_new_pokemon,i);
-			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 			log_info(logger, loQueVoyALoguear,unMensajeNewPokemon->ID,unSuscriptor->IDsuscriptor);
 
 			enviarNewPokemon(unNewPokemon,unSuscriptor->socketSuscriptor,unMensajeNewPokemon->ID);
@@ -418,11 +415,11 @@ void enviarNewPokemonASuscriptores(MensajeNewPokemon2* unMensajeNewPokemon){
 
 			loQueDevuelveElRecv = recv(unSuscriptor->socketSuscriptor,&ack,sizeof(int),MSG_WAITALL);
 			if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-				puts("Se cayó la conexion...");
+				puts("Se cayó la conexión...");
 			}
 			if(ack == 1){
 				list_add(unMensajeNewPokemon->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
-				loQueVoyALoguear2 = "El suscriptor con ID=%d fue agregado a la lista de SuscriptoresACK";
+				loQueVoyALoguear2 = "El suscriptor con ID=%d fue agregado a la lista de SuscriptoresACK.";
 				log_info(logger, loQueVoyALoguear2,unSuscriptor->IDsuscriptor);
 			}
 		}
@@ -442,7 +439,6 @@ void recibirSuscripcionCaughtPokemon(int socket_suscriptor){
 		recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
 
 		memcpy(&idSuscriptor,stream,sizeof(int));
-		printf("\nRecibi solicitud de suscripcion para CaughtPokemon de socket: %d\n",socket_suscriptor);
 		printf("Su ID es: %d\n",idSuscriptor);
 
 		if(idSuscriptor == 0){
@@ -496,7 +492,6 @@ void recibirSuscripcionCatchPokemon(int socket_suscriptor){
 		recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
 
 		memcpy(&idSuscriptor,stream,sizeof(int));
-		printf("\nRecibi solicitud de suscripcion para CatchPokemon de socket: %d\n",socket_suscriptor);
 		printf("Su ID es: %d\n",idSuscriptor);
 
 		if(idSuscriptor == 0){
@@ -550,7 +545,6 @@ void recibirSuscripcionAppearedPokemon(int socket_suscriptor){
 		recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
 
 		memcpy(&idSuscriptor,stream,sizeof(int));
-		printf("\nRecibi solicitud de suscripcion para AppearedPokemon de socket: %d\n",socket_suscriptor);
 		printf("Su ID es: %d\n",idSuscriptor);
 
 		if(idSuscriptor == 0){
@@ -604,7 +598,6 @@ void recibirSuscripcionGetPokemon(int socket_suscriptor){
 		recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
 
 		memcpy(&idSuscriptor,stream,sizeof(int));
-		printf("\nRecibi solicitud de suscripcion para GetPokemon de socket: %d\n",socket_suscriptor);
 		printf("Su ID es: %d\n",idSuscriptor);
 
 		if(idSuscriptor == 0){
@@ -659,7 +652,6 @@ void recibirSuscripcionLocalizedPokemon(int socket_suscriptor){
 			recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
 
 			memcpy(&idSuscriptor,stream,sizeof(int));
-			printf("\nRecibi solicitud de suscripcion para LocalizedPokemon de socket: %d\n",socket_suscriptor);
 			printf("Su ID es: %d\n",idSuscriptor);
 
 			if(idSuscriptor == 0){
@@ -713,7 +705,6 @@ void recibirSuscripcionNewPokemon(int socket_suscriptor){
 		recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
 
 		memcpy(&idSuscriptor,stream,sizeof(int));
-		printf("\nRecibi solicitud de suscripcion para NewPokemon de socket: %d\n",socket_suscriptor);
 		printf("Su ID es: %d\n",idSuscriptor);
 
 		if(idSuscriptor == 0){
@@ -754,6 +745,23 @@ void recibirSuscripcionNewPokemon(int socket_suscriptor){
 		free(buffer);
 }
 
+void insertarOrdenadoEnListaPosicionesOcupadas(PosicionOcupada* unaPosicionOcupada){
+	PosicionOcupada* posicionQueItera;
+	int tamanioListaOcupadas = list_size(listaPosicionesOcupadas);
+	if(tamanioListaOcupadas == 0){
+		list_add(listaPosicionesOcupadas,unaPosicionOcupada);
+	}
+	for(int i=0; i<tamanioListaOcupadas;i++){
+		posicionQueItera = list_get(listaPosicionesOcupadas,i);
+		if(posicionQueItera->posicion > unaPosicionOcupada->posicion){
+			list_add_in_index(listaPosicionesOcupadas,i,unaPosicionOcupada);
+			break;
+		} else if(i == tamanioListaOcupadas-1){
+			list_add_in_index(listaPosicionesOcupadas,i+1,unaPosicionOcupada);
+			break;
+		}
+	}
+}
 
 void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID){
 	PosicionOcupada* unaPosicion = malloc(sizeof(PosicionOcupada));
@@ -768,23 +776,23 @@ void ocuparPosicion(int tamanio, void* posicion, int colaALaQuePertenece, int ID
 		unaPosicion->tamanio = tamanioMinimoParticion;
 	}
 
-	list_add(listaPosicionesOcupadas, unaPosicion);
-	printf("\nOcupe exitosamente una posicion del mensaje con ID %d\n", unaPosicion->ID);
+	insertarOrdenadoEnListaPosicionesOcupadas(unaPosicion);
+	printf("\nOcupé exitosamente una posición del mensaje con ID %d\n", unaPosicion->ID);
 	uint32_t posicionRelativa = unaPosicion->posicion - memoriaInterna;
-	printf("\nGuarde ese dato en la posicion de memoria %u\n", posicionRelativa);
-	printf("\nAhora tengo %d posiciones ocupadas", list_size(listaPosicionesOcupadas));
-	loQueVoyALoguear = "Almacené en memoria el mensaje con ID=%d,donde comienza en: %d";
+	printf("\nGuardé ese dato en la posición de memoria %u\n", posicionRelativa);
+	printf("\nAhora tengo %d posicion/es ocupada/s\n", list_size(listaPosicionesOcupadas));
+	loQueVoyALoguear = "Almacené en memoria el mensaje con ID=%d,donde comienza en: %d.";
 	log_info(logger, loQueVoyALoguear,unaPosicion->ID,posicionRelativa);
 	actualizarTimestamp(ID);
-
-
 }
 
 //---------------------------------------------------Particiones Dinamicas
 
+
+
+
 int insertarOrdenadoEnListaPosicionesLibres(PosicionLibre* unaPosicionLibre){
 	PosicionLibre* posicionQueItera;
-	puts("anda1");
 
 	int tamanioListaLibres = list_size(listaPosicionesLibres);
 	if(tamanioListaLibres == 0){
@@ -811,7 +819,7 @@ void consolidarParticiones(int posicion){
 		int borreAIzquierda = 0;
 		if(posicion>0){ //consolidacion a izquierda
 			PosicionLibre* posicionAIzquierda = list_get(listaPosicionesLibres,posicion-1);
-			printf("\nLa posicion de la izquierda arranca en %i y termina en %i. la posicion base empieza en %i",posicionAIzquierda->posicion,posicionAIzquierda->posicion + posicionAIzquierda->tamanio,posicionBase->posicion);
+			printf("\nLa posición de la izquierda arranca en %i y termina en %i. la posición base empieza en %i",posicionAIzquierda->posicion,posicionAIzquierda->posicion + posicionAIzquierda->tamanio,posicionBase->posicion);
 			if((posicionAIzquierda->posicion + posicionAIzquierda->tamanio) == ((posicionBase->posicion))){
 				posicionAIzquierda->tamanio+= posicionBase->tamanio;
 				free(posicionBase);
@@ -826,10 +834,8 @@ void consolidarParticiones(int posicion){
 						free(posicionADerecha);
 						list_remove(listaPosicionesLibres,posicion);
 					}
-
 				}
 			}
-
 		}
 		if(borreAIzquierda == 0){
 			if(posicion != tamanioPosicionesLibres-1){ //me fijo si tengo algo a la derecha
@@ -848,42 +854,41 @@ void consolidarParticiones(int posicion){
 void consolidarBS(int posicion){
 	PosicionLibre* posicionBase = list_get(listaPosicionesLibres,posicion);
 	int tamanioPosicionesLibres = list_size(listaPosicionesLibres);
-	printf("\n llego a esta funcion? la posicion es %i",posicion);
+	printf("\nLlego a esta funcion? la posición es %i",posicion);
 	int yaConsolide =0;
 	char* loQueVoyALoggear;
 
 	if(posicion>0){ //primero va posicion a izquierda
-		puts("tengo algo a izquierda");
 		PosicionLibre* posicionAIzquierda = list_get(listaPosicionesLibres,posicion-1);
 		printf("\nLa posicion de la izquierda arranca en %p, la memoria interna arranca en %p, el tamanio de la posicion izquierda es %i",posicionAIzquierda->posicion, memoriaInterna, posicionAIzquierda->tamanio);
 		printf("\nLa posicion de la izquierda arranca en %i y termina en %i. la posicion base empieza en %i",posicionAIzquierda->posicion-memoriaInterna,posicionAIzquierda->posicion-memoriaInterna + posicionAIzquierda->tamanio,posicionBase->posicion-memoriaInterna);
-		printf("\nEL tamanio de las posiciones es %i y %i",posicionAIzquierda->tamanio,posicionBase->tamanio);
+		printf("\nEL tamaño de las posiciones es %i y %i",posicionAIzquierda->tamanio,posicionBase->tamanio);
 		if((posicionAIzquierda->posicion + posicionAIzquierda->tamanio) == ((posicionBase->posicion)) && (posicionAIzquierda->tamanio == posicionBase->tamanio) && ((int)posicionAIzquierda->posicion-(int)memoriaInterna == ((int)posicionBase->posicion-(int)memoriaInterna^posicionAIzquierda->tamanio))){
-						puts("efectivamente puedo consolidar a izquierda");
-						loQueVoyALoggear = "consolide las particiones con inicio %i, %i";
-						log_info(logger,loQueVoyALoggear, (int)posicionAIzquierda->posicion-(int)memoriaInterna, (int)posicionBase->posicion-(int)memoriaInterna);
-						posicionAIzquierda->tamanio+= posicionBase->tamanio;
-						free(posicionBase);
-						list_remove(listaPosicionesLibres,posicion);
-						puts("acabo de consolidar a izquierda en BS");
+			puts("\nEfectivamente puedo consolidar a izquierda");
+			loQueVoyALoggear = "Consolidé las particiones con inicio: %i, %i";
+			log_info(logger,loQueVoyALoggear, (int)posicionAIzquierda->posicion-(int)memoriaInterna, (int)posicionBase->posicion-(int)memoriaInterna);
+			posicionAIzquierda->tamanio+= posicionBase->tamanio;
+			free(posicionBase);
+			list_remove(listaPosicionesLibres,posicion);
+			puts("\nAcabo de terminar de consolidar a izquierda en BS.");
 
-						yaConsolide = 1;
-						consolidarBS(posicion-1);
+
+			yaConsolide = 1;
+			consolidarBS(posicion-1);
 		}
 	}
 	if(posicion != tamanioPosicionesLibres-1 && yaConsolide==0){ //me fijo si tengo algo a la derecha
 		PosicionLibre* posicionADerecha = list_get(listaPosicionesLibres,posicion+1);
-		puts("\ntengo algo a derecha");
-		printf("\nLa posicion de la derecha arranca en %i y termina en %i. la posicion base empieza en %i",posicionADerecha->posicion-memoriaInterna,posicionADerecha->posicion-memoriaInterna + posicionADerecha->tamanio,posicionBase->posicion-memoriaInterna);
-		printf("\nEL tamanio de las posiciones es %i y %i",posicionADerecha->tamanio,posicionBase->tamanio);
+		printf("\nLa posición de la derecha arranca en %i y termina en %i. la posición base empieza en %i",posicionADerecha->posicion-memoriaInterna,posicionADerecha->posicion-memoriaInterna + posicionADerecha->tamanio,posicionBase->posicion-memoriaInterna);
+		printf("\nEL tamaño de las posiciones es %i y %i",posicionADerecha->tamanio,posicionBase->tamanio);
 		if(((posicionBase->posicion + posicionBase->tamanio) == posicionADerecha->posicion) && posicionBase->tamanio == posicionADerecha->tamanio && ((int)posicionADerecha->posicion-(int)memoriaInterna == ((int)posicionBase->posicion-(int)memoriaInterna^posicionADerecha->tamanio))){
-			puts("\nvoy a consolidar a derecha");
-			loQueVoyALoggear = "consolide las particiones con inicio %i, %i";
+			puts("\nVoy a consolidar a derecha");
+			loQueVoyALoggear = "Consolidé las particiones con inicio: %i, %i";
 			log_info(logger,loQueVoyALoggear, (int)posicionBase->posicion-(int)memoriaInterna, (int)posicionADerecha->posicion-(int)memoriaInterna);
 			posicionBase->tamanio+= posicionADerecha->tamanio;
 			free(posicionADerecha);
 			list_remove(listaPosicionesLibres,posicion+1);
-			puts("\nacabo de consolidar a derecha en BS");
+			puts("\nAcabo de consolidar a derecha en BS.");
 			consolidarBS(posicion);
 		}
 	}
@@ -899,7 +904,7 @@ void consolidar(int posicion){
 
 void borrarFIFO(){
 	int tamanioOcupados = list_size(listaPosicionesOcupadas);
-	printf("\nHay %d posiciones ocupadas", list_size(listaPosicionesOcupadas));
+	printf("Hay %d posiciones ocupadas\n", list_size(listaPosicionesOcupadas));
 	int posicionABorrar;
 	int auxID = 999999999;
 	PosicionOcupada* unaPosicionOcupada;
@@ -921,7 +926,7 @@ void borrarFIFO(){
 	free(unaPosicionOcupada);
 	list_remove(listaPosicionesOcupadas,posicionABorrar);
 	int posicionQueQuedo = insertarOrdenadoEnListaPosicionesLibres(unaPosicionLibre);
-	printf("\nla posicion que quedo es %i: ",posicionQueQuedo);
+	printf("\nla posición que quedo es %i: ",posicionQueQuedo);
 	consolidar(posicionQueQuedo);
 }
 
@@ -937,6 +942,8 @@ void buscarIDCaughtPokemonYBorrarlo(int id){
 		}
 	}
 	mensaje = list_get(Caught_Pokemon,pokemonABorrar);
+	list_destroy(mensaje->suscriptoresAtendidos);
+	list_destroy(mensaje->suscriptoresACK);
 	free(mensaje);
 	list_remove(Caught_Pokemon,pokemonABorrar);
 }
@@ -953,6 +960,8 @@ void buscarIDCatchPokemonYBorrarlo(int id){
 		}
 	}
 	mensaje = list_get(Catch_Pokemon,pokemonABorrar);
+	list_destroy(mensaje->suscriptoresAtendidos);
+	list_destroy(mensaje->suscriptoresACK);
 	free(mensaje);
 	list_remove(Catch_Pokemon,pokemonABorrar);
 }
@@ -969,6 +978,8 @@ void buscarIDAppearedPokemonYBorrarlo(int id){
 		}
 	}
 	mensaje = list_get(Appeared_Pokemon,pokemonABorrar);
+	list_destroy(mensaje->suscriptoresAtendidos);
+	list_destroy(mensaje->suscriptoresACK);
 	free(mensaje);
 	list_remove(Appeared_Pokemon,pokemonABorrar);
 }
@@ -985,6 +996,8 @@ void buscarIDGetPokemonYBorrarlo(int id){
 		}
 	}
 	mensaje = list_get(Get_Pokemon,pokemonABorrar);
+	list_destroy(mensaje->suscriptoresAtendidos);
+	list_destroy(mensaje->suscriptoresACK);
 	free(mensaje);
 	list_remove(New_Pokemon,pokemonABorrar);
 
@@ -1002,6 +1015,8 @@ void buscarIDLocalizedPokemonYBorrarlo(int id){
 		}
 	}
 	mensaje = list_get(Localized_Pokemon,pokemonABorrar);
+	list_destroy(mensaje->suscriptoresAtendidos);
+	list_destroy(mensaje->suscriptoresACK);
 	free(mensaje);
 	list_remove(New_Pokemon,pokemonABorrar);
 }
@@ -1018,6 +1033,8 @@ void buscarIDNewPokemonYBorrarlo(int id){
 		}
 	}
 	mensaje = list_get(New_Pokemon,pokemonABorrar);
+	list_destroy(mensaje->suscriptoresAtendidos);
+	list_destroy(mensaje->suscriptoresACK);
 	free(mensaje);
 	list_remove(New_Pokemon,pokemonABorrar);
 }
@@ -1048,7 +1065,7 @@ void borrarDeColaDeMensajes(int nroDeCola,int idMensaje){
 
 void borrarLRU(){
 	int tamanioOcupados = list_size(listaPosicionesOcupadas);
-	printf("\nHay %d posiciones ocupadas", list_size(listaPosicionesOcupadas));
+	printf("\nHay %d posiciones ocupadas\n", list_size(listaPosicionesOcupadas));
 	int posicionABorrar;
 	int auxTimestamp = 999999999;
 	PosicionOcupada* unaPosicionOcupada;
@@ -1074,6 +1091,7 @@ void borrarLRU(){
 	int posicionQueQuedo = insertarOrdenadoEnListaPosicionesLibres(unaPosicionLibre);
 	consolidar(posicionQueQuedo);
 }
+
 void actualizarTimestamp(int ID){
 	int tamanioListaOcupados = list_size(listaPosicionesOcupadas);
 	PosicionOcupada* unaPosicionOcupada;
@@ -1084,8 +1102,8 @@ void actualizarTimestamp(int ID){
 			contadorTimestamp++;
 			unaPosicionOcupada->timestamp = contadorTimestamp;
 			pthread_mutex_unlock(&mutexContadorTimestamp);
-			printf("el mensaje de ID %d tiene timestamp %d", unaPosicionOcupada->ID, unaPosicionOcupada->timestamp);
-			puts("jajaxd");
+			printf("El mensaje de ID %d tiene timestamp %d\n", unaPosicionOcupada->ID, unaPosicionOcupada->timestamp);
+
 			break;
 		}
 	}
@@ -1098,9 +1116,19 @@ void borrarPosicion(){
 	if(!strcmp(algoritmoReemplazo,"FIFO")){
 		puts("\nVoy a borrar por FIFO");
 		borrarFIFO();
+		if(!strcmp(algoritmoMemoria,"PARTICIONES")){
+			if((busquedasFallidasPreviasACompactacionOriginal == 1 || busquedasFallidasPreviasACompactacionOriginal == 0)){
+				compacta();
+			}
+		}
 	} else{
 		puts("\nVoy a borrar por LRU");
 		borrarLRU();
+		if(!strcmp(algoritmoMemoria,"PARTICIONES")){
+			if((busquedasFallidasPreviasACompactacionOriginal == 1 || busquedasFallidasPreviasACompactacionOriginal == 0)){
+				compacta();
+			}
+		}
 	}
 
 }
@@ -1160,6 +1188,7 @@ PosicionLibre* pedirPosicionBF(int tamanio) {
 					free(posicionFalsa);
 					printf("\nTamaño de posicion elegida: %d\n",unaPosicionLibre->tamanio);
 					puts("Posicion asignada correctamente.");
+					list_destroy(posicionesPotablesAElegir);
 					return unaPosicionLibre;
 				}
 			}
@@ -1168,6 +1197,7 @@ PosicionLibre* pedirPosicionBF(int tamanio) {
 		printf("\nLas posiciones potables son %i", tamanioListaPosicionesPotables);
 		if (tamanioListaPosicionesPotables == 0){
 			puts("\nNinguna posicion potable para asignarle.");
+			list_destroy(posicionesPotablesAElegir);
 			return posicionFalsa;
 		}
 		int indicePosicionARetornar = 0;
@@ -1184,6 +1214,7 @@ PosicionLibre* pedirPosicionBF(int tamanio) {
 			}
 		}
 		posicionQueVoyARetornar = list_get(posicionesPotablesAElegir,indicePosicionARetornar);
+
 		list_destroy(posicionesPotablesAElegir);
 		free(posicionFalsa);
 		printf("\nTamaño de posicion elegida: %d\n",posicionQueVoyARetornar->tamanio);
@@ -1192,6 +1223,7 @@ PosicionLibre* pedirPosicionBF(int tamanio) {
 		return posicionQueVoyARetornar;
 }
 
+//---------------------------------------------------Buddy System
 PosicionLibre* pedirPosicionBFBS(int tamanio){
 	puts("Estoy en pedir posicion por Buddy System.");
 	PosicionLibre* posicionQueItera;
@@ -1216,6 +1248,7 @@ PosicionLibre* pedirPosicionBFBS(int tamanio){
 	printf("Tamaño de la lista de posiciones que cumplen con el tamaño minimo: %d\n",list_size(posicionesQueCumplenElTamanioMinimo));
 	if(list_size(posicionesQueCumplenElTamanioMinimo) == 0){
 		puts("\nNinguna posicion potable para asignarle.");
+		list_destroy(posicionesQueCumplenElTamanioMinimo);
 		return posicionFalsa;
 	}
 
@@ -1307,43 +1340,38 @@ void compacta(){
 			posicionQueItera->posicion = posicionAnterior->posicion + posicionAnterior->tamanio;
 		}
 	}
+	if(tamanioLibres!=0){
+		if(tamanioOcupados > 0){
+			for(int i = 1;i<tamanioLibres;i++){
+				posicionLibreQueItera = list_get(listaPosicionesLibres,i);
+				free(posicionLibreQueItera);
+			}
+			for (int i=1; i<tamanioLibres;i++){
+				list_remove(listaPosicionesLibres,1);
+			}
 
-	if(tamanioOcupados > 0){
-		for(int i = 1;i<tamanioLibres;i++){
-			posicionLibreQueItera = list_get(listaPosicionesLibres,i);
-			free(posicionLibreQueItera);
+			posicionLibreQueItera = list_get(listaPosicionesLibres,0);
+			posicionQueItera = list_get(listaPosicionesOcupadas,tamanioOcupados-1);
+			posicionLibreQueItera->posicion = posicionQueItera->posicion + posicionQueItera->tamanio;
+			posicionLibreQueItera->tamanio = tamanioMemoria - tamanioOcupadas();
+			printf("La memoria empieza en: %d y la primer posicion libre quedo en %d",memoriaInterna, posicionLibreQueItera->posicion);
 		}
-		for (int i=1; i<tamanioLibres;i++){
-			list_remove(listaPosicionesLibres,1);
-		}
-		posicionLibreQueItera = list_get(listaPosicionesLibres,0);
-		posicionQueItera = list_get(listaPosicionesOcupadas,tamanioOcupados-1);
-		posicionLibreQueItera->posicion = posicionQueItera->posicion + posicionQueItera->tamanio;
-		posicionLibreQueItera->tamanio = tamanioMemoria - tamanioOcupadas();
-		printf("La memoria empieza en: %d y la primer posicion libre quedo en %d", memoriaInterna, posicionLibreQueItera->posicion);
 	}
 
 	loQueVoyALoguear = "Se acaba de compactar";
 	log_info(logger, loQueVoyALoguear);
 
 	busquedasFallidasPreviasACompactacion = busquedasFallidasPreviasACompactacionOriginal;
-
-	puts("Acabo de terminar de compactar");
-
 }
-
-
 
 PosicionLibre* pedirPosicion(int tamanio){
 	PosicionLibre* posicionARetornar;
-	//algoritmoParticionLibre = config_get_string_value(config,"ALGORITMO_PARTICION_LIBRE");
 	if(!strcmp(algoritmoMemoria,"BS")){
 		if(!strcmp(algoritmoParticionLibre,"FF")){
 			posicionARetornar = pedirPosicionFFBS(tamanio);
 		}else{
 			posicionARetornar = pedirPosicionBFBS(tamanio);
 		}
-
 		if(posicionARetornar->tamanio == 0){
 			puts("Me llego una pos falsa");
 			free(posicionARetornar);
@@ -1377,6 +1405,7 @@ PosicionLibre* pedirPosicion(int tamanio){
 					return pedirPosicion(tamanio);
 				} // -1 no lo contemplo porque es lo mismo que nada
 			}
+			puts("estoy por borrar");
 			borrarPosicion();
 			yaCompacte=0;
 			return pedirPosicion(tamanio);
@@ -1399,9 +1428,7 @@ void limpiarPosicionesEn0(){
 			free(unaPosicionLibre);
 			list_remove(listaPosicionesLibres,i);
 			break;
-
 		}
-
 	}
 }
 
@@ -1438,52 +1465,56 @@ MensajeNewPokemon2* guardarMensajeNewPokemon(NewPokemon* unNewPokemon) {
 		int tamanioDeNew = sizeof(uint32_t) * 4 + unNewPokemon->tamanioNombrePokemon;
 
 		pthread_mutex_lock(&mutexMemoriaInterna);
+
 		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeNew-1);
+
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
 		if(unaPosicionLibre->tamanio >= tamanioDeNew-1){
 		void* principioContenidoDelMensaje;
-
 		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
 		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
+
 		if(!strcmp(algoritmoMemoria,"BS")){
 			tamanioBuddy = unaPosicionLibre->tamanio;
 		}
+
 		grabarNewPokemonAMemoriaInterna(unNewPokemon,tamanioDeNew,unaPosicionLibre);
+
 		if(!strcmp(algoritmoMemoria,"BS")){
 			ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,2,mensaje->ID);
+
 		} else{
 			ocuparPosicion(tamanioDeNew-1,mensaje->contenidoDelMensaje,2,mensaje->ID);
 		}
 		limpiarPosicionesEn0();
+
 		pthread_mutex_unlock(&mutexMemoriaInterna);
 		if(!strcmp(algoritmoMemoria,"BS")){
 			mensaje->tamanioEnMemoria = tamanioBuddy;
-			printf("el tamanio en memoria es %d",mensaje->tamanioEnMemoria);
+			printf("El tamaño en memoria es %d",mensaje->tamanioEnMemoria);
 		} else if(tamanioDeNew>=tamanioMinimoParticion){
 			mensaje->tamanioEnMemoria= tamanioDeNew-1;
-			printf("el tamanio en memoria es %d",mensaje->tamanioEnMemoria);
+			printf("El tamaño en memoria es %d",mensaje->tamanioEnMemoria);
 		} else{
 			mensaje->tamanioEnMemoria= tamanioMinimoParticion;
 		}
 
-		pthread_mutex_lock(&mutexColaNewPokemon);
-		list_add(New_Pokemon, mensaje);
-		pthread_cond_signal(&no_vacioNP);
-		pthread_mutex_unlock(&mutexColaNewPokemon);
+			pthread_mutex_lock(&mutexColaNewPokemon);
+			list_add(New_Pokemon, mensaje);
+			pthread_mutex_unlock(&mutexColaNewPokemon);
 
-		printf("\nEl tamaño de la lista ahora es de: %d\n", list_size(New_Pokemon));
-		mensaje->suscriptoresAtendidos = list_create();
-		mensaje->suscriptoresACK = list_create();
-		char* nombreDelPokemonQueGuarde = unNewPokemon->nombre;
+			printf("\nEl tamaño de la lista ahora es de: %d\n", list_size(New_Pokemon));
+			mensaje->suscriptoresAtendidos = list_create();
+			mensaje->suscriptoresACK = list_create();
+			char* nombreDelPokemonQueGuarde = unNewPokemon->nombre;
 
-		printf("[NewPokemon] Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
-		printf("[NewPokemon] Su ID es: %d\n",mensaje->ID);
-
+			printf("[NewPokemon] Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
+			printf("[NewPokemon] Su ID es: %d\n",mensaje->ID);
 		} else {
 			puts("No hay memoria disponible.");
 		}
+		free(unNewPokemon->nombre);
 		free(unNewPokemon);
-
 		puts("\nGrabado en memoria correctamente.");
 
 		return mensaje;
@@ -1523,64 +1554,62 @@ MensajeLocalizedPokemon2* guardarMensajeLocalizedPokemon(LocalizedPokemon* unLoc
 		MensajeLocalizedPokemon2* mensaje = malloc(sizeof(MensajeLocalizedPokemon2));
 		int tamanioBuddy;
 		pthread_mutex_lock(&mutexGeneradorIDMensaje);
-			generadorDeIDsMensaje++;
-			mensaje->ID = generadorDeIDsMensaje;
-			mensaje->IDCorrelativo = idCorrelativo;
+		generadorDeIDsMensaje++;
+		mensaje->ID = generadorDeIDsMensaje;
+		mensaje->IDCorrelativo = idCorrelativo;
 		pthread_mutex_unlock(&mutexGeneradorIDMensaje);
 		int tamanioParesOrdenados = list_size(unLocalizedPokemon->paresOrdenados);
 		int tamanioDeLocalized = sizeof(uint32_t) * tamanioParesOrdenados * 2 + (unLocalizedPokemon->tamanioNombrePokemon);
 
 		pthread_mutex_lock(&mutexMemoriaInterna);
-
 		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeLocalized-1);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
 		if(unaPosicionLibre->tamanio >= tamanioDeLocalized-1){
-		void* principioContenidoDelMensaje;
+			void* principioContenidoDelMensaje;
 
-		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
-		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
-		if(!strcmp(algoritmoMemoria,"BS")){
-			tamanioBuddy = unaPosicionLibre->tamanio;
-		}
-		grabarLocalizedPokemonAMemoriaInterna(unLocalizedPokemon,tamanioDeLocalized,unaPosicionLibre);
+			memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
+			mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
+			if(!strcmp(algoritmoMemoria,"BS")){
+				tamanioBuddy = unaPosicionLibre->tamanio;
+			}
+			grabarLocalizedPokemonAMemoriaInterna(unLocalizedPokemon,tamanioDeLocalized,unaPosicionLibre);
 
-		if(!strcmp(algoritmoMemoria,"BS")){
-			ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,3,mensaje->ID);
-		} else{
-			ocuparPosicion(tamanioDeLocalized-1,mensaje->contenidoDelMensaje,3,mensaje->ID);
-		}
-		limpiarPosicionesEn0();
-		pthread_mutex_unlock(&mutexMemoriaInterna);
+			if(!strcmp(algoritmoMemoria,"BS")){
+				ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,3,mensaje->ID);
+			} else{
+				ocuparPosicion(tamanioDeLocalized-1,mensaje->contenidoDelMensaje,3,mensaje->ID);
+			}
+			limpiarPosicionesEn0();
+			pthread_mutex_unlock(&mutexMemoriaInterna);
+			if(!strcmp(algoritmoMemoria,"BS")){
+				mensaje->tamanioEnMemoria = tamanioBuddy;
+			} else if(tamanioDeLocalized>=tamanioMinimoParticion){
+				mensaje->tamanioEnMemoria= tamanioDeLocalized-1;
+			} else{
+				mensaje->tamanioEnMemoria= tamanioMinimoParticion;
+			}
+			pthread_mutex_lock(&mutexColaLocalizedPokemon);
+			list_add(Localized_Pokemon, mensaje);
+			pthread_mutex_unlock(&mutexColaLocalizedPokemon);
 
+			printf("\nEl tamaño de la lista ahora es de: %d\n", list_size(Localized_Pokemon));
+			mensaje->suscriptoresAtendidos = list_create();
+			mensaje->suscriptoresACK = list_create();
+			char* nombreDelPokemonQueGuarde = unLocalizedPokemon->nombre;
 
-		if(!strcmp(algoritmoMemoria,"BS")){
-			mensaje->tamanioEnMemoria = tamanioBuddy;
-		} else if(tamanioDeLocalized>=tamanioMinimoParticion){
-			mensaje->tamanioEnMemoria= tamanioDeLocalized-1;
-		} else{
-			mensaje->tamanioEnMemoria= tamanioMinimoParticion;
-		}
-
-
-		pthread_mutex_lock(&mutexColaLocalizedPokemon);
-		list_add(Localized_Pokemon, mensaje);
-		pthread_cond_signal(&no_vacioLP);
-		pthread_mutex_unlock(&mutexColaLocalizedPokemon);
-
-		printf("\nEl tamaño de la lista ahora es de: %d\n", list_size(Localized_Pokemon));
-		mensaje->suscriptoresAtendidos = list_create();
-		mensaje->suscriptoresACK = list_create();
-		char* nombreDelPokemonQueGuarde = unLocalizedPokemon->nombre;
-
-		printf("[LocalizedPokemon] Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
-		printf("[LocalizedPokemon] Su ID es: %d, y su IDCorrelativo es: %d\n",mensaje->ID,mensaje->IDCorrelativo);
-
+			printf("[LocalizedPokemon] Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
+			printf("[LocalizedPokemon] Su ID es: %d, y su IDCorrelativo es: %d\n",mensaje->ID,mensaje->IDCorrelativo);
 		} else {
 			puts("No hay memoria disponible.");
 		}
-
+		CoordenadasXY* unaCoordenada;
+		for (int i =0;i<unLocalizedPokemon->cantidadParesOrdenados;i++){
+			unaCoordenada = list_get(unLocalizedPokemon->paresOrdenados,i);
+			free(unaCoordenada);
+		}
+		list_destroy(unLocalizedPokemon->paresOrdenados);
+		free(unLocalizedPokemon->nombre);
 		free(unLocalizedPokemon);
-
 		puts("\nGrabado en memoria correctamente.");
 
 		return mensaje;
@@ -1597,7 +1626,6 @@ void grabarGetPokemonAMemoriaInterna(GetPokemon* unGetPokemon, int tamanio, Posi
 		unaPosicionLibre->tamanio = 0;
 	} else if(tamanio>=tamanioMinimoParticion){
 		unaPosicionLibre->tamanio-= tamanio;
-
 	} else{
 		unaPosicionLibre->tamanio-= tamanioMinimoParticion;
 		unaPosicionLibre->posicion+= (tamanioMinimoParticion-tamanio);
@@ -1609,62 +1637,55 @@ MensajeGetPokemon2* guardarMensajeGetPokemon(GetPokemon* unGetPokemon){
 		MensajeGetPokemon2* mensaje = malloc(sizeof(MensajeGetPokemon2));
 		int tamanioBuddy;
 		pthread_mutex_lock(&mutexGeneradorIDMensaje);
-				generadorDeIDsMensaje++;
-				mensaje->ID = generadorDeIDsMensaje;
-				pthread_mutex_unlock(&mutexGeneradorIDMensaje);
-
+		generadorDeIDsMensaje++;
+		mensaje->ID = generadorDeIDsMensaje;
+		pthread_mutex_unlock(&mutexGeneradorIDMensaje);
 		int tamanioDeGet = sizeof(uint32_t) + unGetPokemon->tamanioNombrePokemon;
 		pthread_mutex_lock(&mutexMemoriaInterna);
 		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeGet-1);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
 		if(unaPosicionLibre->tamanio >= tamanioDeGet-1){
-		void* principioContenidoDelMensaje;
+			void* principioContenidoDelMensaje;
 
-		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
-		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
-		if(!strcmp(algoritmoMemoria,"BS")){
-			tamanioBuddy = unaPosicionLibre->tamanio;
-		}
-		grabarGetPokemonAMemoriaInterna(unGetPokemon,tamanioDeGet,unaPosicionLibre);
-		if(!strcmp(algoritmoMemoria,"BS")){
-			ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,4,mensaje->ID);
-		} else{
-			printf("El tamanio de get sin sacar el /0 es: %i", tamanioDeGet);
-			ocuparPosicion(tamanioDeGet-1,mensaje->contenidoDelMensaje,4,mensaje->ID);
-		}
-		limpiarPosicionesEn0();
-		pthread_mutex_unlock(&mutexMemoriaInterna);
+			memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
+			mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
+			if(!strcmp(algoritmoMemoria,"BS")){
+				tamanioBuddy = unaPosicionLibre->tamanio;
+			}
+			grabarGetPokemonAMemoriaInterna(unGetPokemon,tamanioDeGet,unaPosicionLibre);
+			if(!strcmp(algoritmoMemoria,"BS")){
+				ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,4,mensaje->ID);
+			} else{
+				printf("El tamanio de get sin sacar el /0 es: %i", tamanioDeGet);
+				ocuparPosicion(tamanioDeGet-1,mensaje->contenidoDelMensaje,4,mensaje->ID);
+			}
+			limpiarPosicionesEn0();
+			pthread_mutex_unlock(&mutexMemoriaInterna);
 
-		if(!strcmp(algoritmoMemoria,"BS")){
-			mensaje->tamanioEnMemoria = tamanioBuddy;
-		} else if(tamanioDeGet>=tamanioMinimoParticion){
-			mensaje->tamanioEnMemoria= tamanioDeGet-1;
-		} else{
-			mensaje->tamanioEnMemoria= tamanioMinimoParticion;
-		}
+			if(!strcmp(algoritmoMemoria,"BS")){
+				mensaje->tamanioEnMemoria = tamanioBuddy;
+			} else if(tamanioDeGet>=tamanioMinimoParticion){
+				mensaje->tamanioEnMemoria= tamanioDeGet-1;
+			} else{
+				mensaje->tamanioEnMemoria= tamanioMinimoParticion;
+			}
+			pthread_mutex_lock(&mutexColaGetPokemon);
+			list_add(Get_Pokemon, mensaje);
+			pthread_mutex_unlock(&mutexColaGetPokemon);
 
+			printf("\nEl tamaño de la lista ahora es de: %d\n", list_size(Get_Pokemon));
+			mensaje->suscriptoresAtendidos = list_create();
+			mensaje->suscriptoresACK = list_create();
+			char* nombreDelPokemonQueGuarde = unGetPokemon->nombre;
 
-
-
-		pthread_mutex_lock(&mutexColaGetPokemon);
-		list_add(Get_Pokemon, mensaje);
-		pthread_cond_signal(&no_vacioGP);
-		pthread_mutex_unlock(&mutexColaGetPokemon);
-
-		printf("\nEl tamaño de la lista ahora es de: %d\n", list_size(Get_Pokemon));
-		mensaje->suscriptoresAtendidos = list_create();
-		mensaje->suscriptoresACK = list_create();
-		char* nombreDelPokemonQueGuarde = unGetPokemon->nombre;
-
-		printf("[GetPokemon] Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
-		printf("[GetPokemon] Su ID es: %d\n",mensaje->ID);
-
+			printf("[GetPokemon] Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
+			printf("[GetPokemon] Su ID es: %d\n",mensaje->ID);
 		} else {
 			puts("No hay memoria disponible.");
 		}
 
+		free(unGetPokemon->nombre);
 		free(unGetPokemon);
-
 		puts("\nGrabado en memoria correctamente.");
 
 		return mensaje;
@@ -1682,7 +1703,7 @@ void grabarAppearedPokemonAMemoriaInterna(AppearedPokemon* unAppearedPokemon, in
 	unaPosicionLibre->posicion+= sizeof(uint32_t);
 
 	if(!strcmp(algoritmoMemoria,"BS")){
-			unaPosicionLibre->tamanio = 0;
+		unaPosicionLibre->tamanio = 0;
 	} else if(tamanio>=tamanioMinimoParticion){
 		unaPosicionLibre->tamanio-= tamanio;
 	} else{
@@ -1696,56 +1717,55 @@ MensajeAppearedPokemon2* guardarMensajeAppearedPokemon(AppearedPokemon* unAppear
 		MensajeAppearedPokemon2* mensaje = malloc(sizeof(MensajeAppearedPokemon2));
 		int tamanioBuddy;
 		pthread_mutex_lock(&mutexGeneradorIDMensaje);
-				generadorDeIDsMensaje++;
-				mensaje->ID = generadorDeIDsMensaje;
-				pthread_mutex_unlock(&mutexGeneradorIDMensaje);
+		generadorDeIDsMensaje++;
+		mensaje->ID = generadorDeIDsMensaje;
+		pthread_mutex_unlock(&mutexGeneradorIDMensaje);
 		int tamanioDeAppeared = sizeof(uint32_t) * 3 + unAppearedPokemon->tamanioNombrePokemon;
 		pthread_mutex_lock(&mutexMemoriaInterna);
 		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeAppeared-1);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
 		if(unaPosicionLibre->tamanio >= tamanioDeAppeared-1){
-		void* principioContenidoDelMensaje;
+			void* principioContenidoDelMensaje;
 
-		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
-		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
-		if(!strcmp(algoritmoMemoria,"BS")){
-			tamanioBuddy = unaPosicionLibre->tamanio;
-		}
-		grabarAppearedPokemonAMemoriaInterna(unAppearedPokemon,tamanioDeAppeared,unaPosicionLibre);
-		if(!strcmp(algoritmoMemoria,"BS")){
-			ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,5,mensaje->ID);
-		} else{
-			ocuparPosicion(tamanioDeAppeared-1,mensaje->contenidoDelMensaje,5,mensaje->ID);
-		}
-		limpiarPosicionesEn0();
-		pthread_mutex_unlock(&mutexMemoriaInterna);
-		if(!strcmp(algoritmoMemoria,"BS")){
-			mensaje->tamanioEnMemoria = tamanioBuddy;
-		} else if(tamanioDeAppeared>=tamanioMinimoParticion){
-			mensaje->tamanioEnMemoria= tamanioDeAppeared-1;
-		} else{
-			mensaje->tamanioEnMemoria= tamanioMinimoParticion;
-		}
+			memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
+			mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
+			if(!strcmp(algoritmoMemoria,"BS")){
+				tamanioBuddy = unaPosicionLibre->tamanio;
+			}
+			grabarAppearedPokemonAMemoriaInterna(unAppearedPokemon,tamanioDeAppeared,unaPosicionLibre);
+			if(!strcmp(algoritmoMemoria,"BS")){
+				ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,5,mensaje->ID);
+			} else{
+				ocuparPosicion(tamanioDeAppeared-1,mensaje->contenidoDelMensaje,5,mensaje->ID);
+			}
+			limpiarPosicionesEn0();
+			pthread_mutex_unlock(&mutexMemoriaInterna);
+			if(!strcmp(algoritmoMemoria,"BS")){
+				mensaje->tamanioEnMemoria = tamanioBuddy;
+			} else if(tamanioDeAppeared>=tamanioMinimoParticion){
+				mensaje->tamanioEnMemoria= tamanioDeAppeared-1;
+			} else{
+				mensaje->tamanioEnMemoria= tamanioMinimoParticion;
+			}
 
 
-		pthread_mutex_lock(&mutexColaAppearedPokemon);
-		list_add(Appeared_Pokemon, mensaje);
-		pthread_cond_signal(&no_vacioAP);
-		pthread_mutex_unlock(&mutexColaAppearedPokemon);
+			pthread_mutex_lock(&mutexColaAppearedPokemon);
+			list_add(Appeared_Pokemon, mensaje);
+			pthread_mutex_unlock(&mutexColaAppearedPokemon);
 
-		printf("\nEl tamaño de la lista ahora es de: %d\n", list_size(Appeared_Pokemon));
-		mensaje->suscriptoresAtendidos = list_create();
-		mensaje->suscriptoresACK = list_create();
-		char* nombreDelPokemonQueGuarde = unAppearedPokemon->nombre;
+			printf("\nEl tamaño de la lista ahora es de: %d\n", list_size(Appeared_Pokemon));
+			mensaje->suscriptoresAtendidos = list_create();
+			mensaje->suscriptoresACK = list_create();
+			char* nombreDelPokemonQueGuarde = unAppearedPokemon->nombre;
 
-		printf("[AppearedPokemon] Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
-		printf("[AppearedPokemon] Su ID es: %d\n",mensaje->ID);
+			printf("[AppearedPokemon] Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
+			printf("[AppearedPokemon] Su ID es: %d\n",mensaje->ID);
 		} else {
 			puts("No hay memoria disponible.");
 		}
 
+		free(unAppearedPokemon->nombre);
 		free(unAppearedPokemon);
-
 		puts("\nGrabado en memoria correctamente.");
 
 		return mensaje;
@@ -1785,48 +1805,47 @@ MensajeCatchPokemon2* guardarMensajeCatchPokemon(CatchPokemon* unCatchPokemon){
 		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeCatch-1);
 		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
 		if(unaPosicionLibre->tamanio >= tamanioDeCatch-1){
-		void* principioContenidoDelMensaje;
+			void* principioContenidoDelMensaje;
 
-		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
-		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
-		if(!strcmp(algoritmoMemoria,"BS")){
-			tamanioBuddy = unaPosicionLibre->tamanio;
-		}
-		grabarCatchPokemonAMemoriaInterna(unCatchPokemon,tamanioDeCatch,unaPosicionLibre);
-		if(!strcmp(algoritmoMemoria,"BS")){
-			ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,6,mensaje->ID);
-		} else{
-			ocuparPosicion(tamanioDeCatch-1,mensaje->contenidoDelMensaje,6,mensaje->ID);
-		}
-		limpiarPosicionesEn0();
-		pthread_mutex_unlock(&mutexMemoriaInterna);
-		if(!strcmp(algoritmoMemoria,"BS")){
-			mensaje->tamanioEnMemoria = tamanioBuddy;
-		} else if(tamanioDeCatch>=tamanioMinimoParticion){
-			mensaje->tamanioEnMemoria-= tamanioDeCatch-1;
-		} else{
-			mensaje->tamanioEnMemoria-= tamanioMinimoParticion;
-		}
+			memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
+			mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
+			if(!strcmp(algoritmoMemoria,"BS")){
+				tamanioBuddy = unaPosicionLibre->tamanio;
+			}
+			grabarCatchPokemonAMemoriaInterna(unCatchPokemon,tamanioDeCatch,unaPosicionLibre);
+			if(!strcmp(algoritmoMemoria,"BS")){
+				ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,6,mensaje->ID);
+			} else{
+				ocuparPosicion(tamanioDeCatch-1,mensaje->contenidoDelMensaje,6,mensaje->ID);
+			}
+			limpiarPosicionesEn0();
+			pthread_mutex_unlock(&mutexMemoriaInterna);
+			if(!strcmp(algoritmoMemoria,"BS")){
+				mensaje->tamanioEnMemoria = tamanioBuddy;
+			} else if(tamanioDeCatch>=tamanioMinimoParticion){
+				mensaje->tamanioEnMemoria-= tamanioDeCatch-1;
+			} else{
+				mensaje->tamanioEnMemoria-= tamanioMinimoParticion;
+			}
 
 
-		pthread_mutex_lock(&mutexColaCatchPokemon);
-		list_add(Catch_Pokemon, mensaje);
-		pthread_cond_signal(&no_vacioCP);
-		pthread_mutex_unlock(&mutexColaCatchPokemon);
+			pthread_mutex_lock(&mutexColaCatchPokemon);
+			list_add(Catch_Pokemon, mensaje);
+			pthread_mutex_unlock(&mutexColaCatchPokemon);
 
-		printf("\nEl tamaño de la lista ahora es de: %d\n", list_size(Catch_Pokemon));
-		mensaje->suscriptoresAtendidos = list_create();
-		mensaje->suscriptoresACK = list_create();
-		char* nombreDelPokemonQueGuarde = unCatchPokemon->nombre;
+			printf("\nEl tamaño de la lista ahora es de: %d\n", list_size(Catch_Pokemon));
+			mensaje->suscriptoresAtendidos = list_create();
+			mensaje->suscriptoresACK = list_create();
+			char* nombreDelPokemonQueGuarde = unCatchPokemon->nombre;
 
-		printf("[CatchPokemon] Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
-		printf("[CatchPokemon] Su ID es: %d\n",mensaje->ID);
+			printf("[CatchPokemon] Guarde el mensaje: %s\n", nombreDelPokemonQueGuarde);
+			printf("[CatchPokemon] Su ID es: %d\n",mensaje->ID);
 		} else {
 			puts("No hay memoria disponible.");
 		}
 
+		free(unCatchPokemon->nombre);
 		free(unCatchPokemon);
-
 		puts("\nGrabado en memoria correctamente.");
 
 		return mensaje;
@@ -1854,60 +1873,57 @@ MensajeCaughtPokemon2* guardarMensajeCaughtPokemon(CaughtPokemon* unCaughtPokemo
 		MensajeCaughtPokemon2* mensaje = malloc(sizeof(MensajeCaughtPokemon2));
 		int tamanioBuddy;
 		pthread_mutex_lock(&mutexGeneradorIDMensaje);
-				generadorDeIDsMensaje++;
-				mensaje->ID = generadorDeIDsMensaje;
-				mensaje->IDCorrelativo = idCorrelativo;
-				pthread_mutex_unlock(&mutexGeneradorIDMensaje);
+		generadorDeIDsMensaje++;
+		mensaje->ID = generadorDeIDsMensaje;
+		mensaje->IDCorrelativo = idCorrelativo;
+		pthread_mutex_unlock(&mutexGeneradorIDMensaje);
 		int tamanioDeCaught = sizeof(uint32_t);
 
 		pthread_mutex_lock(&mutexMemoriaInterna);
 		PosicionLibre* unaPosicionLibre = pedirPosicion(tamanioDeCaught-1);
-		printf("Me quedan %d bytes libres",unaPosicionLibre->tamanio);
+		printf("Me quedan %d bytes libres.",unaPosicionLibre->tamanio);
 		if(unaPosicionLibre->tamanio >= tamanioDeCaught){
-		void* principioContenidoDelMensaje;
+			void* principioContenidoDelMensaje;
 
-		memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
-		mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
-		if(!strcmp(algoritmoMemoria,"BS")){
-			tamanioBuddy = unaPosicionLibre->tamanio;
-		}
+			memcpy(&principioContenidoDelMensaje,&(unaPosicionLibre->posicion),sizeof(void*));
+			mensaje->contenidoDelMensaje = principioContenidoDelMensaje;
+			if(!strcmp(algoritmoMemoria,"BS")){
+				tamanioBuddy = unaPosicionLibre->tamanio;
+			}
 
-		grabarCaughtPokemonAMemoriaInterna(unCaughtPokemon,tamanioDeCaught,unaPosicionLibre);
-		if(!strcmp(algoritmoMemoria,"BS")){
-			ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,7,mensaje->ID);
-		} else{
-			ocuparPosicion(tamanioDeCaught,mensaje->contenidoDelMensaje,7,mensaje->ID);
-		}
-		limpiarPosicionesEn0();
-		pthread_mutex_unlock(&mutexMemoriaInterna);
+			grabarCaughtPokemonAMemoriaInterna(unCaughtPokemon,tamanioDeCaught,unaPosicionLibre);
+			if(!strcmp(algoritmoMemoria,"BS")){
+				ocuparPosicion(tamanioBuddy,mensaje->contenidoDelMensaje,7,mensaje->ID);
+			} else{
+				ocuparPosicion(tamanioDeCaught,mensaje->contenidoDelMensaje,7,mensaje->ID);
+			}
+			limpiarPosicionesEn0();
+			pthread_mutex_unlock(&mutexMemoriaInterna);
 
-		if(!strcmp(algoritmoMemoria,"BS")){
-			mensaje->tamanioEnMemoria = tamanioBuddy;
-		} else if(tamanioDeCaught>=tamanioMinimoParticion){
-			mensaje->tamanioEnMemoria-= tamanioDeCaught;
-		} else{
-			mensaje->tamanioEnMemoria-= tamanioMinimoParticion;
-		}
+			if(!strcmp(algoritmoMemoria,"BS")){
+				mensaje->tamanioEnMemoria = tamanioBuddy;
+			} else if(tamanioDeCaught>=tamanioMinimoParticion){
+				mensaje->tamanioEnMemoria-= tamanioDeCaught;
+			} else{
+				mensaje->tamanioEnMemoria-= tamanioMinimoParticion;
+			}
 
 
-		pthread_mutex_lock(&mutexColaCaughtPokemon);
-		list_add(Caught_Pokemon, mensaje);
-		pthread_cond_signal(&no_vacioCAP);
-		pthread_mutex_unlock(&mutexColaCaughtPokemon);
+			pthread_mutex_lock(&mutexColaCaughtPokemon);
+			list_add(Caught_Pokemon, mensaje);
+			pthread_mutex_unlock(&mutexColaCaughtPokemon);
 
-		printf("\nEl tamaño de la lista ahora es de: %d\n", list_size(Caught_Pokemon));
-		mensaje->suscriptoresAtendidos = list_create();
-		mensaje->suscriptoresACK = list_create();
+			printf("\nEl tamaño de la lista ahora es de: %d\n", list_size(Caught_Pokemon));
+			mensaje->suscriptoresAtendidos = list_create();
+			mensaje->suscriptoresACK = list_create();
 
-		printf("[CaughtPokemon] Guarde el mensaje: %d\n",unCaughtPokemon->atrapar);
-		printf("[CaughtPokemon] Su ID es: %d, y su IDCorrelativo es: %d\n",mensaje->ID,mensaje->IDCorrelativo);
+			printf("[CaughtPokemon] Guarde el mensaje: %d\n",unCaughtPokemon->atrapar);
+			printf("[CaughtPokemon] Su ID es: %d, y su IDCorrelativo es: %d\n",mensaje->ID,mensaje->IDCorrelativo);
 
 		} else {
 			puts("No hay memoria disponible.");
 		}
-
 		free(unCaughtPokemon);
-
 		puts("\nGrabado en memoria correctamente.");
 
 		return mensaje;
@@ -1926,10 +1942,10 @@ NewPokemon* sacarDeMemoriaElNewPokemon(MensajeNewPokemon2* mensajeNew2){
 		unNewPokemon->nombre[unNewPokemon->tamanioNombrePokemon-1] = '\0';
 		memcpy(&(unNewPokemon->coordenadas.posicionX),inicioDelNP+offset,sizeof(uint32_t));
 		offset+=sizeof(uint32_t);
-		printf("Saque de memoria el posX de un new: %d",unNewPokemon->coordenadas.posicionX);
 		memcpy(&(unNewPokemon->coordenadas.posicionY),inicioDelNP+offset,sizeof(uint32_t));
 		offset+=sizeof(uint32_t);
 		memcpy(&(unNewPokemon->cantidad),inicioDelNP+offset,sizeof(uint32_t));
+		printf("Saqué de memoria el New Pokemon de nombre: %s\n",unNewPokemon->nombre);
 
 		return unNewPokemon;
 }
@@ -2041,6 +2057,7 @@ void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 
 		if(idGeneradoEnElMomento == 1){ //caso feliz
 		send(socket_suscriptor,&cantidadDeNewPokemon,sizeof(int),0);
+		printf("Tamaño de la cola New_Pokemon es: %d\n",cantidadDeNewPokemon);
 		for(int i=0;i<cantidadDeNewPokemon;i++){
 			mensaje = list_get(New_Pokemon,i);
 			pthread_mutex_lock(&mutexMemoriaInterna);
@@ -2048,7 +2065,7 @@ void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 			unNewPokemon = sacarDeMemoriaElNewPokemon(mensaje);
 			pthread_mutex_unlock(&mutexMemoriaInterna);
 
-			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 			log_info(logger, loQueVoyALoguear,mensaje->ID,unSuscriptor->IDsuscriptor);
 
 			printf("\n\nNombre: %s",unNewPokemon->nombre);
@@ -2104,7 +2121,8 @@ void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 					unNewPokemon = sacarDeMemoriaElNewPokemon(mensaje);
 					pthread_mutex_unlock(&mutexMemoriaInterna);
 
-					loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+					loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
+
 					log_info(logger, loQueVoyALoguear,mensaje->ID,unSuscriptor->IDsuscriptor);
 
 					printf("\n\nNombre: %s",unNewPokemon->nombre);
@@ -2156,7 +2174,7 @@ void enviarColaLocalizedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,
 			unLocalizedPokemon = sacarDeMemoriaElLocalizedPokemon(mensaje);
 			pthread_mutex_unlock(&mutexMemoriaInterna);
 
-			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 			log_info(logger, loQueVoyALoguear,mensaje->ID,unSuscriptor->IDsuscriptor);
 
 			printf("\n\nNombre: %s",unLocalizedPokemon->nombre);
@@ -2219,7 +2237,7 @@ void enviarColaLocalizedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,
 					unLocalizedPokemon = sacarDeMemoriaElLocalizedPokemon(mensaje);
 					pthread_mutex_unlock(&mutexMemoriaInterna);
 
-					loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+					loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 					log_info(logger, loQueVoyALoguear,mensaje->ID,unSuscriptor->IDsuscriptor);
 
 					printf("\n\nNombre: %s",unLocalizedPokemon->nombre);
@@ -2277,7 +2295,7 @@ void enviarColaGetPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 			unGetPokemon = sacarDeMemoriaElGetPokemon(mensaje);
 			pthread_mutex_unlock(&mutexMemoriaInterna);
 
-			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 			log_info(logger, loQueVoyALoguear,mensaje->ID,unSuscriptor->IDsuscriptor);
 
 			printf("\n\nNombre: %s",unGetPokemon->nombre);
@@ -2333,7 +2351,7 @@ void enviarColaGetPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 					unGetPokemon = sacarDeMemoriaElGetPokemon(mensaje);
 					pthread_mutex_unlock(&mutexMemoriaInterna);
 
-					loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+					loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 					log_info(logger, loQueVoyALoguear,mensaje->ID,unSuscriptor->IDsuscriptor);
 
 					printf("\n\nNombre: %s",unGetPokemon->nombre);
@@ -2385,7 +2403,7 @@ void enviarColaAppearedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,S
 			unAppearedPokemon = sacarDeMemoriaElAppearedPokemon(mensaje);
 			pthread_mutex_unlock(&mutexMemoriaInterna);
 
-			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 			log_info(logger, loQueVoyALoguear,mensaje->ID,unSuscriptor->IDsuscriptor);
 
 			printf("\n\nNombre: %s",unAppearedPokemon->nombre);
@@ -2441,7 +2459,7 @@ void enviarColaAppearedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,S
 					unAppearedPokemon = sacarDeMemoriaElAppearedPokemon(mensaje);
 					pthread_mutex_unlock(&mutexMemoriaInterna);
 
-					loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+					loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 					log_info(logger, loQueVoyALoguear,mensaje->ID,unSuscriptor->IDsuscriptor);
 
 					printf("\n\nNombre: %s",unAppearedPokemon->nombre);
@@ -2490,7 +2508,7 @@ void enviarColaCatchPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Susc
 			actualizarTimestamp(mensaje->ID);
 			unCatchPokemon = sacarDeMemoriaElCatchPokemon(mensaje);
 			pthread_mutex_unlock(&mutexMemoriaInterna);
-			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 			log_info(logger, loQueVoyALoguear,mensaje->ID,unSuscriptor->IDsuscriptor);
 
 			printf("\n\nNombre: %s",unCatchPokemon->nombre);
@@ -2547,7 +2565,7 @@ void enviarColaCatchPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Susc
 					unCatchPokemon = sacarDeMemoriaElCatchPokemon(mensaje);
 					pthread_mutex_unlock(&mutexMemoriaInterna);
 
-					loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+					loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 					log_info(logger, loQueVoyALoguear,mensaje->ID,unSuscriptor->IDsuscriptor);
 
 					printf("\n\nNombre: %s",unCatchPokemon->nombre);
@@ -2600,7 +2618,7 @@ void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Sus
 			unCaughtPokemon = sacarDeMemoriaElCaughtPokemon(mensaje);
 			pthread_mutex_unlock(&mutexMemoriaInterna);
 
-			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 			log_info(logger, loQueVoyALoguear,mensaje->ID,unSuscriptor->IDsuscriptor);
 
 			printf("\n\nAtrapado?: %d",unCaughtPokemon->atrapar);
@@ -2657,7 +2675,7 @@ void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Sus
 				unCaughtPokemon = sacarDeMemoriaElCaughtPokemon(mensaje);
 				pthread_mutex_unlock(&mutexMemoriaInterna);
 
-				loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor: %d";
+				loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
 				log_info(logger, loQueVoyALoguear,mensaje->ID,unSuscriptor->IDsuscriptor);
 
 				printf("\n\nAtrapado?: %d",unCaughtPokemon->atrapar);
@@ -2685,5 +2703,3 @@ void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Sus
 		} //fin del caso triste
 			puts("\nSuscriptor ok");
 }
-
-//----------------------------------------------------PARTICIONES DINÁMICAS-----------------
