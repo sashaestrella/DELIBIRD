@@ -7,16 +7,8 @@ void generarConexiones();
 void abrirEscuchas();
 void empezarAnalizadoresDeMensajes();
 
-//void enviar_getPokemon(GetPokemon*);
-//void enviar_catchPokemon(CatchPokemon*);
-//bool descartar_localized_no_deseados(LocalizedPokemonConIDs*);
-//bool descartar_caught_no_deseados(CaughtPokemonConIDs*);
-
 // ----- Auxiliares ----- //
 
-t_list* nuevosNewPokemon;
-t_list* nuevosGetPokemon;
-t_list* nuevosCatch;
 t_list* mensajesRecibidos;
 
 void noHayBroker();
@@ -34,6 +26,11 @@ void* adminMensajeNewPokemon(NewPokemonConIDs*);
 void* adminMensajeGetPokemon(GetPokemonConIDs*);
 void* adminMensajeCatch(CatchPokemonConIDs*);
 
+void abrirAtenciones();
+void* atenderMensajesNew();
+void* atenderMensajesCatch();
+void* atenderMensajesGet();
+
 void* crearDirectorioTG();
 void* crearMetadata(char*);
 void* crearFiles(char*);
@@ -49,10 +46,10 @@ t_list* obtenerPosiciones(int, char*, char*);
 
 void agregarPokemon(NewPokemonConIDs*);
 void eliminarPokemon(CatchPokemonConIDs*);
-LocalizedPokemon* obtenerCantidadYPosiciones(GetPokemonConIDs*);
+void obtenerCantidadYPosiciones(GetPokemonConIDs*);
 
-int enviarMensajeAppeared(int idMensaje, char* pokemon, CoordenadasXY coordenadas);
-int enviarMensajeCaught(int idMensaje, int resultado);
-int enviarMensajeLocalized(int idMensaje, char* pokemon, CoordenadasXY coordenadas, int cantidad);
+int enviarMensajeAppeared(int , char*, CoordenadasXY);
+int enviarMensajeCaught(int , int);
+int enviarMensajeLocalized(int, char*, t_list*);
 
 #endif /* ADMINMENSAJES_H_ */

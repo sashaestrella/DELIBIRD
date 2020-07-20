@@ -45,6 +45,15 @@ int conexionGameBoy;
 int idGameBoy;
 int msgGameBoy;
 
+sem_t colaGet;
+t_list* mensajesGet;
+sem_t colaCatch;
+t_list* mensajesCatch;
+sem_t colaNew;
+t_list* mensajesNew;
+
+t_list* mensajesRecibidos;
+
 t_log* iniciar_logger(void);
 t_config* leer_config(void);
 void terminar_programa(int, t_log*, t_config*);

@@ -4,16 +4,22 @@
 
 int main(void)
 {
-
+	sem_init(&colaNew, 0, 0);
+	sem_init(&colaNew, 0, 0);
+	sem_init(&colaNew, 0, 0);
 	sem_init(&suscripciones, 0, 1);
+	mensajesCatch = list_create();
+	mensajesNew = list_create();
+	mensajesGet = list_create();
+	mensajesRecibidos = list_create();
+
 	leerConfig();
 	cantidadArchivos = 0;
 	crearDirectorioTG();
-	crearMetadataPara("pikachu");
 
-	t_config* md = config_create("/home/utnso/TALL_GRASS/Files/pikachu/Metadata.bin");
-
+	abrirAtenciones();
 	generarConexiones(0);
+
 
 	logger = iniciar_logger();
 
