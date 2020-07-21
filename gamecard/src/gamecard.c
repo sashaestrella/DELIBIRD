@@ -5,8 +5,8 @@
 int main(void)
 {
 	sem_init(&colaNew, 0, 0);
-	sem_init(&colaNew, 0, 0);
-	sem_init(&colaNew, 0, 0);
+	sem_init(&colaCatch, 0, 0);
+	sem_init(&colaGet, 0, 0);
 	sem_init(&suscripciones, 0, 1);
 	mensajesCatch = list_create();
 	mensajesNew = list_create();

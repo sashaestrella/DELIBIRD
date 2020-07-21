@@ -423,12 +423,12 @@ void agregarPokemon(NewPokemonConIDs* newPokemon){
 		// Agregar Bloque -------------------------------_ !!
 		printf("Aca se debería agregar al FS al pokemon %s\n\n", newPokemon->newPokemon->nombre);
 
-		sleep(tiempoRetardo);
 		config_set_value(md,"OPEN","N");
 		config_save(md);
-		enviarMensajeAppeared(newPokemon->IDmensaje, newPokemon->newPokemon->nombre, newPokemon->newPokemon->coordenadas);
-		printf("Envie un appeared\n\n");
 	}
+	sleep(tiempoRetardo);
+	enviarMensajeAppeared(newPokemon->IDmensaje, newPokemon->newPokemon->nombre, newPokemon->newPokemon->coordenadas);
+	printf("Envie un appeared\n\n");
 }
 
 int existePosicion(char** bloque, CoordenadasXY coordenadas){
@@ -445,7 +445,7 @@ void eliminarPokemon(CatchPokemonConIDs* pokemon){
 	string_append(&path, "/Metadata.bin");
 	int encontrado = 0;
 
-	char* error = string_new;
+	char* error = string_new();
 	string_append(&error ,"No existe el pokemon ");
 	string_append(&error ,pokemon->catchPokemon->nombre);
 
@@ -464,23 +464,21 @@ void eliminarPokemon(CatchPokemonConIDs* pokemon){
 			i++;
 		}
 		if(bloques[i] == NULL){
-			log_info(logger,error);
-			enviarMensajeCaught(pokemon->IDmensaje, encontrado);
-			exit(1);
-
+			//log_info(logger,error); ---------------------------------- Ver por qué falla !!
+			puts("No hay pokemon en esa posicion");
 		} else {
 
 			// Disminuir cantidad ---------------------- !!
 			printf("Aca se debería disminuir la cantidad de %s en el FL \n\n", pokemon->catchPokemon->nombre);
-
 			encontrado = 1;
+
 		}
+		config_set_value(md,"OPEN","N");
+		config_save(md);
+	}
 	sleep(tiempoRetardo);
-	config_set_value(md,"OPEN","N");
-	config_save(md);
 	enviarMensajeCaught(pokemon->IDmensaje, encontrado);
 	printf("Envie un Caught\n\n");
-	}
 }
 
 void obtenerCantidadYPosiciones(GetPokemonConIDs* pokemon){
@@ -504,6 +502,8 @@ void obtenerCantidadYPosiciones(GetPokemonConIDs* pokemon){
 		localizedVacio->paresOrdenados = list_create();
 		localizedVacio->tamanioNombrePokemon = strlen(pokemon->getPokemon->nombre) + 1;
 		localizedVacio->nombre = pokemon->getPokemon->nombre;
+
+		sleep(tiempoRetardo);
 
 		int conexionVacio = crear_conexion(ip, puerto);
 
