@@ -101,7 +101,7 @@ void pasar_a_ready_por_cercania(){//se ejecutaria al comienzo y cuando aparecen 
 		Pokemon* pokemonAasignar = malloc(sizeof(Pokemon));
 
 int contador=0;
-	while( contador < list_size(pokemones_en_mapa)){
+	while( contador < list_size(pokemones_en_mapa) ){
 
 		if(hayEntrenadorSinPokemon()){
 
@@ -138,6 +138,7 @@ for(int i = 0; i<list_size(pokemones_en_mapa); i++){
 			pokemonAasignar->IdEntrenadorQueLoVaAatrapar = entrenadorAready->ID;
 			quitar_de_bloqueados_new(entrenadorAready);
 			anterior = entrenadorAready->ID;
+			entrePorPrimeraVez(entrenadorAready);
 			list_add(ready, entrenadorAready);
 			}
 			//sem_post(&agregar_ready);
@@ -151,6 +152,23 @@ for(int i = 0; i<list_size(pokemones_en_mapa); i++){
 
 	}
 
+}
+
+void entrePorPrimeraVez(Entrenador* entrenador){
+	if(algoritmoAUtilizar(algoritmoPlanificacion) == SJF_CD){
+
+		bool esta(int id){
+			return id == entrenador->ID;
+		}
+
+		if(!list_any_satisfy(entraronPorPrimeraVez, esta)){
+
+			entrenador->rafaga = estimarProximaRafaga(entrenador);
+			printf("\nAgregue a %d", entrenador->ID);
+			list_add(entraronPorPrimeraVez, entrenador->ID);
+		}
+
+	}
 }
 
 

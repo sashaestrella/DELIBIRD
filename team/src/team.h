@@ -36,10 +36,7 @@ sem_t reintento_appeared;
 sem_t reintento_localized;
 sem_t reintento_caught;
 
-pthread_mutex_t colaReady;
-pthread_mutex_t colaBlocked_new;
-pthread_mutex_t mutex_mapa;
-pthread_mutex_t ciclosTotales;
+sem_t nuevoReadySJF;
 
 // ----------------- Estructuras ----------------- //
 
@@ -102,6 +99,7 @@ t_list* especies_localizadas;
 t_list* blocked_new;
 t_list* blocked_caught;
 t_list* ready;
+t_list* readyDeadlock;
 t_list* ejecutando;
 t_list* terminados;
 t_list* deadlock;
@@ -109,7 +107,7 @@ t_list* pokemones_en_mapa;
 
 
 t_list* readyAnterior;
-
+t_list* entraronPorPrimeraVez;
 //----------------- Variables para los algoritmos de planificacion ----------------- //
 
 int retardoCicloCPU;
@@ -121,6 +119,8 @@ double estimacionInicial;
 int ciclos_totales;
 int *ciclos_entrenadores;
 int *contadorCiclosPorEntrenador;
+int *ciclosPorEntrenadorEstadistica;
+int cambios_contexto;
 
 int* valorAnteriorReady;
 
@@ -152,8 +152,9 @@ void leer_config();
 void inicializarSemaforos();
 void conexionConBroker();
 void armar_entrenadores(char**, char**, char**);
+Algoritmos algoritmoAUtilizar(char*);
 int cantidad(char**);
-char** obtener_objetivos(char**, char**, t_list*);
+void obtener_objetivos(char**, char**, t_list*);
 void terminar_programa(int, t_log*, t_config*);
 void obtener_objetivo_global();
 void* flujoEntrenador(Entrenador*);
@@ -161,9 +162,10 @@ int obtenerCantidadObjetivo(char*);
 bool cumplioSusObjetivos(Entrenador* entrenador);
 bool noEstaEnLaLista(t_list* lista, char* pokemon);
 void reordenarSJF_SD(int);
-float estimarProximaRafaga(Entrenador*);
+double estimarProximaRafaga(Entrenador*);
 void detectarDeadlocks();
 void enviar_gets();
+void esperarApariciones();
 
 void planificadorFIFO_RR();
 void planificadorSJF_SD();

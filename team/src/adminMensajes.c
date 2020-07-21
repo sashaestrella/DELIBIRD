@@ -73,9 +73,10 @@ void suscribirseAColaCaught(){
 	char id[2];
 	sprintf(id, "%d", IDsuscripcion);
 	config_set_value(archivo_config, "ID_CAUGHT", id );
-	//config_save(archivo_config);
+	config_save(archivo_config);
 	administradorMensajesColas(SUSCRIPTOR_CAUGHTPOKEMON, conexion, IDsuscripcion);
 	}else{
+		sem_post(&reintento_caught);
 		sem_post(&suscripciones);
 		}
 }
@@ -96,9 +97,10 @@ void suscribirseAColaLocalized(){
 	char id[2];
 	sprintf(id, "%d", IDsuscripcion);
 	config_set_value(archivo_config, "ID_LOCALIZED", id );
-	//config_save(archivo_config);
+	config_save(archivo_config);
 	administradorMensajesColas(SUSCRIPTOR_LOCALIZEDPOKEMON, conexion, IDsuscripcion);
 	}else{
+		sem_post(&reintento_localized);
 		sem_post(&suscripciones);
 		}
 }
@@ -119,9 +121,10 @@ void suscribirseAColaAppeared(){
 	char id[2];
 	sprintf(id, "%d", IDsuscripcion);
 	config_set_value(archivo_config, "ID_APPEARED", id );
-	//config_save(archivo_config);
+	config_save(archivo_config);
 	administradorMensajesColas(SUSCRIPTOR_APPEAREDPOKEMON, conexion, IDsuscripcion);
 	}else{
+	sem_post(&reintento_appeared);
 	sem_post(&suscripciones);
 	}
 }
@@ -233,8 +236,8 @@ void adminMensajeAppeared(AppearedPokemonConIDs* nuevoAppeared){
 		list_add(pokemones_en_mapa, nuevo);
 		//sem_post(&aparicion_pokemon);
 		sem_post(&agregar_ready);
-		printf("Guarde un Pokemon %s de appeared con el ID de mensaje: %d\n", nuevo->nombre ,nuevoAppeared->IDmensaje);
-		printf(" y coordenadas (%d, %d) ", nuevo->posicion.posicionX, nuevo->posicion.posicionY);
+		log_info(logger, "Llego un mensaje APPEARED con el ID de mensaje: %d. Contenido %s %d %d\n",nuevoAppeared->IDmensaje, nuevo->nombre, nuevo->posicion.posicionX, nuevo->posicion.posicionY);
+
 		puts("\n");
 
 
@@ -277,8 +280,11 @@ void adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
 	int cantidadPokemonLocalizados = list_size(nuevoLocalized -> localizedPokemon -> paresOrdenados);// se encontraron n
 	Pokemon* nuevo = malloc(sizeof(Pokemon));
 	CoordenadasXY* coor=malloc(sizeof(CoordenadasXY));
-	printf("\nLLego localized con ID %d", nuevoLocalized->IDcorrelativo);
+	//printf("\nLLego localized con ID %d", nuevoLocalized->IDcorrelativo);
+
 	if(descartar_localized_no_deseados(nuevoLocalized)){
+		log_info(logger, "Llego un mensaje LOCALIZED con el ID de mensaje %d e ID correlativo. \n",nuevoLocalized->IDmensaje, nuevoLocalized->IDcorrelativo);
+
 		for(int i=0; i<cantidadObjetivos && j < cantidadPokemonLocalizados; i++){
 		nuevo = elegirMejorUbicacion(nuevoLocalized);
 		nuevo->IdEntrenadorQueLoVaAatrapar = 0;
@@ -286,7 +292,7 @@ void adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
 		list_add(pokemones_en_mapa, nuevo);
 		list_add(especies_localizadas,nuevo->nombre);
 		printf("Guarde un Pokemon %s de localized con el ID de mensaje %d\n", nuevo->nombre, nuevoLocalized->IDmensaje);
-
+		log_info(logger, "Contenido LOCALIZED %s %d %d ", nuevo->nombre, nuevo->posicion.posicionX, nuevo->posicion.posicionY);
 		bool compararCoordenadas(CoordenadasXY* coordenadas){
 			return (nuevo -> posicion.posicionX == coordenadas->posicionX) && (nuevo -> posicion.posicionY == coordenadas->posicionY);
 		}
@@ -351,7 +357,7 @@ void adminMensajeCaught(CaughtPokemonConIDs* nuevoCaught){
 
 		list_add(nuevosCaught, nuevoCaught);
 		printf("Guarde un mensaje Caught");
-
+		log_info(logger, "Llego un mensaje CAUGHT con el ID de mensaje %d, ID correlativo %d y resultado: %d. \n",nuevoCaught->IDmensaje,nuevoCaught->IDCorrelativo,nuevoCaught->caughtPokemon->atrapar);
 		Entrenador* entrenadorParaAvisar = malloc(sizeof(Entrenador));
 
 		bool esperaRespuesta(Entrenador* entrenador){
@@ -586,14 +592,8 @@ void process_request_team(int cod_op, int cliente){
 
 	switch(cod_op){
 
-	case LOCALIZED_POKEMON:
-		pthread_create(&hiloLocalized, NULL, recibirMensajesLocalized, NULL);
-		break;
-
 	case APPEARED_POKEMON:
-		//pthread_create(&hiloAppeared, NULL, recibirMensajesAppeared, NULL);
-		//pthread_detach(hiloAppeared);
-		//con la funcion recibirMensajesAppeared me tira segmentation fault
+
 
 		appeared = recibir_APPEARED_POKEMON(cliente,0,0,0);
 
@@ -602,13 +602,12 @@ void process_request_team(int cod_op, int cliente){
 		pokemon->posicion.posicionY = appeared->appearedPokemon->coordenadas.posicionY;
 		pokemon->IdEntrenadorQueLoVaAatrapar = 0;
 		list_add(pokemones_en_mapa, pokemon);
-		sem_post(&agregar_ready);
-		puts("\nAgregue un pokemon a la lista");
+		//sem_post(&agregar_ready);
+		sem_post(&aparicion_pokemon);
+		log_info(logger, "Llego un mensaje APPEARED. Contenido %s %d %d\n",	 pokemon->nombre, pokemon->posicion.posicionX, pokemon->posicion.posicionY);
+
 		break;
 
-	case CAUGHT_POKEMON:
-		pthread_create(&hiloCaught, NULL, recibirMensajesCaught, NULL);
-		break;
 	default:
 		puts("\nError en codigo de operacion");
 		break;

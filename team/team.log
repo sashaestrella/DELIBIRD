@@ -136,3 +136,137 @@
 [INFO] 03:04:34:315 Log de team/(14608:15818): Soy el entrenador 2 y me movi hasta la posicion (3, 9) de un pokemon.
 [INFO] 03:06:11:622 Log de team/(14608:14608): Empieza a solucionar deadlock.
 [INFO] 05:28:44:269 Log de team/(20704:20720): Soy el entrenador 2 y me movi hasta la posicion (9, 9) de un pokemon.
+[INFO] 01:42:45:500 Log de team/(9345:9357): Soy el entrenador 2 y me movi hasta la posicion (9, 9) de un pokemon.
+[INFO] 01:43:16:842 Log de team/(9345:9359): Soy el entrenador 3 y me movi hasta la posicion (6, 7) de un pokemon.
+[INFO] 01:43:23:851 Log de team/(9345:9356): Soy el entrenador 1 y me movi hasta la posicion (2, 8) de un pokemon.
+[INFO] 01:43:29:869 Log de team/(9345:9357): Soy el entrenador 2 y me movi hasta la posicion (6, 6) de un pokemon.
+[INFO] 01:43:32:880 Log de team/(9345:9359): Soy el entrenador 3 y me movi hasta la posicion (5, 5) de un pokemon.
+[INFO] 01:44:47:888 Log de team/(9412:9425): Soy el entrenador 2 y me movi hasta la posicion (9, 9) de un pokemon.
+[INFO] 01:44:55:900 Log de team/(9412:9427): Soy el entrenador 3 y me movi hasta la posicion (6, 7) de un pokemon.
+[INFO] 01:45:02:920 Log de team/(9412:9423): Soy el entrenador 1 y me movi hasta la posicion (2, 8) de un pokemon.
+[INFO] 01:45:08:941 Log de team/(9412:9425): Soy el entrenador 2 y me movi hasta la posicion (6, 6) de un pokemon.
+[INFO] 01:45:11:976 Log de team/(9412:9427): Soy el entrenador 3 y me movi hasta la posicion (5, 5) de un pokemon.
+[INFO] 03:06:54:787 Log de team/(11279:11297): Soy el entrenador 2 y me movi hasta la posicion (9, 9) de un pokemon.
+[INFO] 03:28:44:736 Log de team/(12426:12441): Soy el entrenador 2 y me movi hasta la posicion (9, 9) de un pokemon.
+[INFO] 03:28:50:771 Log de team/(12426:12439): Soy el entrenador 1 y me movi hasta la posicion (2, 8) de un pokemon.
+[INFO] 03:31:10:958 Log de team/(12492:12515): Soy el entrenador 2 y me movi hasta la posicion (9, 9) de un pokemon.
+[INFO] 03:31:16:966 Log de team/(12492:12513): Soy el entrenador 1 y me movi hasta la posicion (2, 8) de un pokemon.
+[INFO] 04:15:38:732 Log de team/(13620:13633): Soy el entrenador 2 y me movi hasta la posicion (9, 9) de un pokemon.
+[INFO] 04:15:44:745 Log de team/(13620:13632): Soy el entrenador 1 y me movi hasta la posicion (2, 8) de un pokemon.
+[INFO] 04:15:52:783 Log de team/(13620:13634): Soy el entrenador 3 y me movi hasta la posicion (6, 7) de un pokemon.
+[INFO] 04:15:55:939 Log de team/(13620:13634): Soy el entrenador 3 y me movi hasta la posicion (5, 5) de un pokemon.
+[INFO] 04:16:02:63 Log de team/(13620:13633): Soy el entrenador 2 y me movi hasta la posicion (6, 6) de un pokemon.
+[INFO] 04:16:02:64 Log de team/(13620:13620): Empieza a solucionar deadlock.
+[INFO] 04:16:02:65 Log de team/(13620:13634): Se detecto deadlock entre entrenador 3 y 1
+[INFO] 04:16:52:309 Log de team/(13620:13634): Soy el entrenador 3 y me movi hasta la posicion (2, 8) de un entrenador.
+[INFO] 04:30:26:514 Log de team/(14101:14121): Soy el entrenador 2 y me movi hasta la posicion (9, 9) de un pokemon.
+[INFO] 04:30:32:537 Log de team/(14101:14120): Soy el entrenador 1 y me movi hasta la posicion (2, 8) de un pokemon.
+[INFO] 04:30:40:545 Log de team/(14101:14122): Soy el entrenador 3 y me movi hasta la posicion (6, 7) de un pokemon.
+[INFO] 04:30:43:550 Log de team/(14101:14122): Soy el entrenador 3 y me movi hasta la posicion (5, 5) de un pokemon.
+[INFO] 04:30:49:583 Log de team/(14101:14121): Soy el entrenador 2 y me movi hasta la posicion (6, 6) de un pokemon.
+[INFO] 04:30:49:584 Log de team/(14101:14101): Empieza a solucionar deadlock.
+[INFO] 04:30:49:585 Log de team/(14101:14122): Se detecto deadlock entre entrenador 3 y 1
+[INFO] 04:31:18:576 Log de team/(14101:14122): Soy el entrenador 3 y me movi hasta la posicion (2, 8) de un entrenador.
+[INFO] 07:15:45:912 Log de team/(19477:19495): Soy el entrenador 2 y me movi hasta la posicion (9, 9) de un pokemon.
+[INFO] 07:15:51:952 Log de team/(19477:19493): Soy el entrenador 1 y me movi hasta la posicion (2, 8) de un pokemon.
+[INFO] 07:15:56:969 Log de team/(19477:19497): Soy el entrenador 3 y me movi hasta la posicion (5, 5) de un pokemon.
+[INFO] 07:18:28:796 Log de team/(19567:19578): Soy el entrenador 1 y me movi hasta la posicion (0, 0) de un pokemon.
+[INFO] 07:18:33:800 Log de team/(19567:19580): Soy el entrenador 2 y me movi hasta la posicion (2, 8) de un pokemon.
+[INFO] 07:18:40:824 Log de team/(19567:19581): Soy el entrenador 3 y me movi hasta la posicion (6, 6) de un pokemon.
+[INFO] 07:18:46:833 Log de team/(19567:19580): Soy el entrenador 2 y me movi hasta la posicion (5, 5) de un pokemon.
+[INFO] 07:21:48:850 Log de team/(19719:19743): Soy el entrenador 2 y me movi hasta la posicion (9, 9) de un pokemon.
+[INFO] 07:21:56:890 Log de team/(19719:19744): Soy el entrenador 3 y me movi hasta la posicion (6, 7) de un pokemon.
+[INFO] 07:22:02:903 Log de team/(19719:19742): Soy el entrenador 1 y me movi hasta la posicion (2, 8) de un pokemon.
+[INFO] 07:22:05:908 Log de team/(19719:19744): Soy el entrenador 3 y me movi hasta la posicion (5, 5) de un pokemon.
+[INFO] 07:22:11:929 Log de team/(19719:19743): Soy el entrenador 2 y me movi hasta la posicion (6, 6) de un pokemon.
+[INFO] 07:22:11:930 Log de team/(19719:19719): Empieza a solucionar deadlock.
+[INFO] 07:22:11:930 Log de team/(19719:19742): Se detecto deadlock entre entrenador 1 y 3
+[INFO] 07:22:24:482 Log de team/(19719:19742): Soy el entrenador 1 y me movi hasta la posicion (5, 5) de un entrenador.
+[INFO] 07:26:05:926 Log de team/(19850:19873): Soy el entrenador 2 y me movi hasta la posicion (9, 9) de un pokemon.
+[INFO] 07:26:13:989 Log de team/(19850:19874): Soy el entrenador 3 y me movi hasta la posicion (6, 7) de un pokemon.
+[INFO] 07:26:19:999 Log de team/(19850:19870): Soy el entrenador 1 y me movi hasta la posicion (2, 8) de un pokemon.
+[INFO] 07:26:23:31 Log de team/(19850:19874): Soy el entrenador 3 y me movi hasta la posicion (5, 5) de un pokemon.
+[INFO] 07:26:29:90 Log de team/(19850:19873): Soy el entrenador 2 y me movi hasta la posicion (6, 6) de un pokemon.
+[INFO] 07:26:29:91 Log de team/(19850:19850): Empieza a solucionar deadlock.
+[INFO] 07:26:29:92 Log de team/(19850:19870): Se detecto deadlock entre entrenador 1 y 3
+[INFO] 07:26:39:38 Log de team/(19850:19870): Soy el entrenador 1 y me movi hasta la posicion (5, 5) de un entrenador.
+[INFO] 07:29:54:252 Log de team/(20054:20066): Soy el entrenador 2 y me movi hasta la posicion (9, 9) de un pokemon.
+[INFO] 07:30:02:284 Log de team/(20054:20067): Soy el entrenador 3 y me movi hasta la posicion (6, 7) de un pokemon.
+[INFO] 07:30:08:318 Log de team/(20054:20065): Soy el entrenador 1 y me movi hasta la posicion (2, 8) de un pokemon.
+[INFO] 07:30:11:330 Log de team/(20054:20067): Soy el entrenador 3 y me movi hasta la posicion (5, 5) de un pokemon.
+[INFO] 07:30:17:377 Log de team/(20054:20066): Soy el entrenador 2 y me movi hasta la posicion (6, 6) de un pokemon.
+[INFO] 07:30:17:378 Log de team/(20054:20054): Empieza a solucionar deadlock.
+[INFO] 07:30:17:379 Log de team/(20054:20065): Se detecto deadlock entre entrenador 1 y 3
+[INFO] 07:30:27:21 Log de team/(20054:20065): Soy el entrenador 1 y me movi hasta la posicion (5, 5) de un entrenador.
+[INFO] 01:27:46:282 Log de team/(13961:13982): Soy el entrenador 1 y me movi hasta la posicion (2, 2) de un pokemon.
+[INFO] 01:27:53:350 Log de team/(13961:13985): Soy el entrenador 4 y me movi hasta la posicion (7, 1) de un pokemon.
+[INFO] 01:27:53:350 Log de team/(13961:13986): Soy el entrenador 5 y me movi hasta la posicion (4, 10) de un pokemon.
+[INFO] 01:27:53:350 Log de team/(13961:13984): Soy el entrenador 3 y me movi hasta la posicion (10, 6) de un pokemon.
+[INFO] 01:29:08:574 Log de team/(14055:14062): Soy el entrenador 1 y me movi hasta la posicion (2, 2) de un pokemon.
+[INFO] 01:29:16:635 Log de team/(14055:14063): Soy el entrenador 2 y me movi hasta la posicion (4, 6) de un pokemon.
+[INFO] 01:29:17:637 Log de team/(14055:14067): Soy el entrenador 4 y me movi hasta la posicion (7, 1) de un pokemon.
+[INFO] 01:29:17:638 Log de team/(14055:14069): Soy el entrenador 5 y me movi hasta la posicion (4, 10) de un pokemon.
+[INFO] 01:29:17:639 Log de team/(14055:14064): Soy el entrenador 3 y me movi hasta la posicion (10, 6) de un pokemon.
+[INFO] 01:29:17:642 Log de team/(14055:14062): Se detecto deadlock entre entrenador 1 y 5
+[INFO] 01:29:27:681 Log de team/(14055:14062): Soy el entrenador 1 y me movi hasta la posicion (4, 10) de un entrenador.
+[INFO] 01:59:20:44 Log de team/(14814:14830): Soy el entrenador 1 y me movi hasta la posicion (2, 2) de un pokemon.
+[INFO] 01:59:28:109 Log de team/(14814:14831): Soy el entrenador 2 y me movi hasta la posicion (4, 6) de un pokemon.
+[INFO] 01:59:29:112 Log de team/(14814:14835): Soy el entrenador 4 y me movi hasta la posicion (7, 1) de un pokemon.
+[INFO] 01:59:29:113 Log de team/(14814:14837): Soy el entrenador 5 y me movi hasta la posicion (4, 10) de un pokemon.
+[INFO] 01:59:29:114 Log de team/(14814:14832): Soy el entrenador 3 y me movi hasta la posicion (10, 6) de un pokemon.
+[INFO] 01:59:29:122 Log de team/(14814:14830): Se detecto deadlock entre entrenador 1 y 5
+[INFO] 01:59:39:135 Log de team/(14814:14830): Soy el entrenador 1 y me movi hasta la posicion (4, 10) de un entrenador.
+[INFO] 04:34:18:677 Log de team/(17635:17653): Soy el entrenador 1 y me movi hasta la posicion (2, 2) de un pokemon.
+[INFO] 04:34:26:743 Log de team/(17635:17654): Soy el entrenador 2 y me movi hasta la posicion (4, 6) de un pokemon.
+[INFO] 04:34:27:746 Log de team/(17635:17656): Soy el entrenador 4 y me movi hasta la posicion (7, 1) de un pokemon.
+[INFO] 04:34:27:747 Log de team/(17635:17657): Soy el entrenador 5 y me movi hasta la posicion (4, 10) de un pokemon.
+[INFO] 04:34:27:747 Log de team/(17635:17655): Soy el entrenador 3 y me movi hasta la posicion (10, 6) de un pokemon.
+[INFO] 04:34:27:750 Log de team/(17635:17635): SE DETECTO DEADLOCK ENTRE:
+[INFO] 04:34:27:750 Log de team/(17635:17635): 1)
+[INFO] 04:34:27:750 Log de team/(17635:17635): 5)
+[INFO] 04:34:27:750 Log de team/(17635:17635): 4)
+[INFO] 04:34:27:751 Log de team/(17635:17635): 3)
+[INFO] 04:34:27:751 Log de team/(17635:17635): 2)
+[INFO] 04:34:27:751 Log de team/(17635:17653): Se detecto deadlock entre entrenador 1 y 5
+[INFO] 04:34:37:794 Log de team/(17635:17653): Soy el entrenador 1 y me movi hasta la posicion (4, 10) de un entrenador.
+[INFO] 04:34:37:794 Log de team/(17635:17653): Soy el entrenador 1, intercambio con entrenador 5. Le doy a Jolteon y me da a Vaporeon.
+[INFO] 04:34:37:794 Log de team/(17635:17635): Entrenador 1 resolvio deadlock
+[INFO] 04:34:37:795 Log de team/(17635:17635): Entrenador 1 resolvio deadlock
+[INFO] 04:34:37:795 Log de team/(17635:17635): Entrenador 1 resolvio deadlock
+[INFO] 04:34:37:795 Log de team/(17635:17635): Entrenador 1 resolvio deadlock
+[INFO] 04:34:37:796 Log de team/(17635:17635): Entrenador 1 resolvio deadlock
+[INFO] 04:35:34:588 Log de team/(17635:17653): Entrenador 1 resolvio deadlock
+[INFO] 04:36:27:98 Log de team/(17635:17654): Se detecto deadlock entre entrenador 2 y 5
+[INFO] 04:36:44:578 Log de team/(17635:17654): Soy el entrenador 2 y me movi hasta la posicion (4, 10) de un entrenador.
+[INFO] 04:36:44:578 Log de team/(17635:17654): Soy el entrenador 2, intercambio con entrenador 5. Le doy a Flareon y me da a Jolteon.
+[INFO] 04:36:44:579 Log de team/(17635:17635): Entrenador 2 resolvio deadlock
+[INFO] 04:36:44:579 Log de team/(17635:17635): Entrenador 2 resolvio deadlock
+[INFO] 04:36:44:579 Log de team/(17635:17635): Entrenador 2 resolvio deadlock
+[INFO] 04:36:44:579 Log de team/(17635:17635): Entrenador 2 resolvio deadlock
+[INFO] 04:36:44:580 Log de team/(17635:17635): Entrenador 2 resolvio deadlock
+[INFO] 04:37:11:259 Log de team/(17635:17654): Entrenador 2 resolvio deadlock
+[INFO] 04:43:55:646 Log de team/(18070:18084): Soy el entrenador 1 y me movi hasta la posicion (2, 2) de un pokemon.
+[INFO] 04:44:03:713 Log de team/(18070:18086): Soy el entrenador 2 y me movi hasta la posicion (4, 6) de un pokemon.
+[INFO] 04:44:04:715 Log de team/(18070:18089): Soy el entrenador 4 y me movi hasta la posicion (7, 1) de un pokemon.
+[INFO] 04:44:04:716 Log de team/(18070:18091): Soy el entrenador 5 y me movi hasta la posicion (4, 10) de un pokemon.
+[INFO] 04:44:04:716 Log de team/(18070:18087): Soy el entrenador 3 y me movi hasta la posicion (10, 6) de un pokemon.
+[INFO] 04:44:04:719 Log de team/(18070:18070): SE DETECTO DEADLOCK ENTRE:
+[INFO] 04:44:04:719 Log de team/(18070:18070): 1)
+[INFO] 04:44:04:719 Log de team/(18070:18070): 5)
+[INFO] 04:44:04:719 Log de team/(18070:18070): 4)
+[INFO] 04:44:04:719 Log de team/(18070:18070): 3)
+[INFO] 04:44:04:719 Log de team/(18070:18070): 2)
+[INFO] 04:44:04:720 Log de team/(18070:18084): Se detecto deadlock entre entrenador 1 y 5
+[INFO] 04:44:14:732 Log de team/(18070:18084): Soy el entrenador 1 y me movi hasta la posicion (4, 10) de un entrenador.
+[INFO] 04:44:14:732 Log de team/(18070:18084): Soy el entrenador 1, intercambio con entrenador 5. Le doy a Jolteon y me da a Vaporeon.
+[INFO] 04:44:36:612 Log de team/(18070:18070): Entrenador 1 resolvio deadlock
+[INFO] 04:44:51:213 Log de team/(18070:18070): Entrenador 1 resolvio deadlock
+[INFO] 04:44:56:786 Log de team/(18070:18070): Entrenador 1 resolvio deadlock
+[INFO] 04:45:02:247 Log de team/(18070:18070): Entrenador 1 resolvio deadlock
+[INFO] 04:45:06:669 Log de team/(18070:18070): Entrenador 1 resolvio deadlock
+[INFO] 04:45:24:205 Log de team/(18070:18084): Entrenador 1 resolvio deadlock
+[INFO] 04:45:31:91 Log de team/(18070:18086): Se detecto deadlock entre entrenador 2 y 5
+[INFO] 04:45:39:786 Log de team/(18070:18086): Soy el entrenador 2 y me movi hasta la posicion (4, 10) de un entrenador.
+[INFO] 04:45:39:786 Log de team/(18070:18086): Soy el entrenador 2, intercambio con entrenador 5. Le doy a Flareon y me da a Jolteon.
+[INFO] 04:46:02:17 Log de team/(18070:18070): Entrenador 2 resolvio deadlock
+[INFO] 04:46:15:146 Log de team/(18070:18070): Entrenador 2 resolvio deadlock

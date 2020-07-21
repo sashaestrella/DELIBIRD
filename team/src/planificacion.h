@@ -22,4 +22,6 @@ void* entrenadoresReadyLocalizedAppeared();
 void pokemonesParaPrueba();
 bool hayEntrenadorSinPokemon();
 
+void entrePorPrimeraVez();
+
 #endif /* PLANIFICACION_H_ */
