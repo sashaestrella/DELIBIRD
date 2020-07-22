@@ -4,6 +4,8 @@
 
 int main(void)
 {
+	logger = iniciar_logger();
+
 	sem_init(&colaNew, 0, 0);
 	sem_init(&colaCatch, 0, 0);
 	sem_init(&colaGet, 0, 0);
@@ -20,18 +22,15 @@ int main(void)
 	abrirAtenciones();
 	generarConexiones(0);
 
+	//char* primerLog = "Log de Gamecard";
 
-	logger = iniciar_logger();
-
-	char* primerLog = "Log de Gamecard";
-
-	log_info(logger, primerLog);
+	//log_info(logger, primerLog);
 
 }
 
 t_log* iniciar_logger(void)
 {
-	return log_create("gamecard.log", "Log de gamecard" , 1, LOG_LEVEL_INFO);
+	return log_create("gamecard.log", " [GAMECARD] " , 1, LOG_LEVEL_INFO);
 }
 
 void leerConfig(){

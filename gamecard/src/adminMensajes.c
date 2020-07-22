@@ -66,7 +66,7 @@ void* suscribirseAColaNew(){
 	enviarSuscripcion(0, conexion, SUSCRIPTOR_NEWPOKEMON);
 	recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
 	sem_post(&suscripciones);
-	printf("Suscriptor numero: %d\n", IDsuscripcion);
+	printf("Suscriptor numero: %d\n\n", IDsuscripcion);
 
 	administradorMensajesColas(SUSCRIPTOR_NEWPOKEMON, conexion, IDsuscripcion);
 }
@@ -120,7 +120,8 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 					recv(conexion, &codigo, sizeof(op_code), MSG_WAITALL);
 					printf("Codigo de cola: %d\n", codigo);
 					nuevoNewPokemonConId = recibir_NEW_POKEMON(conexion, 0, 1);
-					send(conexion, 1, sizeof(int), 0); // No se si pasar el 1 con un void*
+					int ack=1;
+					send(conexion, &ack, sizeof(int), 0);
 					adminMensajeNewPokemon(nuevoNewPokemonConId);
 					printf("Recibi mensaje com id: %d\n", nuevoNewPokemonConId->IDmensaje);
 				}
@@ -137,7 +138,8 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 					recv(conexion, &codigo1, sizeof(op_code), MSG_WAITALL);
 					printf("Codigo de cola: %d\n", codigo1);
 					nuevoGetPokemonConId = recibir_GET_POKEMON(conexion, 0, 1);
-					send(conexion, 1, sizeof(int), 0);
+					int ack=1;
+					send(conexion, &ack, sizeof(int), 0);
 					printf("%s", nuevoGetPokemonConId->getPokemon->nombre);
 					adminMensajeGetPokemon(nuevoGetPokemonConId);
 				}
@@ -154,7 +156,8 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 					recv(conexion, &codigo2, sizeof(op_code), MSG_WAITALL);
 					printf("Codigo de cola: %d\n", codigo2);
 					nuevoCatchPokemonConId = recibir_CATCH_POKEMON(conexion, 0, 1);
-					send(conexion, 1, sizeof(int), 0);
+					int ack=1;
+					send(conexion, &ack, sizeof(int), 0);
 					adminMensajeCatch(nuevoCatchPokemonConId);
 				}
 				recibirMensajesCatch(conexion);
@@ -432,7 +435,7 @@ void agregarPokemon(NewPokemonConIDs* newPokemon){
 }
 
 int existePosicion(char** bloque, CoordenadasXY coordenadas){
-	return 1;
+	return 1; // -------------------------------------------------!!
 }
 
 
@@ -450,7 +453,7 @@ void eliminarPokemon(CatchPokemonConIDs* pokemon){
 	string_append(&error ,pokemon->catchPokemon->nombre);
 
 	if(!existePokemon(pokemon->catchPokemon->nombre)){
-		//log_info(logger,error); ------------------- Ver por qué el error !!
+		log_info(logger,error);
 	} else {
 		t_config* md = config_create(path);
 		while(archivoAbierto(path)){
@@ -464,7 +467,7 @@ void eliminarPokemon(CatchPokemonConIDs* pokemon){
 			i++;
 		}
 		if(bloques[i] == NULL){
-			//log_info(logger,error); ---------------------------------- Ver por qué falla !!
+			log_info(logger,error);
 			puts("No hay pokemon en esa posicion");
 		} else {
 
@@ -496,20 +499,13 @@ void obtenerCantidadYPosiciones(GetPokemonConIDs* pokemon){
 	string_append(&error ,"No existe el pokemon ");
 	string_append(&error ,pokemon->getPokemon->nombre);
 	if(!existePokemon(pokemon->getPokemon->nombre)){
-		//log_info(logger,"%s",error); ---------------------- ver por que falla !!
-		LocalizedPokemon* localizedVacio = malloc(sizeof(LocalizedPokemon));
-		localizedVacio->cantidadParesOrdenados = 0;
-		localizedVacio->paresOrdenados = list_create();
-		localizedVacio->tamanioNombrePokemon = strlen(pokemon->getPokemon->nombre) + 1;
-		localizedVacio->nombre = pokemon->getPokemon->nombre;
+		log_info(logger,"%s",error);
+		t_list* paresOrdenados = list_create();
 
 		sleep(tiempoRetardo);
+		enviarMensajeLocalized(pokemon->IDmensaje, pokemon->getPokemon->nombre, paresOrdenados);
 
-		int conexionVacio = crear_conexion(ip, puerto);
-
-		enviarLocalizedPokemon(localizedVacio, conexionVacio, 0, pokemon->IDmensaje);
-		list_destroy(localizedVacio->paresOrdenados);
-		free(localizedVacio);
+		list_destroy(paresOrdenados);
 		printf("Envie un localized vacio\n\n");
 	} else {
 		t_config* md = config_create(path);
@@ -552,7 +548,7 @@ t_list* obtenerPosiciones(int IDmensaje, char* nombre, char* Bloque){
 
 // --------------------- Enviar Mensajes --------------------- //
 
-int enviarMensajeAppeared(int IDmensaje, char* pokemon, CoordenadasXY coordenadas){
+void enviarMensajeAppeared(int IDmensaje, char* pokemon, CoordenadasXY coordenadas){
 	printf("Aca llegue\n\n");
 	AppearedPokemon* nuevo = malloc(sizeof(AppearedPokemon));
 	nuevo->coordenadas = coordenadas;
@@ -560,18 +556,18 @@ int enviarMensajeAppeared(int IDmensaje, char* pokemon, CoordenadasXY coordenada
 	nuevo->tamanioNombrePokemon = strlen(pokemon) + 1;
 	int socket_suscriptor = crear_conexion(ip, puerto);
 	enviarAppearedPokemon(nuevo, socket_suscriptor, 0, IDmensaje);
-	return socket_suscriptor;
+	liberar_conexion(socket_suscriptor);
 }
 
-int enviarMensajeCaught(int IDmensaje, int resultado){
+void enviarMensajeCaught(int IDmensaje, int resultado){
 	CaughtPokemon* nuevo = malloc(sizeof(CaughtPokemon));
 	nuevo->atrapar = resultado;
 	int socket_suscriptor = crear_conexion(ip, puerto);
 	enviarCaughtPokemon(nuevo, socket_suscriptor, 0, IDmensaje);
-	return socket_suscriptor;
+	liberar_conexion(socket_suscriptor);
 }
 
-int enviarMensajeLocalized(int IDmensaje, char* pokemon, t_list* coordenadas){
+void enviarMensajeLocalized(int IDmensaje, char* pokemon, t_list* coordenadas){
 	LocalizedPokemon* nuevo = malloc(sizeof(LocalizedPokemon));
 	nuevo->cantidadParesOrdenados = list_size(coordenadas);
 	nuevo->tamanioNombrePokemon = sizeof(pokemon)+1;
@@ -579,7 +575,30 @@ int enviarMensajeLocalized(int IDmensaje, char* pokemon, t_list* coordenadas){
 	nuevo->paresOrdenados = coordenadas;
 	int socket_suscriptor = crear_conexion(ip, puerto);
 	enviarLocalizedPokemon(nuevo, socket_suscriptor, 0, IDmensaje);
-	return socket_suscriptor;
+	printf(" para el broker\n\n");
+	liberar_conexion(socket_suscriptor);
+	free(nuevo);
+}
+
+// --------------------- BITMAP --------------------- //
+
+int proximoDisponible(){
+	int i=0;
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/Metadata");
+	string_append(&path, "/Bitmap.bin");
+	FILE* bitmapFile = fopen(path, "wrb");
+
+	//void* punteroABitmap = malloc(cantidadDeBloques/8);
+
+	//t_bitarray* bitmap = bitarray_create_with_mode(punteroABitmap, cantidadDeBloques, MSB_FIRST);
+
+	//bitarray_test_bit(t_bitarray*, off_t bit_index);
+
+	//if(i == bitarray_get_max_bit())
+
+	return i;
 }
 
 

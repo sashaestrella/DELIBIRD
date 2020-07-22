@@ -48,8 +48,8 @@ void agregarPokemon(NewPokemonConIDs*);
 void eliminarPokemon(CatchPokemonConIDs*);
 void obtenerCantidadYPosiciones(GetPokemonConIDs*);
 
-int enviarMensajeAppeared(int , char*, CoordenadasXY);
-int enviarMensajeCaught(int , int);
-int enviarMensajeLocalized(int, char*, t_list*);
+void enviarMensajeAppeared(int , char*, CoordenadasXY);
+void enviarMensajeCaught(int , int);
+void enviarMensajeLocalized(int, char*, t_list*);
 
 #endif /* ADMINMENSAJES_H_ */
