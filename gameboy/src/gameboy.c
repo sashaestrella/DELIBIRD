@@ -477,7 +477,7 @@ int main(int argc, char *argv[]){
 				CaughtPokemon* unCaughtPokemon;
 				if(argv[3] == NULL || argv[4] == NULL){
 					puts("ERROR: La cantidad mínima de parámetros es 5.Por favor intente de nuevo.");
-				}else if(esUnNumero(argv[3]) || string_length(argv[4]) < 2){
+				}else if(!esUnNumero(argv[3]) || string_length(argv[4]) < 2){
 					puts("Argumento incorrecto. Por favor intente de nuevo.");
 					puts("CAUGHT_POKEMON [ID_MENSAJE_CORRELATIVO] [OK/FAIL]");
 				}else{
@@ -495,7 +495,7 @@ int main(int argc, char *argv[]){
 				}else{
 					unAppearedPokemon = parsearAppearedPokemon(argv[3],argv[4],argv[5]);
 					int id_correlativo = atoi(argv[6]);
-					enviarAppearedPokemon(unAppearedPokemon,conexion,0,0);
+					enviarAppearedPokemon(unAppearedPokemon,conexion,0,id_correlativo);
 				}
 			}else{
 				puts("\nERROR:El nombre de la cola de mensajes es incorrecto. Por favor intente de nuevo.");
