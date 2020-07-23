@@ -4,15 +4,15 @@
 #define FUNCIONESENTRENADOR_H_
 
 
-int calcularDistancia(Entrenador*, Pokemon*);
+
 void* planificar(Entrenador*);
 
-void* flujoEntrenador (Entrenador*);
+//void flujoEntrenador (Entrenador*);
 void planificacionRR(Entrenador*);
 void planificacionSJF_CD(Entrenador*);
 void planificacionSJF_SD(Entrenador*);
 
-Pokemon* elegirMejorUbicacion(LocalizedPokemonConIDs*);
+
 int elegirMejorEntrenador(Pokemon*);
 
 void moverseUnaPosicion(Entrenador*, CoordenadasXY);

@@ -15,9 +15,9 @@
 void* algoritmoPlanificador();
 void* planicadorEntrenador(Entrenador*);
 
-void* esperarCaught();
 
-void* entrenadoresReadyLocalizedAppeared();
+void quitar_de_bloqueados_new(Entrenador* );
+
 
 void pokemonesParaPrueba();
 bool hayEntrenadorSinPokemon();

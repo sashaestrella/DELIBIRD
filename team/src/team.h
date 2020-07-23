@@ -77,6 +77,16 @@ typedef struct pokemon{
 	int IdEntrenadorQueLoVaAatrapar;
 }Pokemon;
 
+
+typedef struct contador{
+	int contador;
+
+}Contador;
+
+typedef struct ciclo{
+	int ciclo;
+
+}Ciclo;
 // ----------------- Colas ----------------- //
 
 pthread_t *hiloEntrenador;
@@ -105,7 +115,11 @@ t_list* terminados;
 t_list* deadlock;
 t_list* pokemones_en_mapa;
 
+t_list* especies_repetidas;
 
+
+t_list* contadores;
+t_list* ciclos;
 t_list* readyAnterior;
 t_list* entraronPorPrimeraVez;
 //----------------- Variables para los algoritmos de planificacion ----------------- //
@@ -119,7 +133,6 @@ double estimacionInicial;
 int ciclos_totales;
 int *ciclos_entrenadores;
 int *contadorCiclosPorEntrenador;
-int *ciclosPorEntrenadorEstadistica;
 int cambios_contexto;
 
 int* valorAnteriorReady;
@@ -154,10 +167,11 @@ void conexionConBroker();
 void armar_entrenadores(char**, char**, char**);
 Algoritmos algoritmoAUtilizar(char*);
 int cantidad(char**);
+void liberarListas(char**);
 void obtener_objetivos(char**, char**, t_list*);
 void terminar_programa(int, t_log*, t_config*);
 void obtener_objetivo_global();
-void* flujoEntrenador(Entrenador*);
+void flujoEntrenador(Entrenador*);
 int obtenerCantidadObjetivo(char*);
 bool cumplioSusObjetivos(Entrenador* entrenador);
 bool noEstaEnLaLista(t_list* lista, char* pokemon);
@@ -166,6 +180,10 @@ double estimarProximaRafaga(Entrenador*);
 void detectarDeadlocks();
 void enviar_gets();
 void esperarApariciones();
+void pasar_a_ready_por_cercania();
+Pokemon* elegirMejorUbicacion(LocalizedPokemonConIDs*);
+int elegirMejorEntrenador(Pokemon*);
+int calcularDistancia(Entrenador*, Pokemon*);
 
 void planificadorFIFO_RR();
 void planificadorSJF_SD();

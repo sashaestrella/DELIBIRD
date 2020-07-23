@@ -16,35 +16,39 @@ int calcularDistancia(Entrenador* entrenador, Pokemon* pokemon){
 
 }
 
-void* flujoEntrenador(Entrenador* entrenador){
-	Entrenador* entrenadorDeadlock = malloc(sizeof(Entrenador));
+void flujoEntrenador(Entrenador* entrenador){
+	Entrenador* entrenadorDeadlock = malloc(sizeof(Entrenador));//sacar
 	CoordenadasXY posicion;
 	int atrapados=0;
-	ciclos_entrenadores[entrenador->ID -1]=0;
-	contadorCiclosPorEntrenador[entrenador->ID -1] =0;
-	//int ciclo=0;
+	//ciclos_entrenadores[entrenador->ID -1]=0;
+	//contadorCiclosPorEntrenador[entrenador->ID -1] =0;
+	Contador* contador = list_get(contadores, entrenador->ID -1 );
+	Ciclo* ciclo = list_get(ciclos, entrenador->ID -1);
 	sem_wait(ejecutate[entrenador->ID - 1]);
 	while(entrenador->estado != EXIT){
 
 	//printf("\nSoy %d y estoy esperando a empezar", entrenador->ID);
 
 
-	Pokemon* pokemon = malloc(sizeof(Pokemon));
+	Pokemon* pokemon ;
 
 	bool buscarMiPokemon(Pokemon* pokemon){
 		return pokemon->IdEntrenadorQueLoVaAatrapar == entrenador->ID;
 	}
 	pokemon = list_find(pokemones_en_mapa, (void*)buscarMiPokemon);
 	posicion = pokemon->posicion;
-	while(noLlegoADestino(entrenador, posicion)){
 
+	while(noLlegoADestino(entrenador, posicion)){
 
 		moverseUnaPosicion(entrenador, posicion);
 		sleep(retardoCicloCPU);
 		ciclos_totales++;
 		ciclos_entrenadores[entrenador->ID -1]++;
-		contadorCiclosPorEntrenador[entrenador->ID -1]++;
-		verificarCiclos(&ciclos_entrenadores[entrenador->ID -1], entrenador,0);
+		ciclo->ciclo++;
+		//contadorCiclosPorEntrenador[entrenador->ID -1]++;
+		contador->contador++;
+		printf("\nSoy %d CONTADOR %d", entrenador->ID,contador->contador);
+		verificarCiclos(&ciclo->ciclo, entrenador,0);
 	}
 
 
@@ -63,12 +67,17 @@ void* flujoEntrenador(Entrenador* entrenador){
 
 	catchPokemonConId=enviar_catchPokemon(catchUnPokemon);
 
-	ciclos_totales++;
-	ciclos_entrenadores[entrenador->ID -1]++;
-	contadorCiclosPorEntrenador[entrenador->ID -1]++;
-	verificarCiclos(&ciclos_entrenadores[entrenador->ID -1], entrenador, 0);
 
-	CaughtPokemonConIDs* caughtPokemonConId = malloc(sizeof(CaughtPokemonConIDs));
+
+	ciclos_totales++;
+	//ciclos_entrenadores[entrenador->ID -1]++;
+	//contadorCiclosPorEntrenador[entrenador->ID -1]++;
+	ciclo->ciclo++;
+	contador->contador++;
+
+	verificarCiclos(&ciclo->ciclo, entrenador, 0);
+
+	CaughtPokemonConIDs* caughtPokemonConId = malloc(sizeof(CaughtPokemonConIDs)) ;
 
 	if(catchPokemonConId == NULL)
 	log_info(logger, "Error de conexion con broker. Inicia comportamiento Default");
@@ -98,9 +107,9 @@ void* flujoEntrenador(Entrenador* entrenador){
 	}
 
 
-	caughtPokemonConId = list_find(nuevosCaught, miRespuesta);
+	caughtPokemonConId = list_find(nuevosCaught, (void*)miRespuesta);
 
-
+	free(catchPokemonConId);
 
 	if(caughtPokemonConId->caughtPokemon->atrapar == 0){
 		//puts("\nvoy a poner repuesto");
@@ -137,21 +146,27 @@ void* flujoEntrenador(Entrenador* entrenador){
 
     }else{
 //----------------------------------------------------------------------------fin caught
+
     	CaughtPokemon* caughtDefault = malloc(sizeof(CaughtPokemon));
     	caughtPokemonConId->caughtPokemon = caughtDefault;
     	caughtPokemonConId->caughtPokemon->atrapar = 1;
     	//printf("\nSoy %d y sigo como si nada", entrenador->ID);
     }
 
-	if(caughtPokemonConId->caughtPokemon->atrapar == 1){
+	if(caughtPokemonConId->caughtPokemon->atrapar == 1 ){
 	list_add(entrenador->pokemonesQueTiene, pokemon);
 	log_info(logger, "Entrenador %d atrapo a %s en (%d,%d)", entrenador->ID, pokemon->nombre, posicion.posicionX, posicion.posicionY);
 	atrapados++;
 	}else{
 		puts("No pude atrapar");
-
-
 	}
+
+
+
+
+	free(catchUnPokemon);
+	free(caughtPokemonConId->caughtPokemon);
+
 	bool buscarPokemon(Pokemon* p){
 		return p->nombre == pokemon->nombre && p->IdEntrenadorQueLoVaAatrapar == pokemon->IdEntrenadorQueLoVaAatrapar;
 	}
@@ -167,12 +182,14 @@ void* flujoEntrenador(Entrenador* entrenador){
 		int i=0;
 		if(!cumplioSusObjetivos(entrenador)){
 			list_remove(ejecutando,0);
+			list_add(deadlock,entrenador);
+			log_info(logger, "Entrenador %d entro a cola de bloqueados (espera resolucion de deadlock)", entrenador->ID);
 			cambios_contexto++;
 			finDeRafaga(&ciclos_entrenadores[entrenador->ID -1], entrenador);
 			sem_post(finEjecucion[entrenador->ID - 1]);
 		}
-			list_add(deadlock,entrenador);
-			log_info(logger, "Entrenador %d entro a cola de bloqueados (espera resolucion de deadlock)", entrenador->ID);
+
+
 			while(!cumplioSusObjetivos(entrenador)){
 				//intf("\nSoy %d y estoy en deadlock", entrenador->ID);
 
@@ -200,11 +217,14 @@ void* flujoEntrenador(Entrenador* entrenador){
 								//pthread_mutex_lock(&ciclosTotales);
 								sleep(retardoCicloCPU);
 								ciclos_totales++;
-								ciclos_entrenadores[entrenador->ID -1]++;
-								contadorCiclosPorEntrenador[entrenador->ID -1]++;
+								//ciclos_entrenadores[entrenador->ID -1]++;
+								//contadorCiclosPorEntrenador[entrenador->ID -1]++;
+								ciclo->ciclo++;
+								contador->contador++;
+
 								//pthread_mutex_unlock(&ciclosTotales);
 
-								verificarCiclos(&ciclos_entrenadores[entrenador->ID -1], entrenador, 1);
+								verificarCiclos(&ciclo->ciclo, entrenador, 1);
 							}
 							log_info(logger, "Soy el entrenador %d y me movi hasta la posicion (%d, %d) de un entrenador." , entrenador->ID, posicion.posicionX, posicion.posicionY);
 							realizarIntercambio(entrenador, entrenadorDeadlock);
@@ -212,14 +232,18 @@ void* flujoEntrenador(Entrenador* entrenador){
 							ciclos_totales += 5;
 							ciclos_entrenadores[entrenador->ID -1]=0;
 							for(int j=0;j<5;j++){
-							ciclos_entrenadores[entrenador->ID -1]++;
-							contadorCiclosPorEntrenador[entrenador->ID -1]++;
+							//ciclos_entrenadores[entrenador->ID -1]++;
+							//contadorCiclosPorEntrenador[entrenador->ID -1]++;
+							ciclo->ciclo++;
+							contador->contador++;
+
 							//pthread_mutex_unlock(&ciclosTotales);
-							verificarCiclos(&ciclos_entrenadores[entrenador->ID -1], entrenador, 1);
+							verificarCiclos(&ciclo->ciclo, entrenador, 1);
 							}
 							i++;
 
 							if(!cumplioSusObjetivos(entrenador)){
+								printf("\nSOY %d",entrenador->ID);
 								finDeRafaga(&ciclos_entrenadores[entrenador->ID -1], entrenador);
 								list_add(deadlock,list_remove(ejecutando,0));
 								log_info(logger, "Entrenador %d entro a cola de bloqueados (espera resolucion de deadlock)", entrenador->ID);
@@ -271,9 +295,9 @@ void agregarPokemonDeRepuesto(char* nombre){
 		return !strcmp(pokemon->nombre,nombre);
 	}
 	//puts("\nAntes de entrar al if");
-	if(list_any_satisfy(mapa_auxiliar, tengoRepuesto)){
+	if(list_any_satisfy(mapa_auxiliar, (void*)tengoRepuesto)){
 
-		list_add(pokemones_en_mapa,list_remove_by_condition(mapa_auxiliar, tengoRepuesto));
+		list_add(pokemones_en_mapa,list_remove_by_condition(mapa_auxiliar, (void*)tengoRepuesto));
 	//	puts("\nAgregue repuesto");
 
 	}
@@ -282,11 +306,11 @@ void agregarPokemonDeRepuesto(char* nombre){
 
 
 void finDeRafaga(int* cicloEntrenador, Entrenador* entrenador ){
-	puts("\nENTRE ACA");
+
 	if(algoritmoAUtilizar(algoritmoPlanificacion) == SJF_SD || algoritmoAUtilizar(algoritmoPlanificacion) == SJF_CD ){
 
 		entrenador->rafaga = estimarProximaRafaga(entrenador);
-		printf("\nrafaga ahora %f", entrenador->rafaga);
+		//printf("\nrafaga ahora %f", entrenador->rafaga);
 		*cicloEntrenador=0;
 
 	}
@@ -315,10 +339,10 @@ void verificarCiclos(int* cicloEntrenador, Entrenador* entrenador, int enDeadloc
 
 	if (algoritmoAUtilizar(algoritmoPlanificacion) == SJF_CD){
 
-		puts("\nVoy a entrar");
+
 		if(seDesbloqueoEntrenador()){ // aca poner las dos condiciones con ||
 
-			printf("\nSoy %d y proxima rafaga %f", entrenador->ID,entrenador->rafaga);
+			//printf("\nSoy %d y proxima rafaga %f", entrenador->ID,entrenador->rafaga);
 			entrenador->rafaga = estimarProximaRafaga(entrenador);
 			//puts("\nEntro uno");
 
@@ -363,9 +387,9 @@ bool hayAlgunoConMenosRafaga(double rafaga, int enDeadlock){
 	}
 
 	if(enDeadlock == 1){
-	return list_any_satisfy(readyDeadlock, tieneMenorRafaga);
+	return list_any_satisfy(readyDeadlock, (void*)tieneMenorRafaga);
 	}else{
-	return list_any_satisfy(ready, tieneMenorRafaga);
+	return list_any_satisfy(ready, (void*)tieneMenorRafaga);
 	}
 }
 
@@ -382,10 +406,10 @@ void realizarIntercambio(Entrenador* entrenador, Entrenador* entrenadorDeadlock)
 			return !strcmp(poke->nombre, pokemon);
 		}
 
-		return list_any_satisfy(entrenador->objetivos, esta);
+		return list_any_satisfy(entrenador->objetivos, (void*)esta);
 	}
 
-	pokemonArecibir = list_remove_by_condition(entrenadorDeadlock->pokemonesQueTiene, loNecesito);
+	pokemonArecibir = list_remove_by_condition(entrenadorDeadlock->pokemonesQueTiene, (void*)loNecesito);
 
 	list_add(entrenador->pokemonesQueTiene, pokemonArecibir);
 
@@ -396,7 +420,7 @@ void realizarIntercambio(Entrenador* entrenador, Entrenador* entrenadorDeadlock)
 			return !strcmp(poke->nombre, pokemon);
 		}
 
-		if(list_any_satisfy(entrenador->objetivos, esta)){
+		if(list_any_satisfy(entrenador->objetivos, (void*)esta)){
 			return false;
 		}else{
 			return true;
@@ -404,7 +428,7 @@ void realizarIntercambio(Entrenador* entrenador, Entrenador* entrenadorDeadlock)
 	}
 
 
-	pokemonParaDar = list_remove_by_condition(entrenador->pokemonesQueTiene, noLoNecesito);
+	pokemonParaDar = list_remove_by_condition(entrenador->pokemonesQueTiene, (void*)noLoNecesito);
 
 	list_add(entrenadorDeadlock->pokemonesQueTiene, pokemonParaDar);
 
@@ -415,19 +439,16 @@ void realizarIntercambio(Entrenador* entrenador, Entrenador* entrenadorDeadlock)
 
 Entrenador* buscarConQuienIntercambiar(Entrenador* entrenador){
 	Entrenador* entre= malloc(sizeof(Entrenador));
-	char* pokemon1;
-	Pokemon* pokemon2 = malloc(sizeof(Pokemon));
-	bool resultado;
 
 	t_list* meFaltan = list_create();
 
 	obtener_los_que_faltan(entrenador->pokemonesQueTiene, entrenador->objetivos, meFaltan);
-	char*p;
-	for(int i=0; i<list_size(meFaltan);i++){
+
+	/*for(int i=0; i<list_size(meFaltan);i++){
 		puts("\nMe faltan");
 		p=list_get(meFaltan,i);
 		printf("%s",p);
-	}
+	}*/
 
 	bool buscarEntrenadorQueTengaElQueNecesito(Entrenador* e){
 
@@ -437,16 +458,16 @@ Entrenador* buscarConQuienIntercambiar(Entrenador* entrenador){
 				return !strcmp(poke->nombre, pokemon);
 			}
 
-			return list_any_satisfy(meFaltan, esta);
+			return list_any_satisfy(meFaltan, (void*)esta);
 		}
 
-		return list_any_satisfy(e->pokemonesQueTiene, loNecesito);
+		return list_any_satisfy(e->pokemonesQueTiene, (void*)loNecesito);
 	}
 
 
 
 	entre = list_find(deadlock,(void*)buscarEntrenadorQueTengaElQueNecesito);
-	log_info(logger, "Se detecto deadlock entre entrenador %d y %d", entrenador->ID, entre->ID);
+
 	return  entre;
 }
 
@@ -486,30 +507,62 @@ void obtener_los_que_faltan(t_list* yaTiene, t_list* objetivos, t_list* meFaltan
 
 
 bool cumplioSusObjetivos(Entrenador* entrenador){
-	Pokemon* pokemon1 = malloc(sizeof(Pokemon));
-	char* pokemon2 ;
-	int contador=0;
-	bool resultado;
 
-	if(list_size(entrenador->pokemonesQueTiene) == list_size(entrenador->objetivos)){
+	t_list* auxiliar = list_create();
+	list_add_all(auxiliar, entrenador->objetivos);
 
 
-		bool sonLosQueNecesita(char* p){
+	if(list_size(entrenador->pokemonesQueTiene) == list_size(auxiliar)){
 
-			bool esta(Pokemon* poke){
-				return !strcmp(poke->nombre, p);
+
+		bool sonLosQueNecesita(Pokemon* p){
+
+			bool esta(char* poke){
+				return !strcmp(poke, p->nombre);
 			}
 
-			return list_any_satisfy(entrenador->pokemonesQueTiene, esta);
+			if( list_any_satisfy(auxiliar, (void*)esta)){
+				list_remove_by_condition(auxiliar, (void*)esta);
+				return true;
+			}else{
+				return false;
+			}
 		}
-		return list_all_satisfy(entrenador->objetivos, sonLosQueNecesita);
+		return list_all_satisfy(entrenador->pokemonesQueTiene, (void*)sonLosQueNecesita);
 
 	}else{
 		return 0;
 	}
 
-	}
 
+	//bool destructor(char* e){
+	//	return true;
+	//}
+
+	//list_destroy_and_destroy_elements(auxiliar, destructor);
+
+	/*if(list_size(entrenador->pokemonesQueTiene) == list_size(entrenador->objetivos)){
+
+		for(int i=0; i<list_size(entrenador->pokemonesQueTiene);i++){
+					pokemon1 = list_get(entrenador->pokemonesQueTiene,i);
+					for(int j=0; j<list_size(entrenador->objetivos);j++){
+						pokemon2 = list_get(entrenador->objetivos,j);
+						resultado = strcmp(pokemon1->nombre,pokemon2);
+						if(resultado == 0){
+						break;
+						}
+					}
+					if(resultado == 0)
+					contador++;
+				}
+
+	}else{
+		return 0;
+	}
+		return contador == list_size(entrenador->objetivos);
+	}*/
+
+}
 
 
 bool noPuedeSeguirAtrapando(int necesita, int losQueYaAtrapo){
@@ -593,10 +646,9 @@ Pokemon* elegirMejorUbicacion(LocalizedPokemonConIDs* localizedPokemon){
 }
 
 int elegirMejorEntrenador(Pokemon* nuevoPokemon){
-	Entrenador* paraProbar = malloc(sizeof(Entrenador));
-	Entrenador* mejorEntrenador = malloc(sizeof(Entrenador));
+	Entrenador* paraProbar ;
+	Entrenador* mejorEntrenador ;
 
-	int mejor;
 
 	int menorDistancia=9999;
 	int distancia = 0;

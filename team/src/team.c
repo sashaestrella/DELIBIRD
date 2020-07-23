@@ -27,7 +27,7 @@ int main(int argc,char* argv[])
 	terminados = list_create();
 	deadlock = list_create();
 	pokemones_en_mapa= list_create();
-
+	especies_repetidas = list_create();
 	readyAnterior = list_create();
 	entraronPorPrimeraVez = list_create();
 
@@ -51,23 +51,51 @@ int main(int argc,char* argv[])
 
 	ciclos_entrenadores = malloc(sizeof(int)*list_size(entrenadores));
 	for(int i=0;i<list_size(entrenadores);i++)
-	ciclos_entrenadores[i]=malloc(sizeof(int));
+	ciclos_entrenadores[i]=(int)malloc(sizeof(int));
 
 
-	contadorCiclosPorEntrenador = malloc(sizeof(int)*list_size(entrenadores));
-	for(int i=0;i<list_size(entrenadores);i++)
-	contadorCiclosPorEntrenador [i]=malloc(sizeof(int));
+	ciclos = list_create();
 
+	for(int i=0;i<list_size(entrenadores);i++){
 
-
-
-	hiloEntrenador = malloc(list_size(entrenadores) * sizeof(pthread_t));
-
-	for(int j=0; j<list_size(entrenadores);j++){
-		pthread_create(&hiloEntrenador[j],NULL, flujoEntrenador,list_get(entrenadores, j));
+	Ciclo* ciclo = malloc(sizeof(Contador));
+	ciclo->ciclo=0;
+	list_add(ciclos, ciclo);
 	}
 
 
+//PROBAR CON LISTAS
+
+	/*contadorCiclosPorEntrenador = malloc(sizeof(int)*list_size(entrenadores));
+	for(int i=0;i<list_size(entrenadores);i++)
+	contadorCiclosPorEntrenador [i]=(int)malloc(sizeof(int));*/
+
+	contadores = list_create();
+
+	for(int i=0;i<list_size(entrenadores);i++){
+
+	Contador* contador = malloc(sizeof(Contador));
+	contador->contador=0;
+	list_add(contadores, contador);
+	}
+
+
+	//hiloEntrenador = malloc(list_size(entrenadores) * sizeof(pthread_t));
+
+	t_list* hilosEntrenadores = list_create();
+
+
+	for(int j=0; j<list_size(entrenadores);j++){
+
+		pthread_t hiloEntrenador;
+		list_add(hilosEntrenadores, hiloEntrenador);
+		pthread_create(&hiloEntrenador, NULL, (void*)&flujoEntrenador,list_get(entrenadores, j));
+	}
+
+
+
+
+	//probar con listas
 
 	puts("\nInicio Servidor para Gameboy");
 	pthread_t hiloConexionGameboy;
@@ -92,7 +120,7 @@ int main(int argc,char* argv[])
 
 	puts("\n\nObjetivo Global");
 	for(i=0; i<list_size(objetivoGlobal);i++){
-		 		printf("%s,", list_get(objetivoGlobal, i));
+		 		printf("%s,", (char*)list_get(objetivoGlobal, i));
 		}
 
 	Entrenador* entrenador;
@@ -101,7 +129,7 @@ int main(int argc,char* argv[])
 		 printf("\nEntrenador %d posicion (%d, %d) rafaga %f", entrenador->ID, entrenador->posicion.posicionX, entrenador->posicion.posicionY,entrenador->rafaga);
 		 puts("\nMi objetivo: ");
 		for(int j=0; j<list_size(entrenador->objetivos);j++){
-			printf("%s,", list_get(entrenador->objetivos, j));
+			printf("%s,", (char*)list_get(entrenador->objetivos, j));
 		}
 
 	}
@@ -110,7 +138,7 @@ int main(int argc,char* argv[])
 	list_add_all(blocked_new, entrenadores);
 
 
-	pthread_t* aparicion_de_pokemones;
+	pthread_t aparicion_de_pokemones;
 
 	pthread_create(&aparicion_de_pokemones, NULL, (void*)esperarApariciones, NULL);
 	pthread_detach(aparicion_de_pokemones);
@@ -128,7 +156,7 @@ int main(int argc,char* argv[])
 		 printf("\nEntrenador %d posicion (%d, %d)",entrenadorReady1->ID, entrenadorReady1->posicion.posicionX, entrenadorReady1->posicion.posicionY);
 		 puts("\nMi objetivo: ");
 		for(int j=0; j<list_size(entrenadorReady1->objetivos);j++){
-			printf("%s,", list_get(entrenadorReady1->objetivos, j));
+			printf("%s,", (char*)list_get(entrenadorReady1->objetivos, j));
 		}
 
 	}
@@ -153,9 +181,14 @@ int main(int argc,char* argv[])
 		}
 
 
+bool romperTodo(GetPokemonConIDs* get){
+	return true;
+}
 
+list_destroy_and_destroy_elements(mensajesGetEnviados, (void*)romperTodo);
 
 Pokemon* pokemon ;
+
 
 
 for(i=0; i<list_size(terminados);i++){
@@ -167,25 +200,32 @@ for(i=0; i<list_size(terminados);i++){
 }
 
 
+pthread_t hilo;
 
+for(int j=0; j<list_size(entrenadores);j++){
 
+	hilo = (pthread_t)list_get(hilosEntrenadores, j);
 
-for(int j=0; j<list_size(entrenadores);j++)
-	pthread_join(hiloEntrenador[j], NULL);
-	//pthread_detach(hiloEntrenador[j]);
+	pthread_join(&hilo, NULL);
+
+}
+
+list_destroy(hilosEntrenadores);
 
 log_info(logger, "Ciclos totales %d.", ciclos_totales);
 log_info(logger, "Cambios de contexto %d.", cambios_contexto);
 
+Contador* contador;
 for(int i=0; i<list_size(entrenadores);i++){
 	entrenador=list_get(entrenadores,i);
-	log_info(logger, "Ciclos entrenador %d, %d.",entrenador->ID, contadorCiclosPorEntrenador[entrenador->ID-1]);
+	contador=list_get(contadores,i);
+	log_info(logger, "Ciclos entrenador %d, %d.",entrenador->ID, contador->contador );
 }
 
 
 }
 
-//TODO
+
 t_log* iniciar_logger(void)
 {
 	return log_create("team.log", "Log de team" , 1, LOG_LEVEL_INFO);
@@ -332,7 +372,7 @@ void planificadorSJF_SD(){
 
 		while(list_size(terminados) != list_size(entrenadores)){
 
-			if(list_size(terminados)+list_size(deadlock) != list_size(entrenadores)){
+			if(list_size(terminados)+list_size(deadlock) + list_size(readyDeadlock) != list_size(entrenadores)){
 
 				if(list_size(ready)==0){
 					puts("\nEntre vacio");

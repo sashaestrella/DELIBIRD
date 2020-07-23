@@ -1,40 +1,6 @@
 #include "planificacion.h"
 
-void* esperarCaught(CaughtPokemonConIDs* unCaught){
-	CatchPokemonConIDs* catchEnviado;
 
-	while(1){
-		sem_wait(&mensajesCaught);
-
-		bool encontrarMensajeEnviado(CatchPokemonConIDs* mensajeCatch){
-			return mensajeCatch->IDmensaje == unCaught -> IDCorrelativo;
-		}
-		catchEnviado = (CatchPokemonConIDs*)list_find(mensajesCatchEnviados, (void*)encontrarMensajeEnviado);
-
-		//Enviar señal al entrenador con la respuesta
-	}
-	free(catchEnviado);
-}
-
-
-void* entrenadoresReadyLocalizedAppeared(){
-	Pokemon* nuevoPokemon;
-	nuevoPokemon = malloc(sizeof(Pokemon));
-	int id;
-
-	/*while(1){
-		sem_wait(&nuevosPokemons);
-
-		nuevoPokemon = (Pokemon*)list_get(nuevosPokemon, 0);
-		list_remove(nuevosPokemon, 0);
-
-		id = elegirMejorEntrenador(nuevoPokemon);
-
-		//Enviar señal al entrenador con el Pokemon
-
-	}*/
-	free(nuevoPokemon);
-}
 
 void pokemonesParaPrueba(){
 
@@ -89,16 +55,16 @@ void pokemonesParaPrueba(){
 }
 
 
-void pasar_a_ready_por_cercania(){//se ejecutaria al comienzo y cuando aparecen pokemones durante la ejecucion
+void pasar_a_ready_por_cercania(){
 
-	Pokemon* pokemon = malloc(sizeof(Pokemon));
-	Entrenador* entrenador = malloc(sizeof(Entrenador));//ver si esto va aca o en el for
+	Pokemon* pokemon;
+	Entrenador* entrenador;
 
 
-	int idEntrenador, distancia, menorDistancia, anterior;
+	int idEntrenador, distancia, menorDistancia;
 
-		Entrenador* entrenadorAready = malloc(sizeof(Entrenador));
-		Pokemon* pokemonAasignar = malloc(sizeof(Pokemon));
+		Entrenador* entrenadorAready ;
+		Pokemon* pokemonAasignar ;
 
 int contador=0;
 	while( contador < list_size(pokemones_en_mapa) ){
@@ -133,11 +99,11 @@ for(int i = 0; i<list_size(pokemones_en_mapa); i++){
 			bool buscar(Entrenador* e){
 				return e->ID == entrenador->ID;
 			}
-			if(list_any_satisfy(blocked_new,buscar)){
+			if(list_any_satisfy(blocked_new,(void*)buscar)){
 			entrenadorAready->tieneAsignadoUnPokemon = true;
 			pokemonAasignar->IdEntrenadorQueLoVaAatrapar = entrenadorAready->ID;
 			quitar_de_bloqueados_new(entrenadorAready);
-			anterior = entrenadorAready->ID;
+
 			entrePorPrimeraVez(entrenadorAready);
 			list_add(ready, entrenadorAready);
 			}
@@ -161,7 +127,7 @@ void entrePorPrimeraVez(Entrenador* entrenador){
 			return id == entrenador->ID;
 		}
 
-		if(!list_any_satisfy(entraronPorPrimeraVez, esta)){
+		if(!list_any_satisfy(entraronPorPrimeraVez, (void*)esta)){
 
 			entrenador->rafaga = estimarProximaRafaga(entrenador);
 			printf("\nAgregue a %d", entrenador->ID);

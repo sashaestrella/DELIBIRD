@@ -10,7 +10,7 @@ void leer_config()
 
 	char** pokemon_entrenadores =  config_get_array_value(archivo_config, "POKEMON_ENTRENADORES");
 
-	char** objetivos_entrenadores =  config_get_array_value(archivo_config, "OBJETIVOS_ENTRENADORES"); // mete a todo en arrays
+	char** objetivos_entrenadores =  config_get_array_value(archivo_config, "OBJETIVOS_ENTRENADORES");
 
 
 	tiempoDeReconexion = config_get_int_value(archivo_config, "TIEMPO_RECONEXION");
@@ -29,6 +29,18 @@ void leer_config()
 
 	armar_entrenadores(posiciones_entrenadores, pokemon_entrenadores, objetivos_entrenadores); //les pasas los arrays y la lista
 
+	for(int i =0;i<cantidad(posiciones_entrenadores);i++){
+		free(posiciones_entrenadores[i]);
+	}
+	free(posiciones_entrenadores);
+	for(int i =0;i<cantidad(objetivos_entrenadores);i++){
+			free(objetivos_entrenadores[i]);
+		}
+	free(objetivos_entrenadores);
+	for(int i =0;i<cantidad(pokemon_entrenadores);i++){
+			free(pokemon_entrenadores[i]);
+		}
+	free(pokemon_entrenadores);
 
 	IDsuscripcionAppeared = config_get_int_value(archivo_config, "ID_APPEARED");
 
@@ -73,19 +85,23 @@ void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
 
 		int cant = cantidad(pokemones);
 
-		for(int j=0; j<cantidad(pokemones);j++){
-		if(pokemones[j] != NULL){
-		pokemones_separados = string_split(pokemones[j], "|");
+		//for(int j=0; j<cant;j++){
+
+		if(i<= cant){
+
+		if(pokemones[i] != NULL){
+		pokemones_separados = string_split(pokemones[i], "|");
+		//free(pokemones);
 		}else{
-			pokemones_separados[j] = NULL;
+			pokemones_separados[i] = NULL;
 		}
 		}
-		if(pokemones[0] == NULL){
+		/*if(pokemones[0] == NULL){
 			pokemones_separados = NULL;
-		}
+		}*/
 
 		char** objetivos_separados = string_split(objetivos[i], "|");
-
+		//free(objetivos);
 		entrenador->objetivos = list_create();
 
 		entrenador->pokemonesQueTiene = list_create();
@@ -93,6 +109,15 @@ void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
 		entrenador->rafaga = estimacionInicial;
 
 		obtener_objetivos(pokemones_separados, objetivos_separados, entrenador->objetivos);
+
+
+		//liberarListas(objetivos_separados);
+		liberarListas(pokemones_separados);
+		liberarListas(posiciones_separadas);
+
+
+
+
 
 		entrenador->tieneAsignadoUnPokemon = false;
 
@@ -127,7 +152,9 @@ void obtener_objetivos(char** yaTiene, char** objetivos, t_list* listaObjetivos)
 		}
 
 		if(flag != 1){
+
 			list_add(listaObjetivos, objetivos[i]);
+
 		}
 		}
 }
@@ -136,7 +163,7 @@ void obtener_objetivo_global(){
 
 	for(int i=0; i<list_size(entrenadores);i++){
 
-			Entrenador* entrenador = malloc(sizeof(Entrenador));
+			Entrenador* entrenador;
 			entrenador = (Entrenador*)list_get(entrenadores, i);
 			list_add_all(objetivoGlobal, entrenador->objetivos);
 	}
@@ -162,6 +189,20 @@ int cantidad(char** lista){
 		return i;
 }
 
+void liberarListas(char** lista){
+
+		int i=0;
+		while(lista [i] != NULL){
+
+			free(lista[i]);
+
+			i++;
+		}
+
+		//free(lista);
+
+}
+
 Algoritmos algoritmoAUtilizar(char* algoritmoPlanificacion){
 
 	if (strcmp(algoritmoPlanificacion, "FIFO") == 0)
@@ -182,7 +223,7 @@ void enviar_gets(){
 
 	GetPokemon* getPokemon = malloc(sizeof(getPokemon));
 	char* pokemon;
-	t_list* especies_repetidas = list_create();
+
 
 	for(int i=0; i<list_size(objetivoGlobal);i++){
 
@@ -192,7 +233,7 @@ void enviar_gets(){
 
 		list_add(especies_repetidas, pokemon);
 		pokemon = list_get(objetivoGlobal,i);
-		printf("\nMAndo a %s", pokemon);
+		//printf("\nMAndo a %s", pokemon);
 		getPokemon->nombre = pokemon;
 		getPokemon->tamanioNombrePokemon = strlen(pokemon) +1;
 
@@ -200,12 +241,14 @@ void enviar_gets(){
 		}
 	}
 
+	free(getPokemon);
+
 }
 
 
 void conexionConBroker(){
 
-	//enviar_gets();
+	enviar_gets();
 
 	generarConexiones();
 
@@ -252,7 +295,7 @@ void detectarDeadlocks(){
 
 	for(int i=0; i<list_size(deadlock); i++){
 		EntrenadorDeadlock* entrenadorAux = malloc(sizeof(EntrenadorDeadlock));
-		Entrenador* entrenador;
+		Entrenador* entrenador ;
 		entrenadorAux->objetivos = list_create();
 		entrenadorAux->pokemonesQueTiene= list_create();
 
@@ -281,19 +324,21 @@ void detectarDeadlocks(){
 				return !strcmp(pokemon->nombre, poke);
 			}
 
-			if(list_any_satisfy(entrenador->objetivos, esta)){
-				char* p = list_remove_by_condition(entrenador->objetivos, esta);
+			if(list_any_satisfy(entrenador->objetivos, (void*)esta)){
+
+				char* p = list_remove_by_condition(entrenador->objetivos, (void*)esta);
 				/*printf("\nEntrenador %d)", entrenador->ID);
 				printf("\nSaque a %s", p);
 				printf("\nY a %s", pokemon->nombre);*/
 
 				return true;
 			}else{
+
 			return false;
 			}
 		}
 
-		list_remove_by_condition(entrenador->pokemonesQueTiene, loNecesita);
+		list_remove_by_condition(entrenador->pokemonesQueTiene, (void*)loNecesita);
 
 
 
@@ -339,7 +384,7 @@ while(list_size(deadlockTemporal) !=0){
 					return !strcmp(p->nombre, poke1);
 				}
 
-				tiene = list_any_satisfy(e->pokemonesQueTiene, esta) && e->ID != entrenador->ID;
+				tiene = list_any_satisfy(e->pokemonesQueTiene, (void*)esta) && e->ID != entrenador->ID;
 				if(tiene)
 					break;
 			}
@@ -349,7 +394,7 @@ while(list_size(deadlockTemporal) !=0){
 
 
 
-		entrenadorEncontrado = list_find(deadlockTemporal, tieneUnoQueNecesito);
+		entrenadorEncontrado = list_find(deadlockTemporal, (void*)tieneUnoQueNecesito);
 
 		//printf("\nEntrenador encontrado %d", entrenadorEncontrado->ID);
 
@@ -360,11 +405,11 @@ while(list_size(deadlockTemporal) !=0){
 				return !strcmp(p->nombre, poke);
 			}
 
-			return list_any_satisfy(entrenadorPrimero->pokemonesQueTiene, esta);
+			return list_any_satisfy(entrenadorPrimero->pokemonesQueTiene, (void*)esta);
 		}
 
 
-		if(list_any_satisfy(entrenadorEncontrado->objetivos, tengoUnoQueNecesita)){
+		if(list_any_satisfy(entrenadorEncontrado->objetivos, (void*)tengoUnoQueNecesita)){
 
 			bool quitar(EntrenadorDeadlock* e){
 				return e->ID == entrenadorEncontrado->ID;
@@ -373,7 +418,7 @@ while(list_size(deadlockTemporal) !=0){
 			//printf("\nMETI A %d", entrenadorEncontrado->ID);
 
 			if(list_size(entrenadorEncontrado->objetivos) ==1)
-			list_remove_by_condition(deadlockTemporal, quitar);
+			list_remove_by_condition(deadlockTemporal, (void*)quitar);
 
 			list_add(deadlockCircular, entrenadorEncontrado );
 
@@ -398,7 +443,7 @@ while(list_size(deadlockTemporal) !=0){
 			}
 
 			if(list_size(entrenadorEncontrado->objetivos) ==1)
-			list_remove_by_condition(deadlockTemporal, quitar);
+			list_remove_by_condition(deadlockTemporal, (void*)quitar);
 
 			//printf("\nMETI A %d", entrenadorEncontrado->ID);
 			list_add(deadlockCircular, entrenadorEncontrado);
@@ -433,6 +478,7 @@ void esperarApariciones(){
 
 	pokemon= list_get(pokemones_en_mapa, list_size(pokemones_en_mapa)-1);
 
+	if(pokemon->IdEntrenadorQueLoVaAatrapar !=0)
 	log_info(logger, "Etrenador %d entro a cola ready (aparicion de nuevo pokemon)", pokemon->IdEntrenadorQueLoVaAatrapar);
 
 	if(list_size(ready)==1)
@@ -455,5 +501,5 @@ bool noEstaEnLaLista(t_list* lista, char* pokemon){
 		return !strcmp(especie, pokemon);
 	}
 
-	return ! list_any_satisfy(lista, buscarEspecie);
+	return ! list_any_satisfy(lista, (void*)buscarEspecie);
 }
