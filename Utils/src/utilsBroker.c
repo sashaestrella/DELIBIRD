@@ -73,6 +73,7 @@ int crear_conexion(char *ip, char* puerto)
 
 	if(connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen) == -1){
 		printf("Error en la conexión con el socket %d.",socket_cliente);
+		freeaddrinfo(server_info);
 		return -1;
 	}
 	freeaddrinfo(server_info);
@@ -2105,6 +2106,7 @@ void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 				}
 			}
 			send(socket_suscriptor,&cantidadDeNewPokemon,sizeof(int),0);
+			cantidadDeNewPokemon = list_size(New_Pokemon);
 			int mensajeYaEnviado = 0;
 			for(int i=0;i<cantidadDeNewPokemon;i++){
 				mensaje = list_get(New_Pokemon,i);
@@ -2221,6 +2223,7 @@ void enviarColaLocalizedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,
 				}
 			}
 			send(socket_suscriptor,&cantidadDeLocalizedPokemon,sizeof(int),0);
+			cantidadDeLocalizedPokemon = list_size(Localized_Pokemon);
 			int mensajeYaEnviado = 0;
 			for(int i=0;i<cantidadDeLocalizedPokemon;i++){
 				mensaje = list_get(Localized_Pokemon,i);
@@ -2335,6 +2338,7 @@ void enviarColaGetPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 				}
 			}
 			send(socket_suscriptor,&cantidadDeGetPokemon,sizeof(int),0);
+			cantidadDeGetPokemon = list_size(Get_Pokemon);
 			int mensajeYaEnviado = 0;
 			for(int i=0;i<cantidadDeGetPokemon;i++){
 				mensaje = list_get(Get_Pokemon,i);
@@ -2443,6 +2447,7 @@ void enviarColaAppearedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,S
 				}
 			}
 			send(socket_suscriptor,&cantidadDeAppearedPokemon,sizeof(int),0);
+			cantidadDeAppearedPokemon = list_size(Appeared_Pokemon);
 			int mensajeYaEnviado = 0;
 			for(int i=0;i<cantidadDeAppearedPokemon;i++){
 				mensaje = list_get(Appeared_Pokemon,i);
@@ -2549,6 +2554,7 @@ void enviarColaCatchPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Susc
 				}
 			}
 			send(socket_suscriptor,&cantidadDeCatchPokemon,sizeof(int),0);
+			cantidadDeCatchPokemon = list_size(Catch_Pokemon);
 			int mensajeYaEnviado = 0;
 			for(int i=0;i<cantidadDeCatchPokemon;i++){
 				mensaje = list_get(Catch_Pokemon,i);
@@ -2658,6 +2664,7 @@ void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Sus
 				}
 			}
 			send(socket_suscriptor,&cantidadDeCaughtPokemon,sizeof(int),0);
+			cantidadDeCaughtPokemon = list_size(Caught_Pokemon);
 			int mensajeYaEnviado = 0;
 			for(int i=0;i<cantidadDeCaughtPokemon;i++){
 				mensaje = list_get(Caught_Pokemon,i);
