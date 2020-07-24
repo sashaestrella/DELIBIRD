@@ -73,7 +73,7 @@ void suscribirseAColaCaught(){
 	char id[2];
 	sprintf(id, "%d", IDsuscripcion);
 	config_set_value(archivo_config, "ID_CAUGHT", id );
-	config_save(archivo_config);
+	//config_save(archivo_config);
 	administradorMensajesColas(SUSCRIPTOR_CAUGHTPOKEMON, conexion, IDsuscripcion);
 	}else{
 		sem_post(&reintento_caught);
@@ -97,7 +97,7 @@ void suscribirseAColaLocalized(){
 	char id[2];
 	sprintf(id, "%d", IDsuscripcion);
 	config_set_value(archivo_config, "ID_LOCALIZED", id );
-	config_save(archivo_config);
+	//config_save(archivo_config);
 	administradorMensajesColas(SUSCRIPTOR_LOCALIZEDPOKEMON, conexion, IDsuscripcion);
 	}else{
 		sem_post(&reintento_localized);
@@ -121,7 +121,7 @@ void suscribirseAColaAppeared(){
 	char id[2];
 	sprintf(id, "%d", IDsuscripcion);
 	config_set_value(archivo_config, "ID_APPEARED", id );
-	config_save(archivo_config);
+	//config_save(archivo_config);
 	administradorMensajesColas(SUSCRIPTOR_APPEAREDPOKEMON, conexion, IDsuscripcion);
 	}else{
 	sem_post(&reintento_appeared);
@@ -596,22 +596,27 @@ void process_request_team(int cod_op, int cliente){
 
 		appeared = recibir_APPEARED_POKEMON(cliente,&size,0,0);
 
-		pokemon->nombre = appeared->appearedPokemon->nombre;
-		pokemon->posicion.posicionX = appeared->appearedPokemon->coordenadas.posicionX;
-		pokemon->posicion.posicionY = appeared->appearedPokemon->coordenadas.posicionY;
+		//pokemon->nombre = appeared->appearedPokemon->nombre;
+		pokemon->nombre = malloc(strlen(appeared->appearedPokemon->nombre)+1);
+		memcpy(pokemon->nombre,appeared->appearedPokemon->nombre,strlen(appeared->appearedPokemon->nombre)+1);
+		//pokemon->posicion.posicionX = appeared->appearedPokemon->coordenadas.posicionX;
+		//pokemon->posicion.posicionY = appeared->appearedPokemon->coordenadas.posicionY;
+		memcpy(&(pokemon->posicion.posicionX),&(appeared->appearedPokemon->coordenadas.posicionX),sizeof(int));
+		memcpy(&(pokemon->posicion.posicionY),&(appeared->appearedPokemon->coordenadas.posicionY),sizeof(int));
 		pokemon->IdEntrenadorQueLoVaAatrapar = 0;
 		list_add(pokemones_en_mapa, pokemon);
 		//sem_post(&agregar_ready);
 		sem_post(&aparicion_pokemon);
 		log_info(logger, "Llego un mensaje APPEARED. Contenido %s %d %d\n",	 pokemon->nombre, pokemon->posicion.posicionX, pokemon->posicion.posicionY);
 
-		//free(appeared->appearedPokemon->nombre);
-		//free(appeared->appearedPokemon);
+		free(appeared->appearedPokemon->nombre);
+		free(appeared->appearedPokemon);
 		free(appeared);
 		break;
 
 	default:
 		puts("\nError en codigo de operacion");
+		free(pokemon);
 		break;
 
 	}

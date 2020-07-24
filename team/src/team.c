@@ -49,9 +49,9 @@ int main(int argc,char* argv[])
 
 	cambios_contexto = 0;
 
-	ciclos_entrenadores = malloc(sizeof(int)*list_size(entrenadores));
+	/*ciclos_entrenadores = malloc(sizeof(int)*list_size(entrenadores));
 	for(int i=0;i<list_size(entrenadores);i++)
-	ciclos_entrenadores[i]=(int)malloc(sizeof(int));
+	ciclos_entrenadores[i]=(int)malloc(sizeof(int));*/
 
 
 	ciclos = list_create();
@@ -265,7 +265,7 @@ void inicializarSemaforos(){
 
 void planificadorFIFO_RR(){
 
-		Entrenador* entrenador = malloc(sizeof(Entrenador));
+		Entrenador* entrenador;
 
 
 		while(list_size(terminados) != list_size(entrenadores)){
@@ -368,7 +368,7 @@ void planificadorFIFO_RR(){
 
 void planificadorSJF_SD(){
 
-		Entrenador* entrenador = malloc(sizeof(Entrenador));
+		Entrenador* entrenador;
 
 		while(list_size(terminados) != list_size(entrenadores)){
 

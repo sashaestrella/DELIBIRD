@@ -474,6 +474,7 @@ void esperarApariciones(){
 
 	while(1){
 	sem_wait(&aparicion_pokemon);
+	puts("debajo del sem wait aaricion pokemon");
 	pasar_a_ready_por_cercania();
 
 	pokemon= list_get(pokemones_en_mapa, list_size(pokemones_en_mapa)-1);

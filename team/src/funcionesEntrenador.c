@@ -63,7 +63,7 @@ void flujoEntrenador(Entrenador* entrenador){
 	catchUnPokemon->coordenadas.posicionX = pokemon->posicion.posicionX;
 	catchUnPokemon->coordenadas.posicionY = pokemon->posicion.posicionY;
 
-	CatchPokemonConIDs* catchPokemonConId = malloc(sizeof(CatchPokemonConIDs));
+	CatchPokemonConIDs* catchPokemonConId;
 
 	catchPokemonConId=enviar_catchPokemon(catchUnPokemon);
 
@@ -109,6 +109,8 @@ void flujoEntrenador(Entrenador* entrenador){
 
 	caughtPokemonConId = list_find(nuevosCaught, (void*)miRespuesta);
 
+	free(catchPokemonConId->catchPokemon->nombre);
+	free(catchPokemonConId->catchPokemon);
 	free(catchPokemonConId);
 
 	if(caughtPokemonConId->caughtPokemon->atrapar == 0){
@@ -534,7 +536,7 @@ bool cumplioSusObjetivos(Entrenador* entrenador){
 		return 0;
 	}
 
-
+	list_destroy(auxiliar);
 	//bool destructor(char* e){
 	//	return true;
 	//}
