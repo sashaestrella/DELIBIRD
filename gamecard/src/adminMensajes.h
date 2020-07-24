@@ -41,7 +41,7 @@ void* armarFolderPara(char*);
 void* crearMetadataPara(char*);
 int archivoAbierto(char*);
 int existePokemon(char*);
-int existePosicion(char**, CoordenadasXY);
+int existePosicionPokemon(char*, CoordenadasXY);
 t_list* obtenerPosiciones(int, char*, char*);
 
 void agregarPokemon(NewPokemonConIDs*);
@@ -51,5 +51,16 @@ void obtenerCantidadYPosiciones(GetPokemonConIDs*);
 void enviarMensajeAppeared(int , char*, CoordenadasXY);
 void enviarMensajeCaught(int , int);
 void enviarMensajeLocalized(int, char*, t_list*);
+
+int obtenerYEscribirProximoDisponible();
+void eliminarBit(int);
+
+void eliminarBloqueDeMetadata(char*, char*);
+void agregarPokemonAUnBloque(char**, NewPokemonConIDs*);
+int esBloqueLleno(char*);
+void agregarBloqueAMetadata(NewPokemonConIDs*);
+void generarEscrituraEnBloque(NewPokemonConIDs*, char*);
+int aumentarCantidadPokemon(char*, CoordenadasXY, int);
+void generarBloqueNuevo(NewPokemonConIDs*, char*);
 
 #endif /* ADMINMENSAJES_H_ */

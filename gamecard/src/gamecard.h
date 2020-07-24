@@ -17,6 +17,10 @@
 #include<readline/readline.h>
 #include<src/utilsGeneral.h>
 #include<semaphore.h>
+#include<sys/mman.h>
+//#include <sys/types.h>
+//#include <sys/stat.h>
+#include <fcntl.h>
 
 char* ip;
 char* puerto;
@@ -44,6 +48,9 @@ int idCatch;
 int conexionGameBoy;
 int idGameBoy;
 int msgGameBoy;
+
+int cantidadBloques;
+int tamanioBloque;
 
 sem_t colaGet;
 t_list* mensajesGet;
