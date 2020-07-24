@@ -238,8 +238,8 @@ void adminMensajeAppeared(AppearedPokemonConIDs* nuevoAppeared){
 		nuevo->IdEntrenadorQueLoVaAatrapar = 0;
 		//list_add(nuevosPokemon, nuevo);
 		list_add(pokemones_en_mapa, nuevo);
-		//sem_post(&aparicion_pokemon);
-		sem_post(&agregar_ready);
+		sem_post(&aparicion_pokemon);
+		//sem_post(&agregar_ready);
 		log_info(logger, "Llego un mensaje APPEARED con el ID de mensaje: %d. Contenido %s %d %d\n",nuevoAppeared->IDmensaje, nuevo->nombre, nuevo->posicion.posicionX, nuevo->posicion.posicionY);
 
 		puts("\n");
