@@ -4,7 +4,7 @@ int main(int argc,char* argv[])
 {
 
 
-	logger = iniciar_logger();
+
 
 	ciclos_totales=0;
 
@@ -32,6 +32,7 @@ int main(int argc,char* argv[])
 	entraronPorPrimeraVez = list_create();
 
 	leer_config();
+	logger = iniciar_logger();
 
 	inicializarSemaforos();
 

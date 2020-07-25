@@ -473,10 +473,11 @@ void esperarApariciones(){
 	}
 	int agrego;
 	while(1){
+
 	sem_wait(&aparicion_pokemon);
-	puts("debajo del sem wait aaricion pokemon");
+
 	agrego = pasar_a_ready_por_cercania();
-	printf("\nAgrego %d",agrego);
+
 	pokemon= list_get(pokemones_en_mapa, list_size(pokemones_en_mapa)-1);
 
 	if(pokemon->IdEntrenadorQueLoVaAatrapar !=0)
@@ -486,7 +487,7 @@ void esperarApariciones(){
 		int valor;
 		sem_post(&agregar_ready);
 		sem_getvalue(&agregar_ready,&valor);
-		printf("\nValorr %d", valor);
+
 	}
 	if(list_size(ejecutando)==1 ){
 		int valor;

@@ -294,8 +294,10 @@ void adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
 		nuevo->IdEntrenadorQueLoVaAatrapar = 0;
 
 		list_add(pokemones_en_mapa, nuevo);
+		sem_post(&aparicion_pokemon);
+		//puts("\nMANDE SEÑAL");
 		list_add(especies_localizadas,nuevo->nombre);
-		printf("Guarde un Pokemon %s de localized con el ID de mensaje %d\n", nuevo->nombre, nuevoLocalized->IDmensaje);
+		//printf("Guarde un Pokemon %s de localized con el ID de mensaje %d\n", nuevo->nombre, nuevoLocalized->IDmensaje);
 		log_info(logger, "Contenido LOCALIZED %s %d %d ", nuevo->nombre, nuevo->posicion.posicionX, nuevo->posicion.posicionY);
 		bool compararCoordenadas(CoordenadasXY* coordenadas){
 			return (nuevo -> posicion.posicionX == coordenadas->posicionX) && (nuevo -> posicion.posicionY == coordenadas->posicionY);
@@ -313,7 +315,7 @@ void adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
 		for(int i=0; i<list_size(nuevoLocalized->localizedPokemon->paresOrdenados);i++){
 		Pokemon* poke = malloc(sizeof(Pokemon));
 		poke->nombre = nuevoLocalized->localizedPokemon->nombre;
-		printf("\nCantidad de pares %d", list_size(nuevoLocalized->localizedPokemon->paresOrdenados));
+		//printf("\nCantidad de pares %d", list_size(nuevoLocalized->localizedPokemon->paresOrdenados));
 		coor = list_get(nuevoLocalized->localizedPokemon->paresOrdenados,i);
 		poke->posicion.posicionX = coor->posicionX;
 
