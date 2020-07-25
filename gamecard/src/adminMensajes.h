@@ -11,6 +11,12 @@ void empezarAnalizadoresDeMensajes();
 
 t_list* mensajesRecibidos;
 
+void serve_client_gamecard(int*);
+void process_request_gamecard(int, int);
+void iniciar_servidor_gamecard(void);
+void esperar_cliente_gamecard(int);
+
+void* conexionConBroker();
 void noHayBroker();
 void* suscribirseAColaNew();
 void* suscribirseAColaGet();
@@ -42,7 +48,7 @@ void* crearMetadataPara(char*);
 int archivoAbierto(char*);
 int existePokemon(char*);
 int existePosicionPokemon(char*, CoordenadasXY);
-t_list* obtenerPosiciones(int, char*, char*);
+t_list* obtenerPosiciones(char*);
 
 void agregarPokemon(NewPokemonConIDs*);
 void eliminarPokemon(CatchPokemonConIDs*);
@@ -62,5 +68,9 @@ void agregarBloqueAMetadata(NewPokemonConIDs*);
 void generarEscrituraEnBloque(NewPokemonConIDs*, char*);
 int aumentarCantidadPokemon(char*, CoordenadasXY, int);
 void generarBloqueNuevo(NewPokemonConIDs*, char*);
+int eliminarSiEsArchivoVacio(char*);
+void eliminarLinea(int ,char*);
+void eliminarSiEsCarpetaVacia(char*, char*);
+void liberar_lista(char**);
 
 #endif /* ADMINMENSAJES_H_ */

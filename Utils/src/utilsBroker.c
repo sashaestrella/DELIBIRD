@@ -73,6 +73,7 @@ int crear_conexion(char *ip, char* puerto)
 
 	if(connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen) == -1){
 		printf("Error en la conexión con el socket %d.",socket_cliente);
+		freeaddrinfo(server_info);
 		return -1;
 	}
 	freeaddrinfo(server_info);

@@ -1,26 +1,38 @@
 #include "gamecard.h"
-
+#include "adminMensajes.h"
 
 
 int main(void)
 {
-	logger = iniciar_logger();
-
 	sem_init(&colaNew, 0, 0);
 	sem_init(&colaCatch, 0, 0);
 	sem_init(&colaGet, 0, 0);
 	sem_init(&suscripciones, 0, 1);
+	sem_init(&reintentoNew, 0, 0);
+	sem_init(&reintentoGet, 0, 0);
+	sem_init(&reintentoCatch, 0, 0);
 	mensajesCatch = list_create();
 	mensajesNew = list_create();
 	mensajesGet = list_create();
-	mensajesRecibidos = list_create();
 
 	leerConfig();
+	logger = iniciar_logger();
 	cantidadArchivos = 0;
 	crearDirectorioTG();
-
 	abrirAtenciones();
-	generarConexiones(0);
+
+	pthread_t hiloConexionGameboy;
+	pthread_create(&hiloConexionGameboy, NULL, (void*)noHayBroker, NULL);
+	//pthread_detach(hiloConexionGameboy);
+
+	pthread_t hiloConexionBroker;
+	pthread_create(&hiloConexionBroker, NULL, (void*)conexionConBroker, NULL);
+	pthread_detach(hiloConexionBroker);
+
+
+	pthread_join(hiloConexionGameboy, NULL);
+	//pthread_join(hiloConexionBroker, NULL);
+
 
 	//char* primerLog = "Log de Gamecard";
 
@@ -30,16 +42,21 @@ int main(void)
 
 t_log* iniciar_logger(void)
 {
-	return log_create("gamecard.log", " [GAMECARD] " , 1, LOG_LEVEL_INFO);
+	return log_create(rutaLog, " [GAMECARD] " , 1, LOG_LEVEL_INFO);
 }
 
 void leerConfig(){
-	t_config* config = config_create("gamecard.config");
+	config = config_create("gamecard.config");
 	ip = config_get_string_value(config,"IP_BROKER");
 	puerto = config_get_string_value(config,"PUERTO_BROKER");
 	puntoMontaje = config_get_string_value(config,"PUNTO_MONTAJE_TALLGRASS");
 	tiempoReintento = config_get_int_value(config,"TIEMPO_DE_REINTENTO_OPERACION");
 	tiempoReconexion = config_get_int_value(config,"TIEMPO_DE_REINTENTO_CONEXION");
 	tiempoRetardo = config_get_int_value(config,"TIEMPO_DE_RETARDO_OPERACION");
-	//close(config);
+	miPUERTO = config_get_string_value(config, "MI_PUERTO");
+	miIP = config_get_string_value(config, "MI_IP");
+	IDsuscripcionNew = config_get_int_value(config, "ID_SUSCRIPCION_NEW");
+	IDsuscripcionGet = config_get_int_value(config, "ID_SUSCRIPCION_GET");
+	IDsuscripcionCatch = config_get_int_value(config, "ID_SUSCRIPCION_CATCH");
+	rutaLog = config_get_string_value(config, "RUTA_LOG");
 }
