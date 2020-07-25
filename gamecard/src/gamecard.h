@@ -17,9 +17,17 @@
 #include<readline/readline.h>
 #include<src/utilsGeneral.h>
 #include<semaphore.h>
+#include<sys/mman.h>
+//#include <sys/types.h>
+//#include <sys/stat.h>
+#include <fcntl.h>
 
 char* ip;
 char* puerto;
+char* miPUERTO;
+char* miIP;
+char* rutaLog;
+char* magicNumber;
 int cantidadArchivos;
 char* puntoMontaje;
 int tiempoReintento;
@@ -27,23 +35,31 @@ int tiempoReconexion;
 int tiempoRetardo;
 sem_t suscripciones;
 t_log* logger;
+t_config* config;
 
 void leerConfig();
 
 // ----------------- Conexiones ----------------- //
 
 int IDsuscripcionGet;
-int idGetPokemon;
 
 int IDsuscripcionNew;
-int idNewPokemon;
 
 int IDsuscripcionCatch;
-int idCatch;
 
-int conexionGameBoy;
-int idGameBoy;
-int msgGameBoy;
+int cantidadBloques;
+int tamanioBloque;
+
+sem_t colaGet;
+t_list* mensajesGet;
+sem_t colaCatch;
+t_list* mensajesCatch;
+sem_t colaNew;
+t_list* mensajesNew;
+
+sem_t reintentoNew;
+sem_t reintentoGet;
+sem_t reintentoCatch;
 
 t_log* iniciar_logger(void);
 t_config* leer_config(void);

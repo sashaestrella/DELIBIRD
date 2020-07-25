@@ -551,7 +551,9 @@ int main(int argc, char *argv[]){
 			}
 	}else if(!strcmp(argv[1],"GAMECARD")){
 		puts("[Consola]: Se ha recibido un pedido para enviar un mensaje al proceso GAMECARD.");
-		conexion = crear_conexion(ip, puerto);
+		char* ipGamecard = config_get_string_value(config,"IP_GAMECARD");
+		char* puertoGamecard = config_get_string_value(config,"PUERTO_GAMECARD");
+		conexion = crear_conexion(ipGamecard, puertoGamecard);
 		char* loQueVoyALoguear = "[GAMEBOY]Se creó la conexión con GAMECARD, con el valor %d.";
 		log_info(logger,loQueVoyALoguear,conexion);
 
@@ -580,8 +582,8 @@ int main(int argc, char *argv[]){
 					unCatchPokemon = parsearCatchPokemon(argv[3],argv[4],argv[5]);
 					int correlativo = atoi(argv[6]);
 					enviarCatchPokemon(unCatchPokemon,conexion,correlativo);
-					int idMensaje;
-					recv(conexion,&idMensaje,sizeof(int),0);
+					//int idMensaje;
+					//recv(conexion,&idMensaje,sizeof(int),0);
 				}
 			}else if(!strcmp(argv[2],"GET_POKEMON")){
 				GetPokemon* unGetPokemon;
@@ -589,13 +591,13 @@ int main(int argc, char *argv[]){
 					puts("ERROR: La cantidad mínima de parámetros es 4.Por favor intente de nuevo.");
 				}else if(string_length(argv[3]) <= 1){
 					puts("Argumento incorrecto. Por favor intente de nuevo.");
-					puts("Formato: GET_POKEMON [POKEMON]");
+					puts("Formato: GET_POKEMON [POKEMON] [ID]");
 				}else{
 					unGetPokemon = parsearGetPokemon(argv[3]);
 					int correlativo = atoi(argv[4]);
 					enviarGetPokemon(unGetPokemon,conexion,correlativo);
-					int idMensaje;
-					recv(conexion,&idMensaje,sizeof(int),0);
+					//int idMensaje;
+					//recv(conexion,&idMensaje,sizeof(int),0);
 				}
 			}else{
 				puts("\nERROR:El nombre de la cola de mensajes ingresado es incorrecto para el proceso GAMECARD. Por favor intente de nuevo.");
