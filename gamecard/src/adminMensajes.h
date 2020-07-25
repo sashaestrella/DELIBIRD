@@ -60,14 +60,7 @@ void enviarMensajeLocalized(int, char*, t_list*);
 
 int obtenerYEscribirProximoDisponible();
 void eliminarBit(int);
-
 void eliminarBloqueDeMetadata(char*, char*);
-void agregarPokemonAUnBloque(char**, NewPokemonConIDs*);
-int esBloqueLleno(char*);
-void agregarBloqueAMetadata(NewPokemonConIDs*);
-void generarEscrituraEnBloque(NewPokemonConIDs*, char*);
-int aumentarCantidadPokemon(char*, CoordenadasXY, int);
-void generarBloqueNuevo(NewPokemonConIDs*, char*);
 int eliminarSiEsArchivoVacio(char*);
 void eliminarLinea(int ,char*);
 void eliminarSiEsCarpetaVacia(char*, char*);
@@ -75,4 +68,19 @@ void liberar_lista(char**);
 int tamanioDeBloque(char*);
 void actualizarTamanioPokemon(char*);
 
+// --------------------- AGREGAR --------------------- //
+
+void agregarPokemonAUnBloque(char**, NewPokemonConIDs*);
+void agregarBloqueAMetadata(char*, char*);
+void generarBloqueNuevo(char*, char*);
+void generarEscrituraEnBloque(char*, char*);
+void pisarBloque(char*, char*);
+char** lecturaBloques(char**);
+char* lecturaBloque(char*);
+int esBloqueLleno(char*, char*);
+void escribirBloques(char**, char**, int, char*);
+
+// --------------------- AUX --------------------- //
+
+int cantidadDeBloques(char**);
 #endif /* ADMINMENSAJES_H_ */

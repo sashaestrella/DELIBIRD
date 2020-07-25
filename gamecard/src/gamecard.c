@@ -21,8 +21,20 @@ int main(void)
 	crearDirectorioTG();
 	abrirAtenciones();
 
+	NewPokemonConIDs* newPokemon = malloc(sizeof(NewPokemonConIDs));
+	newPokemon->newPokemon = malloc(sizeof(NewPokemon));
+	newPokemon->IDmensaje = 1;
+	newPokemon->newPokemon->cantidad = 3;
+	CoordenadasXY coordenadas;
+	coordenadas.posicionX = 3;
+	coordenadas.posicionY = 4;
+	newPokemon->newPokemon->coordenadas = coordenadas;
+	newPokemon->newPokemon->nombre = string_duplicate("Pikachu");
+	newPokemon->newPokemon->tamanioNombrePokemon = strlen("Pikachu") + 1;
 
-	pthread_t hiloConexionGameboy;
+	agregarPokemon(newPokemon);
+
+	/*pthread_t hiloConexionGameboy;
 	pthread_create(&hiloConexionGameboy, NULL, (void*)noHayBroker, NULL);
 
 	//pthread_detach(hiloConexionGameboy);
@@ -35,7 +47,7 @@ int main(void)
 
 	//pthread_join(hiloConexionGameboy, NULL);
 	pthread_join(hiloConexionBroker, NULL);
-
+*/
 	//char* primerLog = "Log de Gamecard";
 
 	//log_info(logger, primerLog);
