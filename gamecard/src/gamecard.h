@@ -27,6 +27,7 @@ char* puerto;
 char* miPUERTO;
 char* miIP;
 char* rutaLog;
+char* magicNumber;
 int cantidadArchivos;
 char* puntoMontaje;
 int tiempoReintento;

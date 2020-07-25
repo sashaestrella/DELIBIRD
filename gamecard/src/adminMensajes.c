@@ -68,7 +68,6 @@ void process_request_gamecard(int cod_op, int cliente_fd) {
 
 	char* loQueVoyALoguear;
 	int idCorrelativo;
-	printf("CODOP: %d\n",cod_op);
 		switch (cod_op) {
 				case 0:
 					pthread_exit(NULL);
@@ -76,21 +75,18 @@ void process_request_gamecard(int cod_op, int cliente_fd) {
 					pthread_exit(NULL);
 				case NEW_POKEMON:
 					newConIDs = recibir_NEW_POKEMON(cliente_fd, &size,1);
-					printf("ID: %d\n", newConIDs->IDmensaje);
 					//atenderMensajesNew(newConIDs);
 					agregarPokemon(newConIDs);
 					free(newConIDs);
 					break;
 				case GET_POKEMON:
 					getConIDs = recibir_GET_POKEMON(cliente_fd,&size,1);
-					printf("ID: %d\n", getConIDs->IDmensaje);
 					//atenderMensajesGet(getConIDs);
 					obtenerCantidadYPosiciones(getConIDs);
 					free(getConIDs);
 					break;
 				case CATCH_POKEMON:
 					catchConIDs = recibir_CATCH_POKEMON(cliente_fd,&size,1);
-					printf("ID: %d\n", catchConIDs->IDmensaje);
 					//atenderMensajesCatch(catchConIDs);
 					eliminarPokemon(catchConIDs);
 					free(catchConIDs);
@@ -165,7 +161,6 @@ void* suscribirseAColaNew(){
 	sem_wait(&suscripciones);
 	int conexion = crear_conexion(ip, puerto);
 	if(conexion!=-1){
-		printf( "\nSe creo la suscripcion a cola New con el valor %d \n", conexion);
 
 		enviarSuscripcion(IDsuscripcionNew, conexion, SUSCRIPTOR_NEWPOKEMON);
 		recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
@@ -174,7 +169,6 @@ void* suscribirseAColaNew(){
 		config_save(config);
 		free(id);
 		sem_post(&suscripciones);
-		printf("Suscriptor numero: %d\n\n", IDsuscripcion);
 		administradorMensajesColas(SUSCRIPTOR_NEWPOKEMON, conexion, IDsuscripcion);
 	} else {
 		sem_post(&reintentoNew);
@@ -187,7 +181,6 @@ void* suscribirseAColaGet(){
 	sem_wait(&suscripciones);
 	int conexion = crear_conexion(ip, puerto);
 	if(conexion != -1){
-		printf( "\nSe creo la suscripcion a cola Get con el valor %d \n", conexion);
 
 		enviarSuscripcion(IDsuscripcionGet, conexion, SUSCRIPTOR_GETPOKEMON);
 		recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
@@ -196,7 +189,6 @@ void* suscribirseAColaGet(){
 		config_save(config);
 		free(id);
 		sem_post(&suscripciones);
-		printf("Suscriptor numero: %d\n", IDsuscripcion);
 
 		administradorMensajesColas(SUSCRIPTOR_GETPOKEMON, conexion, IDsuscripcion);
 	} else {
@@ -210,7 +202,6 @@ void* suscribirseAColaCatch(){
 	sem_wait(&suscripciones);
 	int conexion = crear_conexion(ip, puerto);
 	if(conexion != -1){
-		printf( "\nSe creo la suscripcion a cola Catch con el valor %d \n", conexion);
 
 		enviarSuscripcion(IDsuscripcionCatch, conexion, SUSCRIPTOR_CATCHPOKEMON);
 		recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
@@ -219,7 +210,6 @@ void* suscribirseAColaCatch(){
 		config_save(config);
 		free(id);
 		sem_post(&suscripciones);
-		printf("Suscriptor numero: %d\n", IDsuscripcion);
 
 		administradorMensajesColas(SUSCRIPTOR_CATCHPOKEMON, conexion, IDsuscripcion);
 	} else {
@@ -243,16 +233,13 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 			case SUSCRIPTOR_NEWPOKEMON:
 				IDsuscripcionNew= IDsuscripcion;
 				recv(conexion, &cantidadNewPokemon, sizeof(int), MSG_WAITALL);
-				printf("Cantidad de New Pokemons: %d\n", cantidadNewPokemon);
 				NewPokemonConIDs* nuevoNewPokemonConId;
 				for(int i = 0; i<cantidadNewPokemon; i++){
 					recv(conexion, &codigo, sizeof(op_code), MSG_WAITALL);
-					printf("Codigo de cola: %d\n", codigo);
 					nuevoNewPokemonConId = recibir_NEW_POKEMON(conexion, 0, 1);
 					int ack=1;
 					send(conexion, &ack, sizeof(int), 0);
 					adminMensajeNewPokemon(nuevoNewPokemonConId);
-					printf("Recibi mensaje com id: %d\n", nuevoNewPokemonConId->IDmensaje);
 				}
 				recibirMensajesNew(conexion);
 				break;
@@ -261,15 +248,12 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				IDsuscripcionGet= IDsuscripcion;
 
 				recv(conexion, &cantidadGetPokemon, sizeof(int), MSG_WAITALL);
-				printf("Cantidad de Get Pokemons: %d\n", cantidadGetPokemon);
 				GetPokemonConIDs* nuevoGetPokemonConId;
 				for(int i = 0; i<cantidadGetPokemon; i++){
 					recv(conexion, &codigo1, sizeof(op_code), MSG_WAITALL);
-					printf("Codigo de cola: %d\n", codigo1);
 					nuevoGetPokemonConId = recibir_GET_POKEMON(conexion, 0, 1);
 					int ack=1;
 					send(conexion, &ack, sizeof(int), 0);
-					printf("%s", nuevoGetPokemonConId->getPokemon->nombre);
 					adminMensajeGetPokemon(nuevoGetPokemonConId);
 				}
 				recibirMensajesGet(conexion);
@@ -279,11 +263,9 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				IDsuscripcionCatch= IDsuscripcion;
 
 				recv(conexion, &cantidadCatchPokemon, sizeof(int), MSG_WAITALL);
-				printf("Cantidad de Catch Pokemons: %d\n", cantidadCatchPokemon);
 				CatchPokemonConIDs* nuevoCatchPokemonConId;
 				for(int i = 0; i<cantidadCatchPokemon; i++){
 					recv(conexion, &codigo2, sizeof(op_code), MSG_WAITALL);
-					printf("Codigo de cola: %d\n", codigo2);
 					nuevoCatchPokemonConId = recibir_CATCH_POKEMON(conexion, 0, 1);
 					int ack=1;
 					send(conexion, &ack, sizeof(int), 0);
@@ -292,7 +274,6 @@ void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				recibirMensajesCatch(conexion);
 				break;
 			default:
-				printf("Llego un mensaje invalido");
 				break;
 	}
 }
@@ -360,20 +341,17 @@ void* recibirMensajesCatch(int conexionCatch){
 
 void* adminMensajeNewPokemon(NewPokemonConIDs* nuevoNewPokemon){
 	list_add(mensajesNew, nuevoNewPokemon);
-	printf("Guarde un mensaje New\n\n");
 	sem_post(&colaNew);
 }
 
 void* adminMensajeGetPokemon(GetPokemonConIDs* nuevoGetPokemon){
 	list_add(mensajesGet, nuevoGetPokemon);
-	printf("Guarde un mensaje Get\n\n");
 	sem_post(&colaGet);
 
 }
 
 void* adminMensajeCatch(CatchPokemonConIDs* nuevoCatch){
 	list_add(mensajesCatch, nuevoCatch);
-	printf("Guarde un mensaje Catch\n\n");
 	sem_post(&colaCatch);
 }
 
@@ -432,6 +410,8 @@ void* crearDirectorioTG(){
 	string_append(&path, "/TALL_GRASS");
 	mkdir(path, 0777);
 
+	log_info(logger, "Genere el directorio para el FL en %s", puntoMontaje);
+
 	crearMetadata(path);
 	crearFiles(path);
 	crearBlocks(path);
@@ -445,17 +425,22 @@ void* crearMetadata(char* pathOrigin){
 	string_append(&path,"/Metadata");
 	char* pathMetadata = string_duplicate(path);
 	mkdir(path, 0777);
+
+	log_info(logger, "Agrego la carpeta Metadata");
+
 	string_append(&path, "/Metadata.bin");
 	metadata = fopen(path, "wrb");
 	fclose(metadata);
-
 	t_config* md = config_create(path);
-	config_set_value(md, "BLOCK_SIZE", "16");
-	config_set_value(md, "BLOCKS", "5192");
-	config_set_value(md, "MAGIC_NUMBER", "TALL_GRASS");
-	tamanioBloque = config_get_int_value(md, "BLOCK_SIZE");
-	cantidadBloques = config_get_int_value(md, "BLOCKS");
-	config_save(md);
+	char* tamanio = string_itoa(tamanioBloque);
+	char* cantidad = string_itoa(cantidadBloques);
+	config_set_value(md, "BLOCK_SIZE", tamanio);
+	config_set_value(md, "BLOCKS", cantidad);
+	config_set_value(md, "MAGIC_NUMBER", magicNumber);
+	free(tamanio);
+	free(cantidad);
+
+	log_info(logger, "Agrego el Metadata del File System");
 
 	generarBitmap(pathMetadata, md);
 	config_destroy(md);
@@ -468,6 +453,8 @@ void* crearFiles(char* pathOrigin){
 	FILE* metadata;
 	char* path = string_duplicate(pathOrigin);
 
+	log_info(logger, "Agrego la carpeta Files");
+
 	string_append(&path, "/Files");
 	mkdir(path, 0777);
 	string_append(&path, "/Metadata.bin");
@@ -477,6 +464,9 @@ void* crearFiles(char* pathOrigin){
 	t_config* md = config_create(path);
 	config_set_value(md, "DIRECTORY", "Y");
 	config_save(md);
+
+	log_info(logger, "Agrego el Metadata de Files");
+
 	config_destroy(md);
 	free(path);
 }
@@ -486,6 +476,7 @@ void* crearBlocks(char* path){
 	string_append(&path, "/Blocks");
 	mkdir(path, 0777);
 	free(path);
+	log_info(logger, "Agrego la carpeta Blocks");
 }
 
 
@@ -507,6 +498,8 @@ void* generarBitmap(char* pathOrigin, t_config* md){
 	bitarray_destroy(bitmap);
 	free(punteroABitmap);
 	free(path);
+
+	log_info(logger, "Genere el bitmap");
 }
 
 
@@ -517,6 +510,7 @@ void* armarFolderPara(char* nombre){
 	string_append(&path, nombre);
 	mkdir(path, 0777);
 	free(path);
+	log_info(logger, "Genere la carpeta para %s", nombre);
 }
 
 void* crearMetadataPara(char* nombre){
@@ -539,9 +533,10 @@ void* crearMetadataPara(char* nombre){
 	config_save(md);
 	config_destroy(md);
 	free(path);
+	log_info(logger, "Cree el Metadata para %s", nombre);
 }
 
-// --------------------- INTERACCION CON FS --------------------- //
+// --------------------- INTERACCION CON ARCHIVOS --------------------- //
 
 int archivoAbierto(char* path){
 	t_config* md = config_create(path);
@@ -606,6 +601,7 @@ void agregarPokemon(NewPokemonConIDs* newPokemon){
 		config_destroy(md);
 		liberar_lista(bloques);
 	}
+	actualizarTamanioPokemon(newPokemon->newPokemon->nombre);
 	sleep(tiempoRetardo);
 	enviarMensajeAppeared(newPokemon->IDmensaje, newPokemon->newPokemon->nombre, newPokemon->newPokemon->coordenadas);
 	printf("Envie un appeared\n\n");
@@ -648,7 +644,6 @@ int existePosicionPokemon(char* bloque, CoordenadasXY coordenadas){
 
 				eliminarLinea(cursor ,path);
 
-				// ELIMINAR LINEA --------------------------------- !!
 			} else {
 				string_append(&nuevaLinea, subLeido[0]);
 				string_append(&nuevaLinea, "=");
@@ -680,18 +675,14 @@ int eliminarSiEsArchivoVacio(char* bloque){
 	string_append(&path, "/TALL_GRASS/Blocks/");
 	string_append(&path, bloque);
 	string_append(&path, ".bin");
-
 	int seElimina = 0;
-	FILE *fd;
-	fd = fopen(path, "r" );
-	fseek( fd, 0, SEEK_END );
-	if (ftell( fd ) == 0 ){
+
+	if(tamanioDeBloque(bloque) == 0){
 	  seElimina = 1;
 	}
-	fclose(fd);
-
 	if(seElimina){
 		remove(path);
+		log_info(logger, "Elimine el archivo %s", path);
 	}
 	free(path);
 	return seElimina;
@@ -726,6 +717,7 @@ void eliminarLinea(int lno, char* path){
 	fclose(fptr2);
 	remove(path);  		// remove the original file
 	rename(temp, path); // rename the temporary file to original name
+	log_info(logger, "Se elimino la linea %d del archivo %s", lno, path);
 	free(temp);
 	free(str);
 
@@ -742,12 +734,8 @@ void eliminarPokemon(CatchPokemonConIDs* pokemon){
 	string_append(&path, "/Metadata.bin");
 	int encontrado = 0;
 
-	char* error = string_new();
-	string_append(&error ,"No existe el pokemon ");
-	string_append(&error ,pokemon->catchPokemon->nombre);
-
 	if(!existePokemon(pokemon->catchPokemon->nombre)){
-		log_info(logger,error);
+		log_info(logger,"No existe el pokemon %s", pokemon->catchPokemon->nombre);
 	} else {
 		t_config* md = config_create(path);
 		while(archivoAbierto(path)){
@@ -763,8 +751,7 @@ void eliminarPokemon(CatchPokemonConIDs* pokemon){
 			i++;
 		}
 		if(bloques[i] == NULL){
-			log_info(logger,error);
-			puts("No hay pokemon en esa posicion");
+			log_info(logger,"No existe %s en esa posición", pokemon->catchPokemon->nombre);
 			md = config_create(path);
 			config_set_value(md,"OPEN","N");
 			config_save(md);
@@ -786,13 +773,13 @@ void eliminarPokemon(CatchPokemonConIDs* pokemon){
 			}
 		}
 		liberar_lista(bloques);
+		actualizarTamanioPokemon(pokemon->catchPokemon->nombre);
 	}
 	sleep(tiempoRetardo);
 	enviarMensajeCaught(pokemon->IDmensaje, encontrado);
 	printf("Envie un Caught\n\n");
 	free(path);
 	free(pathCarpeta);
-	free(error);
 }
 
 void obtenerCantidadYPosiciones(GetPokemonConIDs* pokemon){
@@ -807,17 +794,14 @@ void obtenerCantidadYPosiciones(GetPokemonConIDs* pokemon){
 	char** bloques;
 
 	char* error = string_new();
-	string_append(&error ,"No existe el pokemon ");
-	string_append(&error ,pokemon->getPokemon->nombre);
 	if(!existePokemon(pokemon->getPokemon->nombre)){
-		log_info(logger,"%s",error);
+		log_info(logger,"No existe el pokemon %s",pokemon->getPokemon->nombre);
 		t_list* paresOrdenados = list_create();
 
 		sleep(tiempoRetardo);
 		enviarMensajeLocalized(pokemon->IDmensaje, pokemon->getPokemon->nombre, paresOrdenados);
 
 		list_destroy(paresOrdenados);
-		printf("Envie un localized vacio\n\n");
 	} else {
 		t_config* md = config_create(path);
 			while(archivoAbierto(path)){
@@ -852,6 +836,7 @@ void obtenerCantidadYPosiciones(GetPokemonConIDs* pokemon){
 			}
 			list_destroy(coordenadas);
 			liberar_lista(bloques);
+			actualizarTamanioPokemon(pokemon->getPokemon->nombre);
 	}
 	free(path);
 	free(error);
@@ -978,6 +963,7 @@ int obtenerYEscribirProximoDisponible(){
 
 	for(int i=0; i<cantidadBloques; i++){
 		if(bitarray_test_bit(bitmap, i) == 0){
+			printf("Asigne el bloque %d\n", i);
 			bitarray_set_bit(bitmap ,i);
 			msync(NULL ,cantidadBloques/8 ,0);
 			free(path);
@@ -1025,8 +1011,53 @@ void eliminarBit(int index){
 	free(path);
 }
 
+// --------------------- METADATA --------------------- //
+
+void actualizarTamanioPokemon(char* pokemon){
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files/");
+	string_append(&path, pokemon);
+	string_append(&path, "/Metadata.bin");
+
+	int tamanio = 0;
+	int i = 0;
+
+	t_config* md = config_create(path);
+	char** bloques = config_get_array_value(md, "BLOCKS");
+
+	while(bloques[i]!=NULL){
+		tamanio += tamanioDeBloque(bloques[i]);
+		i++;
+	}
+
+	char* tamanioTotal = string_itoa(tamanio);
+	config_set_value(md, "SIZE", tamanioTotal);
+	free(tamanioTotal);
+	config_save(md);
+	config_destroy(md);
+	free(path);
+	liberar_lista(bloques);
+	log_info(logger, "Actualiza SIZE de %s", pokemon);
+}
+
 // --------------------- BLOCKS --------------------- //
 
+int tamanioDeBloque(char* bloque){
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Blocks/");
+	string_append(&path, bloque);
+	string_append(&path, ".bin");
+
+	FILE* fd = fopen(path, "rb");
+	fseek(fd, 0, SEEK_END);
+	int tamanio = ftell(fd);
+
+	fclose(fd);
+	free(path);
+	return tamanio;
+}
 
 void agregarBloqueAMetadata(NewPokemonConIDs* newPokemon){
 	char* path = string_new();
@@ -1058,6 +1089,7 @@ void agregarBloqueAMetadata(NewPokemonConIDs* newPokemon){
 	free(nuevoBloques);
 	free(bloque);
 	liberar_lista(bloques);
+	log_info("Agregue un bloque al Metadata de %s", newPokemon->newPokemon->nombre);
 }
 
 void generarBloqueNuevo(NewPokemonConIDs* newPokemon, char* bloque){
@@ -1081,6 +1113,7 @@ void generarBloqueNuevo(NewPokemonConIDs* newPokemon, char* bloque){
 	FILE* fd = fopen(nombre, "wt");
 	fwrite(escritura, strlen(escritura), 1, fd);
 	fclose(fd);
+	log_info(logger, "Genere un bloque nuevo para %s", newPokemon->newPokemon->nombre);
 	free(nombre);
 	free(escritura);
 	free(coorX);
@@ -1110,6 +1143,9 @@ void generarEscrituraEnBloque(NewPokemonConIDs* newPokemon, char* bloque){
 	lseek(file, 0, SEEK_END);
 	write(file, escritura, strlen(escritura));
 	close(file);
+
+	log_info(logger, "Escribi en el bloque %s la linea %s", bloque, escritura);
+
 	free(nombre);
 	free(escritura);
 	free(coorX);
@@ -1145,7 +1181,7 @@ void eliminarBloqueDeMetadata(char* path, char* bloqueAEliminar){
 	config_destroy(md);
 	liberar_lista(bloques);
 	free(nuevoBloques);
-
+	log_info(logger, "Elimine el bloque %s", bloqueAEliminar);
 	eliminarBit(atoi(bloqueAEliminar));
 }
 
@@ -1172,17 +1208,7 @@ void agregarPokemonAUnBloque(char** bloques, NewPokemonConIDs* newPokemon){
 }
 
 int esBloqueLleno(char* numBloque){
-	char* nombre = string_new();
-	string_append(&nombre, puntoMontaje);
-	string_append(&nombre, "/TALL_GRASS/Blocks/");
-	string_append(&nombre, numBloque);
-	string_append(&nombre, ".bin");
-
-	FILE* fd = fopen(nombre, "rb");
-	fseek(fd, 0, SEEK_END);
-	int lleno = ftell(fd) +6 >= tamanioBloque;
-	fclose(fd);
-	free(nombre);
+	int lleno = tamanioDeBloque(numBloque) +6 >= tamanioBloque;
 	return lleno;
 }
 
@@ -1192,51 +1218,75 @@ int aumentarCantidadPokemon(char* bloque, CoordenadasXY coordenadas, int cantida
 	string_append(&nombre, "/TALL_GRASS/Blocks/");
 	string_append(&nombre, bloque);
 	string_append(&nombre, ".bin");
+	char* centinela = string_new();
 	int cambiado = 0;
 	char* coorX = string_itoa(coordenadas.posicionX);
 	char* coorY = string_itoa(coordenadas.posicionY);
 
-	int file = open(nombre, O_CREAT | O_RDWR, 0664);
+	t_config* md = config_create(nombre);
 
-	void* punteroATexto;
-	char* leido;
+	string_append(&centinela, coorX);
+	string_append(&centinela, "-");
+	string_append(&centinela, coorY);
+
+	int cantidadActual = 0;
+
+	if(config_has_property(md, centinela)){
+		cantidadActual = config_get_int_value(md, centinela);
+		int cantidadNueva = cantidadActual + cantidad;
+		config_set_value(md, centinela, cantidadNueva);
+		log_info(logger, "Aumente la cantidad de pokemon %s %d", centinela, cantidadNueva);
+	}
+
+	config_save(md);
+	config_destroy(md);
+
+	/*int file = open(nombre, O_CREAT | O_RDWR, 0664);
+
+	void* punteroATexto = malloc(sizeof(tamanioBloque));
+	char** leido;
 	char** subLeido;
+	char* escritura = string_new();
+	char* respaldoEscritura;
 
-	punteroATexto = mmap(NULL, tamanioBloque, PROT_READ | PROT_WRITE, MAP_SHARED, file, 0);
+	read(file, punteroATexto, tamanioBloque);
 
-	while(strcmp(punteroATexto, "")  && !cambiado){
+	leido = string_split(punteroATexto, "\n");
+	int i = 0;
 
-		leido = punteroATexto;
-		subLeido = string_split(leido, "=");
-
+	while(leido[i]!=NULL){
+		subLeido = string_split(leido[i], "=");
+		respaldoEscritura = string_duplicate(escritura);
 		if(string_starts_with(subLeido[0], coorX) && string_ends_with(subLeido[0], coorY)){
 				cambiado = 1;
-				char* nuevaLinea = string_new();
-				string_append(&nuevaLinea, subLeido[0]);
-				string_append(&nuevaLinea, "=");
+				string_append(&escritura, subLeido[0]);
+				string_append(&escritura, "=");
 
 				char* cantidadAnterior = string_duplicate(subLeido[1]);
 				int cantidadAnt = atoi(cantidadAnterior);
 				int nuevaCantidad = cantidadAnt + cantidad;
 				char* nuevaCant = string_itoa(nuevaCantidad);
-				string_append(&nuevaLinea, nuevaCant);
-				string_append(&nuevaLinea, "\n");
+				string_append(&escritura, nuevaCant);
+				string_append(&escritura, "\n");
 
-				memcpy(punteroATexto, nuevaLinea, strlen(nuevaLinea));
-				msync(NULL ,tamanioBloque ,0);
 				free(nuevaCant);
 				free(cantidadAnterior);
-				free(nuevaLinea);
+		} else {
+			string_append(&escritura, subLeido[0]);
+			string_append(&escritura, "=");
+			string_append(&escritura, subLeido[1]);
 		}
-		punteroATexto = punteroATexto + strlen(leido);
 		liberar_lista(subLeido);
+		free(respaldoEscritura);
+		i++;
 	}
-
-	close(file);
+	lseek(file, -strlen(), SEEK_CUR);
+	write(file, escritura, tamanioBloque);
+	close(file);*/
 	free(coorX);
 	free(coorY);
 	free(nombre);
-	//free(punteroATexto);
+	//free(escritura);
 	return cambiado;
 }
 
@@ -1255,7 +1305,9 @@ void eliminarSiEsCarpetaVacia(char* path, char* pathCarpeta){
 	if(!strcmp(bloques, "[]")){
 		config_destroy(md);
 		remove(path);
+		log_info(logger, "Elimine el archivo %s", path);
 		remove(pathCarpeta);
+		log_info(logger, "Elimine la carpeta %s", pathCarpeta);
 	}
 }
 

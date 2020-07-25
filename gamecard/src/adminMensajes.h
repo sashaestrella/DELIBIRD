@@ -72,5 +72,7 @@ int eliminarSiEsArchivoVacio(char*);
 void eliminarLinea(int ,char*);
 void eliminarSiEsCarpetaVacia(char*, char*);
 void liberar_lista(char**);
+int tamanioDeBloque(char*);
+void actualizarTamanioPokemon(char*);
 
 #endif /* ADMINMENSAJES_H_ */

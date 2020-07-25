@@ -21,18 +21,20 @@ int main(void)
 	crearDirectorioTG();
 	abrirAtenciones();
 
+
 	pthread_t hiloConexionGameboy;
 	pthread_create(&hiloConexionGameboy, NULL, (void*)noHayBroker, NULL);
+
 	//pthread_detach(hiloConexionGameboy);
+
 
 	pthread_t hiloConexionBroker;
 	pthread_create(&hiloConexionBroker, NULL, (void*)conexionConBroker, NULL);
-	pthread_detach(hiloConexionBroker);
+	//pthread_detach(hiloConexionBroker);
 
 
-	pthread_join(hiloConexionGameboy, NULL);
-	//pthread_join(hiloConexionBroker, NULL);
-
+	//pthread_join(hiloConexionGameboy, NULL);
+	pthread_join(hiloConexionBroker, NULL);
 
 	//char* primerLog = "Log de Gamecard";
 
@@ -59,4 +61,7 @@ void leerConfig(){
 	IDsuscripcionGet = config_get_int_value(config, "ID_SUSCRIPCION_GET");
 	IDsuscripcionCatch = config_get_int_value(config, "ID_SUSCRIPCION_CATCH");
 	rutaLog = config_get_string_value(config, "RUTA_LOG");
+	tamanioBloque = config_get_int_value(config, "BLOCKS_SIZE");
+	cantidadBloques = config_get_int_value(config, "BLOCKS");
+	magicNumber = config_get_string_value(config, "MAGIC_NUMBER");
 }
