@@ -76,6 +76,7 @@ void process_request_gamecard(int cod_op, int cliente_fd) {
 				case NEW_POKEMON:
 					newConIDs = recibir_NEW_POKEMON(cliente_fd, &size,1);
 					//atenderMensajesNew(newConIDs);
+					puts("\Me llego un NEW");
 					agregarPokemon(newConIDs);
 					free(newConIDs);
 					break;
@@ -581,9 +582,11 @@ void agregarPokemon(NewPokemonConIDs* newPokemon){
 	string_append(&path, "/Metadata.bin");
 
 	if(!existePokemon(newPokemon->newPokemon->nombre)){
+		puts("\Me llego un NEW2");
 		crearMetadataPara(newPokemon->newPokemon->nombre);
 		agregarBloqueAMetadata(newPokemon);
 	} else {
+		puts("\Me llego un NEW3");
 		t_config* md = config_create(path);
 		while(archivoAbierto(path)){
 			sleep(tiempoReintento);
