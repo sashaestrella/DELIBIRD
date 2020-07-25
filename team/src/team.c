@@ -228,7 +228,7 @@ for(int i=0; i<list_size(entrenadores);i++){
 
 t_log* iniciar_logger(void)
 {
-	return log_create("team.log", "Log de team" , 1, LOG_LEVEL_INFO);
+	return log_create(archivoLog, "Log de team" , 1, LOG_LEVEL_INFO);
 
 }
 
@@ -275,10 +275,15 @@ void planificadorFIFO_RR(){
 				if(list_size(ready)==0){
 
 					puts("\nEntre a ready vacio");
+					int valor;
 
 					sem_wait(&agregar_ready);
+					sem_getvalue(&agregar_ready, &valor);
+					printf("\nValor %d", valor);
 
 				}
+
+
 
 				puts("\n_____________________________");
 				for(int i=0; i<list_size(ready);i++){
@@ -295,11 +300,11 @@ void planificadorFIFO_RR(){
 					cambios_contexto++;
 
 					sem_post(ejecutate[entrenador->ID - 1]);
-					//printf("\n\nDesperte a %d", entrenador->ID);
+					printf("\n\nDesperte a %d", entrenador->ID);
 
-					//printf("\nEspero a %d,", entrenador->ID);
+					printf("\nEspero a %d,", entrenador->ID);
 					sem_wait(finEjecucion[entrenador->ID - 1]);
-					//printf("\nMe llego %d,", entrenador->ID);
+					printf("\nMe llego %d,", entrenador->ID);
 				}
 
 
@@ -346,6 +351,7 @@ void planificadorFIFO_RR(){
 				list_add(ejecutando, entrenador);
 				log_info(logger, "Entrenador %d entro a EXEC", entrenador->ID);
 				cambios_contexto++;
+
 				sem_post(ejecutate[entrenador->ID - 1]);
 				printf("\nDesperte a %d", entrenador->ID);
 
@@ -472,10 +478,10 @@ void planificadorSJF_SD(){
 
 
 double estimarProximaRafaga(Entrenador* entrenador){
-
+	Ciclo* ciclo = list_get(ciclos, entrenador->ID -1);
 	//printf("\nResultado %f",alpha * ciclos_entrenadores[entrenador->ID -1] + (1-alpha) * entrenador->rafaga);
 
- return alpha * ciclos_entrenadores[entrenador->ID -1] + (1-alpha) * entrenador->rafaga;
+ return alpha * ciclo->ciclo + (1-alpha) * entrenador->rafaga;
 
 
 }

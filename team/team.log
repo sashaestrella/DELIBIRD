@@ -995,3 +995,54 @@
 [INFO] 05:57:06:567 Log de team/(12172:12186): Error de conexion. Inicia reintento
 [INFO] 05:57:34:509 Log de team/(12172:12186): Error de conexion. Inicia reintento
 [INFO] 05:57:55:413 Log de team/(12172:12186): Error de conexion. Inicia reintento
+[INFO] 23:41:08:323 Log de team/(12784:12797): Error de conexion. Inicia reintento
+[INFO] 23:41:14:221 Log de team/(12784:12806): Etrenador 2 entro a cola ready (aparicion de nuevo pokemon)
+[INFO] 23:41:14:221 Log de team/(12784:12784): Entrenador 2 entro a EXEC
+[INFO] 23:41:14:225 Log de team/(12784:12811): Llego un mensaje APPEARED. Contenido Pikachu 9 9
+
+[INFO] 23:41:14:239 Log de team/(12784:12806): Etrenador 3 entro a cola ready (aparicion de nuevo pokemon)
+[INFO] 23:41:14:239 Log de team/(12784:12814): Llego un mensaje APPEARED. Contenido Squirtle 6 7
+
+[INFO] 23:41:14:262 Log de team/(12784:12806): Etrenador 1 entro a cola ready (aparicion de nuevo pokemon)
+[INFO] 23:41:14:263 Log de team/(12784:12816): Llego un mensaje APPEARED. Contenido Onix 2 8
+
+[INFO] 23:41:14:292 Log de team/(12784:12818): Llego un mensaje APPEARED. Contenido Gengar 6 6
+
+[INFO] 23:41:14:306 Log de team/(12784:12820): Llego un mensaje APPEARED. Contenido Squirtle 5 5
+
+[INFO] 23:41:27:234 Log de team/(12784:12800): Soy el entrenador 2 y me movi hasta la posicion (9, 9) de un Pikachu.
+[INFO] 23:41:27:235 Log de team/(12784:12800): Error de conexion con broker. Inicia comportamiento Default
+[INFO] 23:41:27:235 Log de team/(12784:12800): Entrenador 2 atrapo a Pikachu en (9,9)
+[INFO] 23:41:27:236 Log de team/(12784:12800): Entrenador 2 entro a cola de bloqueados (le falta atrapar pokemones)
+[INFO] 23:41:27:237 Log de team/(12784:12784): Entrenador 2 entro a cola ready (hay pokemones en mapa para que siga atrapando)
+[INFO] 23:41:27:237 Log de team/(12784:12784): Entrenador 3 entro a EXEC
+[INFO] 23:41:35:244 Log de team/(12784:12802): Soy el entrenador 3 y me movi hasta la posicion (6, 7) de un Squirtle.
+[INFO] 23:41:35:246 Log de team/(12784:12802): Error de conexion con broker. Inicia comportamiento Default
+[INFO] 23:41:35:246 Log de team/(12784:12802): Entrenador 3 atrapo a Squirtle en (6,7)
+[INFO] 23:41:35:246 Log de team/(12784:12802): Entrenador 3 entro a cola de bloqueados (le falta atrapar pokemones)
+[INFO] 23:41:35:246 Log de team/(12784:12784): Entrenador 3 entro a cola ready (hay pokemones en mapa para que siga atrapando)
+[INFO] 23:41:35:246 Log de team/(12784:12784): Entrenador 1 entro a EXEC
+[INFO] 23:41:38:324 Log de team/(12784:12797): Error de conexion. Inicia reintento
+[INFO] 23:41:41:251 Log de team/(12784:12798): Soy el entrenador 1 y me movi hasta la posicion (2, 8) de un Onix.
+[INFO] 23:41:41:251 Log de team/(12784:12798): Error de conexion con broker. Inicia comportamiento Default
+[INFO] 23:41:41:251 Log de team/(12784:12798): Entrenador 1 atrapo a Onix en (2,8)
+[INFO] 23:41:41:251 Log de team/(12784:12798): Entrenador 1 entro a cola de bloqueados (espera resolucion de deadlock)
+[INFO] 23:41:41:251 Log de team/(12784:12784): Entrenador 2 entro a EXEC
+[INFO] 23:41:47:256 Log de team/(12784:12800): Soy el entrenador 2 y me movi hasta la posicion (6, 6) de un Gengar.
+[INFO] 23:41:47:257 Log de team/(12784:12800): Error de conexion con broker. Inicia comportamiento Default
+[INFO] 23:41:47:258 Log de team/(12784:12800): Entrenador 2 atrapo a Gengar en (6,6)
+[INFO] 23:41:47:258 Log de team/(12784:12800): Entrenador 2 entro a cola exit.
+[INFO] 23:41:47:259 Log de team/(12784:12784): Entrenador 3 entro a EXEC
+[INFO] 23:41:50:262 Log de team/(12784:12802): Soy el entrenador 3 y me movi hasta la posicion (5, 5) de un Squirtle.
+[INFO] 23:41:50:262 Log de team/(12784:12802): Error de conexion con broker. Inicia comportamiento Default
+[INFO] 23:41:50:262 Log de team/(12784:12802): Entrenador 3 atrapo a Squirtle en (5,5)
+[INFO] 23:41:50:262 Log de team/(12784:12802): Entrenador 3 entro a cola de bloqueados (espera resolucion de deadlock)
+[INFO] 23:41:50:262 Log de team/(12784:12784): Inicia algotirmo de deteccion de deadlock
+[INFO] 23:41:50:262 Log de team/(12784:12784): SE DETECTO DEADLOCK ENTRE:
+[INFO] 23:41:50:262 Log de team/(12784:12784): 1)
+[INFO] 23:41:50:262 Log de team/(12784:12784): 3)
+[INFO] 23:41:50:262 Log de team/(12784:12784): Entrenador 1 entro a cola ready (esta resolviendo deadlock)
+[INFO] 23:41:50:262 Log de team/(12784:12784): Entrenador 1 entro a EXEC
+[INFO] 23:42:09:643 Log de team/(12784:12797): Error de conexion. Inicia reintento
+[INFO] 23:42:41:177 Log de team/(12784:12797): Error de conexion. Inicia reintento
+[INFO] 23:43:12:781 Log de team/(12784:12797): Error de conexion. Inicia reintento

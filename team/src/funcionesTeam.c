@@ -25,7 +25,7 @@ void leer_config()
 
 	estimacionInicial = config_get_double_value(archivo_config, "ESTIMACION_INICIAL");
 
-	//archivoLog = config_get_string_value(archivo_config, "LOG_FILE");
+	archivoLog = config_get_string_value(archivo_config, "LOG_FILE");
 
 	armar_entrenadores(posiciones_entrenadores, pokemon_entrenadores, objetivos_entrenadores); //les pasas los arrays y la lista
 
@@ -471,19 +471,23 @@ void esperarApariciones(){
 		pokemon = list_get(pokemones_en_mapa,i);
 		log_info(logger, "Etrenador %d entro a cola ready (por cercania a un pokemon en el mapa)", pokemon->IdEntrenadorQueLoVaAatrapar);
 	}
-
+	int agrego;
 	while(1){
 	sem_wait(&aparicion_pokemon);
 	puts("debajo del sem wait aaricion pokemon");
-	pasar_a_ready_por_cercania();
-
+	agrego = pasar_a_ready_por_cercania();
+	printf("\nAgrego %d",agrego);
 	pokemon= list_get(pokemones_en_mapa, list_size(pokemones_en_mapa)-1);
 
 	if(pokemon->IdEntrenadorQueLoVaAatrapar !=0)
 	log_info(logger, "Etrenador %d entro a cola ready (aparicion de nuevo pokemon)", pokemon->IdEntrenadorQueLoVaAatrapar);
 
-	if(list_size(ready)==1)
+	if(agrego==1 && list_size(ready)==1 && list_size(ejecutando)==0){
+		int valor;
 		sem_post(&agregar_ready);
+		sem_getvalue(&agregar_ready,&valor);
+		printf("\nValorr %d", valor);
+	}
 	if(list_size(ejecutando)==1 ){
 		int valor;
 		sem_getvalue(&nuevoReadySJF, &valor);

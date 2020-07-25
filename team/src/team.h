@@ -180,7 +180,7 @@ double estimarProximaRafaga(Entrenador*);
 void detectarDeadlocks();
 void enviar_gets();
 void esperarApariciones();
-void pasar_a_ready_por_cercania();
+int pasar_a_ready_por_cercania();
 Pokemon* elegirMejorUbicacion(LocalizedPokemonConIDs*);
 int elegirMejorEntrenador(Pokemon*);
 int calcularDistancia(Entrenador*, Pokemon*);

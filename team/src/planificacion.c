@@ -55,7 +55,7 @@ void pokemonesParaPrueba(){
 }
 
 
-void pasar_a_ready_por_cercania(){
+int pasar_a_ready_por_cercania(){
 
 	Pokemon* pokemon;
 	Entrenador* entrenador;
@@ -106,6 +106,7 @@ for(int i = 0; i<list_size(pokemones_en_mapa); i++){
 
 			entrePorPrimeraVez(entrenadorAready);
 			list_add(ready, entrenadorAready);
+			return 1;
 			}
 			//sem_post(&agregar_ready);
 		}
@@ -117,7 +118,7 @@ for(int i = 0; i<list_size(pokemones_en_mapa); i++){
 		contador++;
 
 	}
-
+	return 0;
 }
 
 void entrePorPrimeraVez(Entrenador* entrenador){
