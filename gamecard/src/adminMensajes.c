@@ -76,7 +76,6 @@ void process_request_gamecard(int cod_op, int cliente_fd) {
 				case NEW_POKEMON:
 					newConIDs = recibir_NEW_POKEMON(cliente_fd, &size,1);
 					//atenderMensajesNew(newConIDs);
-					puts("\Me llego un NEW");
 					agregarPokemon(newConIDs);
 					free(newConIDs);
 					break;
@@ -485,19 +484,21 @@ void* generarBitmap(char* pathOrigin, t_config* md){
 
 	char* path = string_duplicate(pathOrigin);
 	string_append(&path, "/Bitmap.bin");
-	FILE* bitmapFile = fopen(path, "wrb");
 
-	void* punteroABitmap = malloc(cantidadBloques/8);
+	FILE* bitmapFile = fopen(path, "r");
 
-	t_bitarray* bitmap = bitarray_create_with_mode(punteroABitmap, cantidadBloques, MSB_FIRST);
+	if(bitmapFile == NULL){
+		void* punteroABitmap = malloc(cantidadBloques/8);
 
-	for(int i = 0; i < cantidadBloques; i++){
-		bitarray_clean_bit(bitmap,i);
+		t_bitarray* bitmap = bitarray_create_with_mode(punteroABitmap, cantidadBloques, MSB_FIRST);
+
+		FILE* bitmapFile = fopen(path, "wrb");
+		fwrite(punteroABitmap, 1, cantidadBloques/8, bitmapFile);
+		fclose(bitmapFile);
+		bitarray_destroy(bitmap);
+		free(punteroABitmap);
 	}
-	fwrite(punteroABitmap, 1, cantidadBloques/8, bitmapFile);
-	fclose(bitmapFile);
-	bitarray_destroy(bitmap);
-	free(punteroABitmap);
+
 	free(path);
 
 	log_info(logger, "Genere el bitmap");
@@ -582,7 +583,6 @@ void agregarPokemon(NewPokemonConIDs* newPokemon){
 	string_append(&path, "/Metadata.bin");
 
 	if(!existePokemon(newPokemon->newPokemon->nombre)){
-
 		char* escritura = string_new();
 		char* coorX = string_itoa(newPokemon->newPokemon->coordenadas.posicionX);
 		char* coorY = string_itoa(newPokemon->newPokemon->coordenadas.posicionY);
@@ -600,7 +600,6 @@ void agregarPokemon(NewPokemonConIDs* newPokemon){
 		free(coorY);
 		free(cantidad);
 	} else {
-		puts("\Me llego un NEW3");
 		t_config* md = config_create(path);
 		while(archivoAbierto(path)){
 			sleep(tiempoReintento);
@@ -968,18 +967,11 @@ void enviarMensajeLocalized(int IDmensaje, char* pokemon, t_list* coordenadas){
 
 int obtenerYEscribirProximoDisponible(){
 	char* path = string_new();
-	int existe;
-	int bitmapFile;
+
 	string_append(&path, puntoMontaje);
 	string_append(&path, "/TALL_GRASS/Metadata/Bitmap.bin");
 
-	FILE* archivo = fopen(path, "r");
-	if (archivo == NULL) {
-		bitmapFile = open(path, O_CREAT | O_RDWR, 0664);
-	} else {
-		fclose(archivo);
-		bitmapFile = open(path, O_RDWR, 0664);
-	}
+	int bitmapFile = open(path, O_CREAT | O_RDWR, 0664);
 
 	void* punteroABitmap = mmap(NULL, cantidadBloques/8, PROT_READ | PROT_WRITE, MAP_SHARED, bitmapFile, 0);
 
@@ -987,19 +979,19 @@ int obtenerYEscribirProximoDisponible(){
 
 	for(int i=0; i<cantidadBloques; i++){
 		if(bitarray_test_bit(bitmap, i) == 0){
-			printf("Asigne el bloque %d\n", i);
 			bitarray_set_bit(bitmap ,i);
 			msync(NULL ,cantidadBloques/8 ,0);
-			free(path);
+			write(bitmapFile, punteroABitmap, cantidadBloques/8);
 			close(bitmapFile);
-			//bitarray_destroy(bitmap);
+			free(path);
+			bitarray_destroy(bitmap);
 			return i;
 		}
 	}
 	close(bitmapFile);
-	printf("Espacio lleno\n");
+	bitarray_destroy(bitmap);
 	free(path);
-	//bitarray_destroy(bitmap);
+	printf("Espacio lleno\n");
 	return 0;
 }
 
