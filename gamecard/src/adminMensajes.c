@@ -1,6 +1,6 @@
 #include "adminMensajes.h"
 
-// ------------------------------------ GAMEBOY ------------------------------------ //
+// ------------------------------------ CONEXION GAMEBOY ------------------------------------ //
 
 void noHayBroker(){
 	iniciar_servidor_gamecard();
@@ -95,7 +95,7 @@ void process_request_gamecard(int cod_op, int cliente_fd) {
 }
 
 
-// ------------------------------------ BROKER ------------------------------------ //
+// ------------------------------------ CONEXION BROKER ------------------------------------ //
 
 void* conexionConBroker(){
 	generarConexiones();
@@ -153,7 +153,7 @@ void generarConexiones(){
 	pthread_join(hiloCatch,NULL);
 }
 
-// ------------------------------------ SUSCRIPCIONES ------------------------------------ //
+// ------------------------------------ SUSCRIPCIONES BROKER ------------------------------------ //
 
 
 void* suscribirseAColaNew(){
@@ -165,7 +165,7 @@ void* suscribirseAColaNew(){
 		enviarSuscripcion(IDsuscripcionNew, conexion, SUSCRIPTOR_NEWPOKEMON);
 		recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
 		char* id = string_itoa(IDsuscripcion);
-		config_set_value(config, "ID_SUSCRIPCION_NEW", id);
+		//config_set_value(config, "ID_SUSCRIPCION_NEW", id);
 		config_save(config);
 		free(id);
 		sem_post(&suscripciones);
@@ -185,7 +185,7 @@ void* suscribirseAColaGet(){
 		enviarSuscripcion(IDsuscripcionGet, conexion, SUSCRIPTOR_GETPOKEMON);
 		recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
 		char* id = string_itoa(IDsuscripcion);
-		config_set_value(config, "ID_SUSCRIPCION_GET", id);
+		//config_set_value(config, "ID_SUSCRIPCION_GET", id);
 		config_save(config);
 		free(id);
 		sem_post(&suscripciones);
@@ -206,7 +206,7 @@ void* suscribirseAColaCatch(){
 		enviarSuscripcion(IDsuscripcionCatch, conexion, SUSCRIPTOR_CATCHPOKEMON);
 		recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
 		char* id = string_itoa(IDsuscripcion);
-		config_set_value(config, "ID_SUSCRIPCION_CATCH", id);
+		//config_set_value(config, "ID_SUSCRIPCION_CATCH", id);
 		config_save(config);
 		free(id);
 		sem_post(&suscripciones);
@@ -218,7 +218,7 @@ void* suscribirseAColaCatch(){
 	}
 }
 
-// ------------------------------------ RECEPCION MENSAJES ------------------------------------ //
+// ------------------------------------ RECEPCION BROKER ------------------------------------ //
 
 void* administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 
@@ -401,24 +401,24 @@ void* atenderMensajesGet(){
 	}
 }
 
-// --------------------- FILE SYSTEM --------------------- //
+// --------------------- LEVANTAR FILE SYSTEM --------------------- //
 
 
-void* crearDirectorioTG(){
+void crearDirectorioTG(){
 	char* path = string_new();
 	string_append(&path,puntoMontaje);
 	string_append(&path, "/TALL_GRASS");
-	mkdir(path, 0777);
 
-	log_info(logger, "Genere el directorio para el FL en %s", puntoMontaje);
-
-	crearMetadata(path);
-	crearFiles(path);
-	crearBlocks(path);
+	if(!mkdir(path, 0777)){
+		log_info(logger, "Genere el directorio para el FL en %s", puntoMontaje);
+		crearMetadata(path);
+		crearFiles(path);
+		crearBlocks(path);
+	}
 }
 
 
-void* crearMetadata(char* pathOrigin){
+void crearMetadata(char* pathOrigin){
 	FILE* metadata;
 	char* path = string_duplicate(pathOrigin);
 
@@ -449,7 +449,7 @@ void* crearMetadata(char* pathOrigin){
 }
 
 
-void* crearFiles(char* pathOrigin){
+void crearFiles(char* pathOrigin){
 	FILE* metadata;
 	char* path = string_duplicate(pathOrigin);
 
@@ -472,7 +472,7 @@ void* crearFiles(char* pathOrigin){
 }
 
 
-void* crearBlocks(char* path){
+void crearBlocks(char* path){
 	string_append(&path, "/Blocks");
 	mkdir(path, 0777);
 	free(path);
@@ -480,32 +480,28 @@ void* crearBlocks(char* path){
 }
 
 
-void* generarBitmap(char* pathOrigin, t_config* md){
+void generarBitmap(char* pathOrigin, t_config* md){
 
 	char* path = string_duplicate(pathOrigin);
 	string_append(&path, "/Bitmap.bin");
 
-	FILE* bitmapFile = fopen(path, "r");
+	void* punteroABitmap = malloc(cantidadBloques/8);
 
-	if(bitmapFile == NULL){
-		void* punteroABitmap = malloc(cantidadBloques/8);
+	t_bitarray* bitmap = bitarray_create_with_mode(punteroABitmap, cantidadBloques, MSB_FIRST);
 
-		t_bitarray* bitmap = bitarray_create_with_mode(punteroABitmap, cantidadBloques, MSB_FIRST);
-
-		FILE* bitmapFile = fopen(path, "wrb");
-		fwrite(punteroABitmap, 1, cantidadBloques/8, bitmapFile);
-		fclose(bitmapFile);
-		bitarray_destroy(bitmap);
-		free(punteroABitmap);
-	}
-
+	FILE* bitmapFile = fopen(path, "wrb");
+	fwrite(punteroABitmap, 1, cantidadBloques/8, bitmapFile);
+	fclose(bitmapFile);
+	bitarray_destroy(bitmap);
+	free(punteroABitmap);
 	free(path);
 
 	log_info(logger, "Genere el bitmap");
 }
 
+// --------------------- MANEJO FILE SYSTEM --------------------- //
 
-void* armarFolderPara(char* nombre){
+void armarFolderPara(char* nombre){
 	char* path = string_new();
 	string_append(&path,puntoMontaje);
 	string_append(&path, "/TALL_GRASS/Files/");
@@ -515,7 +511,7 @@ void* armarFolderPara(char* nombre){
 	log_info(logger, "Genere la carpeta para %s", nombre);
 }
 
-void* crearMetadataPara(char* nombre){
+void crearMetadataPara(char* nombre){
 	FILE* metadata;
 	char* path = string_new();
 	string_append(&path, puntoMontaje);
@@ -526,6 +522,7 @@ void* crearMetadataPara(char* nombre){
 	armarFolderPara(nombre);
 	metadata = fopen(path, "wrb");
 	fclose(metadata);
+	//fflush(metadata);
 
 	t_config* md = config_create(path);
 	config_set_value(md, "DIRECTORY", "N");
@@ -538,8 +535,6 @@ void* crearMetadataPara(char* nombre){
 	log_info(logger, "Cree el Metadata para %s", nombre);
 }
 
-// --------------------- INTERACCION CON ARCHIVOS --------------------- //
-
 int archivoAbierto(char* path){
 	t_config* md = config_create(path);
 	int abierto = !strcmp(config_get_string_value(md, "OPEN"), "Y");
@@ -547,35 +542,58 @@ int archivoAbierto(char* path){
 	return abierto;
 }
 
+// --------------------- INTERACCION CON ARCHIVOS --------------------- //
+
 int existePokemon(char* nombreOriginal){
-	char* nombre = string_duplicate(nombreOriginal);
 	char* path = string_new();
 	string_append(&path, puntoMontaje);
 	string_append(&path, "/TALL_GRASS/Files/");
 
-	string_append(&path, nombre);
+	string_append(&path, nombreOriginal);
 
+	int existe = mkdir(path, 0777);
+	free(path);
+	return existe;
+}
+
+void actualizarTamanioPokemon(char* pokemon){
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files/");
+	string_append(&path, pokemon);
 	string_append(&path, "/Metadata.bin");
 
+	int tamanio = 0;
+	int i = 0;
 
-	FILE* archivo = fopen(path, "r");
-	if (archivo == NULL) {
-		free(nombre);
+	FILE *fd = fopen(path, "r");
+
+	if(fd != NULL){
+
+		fclose(fd);
+
+		t_config* conf = config_create(path);
+		char** bloques = config_get_array_value(conf, "BLOCKS");
+
+		while(bloques[i]!=NULL){
+			tamanio = tamanio + tamanioDeBloque(bloques[i]);
+			i++;
+		}
+
+		char* tamanioTotal = string_itoa(tamanio);
+		config_set_value(conf, "SIZE", tamanioTotal);
+		free(tamanioTotal);
+		config_save(conf);
+		config_destroy(conf);
 		free(path);
-	    return 0;
-	} else {
-	    fclose(archivo);
-	    free(nombre);
-	    free(path);
-	    return 1;
+		liberar_lista(bloques);
+		log_info(logger, "Actualiza SIZE de %s", pokemon);
 	}
 }
 
-// --------------------- FUNCIONES PRINCIPALES --------------------- //
-
+// --------------------- AGREGAR - NEW --------------------- //
 
 void agregarPokemon(NewPokemonConIDs* newPokemon){
-	FILE* metadata;
 	char* path = string_new();
 	string_append(&path, puntoMontaje);
 	string_append(&path, "/TALL_GRASS/Files/");
@@ -595,7 +613,7 @@ void agregarPokemon(NewPokemonConIDs* newPokemon){
 		string_append(&escritura, "\n");
 		crearMetadataPara(newPokemon->newPokemon->nombre);
 		agregarBloqueAMetadata(escritura, newPokemon->newPokemon->nombre);
-		free(escritura);
+		//free(escritura); ------------------------ MIRAR ESTO
 		free(coorX);
 		free(coorY);
 		free(cantidad);
@@ -622,6 +640,313 @@ void agregarPokemon(NewPokemonConIDs* newPokemon){
 	enviarMensajeAppeared(newPokemon->IDmensaje, newPokemon->newPokemon->nombre, newPokemon->newPokemon->coordenadas);
 	printf("Envie un appeared\n\n");
 	free(path);
+}
+
+void agregarPokemonAUnBloque(char** bloques, NewPokemonConIDs* newPokemon){
+	int i = 0;
+	int carga = 0;
+	char** subLeido;
+	char* escritura;
+
+	int tamanioMax = cantidadDeBloques(bloques);
+	tamanioMax = tamanioBloque * tamanioMax;
+
+
+	char** leido = lecturaBloques(bloques);
+
+	char* coorX = string_itoa(newPokemon->newPokemon->coordenadas.posicionX);
+	char* coorY = string_itoa(newPokemon->newPokemon->coordenadas.posicionY);
+
+	i = 0;
+
+	while(leido[i]!=NULL && !carga){
+			escritura = string_new();
+			subLeido = string_split(leido[i], "=");
+			if(string_starts_with(subLeido[0], coorX) && string_ends_with(subLeido[0], coorY)){
+					carga = 1;
+					string_append(&escritura, subLeido[0]);
+					string_append(&escritura, "=");
+
+					char* cantidadAnterior = string_duplicate(subLeido[1]);
+					int cantidadAnt = atoi(cantidadAnterior);
+					int nuevaCantidad = cantidadAnt + newPokemon->newPokemon->cantidad;
+					char* nuevaCant = string_itoa(nuevaCantidad);
+					string_append(&escritura, nuevaCant);
+					//string_append(&escritura, "\n");
+
+					free(nuevaCant);
+					free(cantidadAnterior);
+					free(leido[i]); //---------------------------- A ver si salvo esos bytes !!
+					leido[i] = string_duplicate(escritura);
+			}
+			i++;
+			free(escritura);
+			liberar_lista(subLeido);
+	}
+
+	i = 0;
+	if(carga){
+		escribirBloques(bloques, leido, tamanioMax, newPokemon->newPokemon->nombre);
+	} else {
+		escritura = string_new();
+		string_append(&escritura, coorX);
+		string_append(&escritura, "-");
+		string_append(&escritura, coorY);
+		string_append(&escritura, "=");
+		char* cantidad = string_itoa(newPokemon->newPokemon->cantidad);
+		string_append(&escritura, cantidad);
+		string_append(&escritura, "\n");
+		free(cantidad);
+		while(bloques[i]!=NULL && !carga){
+			if(!esBloqueLleno(bloques[i], escritura)){
+				carga = 1;
+				generarEscrituraEnBloque(escritura, bloques[i]);
+			}
+			i++;
+		}
+		if(!carga){
+			agregarBloqueAMetadata(escritura, newPokemon->newPokemon->nombre);
+		}
+		//free(escritura);
+	}
+
+	free(coorX);
+	free(coorY);
+	liberar_lista(leido);
+}
+
+void agregarBloqueAMetadata(char* escritura, char* nombre){
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files/");
+	string_append(&path, nombre);
+	string_append(&path, "/Metadata.bin");
+
+	char* nuevoBloques = string_new();
+	t_config* md = config_create(path);
+	char** bloques = config_get_array_value(md, "BLOCKS");
+	int bloqueNum = obtenerYEscribirProximoDisponible();
+	char* bloque = string_itoa(bloqueNum);
+	int i = 0;
+	string_append(&nuevoBloques, "[");
+	while(bloques[i] != NULL){
+		string_append(&nuevoBloques, bloques[i]);
+		string_append(&nuevoBloques, ",");
+		i++;
+	}
+	string_append(&nuevoBloques, bloque);
+	string_append(&nuevoBloques, "]");
+	config_set_value(md, "BLOCKS", nuevoBloques);
+	config_save(md);
+
+	generarBloqueNuevo(escritura, bloque);
+	config_destroy(md);
+	free(path);
+	free(nuevoBloques);
+	free(bloque);
+	liberar_lista(bloques);
+	log_info(logger, "Agregue un bloque al Metadata de %s", nombre);
+}
+
+void generarBloqueNuevo(char* escritura, char* bloque){
+	char* nombre = string_new();
+	string_append(&nombre, puntoMontaje);
+	string_append(&nombre, "/TALL_GRASS/Blocks/");
+	string_append(&nombre, bloque);
+	string_append(&nombre, ".bin");
+
+	FILE* fd = fopen(nombre, "wt");
+	fwrite(escritura, strlen(escritura), 1, fd);
+	fclose(fd);
+	log_info(logger, "Genere un bloque nuevo para %s", nombre);
+	free(nombre);
+	free(escritura);
+}
+
+void generarEscrituraEnBloque(char* escritura, char* bloque){
+	char* nombre = string_new();
+	string_append(&nombre, puntoMontaje);
+	string_append(&nombre, "/TALL_GRASS/Blocks/");
+	string_append(&nombre, bloque);
+	string_append(&nombre, ".bin");
+
+	int file = open(nombre, O_CREAT | O_RDWR, 0664);
+	lseek(file, 0, SEEK_END);
+	write(file, escritura, strlen(escritura));
+	close(file);
+
+	log_info(logger, "Escribi en el bloque %s la linea %s", bloque, escritura);
+
+	free(nombre);
+}
+
+void pisarBloque(char* escritura, char* bloque){
+	char* nombre = string_new();
+	string_append(&nombre, puntoMontaje);
+	string_append(&nombre, "/TALL_GRASS/Blocks/");
+	string_append(&nombre, bloque);
+	string_append(&nombre, ".bin");
+
+	FILE* fd = fopen(nombre, "wt");
+	fwrite(escritura, strlen(escritura), 1, fd);
+	fclose(fd);
+
+	log_info(logger, "Pise el bloque %s", bloque);
+
+	free(nombre);
+	free(escritura);
+}
+
+char** lecturaBloques(char** bloques){
+	char* aux;
+
+	int i = cantidadDeBloques(bloques);
+
+	void* lectura = malloc(tamanioBloque*i);
+
+	char* original = lectura;
+	i=0;
+
+	while(bloques[i]!=NULL){
+		aux = lecturaBloque(bloques[i]);
+		memcpy(lectura, aux, strlen(aux));
+		i++;
+		lectura = lectura + strlen(aux);
+		free(aux);
+	}
+
+	char** leido = string_split(original, "\n");
+
+	free(original);
+//	free(lectura);
+//	free(aux);
+
+	return leido;
+}
+
+char* lecturaBloque(char* bloque){
+	char* nombre = string_new();
+	string_append(&nombre, puntoMontaje);
+	string_append(&nombre, "/TALL_GRASS/Blocks/");
+	string_append(&nombre, bloque);
+	string_append(&nombre, ".bin");
+	char* centinela = string_new();
+	int file = open(nombre, O_CREAT | O_RDWR, 0664);
+
+	void* punteroATexto = malloc(sizeof(tamanioBloque));
+
+	read(file, punteroATexto, tamanioBloque);
+
+	close(file);
+
+	centinela = punteroATexto;
+
+	free(nombre);
+
+	//free(punteroATexto);
+
+	return centinela;
+}
+
+int esBloqueLleno(char* numBloque, char* escritura){
+	int lleno = tamanioDeBloque(numBloque) +strlen(escritura) >= tamanioBloque;
+	return lleno;
+}
+
+void escribirBloques(char** bloques,char** leido,int tamanioMax, char* nombre){
+	int i = 0;
+	int j = 0;
+	int tamanioEscritura = 0;
+	char* escritura;
+	while(bloques[i]!=NULL){
+		escritura = string_new();
+		tamanioEscritura += strlen(leido[j]+1);
+		while(tamanioEscritura < tamanioMax && leido[j]!=NULL){
+			string_append(&escritura, leido[j]);
+			string_append(&escritura, "\n");
+			j++;
+			if(leido[j] != NULL){
+				tamanioEscritura += strlen(leido[j]+1);
+			}
+		}
+		pisarBloque(escritura, bloques[i]);
+		//free(escritura);
+		tamanioEscritura = 0;
+		i++;
+	}
+	while(leido[j]!=NULL){
+		escritura = string_new();
+		tamanioEscritura += strlen(leido[j]);
+		while(tamanioEscritura < tamanioMax && leido[j]!=NULL){
+			string_append(&escritura, leido[j]);
+			j++;
+			tamanioEscritura += strlen(leido[j]);
+		}
+		agregarBloqueAMetadata(escritura, nombre);
+		tamanioEscritura = 0;
+		free(escritura);
+	}
+}
+
+// --------------------- ELIMINAR - CATCH --------------------- //
+
+void eliminarPokemon(CatchPokemonConIDs* pokemon){
+	char* path = string_new();
+	string_append(&path, puntoMontaje);
+	string_append(&path, "/TALL_GRASS/Files/");
+	string_append(&path, pokemon->catchPokemon->nombre);
+
+	char* pathCarpeta= string_duplicate(path);
+
+	string_append(&path, "/Metadata.bin");
+	int encontrado = 0;
+
+	if(!existePokemon(pokemon->catchPokemon->nombre)){
+		log_info(logger,"No existe el pokemon %s", pokemon->catchPokemon->nombre);
+	} else {
+		t_config* md = config_create(path);
+		while(archivoAbierto(path)){
+			sleep(tiempoReintento);
+		}
+		config_set_value(md,"OPEN","Y");
+		config_save(md);
+		char** bloques = config_get_array_value(md, "BLOCKS");
+		config_destroy(md);
+
+		int i = 0;
+		while(bloques[i]!=NULL && !existePosicionPokemon(bloques[i], pokemon->catchPokemon->coordenadas)){
+			i++;
+		}
+		if(bloques[i] == NULL){
+			log_info(logger,"No existe %s en esa posición", pokemon->catchPokemon->nombre);
+			md = config_create(path);
+			config_set_value(md,"OPEN","N");
+			config_save(md);
+			config_destroy(md);
+		} else {
+			encontrado = 1;
+			if(eliminarSiEsArchivoVacio(bloques[i])){
+				md = config_create(path);
+				config_set_value(md,"OPEN","N");
+				config_save(md);
+				config_destroy(md);
+				eliminarBloqueDeMetadata(path ,bloques[i]);
+				eliminarSiEsCarpetaVacia(path, pathCarpeta);
+			} else {
+				md = config_create(path);
+				config_set_value(md,"OPEN","N");
+				config_save(md);
+				config_destroy(md);
+			}
+			actualizarTamanioPokemon(pokemon->catchPokemon->nombre);
+		}
+		liberar_lista(bloques);
+	}
+	sleep(tiempoRetardo);
+	enviarMensajeCaught(pokemon->IDmensaje, encontrado);
+	printf("Envie un Caught\n\n");
+	free(path);
+	free(pathCarpeta);
 }
 
 int existePosicionPokemon(char* bloque, CoordenadasXY coordenadas){
@@ -666,6 +991,7 @@ int existePosicionPokemon(char* bloque, CoordenadasXY coordenadas){
 				char* nuevaCantidad = string_itoa(cantidad - 1);
 				string_append(&nuevaLinea, nuevaCantidad);
 				free(nuevaCantidad);
+				log_info(logger, "Elimine un Pokemon en la posicion %s,%s", coorX, coorY);
 			}
 			memcpy(punteroATexto, nuevaLinea, strlen(nuevaLinea));
 			msync(NULL, tamanioBloque, 0);
@@ -739,74 +1065,60 @@ void eliminarLinea(int lno, char* path){
 
 }
 
-void eliminarPokemon(CatchPokemonConIDs* pokemon){
-	char* path = string_new();
-	string_append(&path, puntoMontaje);
-	string_append(&path, "/TALL_GRASS/Files/");
-	string_append(&path, pokemon->catchPokemon->nombre);
+void eliminarBloqueDeMetadata(char* path, char* bloqueAEliminar){
 
-	char* pathCarpeta= string_duplicate(path);
-
-	string_append(&path, "/Metadata.bin");
-	int encontrado = 0;
-
-	if(!existePokemon(pokemon->catchPokemon->nombre)){
-		log_info(logger,"No existe el pokemon %s", pokemon->catchPokemon->nombre);
-	} else {
-		t_config* md = config_create(path);
-		while(archivoAbierto(path)){
-			sleep(tiempoReintento);
+	char* nuevoBloques = string_new();
+	t_config* md = config_create(path);
+	char** bloques = config_get_array_value(md, "BLOCKS");
+	int i = 0;
+	string_append(&nuevoBloques, "[");
+	while(bloques[i+1] != NULL){
+		if(strcmp(bloques[i+1], bloqueAEliminar)){
+			string_append(&nuevoBloques, bloques[i+1]);
+			string_append(&nuevoBloques, ",");
 		}
-		config_set_value(md,"OPEN","Y");
-		config_save(md);
-		char** bloques = config_get_array_value(md, "BLOCKS");
-		config_destroy(md);
-
-		int i = 0;
-		while(bloques[i]!=NULL && !existePosicionPokemon(bloques[i], pokemon->catchPokemon->coordenadas)){
-			i++;
-		}
-		if(bloques[i] == NULL){
-			log_info(logger,"No existe %s en esa posición", pokemon->catchPokemon->nombre);
-			md = config_create(path);
-			config_set_value(md,"OPEN","N");
-			config_save(md);
-			config_destroy(md);
-		} else {
-			encontrado = 1;
-			if(eliminarSiEsArchivoVacio(bloques[i])){
-				md = config_create(path);
-				config_set_value(md,"OPEN","N");
-				config_save(md);
-				config_destroy(md);
-				eliminarBloqueDeMetadata(path ,bloques[i]);
-				eliminarSiEsCarpetaVacia(path, pathCarpeta);
-			} else {
-				md = config_create(path);
-				config_set_value(md,"OPEN","N");
-				config_save(md);
-				config_destroy(md);
-			}
-		}
-		liberar_lista(bloques);
-		actualizarTamanioPokemon(pokemon->catchPokemon->nombre);
+		i++;
 	}
-	sleep(tiempoRetardo);
-	enviarMensajeCaught(pokemon->IDmensaje, encontrado);
-	printf("Envie un Caught\n\n");
-	free(path);
-	free(pathCarpeta);
+	if(strcmp(bloques[i],bloqueAEliminar)){
+		string_append(&nuevoBloques, bloques[i]);
+	} else {
+		int length = string_length(nuevoBloques);
+		if(length != 1){
+			nuevoBloques = string_substring(nuevoBloques, 0, length-1);
+		}
+	}
+	string_append(&nuevoBloques, "]");
+	config_set_value(md, "BLOCKS", nuevoBloques);
+	config_save(md);
+	config_destroy(md);
+	liberar_lista(bloques);
+	free(nuevoBloques);
+	log_info(logger, "Elimine el bloque %s", bloqueAEliminar);
+	eliminarBit(atoi(bloqueAEliminar));
 }
+
+void eliminarSiEsCarpetaVacia(char* path, char* pathCarpeta){
+	t_config* md = config_create(path);
+	char* bloques = config_get_string_value(md, "BLOCKS");
+	if(!strcmp(bloques, "[]")){
+		config_destroy(md);
+		remove(path);
+		log_info(logger, "Elimine el archivo %s", path);
+		remove(pathCarpeta);
+		log_info(logger, "Elimine la carpeta %s", pathCarpeta);
+	}
+}
+
+
+//--------------------- BUSCAR - GET --------------------- //
 
 void obtenerCantidadYPosiciones(GetPokemonConIDs* pokemon){
 
-	FILE* metadata;
 	char* path = string_new();
 	string_append(&path, puntoMontaje);
 	string_append(&path, "/TALL_GRASS/Files/");
 	string_append(&path, pokemon->getPokemon->nombre);
 	string_append(&path, "/Metadata.bin");
-	int encontrado = 0;
 	char** bloques;
 
 	char* error = string_new();
@@ -852,7 +1164,7 @@ void obtenerCantidadYPosiciones(GetPokemonConIDs* pokemon){
 			}
 			list_destroy(coordenadas);
 			liberar_lista(bloques);
-			actualizarTamanioPokemon(pokemon->getPokemon->nombre);
+			//actualizarTamanioPokemon(pokemon->getPokemon->nombre);
 	}
 	free(path);
 	free(error);
@@ -921,7 +1233,7 @@ t_list* obtenerPosiciones(char* bloque){
 }
 
 
-// --------------------- Enviar Mensajes --------------------- //
+// --------------------- ENVIAR MENSAJES --------------------- //
 
 void enviarMensajeAppeared(int IDmensaje, char* pokemon, CoordenadasXY coordenadas){
 	int socket_suscriptor = crear_conexion(ip, puerto);
@@ -980,8 +1292,8 @@ int obtenerYEscribirProximoDisponible(){
 	for(int i=0; i<cantidadBloques; i++){
 		if(bitarray_test_bit(bitmap, i) == 0){
 			bitarray_set_bit(bitmap ,i);
-			msync(NULL ,cantidadBloques/8 ,0);
-			write(bitmapFile, punteroABitmap, cantidadBloques/8);
+			msync(punteroABitmap ,cantidadBloques/8 ,0);
+			//write(bitmapFile, punteroABitmap, cantidadBloques/8);
 			close(bitmapFile);
 			free(path);
 			bitarray_destroy(bitmap);
@@ -1027,40 +1339,6 @@ void eliminarBit(int index){
 	free(path);
 }
 
-// --------------------- METADATA --------------------- //
-
-void actualizarTamanioPokemon(char* pokemon){
-	char* path = string_new();
-	string_append(&path, puntoMontaje);
-	string_append(&path, "/TALL_GRASS/Files/");
-	string_append(&path, pokemon);
-	string_append(&path, "/Metadata.bin");
-
-	int tamanio = 0;
-	int i = 0;
-
-	t_config* md = config_create(path);
-	char** bloques = config_get_array_value(md, "BLOCKS");
-
-	if(!strcmp(bloques[i],"")){
-		tamanio = 0;
-	} else {
-		while(bloques[i]!=NULL){
-			tamanio = tamanio + tamanioDeBloque(bloques[i]);
-			i++;
-		}
-	}
-
-	char* tamanioTotal = string_itoa(tamanio);
-	config_set_value(md, "SIZE", tamanioTotal);
-	free(tamanioTotal);
-	config_save(md);
-	config_destroy(md);
-	free(path);
-	liberar_lista(bloques);
-	log_info(logger, "Actualiza SIZE de %s", pokemon);
-}
-
 // --------------------- BLOCKS --------------------- //
 
 int cantidadDeBloques(char** bloques){
@@ -1086,293 +1364,6 @@ int tamanioDeBloque(char* bloque){
 	free(path);
 	return tamanio;
 }
-
-// --------------------- AGREGAR --------------------- //
-
-void agregarPokemonAUnBloque(char** bloques, NewPokemonConIDs* newPokemon){
-	int i = 0;
-	int carga = 0;
-	char** subLeido;
-	char* escritura;
-
-	int tamanioMax = cantidadDeBloques(bloques);
-	tamanioMax = tamanioBloque * tamanioMax;
-
-
-	char** leido = lecturaBloques(bloques);
-
-	char* coorX = string_itoa(newPokemon->newPokemon->coordenadas.posicionX);
-	char* coorY = string_itoa(newPokemon->newPokemon->coordenadas.posicionY);
-
-	i = 0;
-
-	while(leido[i]!=NULL && !carga){
-			escritura = string_new();
-			subLeido = string_split(leido[i], "=");
-			if(string_starts_with(subLeido[0], coorX) && string_ends_with(subLeido[0], coorY)){
-					carga = 1;
-					string_append(&escritura, subLeido[0]);
-					string_append(&escritura, "=");
-
-					char* cantidadAnterior = string_duplicate(subLeido[1]);
-					int cantidadAnt = atoi(cantidadAnterior);
-					int nuevaCantidad = cantidadAnt + newPokemon->newPokemon->cantidad;
-					char* nuevaCant = string_itoa(nuevaCantidad);
-					string_append(&escritura, nuevaCant);
-					string_append(&escritura, "\n");
-
-					free(nuevaCant);
-					free(cantidadAnterior);
-					leido[i] = escritura;
-			}
-			//free(escritura);
-			i++;
-	}
-
-	i = 0;
-	if(carga){
-		escribirBloques(bloques, leido, tamanioMax, newPokemon->newPokemon->nombre);
-	} else {
-		string_append(&escritura, coorX);
-		string_append(&escritura, "-");
-		string_append(&escritura, coorY);
-		string_append(&escritura, "=");
-		char* cantidad = string_itoa(newPokemon->newPokemon->cantidad);
-		string_append(&escritura, cantidad);
-		string_append(&escritura, "\n");
-		free(cantidad);
-		while(bloques[i]!=NULL && !carga){
-			if(!esBloqueLleno(bloques[i], escritura)){
-				carga = 1;
-				generarEscrituraEnBloque(escritura, bloques[i]);
-			}
-			i++;
-		}
-		if(!carga){
-			agregarBloqueAMetadata(escritura, newPokemon->newPokemon->nombre);
-		}
-	}
-
-	free(coorX);
-	free(coorY);
-	//free(escritura);
-}
-
-void agregarBloqueAMetadata(char* escritura, char* nombre){
-	char* path = string_new();
-	string_append(&path, puntoMontaje);
-	string_append(&path, "/TALL_GRASS/Files/");
-	string_append(&path, nombre);
-	string_append(&path, "/Metadata.bin");
-
-	char* nuevoBloques = string_new();
-	t_config* md = config_create(path);
-	char** bloques = config_get_array_value(md, "BLOCKS");
-	int bloqueNum = obtenerYEscribirProximoDisponible();
-	char* bloque = string_itoa(bloqueNum);
-	int i = 0;
-	string_append(&nuevoBloques, "[");
-	while(bloques[i] != NULL){
-		string_append(&nuevoBloques, bloques[i]);
-		string_append(&nuevoBloques, ",");
-		i++;
-	}
-	string_append(&nuevoBloques, bloque);
-	string_append(&nuevoBloques, "]");
-	config_set_value(md, "BLOCKS", nuevoBloques);
-	config_save(md);
-
-	generarBloqueNuevo(escritura, bloque);
-	config_destroy(md);
-	free(path);
-	free(nuevoBloques);
-	free(bloque);
-	liberar_lista(bloques);
-	log_info(logger, "Agregue un bloque al Metadata de %s", nombre);
-}
-
-void generarBloqueNuevo(char* escritura, char* bloque){
-	char* nombre = string_new();
-	string_append(&nombre, puntoMontaje);
-	string_append(&nombre, "/TALL_GRASS/Blocks/");
-	string_append(&nombre, bloque);
-	string_append(&nombre, ".bin");
-
-	FILE* fd = fopen(nombre, "wt");
-	fwrite(escritura, strlen(escritura), 1, fd);
-	fclose(fd);
-	log_info(logger, "Genere un bloque nuevo para %s", nombre);
-	free(nombre);
-	free(escritura);
-}
-
-void generarEscrituraEnBloque(char* escritura, char* bloque){
-	char* nombre = string_new();
-	string_append(&nombre, puntoMontaje);
-	string_append(&nombre, "/TALL_GRASS/Blocks/");
-	string_append(&nombre, bloque);
-	string_append(&nombre, ".bin");
-
-	int file = open(nombre, O_CREAT | O_RDWR, 0664);
-	lseek(file, 0, SEEK_END);
-	write(file, escritura, strlen(escritura));
-	close(file);
-
-	log_info(logger, "Escribi en el bloque %s la linea %s", bloque, escritura);
-
-	free(nombre);
-	free(escritura);
-}
-
-void pisarBloque(char* escritura, char* bloque){
-	char* nombre = string_new();
-	string_append(&nombre, puntoMontaje);
-	string_append(&nombre, "/TALL_GRASS/Blocks/");
-	string_append(&nombre, bloque);
-	string_append(&nombre, ".bin");
-
-	FILE* fd = fopen(nombre, "wt");
-	fwrite(escritura, strlen(escritura), 1, fd);
-	fclose(fd);
-
-	log_info(logger, "Pise el bloque %s", bloque);
-
-	free(nombre);
-	free(escritura);
-}
-
-char** lecturaBloques(char** bloques){
-	char* aux;
-
-
-	int i = cantidadDeBloques(bloques);
-
-	void* lectura = malloc(tamanioBloque*i);
-
-	char* original = lectura;
-	i=0;
-
-	while(bloques[i]!=NULL){
-		aux = lecturaBloque(bloques[i]);
-		memcpy(lectura, aux, strlen(aux));
-		i++;
-		lectura = lectura + strlen(aux);
-	}
-
-	char** leido = string_split(original, "/n");
-
-	return leido;
-}
-
-char* lecturaBloque(char* bloque){
-	char* nombre = string_new();
-	string_append(&nombre, puntoMontaje);
-	string_append(&nombre, "/TALL_GRASS/Blocks/");
-	string_append(&nombre, bloque);
-	string_append(&nombre, ".bin");
-	char* centinela = string_new();
-	int file = open(nombre, O_CREAT | O_RDWR, 0664);
-
-	void* punteroATexto = malloc(sizeof(tamanioBloque));
-
-	read(file, punteroATexto, tamanioBloque);
-
-	close(file);
-
-	centinela = punteroATexto;
-
-	return centinela;
-}
-
-int esBloqueLleno(char* numBloque, char* escritura){
-	int lleno = tamanioDeBloque(numBloque) +strlen(escritura) >= tamanioBloque;
-	return lleno;
-}
-
-void escribirBloques(char** bloques,char** leido,int tamanioMax, char* nombre){
-	int i = 0;
-	int j = 0;
-	int cantBloquesAEscribir = cantidadDeBloques(leido);
-	int cantBloques = cantidadDeBloques(bloques);
-	int tamanioEscritura = 0;
-	char* escritura;
-	while(bloques[i]!=NULL){
-		escritura = string_new();
-		tamanioEscritura += strlen(leido[j]);
-		while(tamanioEscritura < tamanioMax && leido[j]!=NULL){
-			string_append(&escritura, leido[j]);
-			j++;
-			if(leido[j] != NULL){
-				tamanioEscritura += strlen(leido[j]);
-			}
-		}
-		pisarBloque(escritura, bloques[i]);
-		//free(escritura);
-		tamanioEscritura = 0;
-		i++;
-	}
-	while(leido[j]!=NULL){
-		escritura = string_new();
-		tamanioEscritura += strlen(leido[j]);
-		while(tamanioEscritura < tamanioMax && leido[j]!=NULL){
-			string_append(&escritura, leido[j]);
-			j++;
-			tamanioEscritura += strlen(leido[j]);
-		}
-		agregarBloqueAMetadata(escritura, nombre);
-		tamanioEscritura = 0;
-		free(escritura);
-	}
-}
-
-
-// --------------------- ELIMINAR --------------------- //
-
-void eliminarBloqueDeMetadata(char* path, char* bloqueAEliminar){
-
-	char* nuevoBloques = string_new();
-	t_config* md = config_create(path);
-	char** bloques = config_get_array_value(md, "BLOCKS");
-	int i = 0;
-	string_append(&nuevoBloques, "[");
-	while(bloques[i+1] != NULL){
-		if(strcmp(bloques[i+1], bloqueAEliminar)){
-			string_append(&nuevoBloques, bloques[i+1]);
-			string_append(&nuevoBloques, ",");
-		}
-		i++;
-	}
-	if(strcmp(bloques[i],bloqueAEliminar)){
-		string_append(&nuevoBloques, bloques[i]);
-	} else {
-		int length = string_length(nuevoBloques);
-		if(length != 1){
-			nuevoBloques = string_substring(nuevoBloques, 0, length-1);
-		}
-	}
-	string_append(&nuevoBloques, "]");
-	config_set_value(md, "BLOCKS", nuevoBloques);
-	config_save(md);
-	config_destroy(md);
-	liberar_lista(bloques);
-	free(nuevoBloques);
-	log_info(logger, "Elimine el bloque %s", bloqueAEliminar);
-	eliminarBit(atoi(bloqueAEliminar));
-}
-
-void eliminarSiEsCarpetaVacia(char* path, char* pathCarpeta){
-	t_config* md = config_create(path);
-	char* bloques = config_get_string_value(md, "BLOCKS");
-	if(!strcmp(bloques, "[]")){
-		config_destroy(md);
-		remove(path);
-		log_info(logger, "Elimine el archivo %s", path);
-		remove(pathCarpeta);
-		log_info(logger, "Elimine la carpeta %s", pathCarpeta);
-	}
-}
-
-// --------------------- BUSCAR --------------------- //
 
 // --------------------- AUX --------------------- //
 

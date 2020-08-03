@@ -37,14 +37,14 @@ void* atenderMensajesNew();
 void* atenderMensajesCatch();
 void* atenderMensajesGet();
 
-void* crearDirectorioTG();
-void* crearMetadata(char*);
-void* crearFiles(char*);
-void* crearBlocks(char*);
-void* generarBitmap(char*, t_config*);
+void crearDirectorioTG();
+void crearMetadata(char*);
+void crearFiles(char*);
+void crearBlocks(char*);
+void generarBitmap(char*, t_config*);
 
-void* armarFolderPara(char*);
-void* crearMetadataPara(char*);
+void armarFolderPara(char*);
+void crearMetadataPara(char*);
 int archivoAbierto(char*);
 int existePokemon(char*);
 int existePosicionPokemon(char*, CoordenadasXY);

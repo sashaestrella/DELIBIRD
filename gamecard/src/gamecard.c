@@ -2,8 +2,8 @@
 #include "adminMensajes.h"
 
 
-int main(void)
-{
+int main(void){
+
 	sem_init(&colaNew, 0, 0);
 	sem_init(&colaCatch, 0, 0);
 	sem_init(&colaGet, 0, 0);
