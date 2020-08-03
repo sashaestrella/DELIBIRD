@@ -1156,15 +1156,14 @@ void obtenerCantidadYPosiciones(GetPokemonConIDs* pokemon){
 			}
 
 			enviarMensajeLocalized(pokemon->IDmensaje, pokemon->getPokemon->nombre, coordenadas);
-			printf("Envie un localized\n\n");
-			CoordenadasXY* coordenadaAux;
+			printf("\nEnvie un localized\n\n");
+			/*CoordenadasXY* coordenadaAux;
 			for(int j = 0; j < list_size(coordenadas); j++){
 				coordenadaAux = list_get(coordenadas, j);
 				free(coordenadaAux);
-			}
+			}*/
 			list_destroy(coordenadas);
 			liberar_lista(bloques);
-			//actualizarTamanioPokemon(pokemon->getPokemon->nombre);
 	}
 	free(path);
 	free(error);
@@ -1178,57 +1177,24 @@ t_list* obtenerPosiciones(char* bloque){
 	string_append(&path, bloque);
 	string_append(&path, ".bin");
 
-	char* caracterLeido = malloc(1);
-	char* caracterAuxiliar;
+	char* leido = lecturaBloque(bloque);
+	char** pokemones;
 	char** subleido;
-	char** lasCoor;
-	char* coorX;
-	char* coorY;
-
-	FILE* fd = fopen(path, "rt");
-	char finDeLinea = '\n';
-	CoordenadasXY* posicion;
-
-	int cantidad;
-
-	char* leido;
-
-	fread(caracterLeido, 1, 1, fd);
-	caracterAuxiliar = string_substring_until(caracterLeido, 1);
-	while(!feof(fd)){
-		leido = string_new();
-		while(caracterLeido[0] != finDeLinea){
-			string_append(&leido, caracterAuxiliar);
-			free(caracterAuxiliar);
-			fread(caracterLeido, 1, 1, fd);
-			caracterAuxiliar = string_substring_until(caracterLeido, 1);
+	char** posicion;
+	CoordenadasXY* coordenadas;
+	pokemones = string_split(leido, "\n");
+	int i = 0;
+	while(pokemones[i+1] != NULL){
+		coordenadas = malloc(sizeof(CoordenadasXY));
+		subleido = string_split(pokemones[i], "=");
+		posicion = string_split(subleido[0], "-");
+		coordenadas->posicionX = atoi(posicion[0]);
+		coordenadas->posicionY = atoi(posicion[1]);
+		for(int j=0; j < atoi(subleido[1]); j++){
+			list_add(posiciones, coordenadas);
 		}
-		subleido = string_split(leido, "=");
-		lasCoor = string_split(subleido[0], "-");
-		cantidad = atoi(subleido[1]);
-		coorX = string_duplicate(lasCoor[0]);
-		coorY = string_duplicate(lasCoor[1]);
-		for(int i=0; i<cantidad; i++){
-			posicion = malloc(sizeof(CoordenadasXY));
-			posicion->posicionX = atoi(coorX);
-			posicion->posicionY = atoi(coorY);
-			list_add(posiciones, posicion);
-		}
-		free(caracterAuxiliar);
-		fread(caracterLeido, 1, 1, fd);
-		caracterAuxiliar = string_substring_until(caracterLeido, 1);
-		free(leido);
-		liberar_lista(subleido);
-		liberar_lista(lasCoor);
-		free(coorX);
-		free(coorY);
+		i++;
 	}
-
-	free(caracterAuxiliar);
-	free(caracterLeido);
-	fclose(fd);
-	free(path);
-
 	return posiciones;
 }
 
