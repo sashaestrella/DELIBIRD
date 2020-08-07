@@ -98,16 +98,13 @@ int main(int argc,char* argv[])
 
 	//probar con listas
 
-	puts("\nInicio Servidor para Gameboy");
+	//puts("\nInicio Servidor para Gameboy");
 	pthread_t hiloConexionGameboy;
 	pthread_create(&hiloConexionGameboy, NULL, (void*)noHayBroker, NULL);
 
 	pthread_detach(hiloConexionGameboy);
 
-	//sem_wait(&pruebaLocalized);
-	//sem_wait(&pruebaLocalized);
-	//sem_wait(&pruebaLocalized);
-	//sem_wait(&pruebaLocalized);
+
 
 
 	int i;
