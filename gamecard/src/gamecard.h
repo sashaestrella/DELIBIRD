@@ -50,13 +50,6 @@ int IDsuscripcionCatch;
 int cantidadBloques;
 int tamanioBloque;
 
-sem_t colaGet;
-t_list* mensajesGet;
-sem_t colaCatch;
-t_list* mensajesCatch;
-sem_t colaNew;
-t_list* mensajesNew;
-
 sem_t reintentoNew;
 sem_t reintentoGet;
 sem_t reintentoCatch;

@@ -5,16 +5,15 @@
 
 void generarConexiones();
 void abrirEscuchas();
-void empezarAnalizadoresDeMensajes();
 
-// ----- Auxiliares ----- //
-
-t_list* mensajesRecibidos;
+// --------------------- GAMEBOY --------------------- //
 
 void serve_client_gamecard(int*);
 void process_request_gamecard(int, int);
 void iniciar_servidor_gamecard(void);
 void esperar_cliente_gamecard(int);
+
+// --------------------- BROKER --------------------- //
 
 void* conexionConBroker();
 void noHayBroker();
@@ -32,45 +31,37 @@ void* adminMensajeNewPokemon(NewPokemonConIDs*);
 void* adminMensajeGetPokemon(GetPokemonConIDs*);
 void* adminMensajeCatch(CatchPokemonConIDs*);
 
-void abrirAtenciones();
-/*
-void* atenderMensajesNew();
-void* atenderMensajesCatch();
-void* atenderMensajesGet();
-*/
+// --------------------- INICIALIZAR --------------------- //
+
 void crearDirectorioTG();
 void crearMetadata(char*);
 void crearFiles(char*);
 void crearBlocks(char*);
 void generarBitmap(char*, t_config*);
 
-void armarFolderPara(char*);
-void crearMetadataPara(char*);
-int archivoAbierto(char*);
-int existePokemon(char*);
-t_list* obtenerPosiciones(char*);
-
-void agregarPokemon(NewPokemonConIDs*);
-void eliminarPokemon(CatchPokemonConIDs*);
-void obtenerCantidadYPosiciones(GetPokemonConIDs*);
+// --------------------- ENVIAR MENSAJES --------------------- //
 
 void enviarMensajeAppeared(int , char*, CoordenadasXY);
 void enviarMensajeCaught(int , int);
 void enviarMensajeLocalized(int, char*, t_list*);
 
+// --------------------- BITMAP --------------------- //
+
 int obtenerYEscribirProximoDisponible();
 void eliminarBit(int);
-void eliminarBloqueDeMetadata(char*, char*);
-int eliminarSiEsArchivoVacio(char*);
-int recorrerParaEliminarArchivo(char**, char*);
-void eliminarLinea(int ,char*);
-void eliminarSiEsCarpetaVacia(char*, char*);
-void liberar_lista(char**);
+
+// --------------------- FS --------------------- //
+
+void armarFolderPara(char*);
+void crearMetadataPara(char*);
+int archivoAbierto(char*);
+int existePokemon(char*);
 int tamanioDeBloque(char*);
 void actualizarTamanioPokemon(char*);
 
 // --------------------- AGREGAR --------------------- //
 
+void agregarPokemon(NewPokemonConIDs*);
 void agregarPokemonAUnBloque(char**, NewPokemonConIDs*);
 void agregarBloqueAMetadata(char*, char*);
 void generarBloqueNuevo(char*, char*);
@@ -81,7 +72,21 @@ char* lecturaBloque(char*);
 int esBloqueLleno(char*, char*);
 void escribirBloques(char**, char**, int, char*);
 
+// --------------------- ELIMINAR --------------------- //
+
+void eliminarPokemon(CatchPokemonConIDs*);
+void eliminarBloqueDeMetadata(char*, char*);
+int eliminarSiEsArchivoVacio(char*);
+int recorrerParaEliminarArchivo(char**, char*);
+void eliminarSiEsCarpetaVacia(char*, char*);
+
+// --------------------- BUSCAR --------------------- //
+
+t_list* obtenerPosiciones(char*);
+void obtenerCantidadYPosiciones(GetPokemonConIDs*);
+
 // --------------------- AUX --------------------- //
 
 int cantidadDeBloques(char**);
+void liberar_lista(char**);
 #endif /* ADMINMENSAJES_H_ */
