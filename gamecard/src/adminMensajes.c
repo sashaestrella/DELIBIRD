@@ -824,13 +824,17 @@ void escribirBloques(char** bloques,char** leido,int tamanioMax, char* nombre){
 	char* escritura;
 	while(bloques[i]!=NULL && tamanioEscritura < tamanioMax){
 		escritura = string_new();
-		tamanioEscritura += strlen(leido[j])+1;
-		tamanioTotal += strlen(leido[j])+1;
+		if(leido[j]!= NULL){
+			if(!strcmp(leido[j],"")){ j++;}
+			tamanioEscritura += strlen(leido[j])+1;
+			tamanioTotal += strlen(leido[j])+1;
+		}
 		while(leido[j] != NULL && tamanioEscritura < tamanioBloque && tamanioTotal < tamanioMax){
 			string_append(&escritura, leido[j]);
 			string_append(&escritura, "\n");
 			j++;
 			if(leido[j]!= NULL){
+				if(!strcmp(leido[j],"")){ j++;}
 				tamanioEscritura += strlen(leido[j])+1;
 				tamanioTotal += strlen(leido[j])+1;
 			}
@@ -890,18 +894,24 @@ void eliminarPokemon(CatchPokemonConIDs* pokemon){
 			if(!strcmp(subleido[0], centinela)){
 				encontrado = 1;
 				int nuevaCantidad = atof(subleido[1]) - 1;
+				char* escritura = string_new();
 				if(nuevaCantidad == 0){
 					lineaVacia = 1;
+					log_info(logger,"Ya no hay mas %s en la posicion %d %d", pokemon->catchPokemon->nombre, pokemon->catchPokemon->coordenadas.posicionX, pokemon->catchPokemon->coordenadas.posicionY);
+					string_append(&escritura, "");
+					free(leido[i]);
+					leido[i] = string_duplicate(escritura);
+					free(escritura);
+				} else {
+					string_append(&escritura, subleido[0]);
+					string_append(&escritura, "=");
+					char* nuevaCant = string_itoa(nuevaCantidad);
+					string_append(&escritura, nuevaCant);
+					free(leido[i]);
+					leido[i] = string_duplicate(escritura);
+					free(escritura);
+					free(nuevaCant);
 				}
-				char* escritura = string_new();
-				string_append(&escritura, subleido[0]);
-				string_append(&escritura, "=");
-				char* nuevaCant = string_itoa(nuevaCantidad);
-				string_append(&escritura, nuevaCant);
-				free(leido[i]);
-				leido[i] = string_duplicate(escritura);
-				free(escritura);
-				free(nuevaCant);
 			}
 			liberar_lista(subleido);
 			i++;
@@ -916,14 +926,13 @@ void eliminarPokemon(CatchPokemonConIDs* pokemon){
 			int cantDeBloques = cantidadDeBloques(bloques);
 			escribirBloques(bloques, leido, cantDeBloques*tamanioBloque, pokemon->catchPokemon->nombre);
 			if(lineaVacia){
-				if(eliminarLineaVacia(bloques, path)){
+				md = config_create(path);
+				config_set_value(md,"OPEN","N");
+				config_save(md);
+				config_destroy(md);
+				actualizarTamanioPokemon(pokemon->catchPokemon->nombre);
+				if(recorrerParaEliminarArchivo(bloques, path)){
 					eliminarSiEsCarpetaVacia(path, pathCarpeta);
-				} else {
-					md = config_create(path);
-					config_set_value(md,"OPEN","N");
-					config_save(md);
-					config_destroy(md);
-					actualizarTamanioPokemon(pokemon->catchPokemon->nombre);
 				}
 			} else {
 				md = config_create(path);
@@ -947,31 +956,15 @@ void eliminarPokemon(CatchPokemonConIDs* pokemon){
 	free(pathCarpeta);
 }
 
-int eliminarLineaVacia(char** bloques, char* path){
+int recorrerParaEliminarArchivo(char** bloques, char* path){
 	int i = 0;
-	int j=0;
 	int seBorra = 0;
-	char* leido;
-	char** subleido;
-	char** cadaPokemon;
 	while(bloques[i] != NULL && !seBorra){
-		leido = lecturaBloque(bloques[i]);
-		subleido = string_split(leido, "\n");
-		while(subleido[j] !=  NULL && !seBorra){
-			cadaPokemon = string_split(subleido[j], "=");
-			if(!strcmp(cadaPokemon[1], "0")){
-				eliminarLinea(j, bloques[i]);
-				if(eliminarSiEsArchivoVacio(bloques[i])){
-					seBorra = 1;
-					eliminarBloqueDeMetadata(path, bloques[i]);
-				}
-			}
-			liberar_lista(cadaPokemon);
-			j++;
+		if(eliminarSiEsArchivoVacio(bloques[i])){
+			seBorra=1;
+			eliminarBloqueDeMetadata(path, bloques[i]);
 		}
-		liberar_lista(subleido);
-		free(leido);
-		i++;
+	i++;
 	}
 	return seBorra;
 }
@@ -993,47 +986,6 @@ int eliminarSiEsArchivoVacio(char* bloque){
 	return 0;
 }
 
-void eliminarLinea(int lno, char* bloque){
-	char* path = string_new();
-	string_append(&path, puntoMontaje);
-	string_append(&path, "/TALL_GRASS/Blocks/");
-	string_append(&path, bloque);
-	string_append(&path, ".bin");
-	int ctr = 0;
-	FILE *fptr1, *fptr2;
-	char* str;
-	char* temp = string_duplicate("temp.bin");
-
-	fptr1 = fopen(path, "r");
-	fptr2 = fopen(temp, "w");
-
-	lno++;
-
-	while (!feof(fptr1))
-	{
-		str = string_new();
-		int cantidad = fread(str, 1, tamanioBloque, fptr1);
-		str = string_substring_until(str, cantidad);
-		if (!feof(fptr1))
-		{
-			printf("Pinto desconocerse \n");
-			ctr++;
-			if (ctr != lno)
-			{
-				fprintf(fptr2, "%s", str);
-			}
-		}
-	}
-	fclose(fptr1);
-	fclose(fptr2);
-	remove(path);  		// remove the original file
-	rename(temp, path); // rename the temporary file to original name
-	log_info(logger, "Se elimino la linea %d del archivo %s", lno, path);
-	free(temp);
-	free(str);
-
-}
-
 void eliminarBloqueDeMetadata(char* path, char* bloqueAEliminar){
 
 	char* nuevoBloques = string_new();
@@ -1042,8 +994,8 @@ void eliminarBloqueDeMetadata(char* path, char* bloqueAEliminar){
 	int i = 0;
 	string_append(&nuevoBloques, "[");
 	while(bloques[i+1] != NULL){
-		if(strcmp(bloques[i+1], bloqueAEliminar)){
-			string_append(&nuevoBloques, bloques[i+1]);
+		if(strcmp(bloques[i], bloqueAEliminar)){
+			string_append(&nuevoBloques, bloques[i]);
 			string_append(&nuevoBloques, ",");
 		}
 		i++;
