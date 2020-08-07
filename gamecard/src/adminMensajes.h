@@ -33,10 +33,11 @@ void* adminMensajeGetPokemon(GetPokemonConIDs*);
 void* adminMensajeCatch(CatchPokemonConIDs*);
 
 void abrirAtenciones();
+/*
 void* atenderMensajesNew();
 void* atenderMensajesCatch();
 void* atenderMensajesGet();
-
+*/
 void crearDirectorioTG();
 void crearMetadata(char*);
 void crearFiles(char*);
@@ -47,7 +48,6 @@ void armarFolderPara(char*);
 void crearMetadataPara(char*);
 int archivoAbierto(char*);
 int existePokemon(char*);
-int existePosicionPokemon(char*, CoordenadasXY);
 t_list* obtenerPosiciones(char*);
 
 void agregarPokemon(NewPokemonConIDs*);
@@ -62,6 +62,7 @@ int obtenerYEscribirProximoDisponible();
 void eliminarBit(int);
 void eliminarBloqueDeMetadata(char*, char*);
 int eliminarSiEsArchivoVacio(char*);
+int eliminarLineaVacia(char**, char*);
 void eliminarLinea(int ,char*);
 void eliminarSiEsCarpetaVacia(char*, char*);
 void liberar_lista(char**);

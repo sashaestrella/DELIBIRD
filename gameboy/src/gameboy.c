@@ -565,11 +565,11 @@ int main(int argc, char *argv[]){
 					puts("ERROR: La cantidad mínima de parámetros es 7.Por favor intente de nuevo.");
 				}else if(string_length(argv[3]) <= 1 || !esUnNumero(argv[4]) || !esUnNumero(argv[5]) || !esUnNumero(argv[6])){
 					puts("Argumento incorrecto. Por favor intente de nuevo.");
-					puts("Formato: NEW_POKEMON [POKEMON] [POSX] [POSY] [CANTIDAD]");
+					puts("Formato: NEW_POKEMON [POKEMON] [POSX] [POSY] [CANTIDAD] [ID]");
 				}else{
 					newPokemon = parsearNewPokemon(argv[3], argv[4], argv[5], argv[6]);
-					int correlativo = atoi(argv[7]);
-					enviarNewPokemon(newPokemon, conexion,correlativo);
+					int id = atoi(argv[7]);
+					enviarNewPokemon(newPokemon, conexion,id);
 				}
 			}else if(!strcmp(argv[2],"CATCH_POKEMON")){
 				CatchPokemon* unCatchPokemon;
@@ -577,11 +577,11 @@ int main(int argc, char *argv[]){
 					puts("ERROR: La cantidad mínima de parámetros es 6.Por favor intente de nuevo.");
 				}else if(string_length(argv[3]) <= 1 || !esUnNumero(argv[4]) || !esUnNumero(argv[5])){
 					puts("Argumento incorrecto. Por favor intente de nuevo.");
-					puts("Formato: CATCH_POKEMON [POKEMON] [POSX] [POSY]");
+					puts("Formato: CATCH_POKEMON [POKEMON] [POSX] [POSY] [ID]");
 				}else{
 					unCatchPokemon = parsearCatchPokemon(argv[3],argv[4],argv[5]);
-					int correlativo = atoi(argv[6]);
-					enviarCatchPokemon(unCatchPokemon,conexion,correlativo);
+					int id = atoi(argv[6]);
+					enviarCatchPokemon(unCatchPokemon,conexion,id);
 					//int idMensaje;
 					//recv(conexion,&idMensaje,sizeof(int),0);
 				}
@@ -594,8 +594,8 @@ int main(int argc, char *argv[]){
 					puts("Formato: GET_POKEMON [POKEMON] [ID]");
 				}else{
 					unGetPokemon = parsearGetPokemon(argv[3]);
-					int correlativo = atoi(argv[4]);
-					enviarGetPokemon(unGetPokemon,conexion,correlativo);
+					int id = atoi(argv[4]);
+					enviarGetPokemon(unGetPokemon,conexion,id);
 					//int idMensaje;
 					//recv(conexion,&idMensaje,sizeof(int),0);
 				}
