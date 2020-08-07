@@ -4,16 +4,10 @@
 
 int main(void){
 
-	sem_init(&colaNew, 0, 0);
-	sem_init(&colaCatch, 0, 0);
-	sem_init(&colaGet, 0, 0);
 	sem_init(&suscripciones, 0, 1);
 	sem_init(&reintentoNew, 0, 0);
 	sem_init(&reintentoGet, 0, 0);
 	sem_init(&reintentoCatch, 0, 0);
-	mensajesCatch = list_create();
-	mensajesNew = list_create();
-	mensajesGet = list_create();
 
 	leerConfig();
 	logger = iniciar_logger();
