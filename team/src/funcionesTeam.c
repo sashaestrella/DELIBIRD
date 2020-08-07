@@ -29,8 +29,7 @@ void leer_config()
 
 	armar_entrenadores(posiciones_entrenadores, pokemon_entrenadores, objetivos_entrenadores); //les pasas los arrays y la lista
 
-
-	/*int cant;
+	int cant;
 	cant= cantidad(posiciones_entrenadores);
 
 
@@ -53,7 +52,7 @@ void leer_config()
 			free(pokemon_entrenadores[i]);
 		}
 	free(pokemon_entrenadores);
-	*/
+
 
 	IDsuscripcionAppeared = config_get_int_value(archivo_config, "ID_APPEARED");
 
@@ -81,11 +80,12 @@ void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
 
 
 	int cantidad_entrenadores = cantidad(posiciones);
-	int i;
-	char** pokemones_separados;
 
-	for(i=0; i<cantidad_entrenadores; i++){
 
+
+	for(int i=0; i<cantidad_entrenadores; i++){
+
+		char** pokemones_separados;
 		Entrenador* entrenador = malloc(sizeof(Entrenador));
 
 		entrenador->ID = i+1;
@@ -98,21 +98,21 @@ void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
 
 		int cant = cantidad(pokemones);
 
-		//for(int j=0; j<cant;j++){
 
-		if(i<= cant){
+		//if(i<= cant){
 
 		if(pokemones[i] != NULL){
 		pokemones_separados = string_split(pokemones[i], "|");
-		//free(pokemones);
-		/*}else{
-			pokemones_separados = NULL;*/
-		}
-		}
 
-		if(pokemones[0] == NULL){
+		//free(pokemones);
+		}else{
 			pokemones_separados = NULL;
 		}
+
+
+		/*if(pokemones[0] == NULL){
+			pokemones_separados = NULL;
+		}*/
 
 		char** objetivos_separados = string_split(objetivos[i], "|");
 		//free(objetivos);
@@ -125,8 +125,10 @@ void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
 		obtener_objetivos(pokemones_separados, objetivos_separados, entrenador->objetivos);
 
 
-		//liberarListas(objetivos_separados);
+		liberarListas(objetivos_separados);
+
 		liberarListas(pokemones_separados);
+
 		liberarListas(posiciones_separadas);
 
 
@@ -167,7 +169,7 @@ void obtener_objetivos(char** yaTiene, char** objetivos, t_list* listaObjetivos)
 
 		if(flag != 1){
 
-			list_add(listaObjetivos, objetivos[i]);
+			list_add(listaObjetivos, string_duplicate(objetivos[i]));
 
 		}
 		}
@@ -214,8 +216,14 @@ void liberarListas(char** lista){
 
 			i++;
 		}
+		free(lista);
 	}
-		//free(lista);
+
+	if(lista == NULL){
+		free(lista);
+	}
+
+
 
 }
 
