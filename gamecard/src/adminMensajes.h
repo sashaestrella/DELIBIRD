@@ -62,7 +62,7 @@ int obtenerYEscribirProximoDisponible();
 void eliminarBit(int);
 void eliminarBloqueDeMetadata(char*, char*);
 int eliminarSiEsArchivoVacio(char*);
-int eliminarLineaVacia(char**, char*);
+int recorrerParaEliminarArchivo(char**, char*);
 void eliminarLinea(int ,char*);
 void eliminarSiEsCarpetaVacia(char*, char*);
 void liberar_lista(char**);
