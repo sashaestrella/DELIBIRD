@@ -41,14 +41,14 @@ void flujoEntrenador(Entrenador* entrenador){
 	while(noLlegoADestino(entrenador, posicion)){
 
 		moverseUnaPosicion(entrenador, posicion);
-
+		log_info(logger, "Soy el entrenador %d y me movi hasta la posicion (%d, %d)" , entrenador->ID, entrenador->posicion.posicionX, entrenador->posicion.posicionY);
 		sleep(retardoCicloCPU);
 		ciclos_totales++;
 		//ciclos_entrenadores[entrenador->ID -1]++;
 		ciclo->ciclo++;
 		//contadorCiclosPorEntrenador[entrenador->ID -1]++;
 		contador->contador++;
-		printf("\nSoy %d CONTADOR %d", entrenador->ID,contador->contador);
+
 
 		verificarCiclos(&ciclo->ciclo, entrenador,0);
 	}
@@ -505,7 +505,7 @@ void obtener_los_que_faltan(t_list* yaTiene, t_list* objetivos, t_list* meFaltan
 				list_remove(temporal,j);
 				break;
 			}else{
-				printf("\nMeti a %s", pokemon1);
+				//printf("\nMeti a %s", pokemon1);
 				list_add(meFaltan, pokemon1);
 			}
 
@@ -542,12 +542,15 @@ bool cumplioSusObjetivos(Entrenador* entrenador){
 				return false;
 			}
 		}
-		list_destroy(auxiliar);
-		return list_all_satisfy(entrenador->pokemonesQueTiene, (void*)sonLosQueNecesita);
+
+		if(list_all_satisfy(entrenador->pokemonesQueTiene, (void*)sonLosQueNecesita)){
+			list_destroy(auxiliar);
+			return true;
+		}
 
 	}else{
 		list_destroy(auxiliar);
-		return 0;
+		return false;;
 	}
 
 

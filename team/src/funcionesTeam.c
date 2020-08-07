@@ -29,18 +29,31 @@ void leer_config()
 
 	armar_entrenadores(posiciones_entrenadores, pokemon_entrenadores, objetivos_entrenadores); //les pasas los arrays y la lista
 
-	for(int i =0;i<cantidad(posiciones_entrenadores);i++){
+
+	/*int cant;
+	cant= cantidad(posiciones_entrenadores);
+
+
+	for(int i =0;i<cant;i++){
+
 		free(posiciones_entrenadores[i]);
 	}
 	free(posiciones_entrenadores);
-	for(int i =0;i<cantidad(objetivos_entrenadores);i++){
+
+	cant = cantidad(objetivos_entrenadores);
+
+	for(int i =0;i<cant;i++){
 			free(objetivos_entrenadores[i]);
 		}
 	free(objetivos_entrenadores);
-	for(int i =0;i<cantidad(pokemon_entrenadores);i++){
+
+	cant = cantidad(pokemon_entrenadores);
+
+	for(int i =0;i<cant;i++){
 			free(pokemon_entrenadores[i]);
 		}
 	free(pokemon_entrenadores);
+	*/
 
 	IDsuscripcionAppeared = config_get_int_value(archivo_config, "ID_APPEARED");
 
@@ -92,13 +105,14 @@ void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
 		if(pokemones[i] != NULL){
 		pokemones_separados = string_split(pokemones[i], "|");
 		//free(pokemones);
-		}else{
-			pokemones_separados[i] = NULL;
+		/*}else{
+			pokemones_separados = NULL;*/
 		}
 		}
-		/*if(pokemones[0] == NULL){
+
+		if(pokemones[0] == NULL){
 			pokemones_separados = NULL;
-		}*/
+		}
 
 		char** objetivos_separados = string_split(objetivos[i], "|");
 		//free(objetivos);
@@ -191,6 +205,8 @@ int cantidad(char** lista){
 
 void liberarListas(char** lista){
 
+	if(lista != NULL){
+
 		int i=0;
 		while(lista [i] != NULL){
 
@@ -198,7 +214,7 @@ void liberarListas(char** lista){
 
 			i++;
 		}
-
+	}
 		//free(lista);
 
 }
