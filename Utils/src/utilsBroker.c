@@ -39,6 +39,7 @@ void esperar_cliente(int socket_servidor)
 
 	int tam_direccion = sizeof(struct sockaddr_in);
 	//sem_wait(&semMensajes);
+	pthread_mutex_lock(&mutexMensajes);
 	pthread_mutex_lock(&mutexEscuchaPrincipal);
 	int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
 
@@ -51,7 +52,6 @@ void esperar_cliente(int socket_servidor)
 void serve_client(int* socket)
 {
 	int cod_op;
-	//pthread_mutex_lock(&mutexMensajes);
 	int resultado= recv(*socket, &cod_op, sizeof(int), MSG_WAITALL);
 	if(resultado == -1){
 		cod_op = -1;
@@ -121,13 +121,13 @@ void process_request(int cod_op, int cliente_fd) {
 					break;
 				case 0:
 					pthread_mutex_unlock(&mutexEscuchaPrincipal);
-				//	pthread_mutex_unlock(&mutexMensajes);
+					pthread_mutex_unlock(&mutexMensajes);
 					//sem_post(&semMensajes);
 
 					pthread_exit(NULL);
 				case -1:
 					pthread_mutex_unlock(&mutexEscuchaPrincipal);
-				//	pthread_mutex_unlock(&mutexMensajes);
+					pthread_mutex_unlock(&mutexMensajes);
 					//sem_post(&semMensajes);
 
 					pthread_exit(NULL);
@@ -142,7 +142,7 @@ void process_request(int cod_op, int cliente_fd) {
 					pthread_mutex_lock(&suscriptoresNew);
 					enviarNewPokemonASuscriptores(mensajeNewPokemon2);
 					pthread_mutex_unlock(&suscriptoresNew);
-					//pthread_mutex_unlock(&mutexMensajes);
+					pthread_mutex_unlock(&mutexMensajes);
 					//sem_post(&semMensajes);
 
 					break;
@@ -158,7 +158,7 @@ void process_request(int cod_op, int cliente_fd) {
 					pthread_mutex_lock(&suscriptoresLocalized);
 					enviarLocalizedPokemonASuscriptores(mensajeLocalizedPokemon2);
 					pthread_mutex_unlock(&suscriptoresLocalized);
-					//pthread_mutex_unlock(&mutexMensajes);
+					pthread_mutex_unlock(&mutexMensajes);
 					//sem_post(&semMensajes);
 
 					break;
@@ -174,7 +174,7 @@ void process_request(int cod_op, int cliente_fd) {
 					devolverID(cliente_fd,unMensajeGetPokemon2->ID);
 					enviarGetPokemonASuscriptores(unMensajeGetPokemon2);
 					pthread_mutex_unlock(&suscriptoresGet);
-					//pthread_mutex_unlock(&mutexMensajes);
+					pthread_mutex_unlock(&mutexMensajes);
 					//sem_post(&semMensajes);
 
 					break;
@@ -189,7 +189,7 @@ void process_request(int cod_op, int cliente_fd) {
 					pthread_mutex_lock(&suscriptoresAppeared);
 					enviarAppearedPokemonASuscriptores(mensajeAppearedPokemon2);
 					pthread_mutex_unlock(&suscriptoresAppeared);
-					//pthread_mutex_unlock(&mutexMensajes);
+					pthread_mutex_unlock(&mutexMensajes);
 					//sem_post(&semMensajes);
 
 					break;
@@ -205,7 +205,7 @@ void process_request(int cod_op, int cliente_fd) {
 					devolverID(cliente_fd,mensajeCatchPokemon2->ID);
 					enviarCatchPokemonASuscriptores(mensajeCatchPokemon2);
 					pthread_mutex_unlock(&suscriptoresCatch);
-					//pthread_mutex_unlock(&mutexMensajes);
+					pthread_mutex_unlock(&mutexMensajes);
 					//sem_post(&semMensajes);
 
 					break;
@@ -221,7 +221,7 @@ void process_request(int cod_op, int cliente_fd) {
 					pthread_mutex_lock(&suscriptoresCaught);
 					enviarCaughtPokemonASuscriptores(mensajeCaughtPokemon2);
 					pthread_mutex_unlock(&suscriptoresCaught);
-					//pthread_mutex_unlock(&mutexMensajes);
+					pthread_mutex_unlock(&mutexMensajes);
 					//sem_post(&semMensajes);
 
 					break;
@@ -230,7 +230,7 @@ void process_request(int cod_op, int cliente_fd) {
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionNewPokemon(cliente_fd);
 					pthread_mutex_unlock(&suscriptoresNew);
-					//pthread_mutex_unlock(&mutexMensajes);
+					pthread_mutex_unlock(&mutexMensajes);
 					//sem_post(&semMensajes);
 
 					break;
@@ -239,7 +239,7 @@ void process_request(int cod_op, int cliente_fd) {
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionLocalizedPokemon(cliente_fd);
 					pthread_mutex_unlock(&suscriptoresLocalized);
-					//pthread_mutex_unlock(&mutexMensajes);
+					pthread_mutex_unlock(&mutexMensajes);
 					//sem_post(&semMensajes);
 
 					break;
@@ -248,7 +248,7 @@ void process_request(int cod_op, int cliente_fd) {
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionGetPokemon(cliente_fd);
 					pthread_mutex_unlock(&suscriptoresGet);
-					//pthread_mutex_unlock(&mutexMensajes);
+					pthread_mutex_unlock(&mutexMensajes);
 					//sem_post(&semMensajes);
 
 					break;
@@ -257,7 +257,7 @@ void process_request(int cod_op, int cliente_fd) {
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionAppearedPokemon(cliente_fd);
 					pthread_mutex_unlock(&suscriptoresAppeared);
-					//pthread_mutex_unlock(&mutexMensajes);
+					pthread_mutex_unlock(&mutexMensajes);
 					//sem_post(&semMensajes);
 
 
@@ -267,7 +267,7 @@ void process_request(int cod_op, int cliente_fd) {
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionCatchPokemon(cliente_fd);
 					pthread_mutex_unlock(&suscriptoresCatch);
-					//pthread_mutex_unlock(&mutexMensajes);
+					pthread_mutex_unlock(&mutexMensajes);
 					//sem_post(&semMensajes);
 
 					break;
@@ -276,13 +276,13 @@ void process_request(int cod_op, int cliente_fd) {
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionCaughtPokemon(cliente_fd);
 					pthread_mutex_unlock(&suscriptoresCaught);
-					//pthread_mutex_unlock(&mutexMensajes);
+					pthread_mutex_unlock(&mutexMensajes);
 					//sem_post(&semMensajes);
 
 					break;
 				default:
 					pthread_mutex_unlock(&mutexEscuchaPrincipal);
-					//pthread_mutex_unlock(&mutexMensajes);
+					pthread_mutex_unlock(&mutexMensajes);
 					//sem_post(&semMensajes);
 
 	}
