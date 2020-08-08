@@ -38,7 +38,8 @@ void esperar_cliente(int socket_servidor)
 	struct sockaddr_in dir_cliente;
 
 	int tam_direccion = sizeof(struct sockaddr_in);
-	sem_wait(&semMensajes);
+	//sem_wait(&semMensajes);
+	pthread_mutex_lock(&mutexEscuchaPrincipal);
 	int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
 
 	pthread_create(&thread,NULL,(void*)serve_client,&socket_cliente);
@@ -50,12 +51,10 @@ void esperar_cliente(int socket_servidor)
 void serve_client(int* socket)
 {
 	int cod_op;
-	pthread_mutex_lock(&mutexEscuchaPrincipal);
-	pthread_mutex_lock(&mutexMensajes);
+	//pthread_mutex_lock(&mutexMensajes);
 	int resultado= recv(*socket, &cod_op, sizeof(int), MSG_WAITALL);
 	if(resultado == -1){
 		cod_op = -1;
-		pthread_mutex_unlock(&mutexEscuchaPrincipal);
 	}
 	char* loQueVoyALoguear = "Se creó una conexión. El código de operación recibido es: %d.";
 	log_info(logger, loQueVoyALoguear,cod_op);
@@ -123,12 +122,13 @@ void process_request(int cod_op, int cliente_fd) {
 				case 0:
 					pthread_mutex_unlock(&mutexEscuchaPrincipal);
 				//	pthread_mutex_unlock(&mutexMensajes);
-					sem_post(&semMensajes);
+					//sem_post(&semMensajes);
 
 					pthread_exit(NULL);
 				case -1:
+					pthread_mutex_unlock(&mutexEscuchaPrincipal);
 				//	pthread_mutex_unlock(&mutexMensajes);
-					sem_post(&semMensajes);
+					//sem_post(&semMensajes);
 
 					pthread_exit(NULL);
 				case NEW_POKEMON:
@@ -142,8 +142,8 @@ void process_request(int cod_op, int cliente_fd) {
 					pthread_mutex_lock(&suscriptoresNew);
 					enviarNewPokemonASuscriptores(mensajeNewPokemon2);
 					pthread_mutex_unlock(&suscriptoresNew);
-					pthread_mutex_unlock(&mutexMensajes);
-					sem_post(&semMensajes);
+					//pthread_mutex_unlock(&mutexMensajes);
+					//sem_post(&semMensajes);
 
 					break;
 				case LOCALIZED_POKEMON:
@@ -158,8 +158,8 @@ void process_request(int cod_op, int cliente_fd) {
 					pthread_mutex_lock(&suscriptoresLocalized);
 					enviarLocalizedPokemonASuscriptores(mensajeLocalizedPokemon2);
 					pthread_mutex_unlock(&suscriptoresLocalized);
-					pthread_mutex_unlock(&mutexMensajes);
-					sem_post(&semMensajes);
+					//pthread_mutex_unlock(&mutexMensajes);
+					//sem_post(&semMensajes);
 
 					break;
 				case GET_POKEMON:
@@ -174,8 +174,8 @@ void process_request(int cod_op, int cliente_fd) {
 					devolverID(cliente_fd,unMensajeGetPokemon2->ID);
 					enviarGetPokemonASuscriptores(unMensajeGetPokemon2);
 					pthread_mutex_unlock(&suscriptoresGet);
-					pthread_mutex_unlock(&mutexMensajes);
-					sem_post(&semMensajes);
+					//pthread_mutex_unlock(&mutexMensajes);
+					//sem_post(&semMensajes);
 
 					break;
 				case APPEARED_POKEMON:
@@ -189,8 +189,8 @@ void process_request(int cod_op, int cliente_fd) {
 					pthread_mutex_lock(&suscriptoresAppeared);
 					enviarAppearedPokemonASuscriptores(mensajeAppearedPokemon2);
 					pthread_mutex_unlock(&suscriptoresAppeared);
-					pthread_mutex_unlock(&mutexMensajes);
-					sem_post(&semMensajes);
+					//pthread_mutex_unlock(&mutexMensajes);
+					//sem_post(&semMensajes);
 
 					break;
 				case CATCH_POKEMON:
@@ -205,8 +205,8 @@ void process_request(int cod_op, int cliente_fd) {
 					devolverID(cliente_fd,mensajeCatchPokemon2->ID);
 					enviarCatchPokemonASuscriptores(mensajeCatchPokemon2);
 					pthread_mutex_unlock(&suscriptoresCatch);
-					pthread_mutex_unlock(&mutexMensajes);
-					sem_post(&semMensajes);
+					//pthread_mutex_unlock(&mutexMensajes);
+					//sem_post(&semMensajes);
 
 					break;
 				case CAUGHT_POKEMON:
@@ -221,8 +221,8 @@ void process_request(int cod_op, int cliente_fd) {
 					pthread_mutex_lock(&suscriptoresCaught);
 					enviarCaughtPokemonASuscriptores(mensajeCaughtPokemon2);
 					pthread_mutex_unlock(&suscriptoresCaught);
-					pthread_mutex_unlock(&mutexMensajes);
-					sem_post(&semMensajes);
+					//pthread_mutex_unlock(&mutexMensajes);
+					//sem_post(&semMensajes);
 
 					break;
 				case SUSCRIPTOR_NEWPOKEMON:
@@ -230,8 +230,8 @@ void process_request(int cod_op, int cliente_fd) {
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionNewPokemon(cliente_fd);
 					pthread_mutex_unlock(&suscriptoresNew);
-					pthread_mutex_unlock(&mutexMensajes);
-					sem_post(&semMensajes);
+					//pthread_mutex_unlock(&mutexMensajes);
+					//sem_post(&semMensajes);
 
 					break;
 				case SUSCRIPTOR_LOCALIZEDPOKEMON:
@@ -239,8 +239,8 @@ void process_request(int cod_op, int cliente_fd) {
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionLocalizedPokemon(cliente_fd);
 					pthread_mutex_unlock(&suscriptoresLocalized);
-					pthread_mutex_unlock(&mutexMensajes);
-					sem_post(&semMensajes);
+					//pthread_mutex_unlock(&mutexMensajes);
+					//sem_post(&semMensajes);
 
 					break;
 				case SUSCRIPTOR_GETPOKEMON:
@@ -248,8 +248,8 @@ void process_request(int cod_op, int cliente_fd) {
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionGetPokemon(cliente_fd);
 					pthread_mutex_unlock(&suscriptoresGet);
-					pthread_mutex_unlock(&mutexMensajes);
-					sem_post(&semMensajes);
+					//pthread_mutex_unlock(&mutexMensajes);
+					//sem_post(&semMensajes);
 
 					break;
 				case SUSCRIPTOR_APPEAREDPOKEMON:
@@ -257,8 +257,8 @@ void process_request(int cod_op, int cliente_fd) {
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionAppearedPokemon(cliente_fd);
 					pthread_mutex_unlock(&suscriptoresAppeared);
-					pthread_mutex_unlock(&mutexMensajes);
-					sem_post(&semMensajes);
+					//pthread_mutex_unlock(&mutexMensajes);
+					//sem_post(&semMensajes);
 
 
 					break;
@@ -267,8 +267,8 @@ void process_request(int cod_op, int cliente_fd) {
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionCatchPokemon(cliente_fd);
 					pthread_mutex_unlock(&suscriptoresCatch);
-					pthread_mutex_unlock(&mutexMensajes);
-					sem_post(&semMensajes);
+					//pthread_mutex_unlock(&mutexMensajes);
+					//sem_post(&semMensajes);
 
 					break;
 				case SUSCRIPTOR_CAUGHTPOKEMON:
@@ -276,14 +276,14 @@ void process_request(int cod_op, int cliente_fd) {
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionCaughtPokemon(cliente_fd);
 					pthread_mutex_unlock(&suscriptoresCaught);
-					pthread_mutex_unlock(&mutexMensajes);
-					sem_post(&semMensajes);
+					//pthread_mutex_unlock(&mutexMensajes);
+					//sem_post(&semMensajes);
 
 					break;
 				default:
 					pthread_mutex_unlock(&mutexEscuchaPrincipal);
-					pthread_mutex_unlock(&mutexMensajes);
-					sem_post(&semMensajes);
+					//pthread_mutex_unlock(&mutexMensajes);
+					//sem_post(&semMensajes);
 
 	}
 }
@@ -1090,11 +1090,12 @@ void buscarIDGetPokemonYBorrarlo(int id){
 	list_destroy(mensaje->suscriptoresAtendidos);
 	list_destroy(mensaje->suscriptoresACK);
 	free(mensaje);
-	list_remove(New_Pokemon,pokemonABorrar);
+	list_remove(Get_Pokemon,pokemonABorrar);
 
 }
 
 void buscarIDLocalizedPokemonYBorrarlo(int id){
+	printf("el id que tengo que borrar es: %i\n",id);
 	MensajeLocalizedPokemon2* mensaje;
 	int tamanioLista = list_size(Localized_Pokemon);
 	int pokemonABorrar;
@@ -1109,7 +1110,7 @@ void buscarIDLocalizedPokemonYBorrarlo(int id){
 	list_destroy(mensaje->suscriptoresAtendidos);
 	list_destroy(mensaje->suscriptoresACK);
 	free(mensaje);
-	list_remove(New_Pokemon,pokemonABorrar);
+	list_remove(Localized_Pokemon,pokemonABorrar);
 }
 
 void buscarIDNewPokemonYBorrarlo(int id){
@@ -1131,24 +1132,30 @@ void buscarIDNewPokemonYBorrarlo(int id){
 }
 
 void borrarDeColaDeMensajes(int nroDeCola,int idMensaje){
-
+	printf("El numero de cola donde estoy borrando es %i \n", nroDeCola);
 	switch(nroDeCola){
 			case 2:
+				puts("estoy en new");
 				buscarIDNewPokemonYBorrarlo(idMensaje);
 				break;
 			case 3:
+				puts("estoy en localized");
 				buscarIDLocalizedPokemonYBorrarlo(idMensaje);
 				break;
 			case 4:
+				puts("en get");
 				buscarIDGetPokemonYBorrarlo(idMensaje);
 				break;
 			case 5:
+				puts("en appeared");
 				buscarIDAppearedPokemonYBorrarlo(idMensaje);
 				break;
 			case 6:
+				puts("en catch");
 				buscarIDCatchPokemonYBorrarlo(idMensaje);
 				break;
 			case 7:
+				puts("en caught");
 				buscarIDCaughtPokemonYBorrarlo(idMensaje);
 				break;
 	}
