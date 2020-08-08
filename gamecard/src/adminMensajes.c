@@ -590,7 +590,6 @@ void agregarPokemon(NewPokemonConIDs* newPokemon){
 	actualizarTamanioPokemon(newPokemon->newPokemon->nombre);
 	sleep(tiempoRetardo);
 	enviarMensajeAppeared(newPokemon->IDmensaje, newPokemon->newPokemon->nombre, newPokemon->newPokemon->coordenadas);
-	printf("Envie un appeared\n\n");
 	free(path);
 }
 
@@ -657,6 +656,8 @@ void agregarPokemonAUnBloque(char** bloques, NewPokemonConIDs* newPokemon){
 		}
 		if(!carga){
 			agregarBloqueAMetadata(escritura, newPokemon->newPokemon->nombre);
+		} else {
+			free(escritura);
 		}
 	}
 	free(coorX);
@@ -767,9 +768,12 @@ char** lecturaBloques(char** bloques){
 		free(aux);
 	}
 
-	original = string_substring_until(original, tamanioDeLoLeido);
 
-	char** leido = string_split(original, "\n");
+	char* piloto = string_substring_until(original, tamanioDeLoLeido);
+
+	free(original);
+
+	char** leido = string_split(piloto, "\n");
 
 	i=0;
 
@@ -780,8 +784,7 @@ char** lecturaBloques(char** bloques){
 		i++;
 	}
 
-	free(original);
-	//free(lectura);
+	free(piloto);
 
 	return leido;
 }
@@ -792,7 +795,7 @@ char* lecturaBloque(char* bloque){
 	string_append(&nombre, "/TALL_GRASS/Blocks/");
 	string_append(&nombre, bloque);
 	string_append(&nombre, ".bin");
-	char* centinela = string_new();
+	char* centinela;// = string_new();
 	int file = open(nombre, O_CREAT | O_RDWR, 0664);
 
 	void* punteroATexto = malloc(tamanioBloque);
@@ -803,13 +806,13 @@ char* lecturaBloque(char* bloque){
 
 	centinela = punteroATexto;
 
-	centinela = string_substring_until(centinela, tamanioLeido);
+	char* piloto = string_substring_until(centinela, tamanioLeido);
+
+	free(centinela);
 
 	free(nombre);
 
-	free(punteroATexto);
-
-	return centinela;
+	return piloto;
 }
 
 int esBloqueLleno(char* numBloque, char* escritura){
@@ -837,8 +840,10 @@ void escribirBloques(char** bloques,char** leido,int tamanioMax, char* nombre){
 		} else {
 			if(leido[j]!= NULL){
 				if(!strcmp(leido[j],"")){ j++;}
-				tamanioEscritura += strlen(leido[j])+1;
-				tamanioTotal += strlen(leido[j])+1;
+				if(leido[j]!=NULL){
+					tamanioEscritura += strlen(leido[j])+1;
+					tamanioTotal += strlen(leido[j])+1;
+				}
 			}
 		while(leido[j] != NULL && tamanioEscritura < tamanioBloque && tamanioTotal < tamanioMax){
 			string_append(&escritura, leido[j]);
@@ -846,8 +851,10 @@ void escribirBloques(char** bloques,char** leido,int tamanioMax, char* nombre){
 			j++;
 			if(leido[j]!= NULL){
 				if(!strcmp(leido[j],"")){ j++;}
-				tamanioEscritura += strlen(leido[j])+1;
-				tamanioTotal += strlen(leido[j])+1;
+				if(leido[j]!=NULL){
+					tamanioEscritura += strlen(leido[j])+1;
+					tamanioTotal += strlen(leido[j])+1;
+				}
 			}
 		}
 	}
@@ -963,7 +970,6 @@ void eliminarPokemon(CatchPokemonConIDs* pokemon){
 	}
 	sleep(tiempoRetardo);
 	enviarMensajeCaught(pokemon->IDmensaje, encontrado);
-	printf("Envie un Caught\n\n");
 	free(path);
 	free(pathCarpeta);
 }
@@ -1017,7 +1023,10 @@ void eliminarBloqueDeMetadata(char* path, char* bloqueAEliminar){
 	} else {
 		int length = string_length(nuevoBloques);
 		if(length != 1){
-			nuevoBloques = string_substring(nuevoBloques, 0, length-1);
+			char* nuevoNuevoBloques = string_duplicate(nuevoBloques);
+			free(nuevoBloques);
+			nuevoBloques = string_substring(nuevoNuevoBloques, 0, length-1);
+			free(nuevoNuevoBloques);
 		}
 	}
 	string_append(&nuevoBloques, "]");
@@ -1040,6 +1049,7 @@ void eliminarSiEsCarpetaVacia(char* path, char* pathCarpeta){
 		remove(pathCarpeta);
 		log_info(logger, "Elimine la carpeta %s", pathCarpeta);
 	}
+	config_destroy(md);
 }
 
 
@@ -1061,7 +1071,6 @@ void obtenerCantidadYPosiciones(GetPokemonConIDs* pokemon){
 
 		sleep(tiempoRetardo);
 		enviarMensajeLocalized(pokemon->IDmensaje, pokemon->getPokemon->nombre, paresOrdenados);
-		printf("\nEnvie un localized\n\n");
 
 		list_destroy(paresOrdenados);
 	} else {
@@ -1088,9 +1097,15 @@ void obtenerCantidadYPosiciones(GetPokemonConIDs* pokemon){
 				i++;
 				list_destroy(posiciones);
 			}
-
 			enviarMensajeLocalized(pokemon->IDmensaje, pokemon->getPokemon->nombre, coordenadas);
-			printf("\nEnvie un localized\n\n");
+			int tam = list_size(coordenadas);
+			CoordenadasXY* aux;
+			for(int j = 1;i<tam;j++){
+				aux = list_get(coordenadas,j);
+				if(aux != list_get(coordenadas,j-1)){
+					free(aux);
+				}
+			}
 			list_destroy(coordenadas);
 			liberar_lista(bloques);
 	}
@@ -1143,16 +1158,12 @@ void enviarMensajeAppeared(int IDmensaje, char* pokemon, CoordenadasXY coordenad
 		nuevo->coordenadas = coordenadas;
 		nuevo->nombre = pokemon;
 		nuevo->tamanioNombrePokemon = strlen(pokemon) + 1;
-		printf("Nombre: %s\n", nuevo->nombre);
-		printf("Tamanio Nombre: %d\n", nuevo->tamanioNombrePokemon);
-		printf("Coordenada X: %d\n", nuevo->coordenadas.posicionX);
-		printf("Coordenada Y: %d\n", nuevo->coordenadas.posicionY);
-		printf("ID Mensaje: %d\n", IDmensaje);
 		enviarAppearedPokemon(nuevo, socket_suscriptor, 0, IDmensaje);
 		liberar_conexion(socket_suscriptor);
 		free(nuevo);
 	}
 	sem_post(&mensajeABroker);
+	printf("Envie un appeared\n\n");
 }
 
 void enviarMensajeCaught(int IDmensaje, int resultado){
@@ -1166,6 +1177,7 @@ void enviarMensajeCaught(int IDmensaje, int resultado){
 		free(nuevo);
 	}
 	sem_post(&mensajeABroker);
+	printf("Envie un Caught\n\n");
 }
 
 void enviarMensajeLocalized(int IDmensaje, char* pokemon, t_list* coordenadas){
@@ -1182,6 +1194,7 @@ void enviarMensajeLocalized(int IDmensaje, char* pokemon, t_list* coordenadas){
 		free(nuevo);
 	}
 	sem_post(&mensajeABroker);
+	printf("\nEnvie un localized\n\n");
 }
 
 // --------------------- BITMAP --------------------- //
