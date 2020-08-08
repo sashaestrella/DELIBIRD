@@ -2334,95 +2334,35 @@ void enviarColaNewPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscri
 }
 
 
-LocalizedPokemon* sacarDeMemoriaElLocalizedPokemon2(void* inicio){
-		LocalizedPokemon* unLocalizedPokemon = malloc (sizeof(LocalizedPokemon));
-		void* inicioDelLP = inicio;
-		int offset = 0;
-
-		memcpy(&(unLocalizedPokemon->tamanioNombrePokemon),inicioDelLP+offset,sizeof(uint32_t));
-		offset+=sizeof(uint32_t);
-		printf("\nEl tamaño del localized en memoria es %d: ",unLocalizedPokemon->tamanioNombrePokemon);
-		unLocalizedPokemon->nombre = malloc(unLocalizedPokemon->tamanioNombrePokemon);
-		memcpy(unLocalizedPokemon->nombre,inicioDelLP+offset,unLocalizedPokemon->tamanioNombrePokemon-1);
-		offset+=unLocalizedPokemon->tamanioNombrePokemon-1;
-		unLocalizedPokemon->nombre[unLocalizedPokemon->tamanioNombrePokemon-1] = '\0';
-		memcpy(&(unLocalizedPokemon->cantidadParesOrdenados),inicioDelLP+offset,sizeof(uint32_t));
-		offset+=sizeof(uint32_t);
-
-		int cantidadDePares = (unLocalizedPokemon->cantidadParesOrdenados);
-		t_list* unasCoordenadas = list_create();
-
-		for(int i=0;i<cantidadDePares;i++){
-			CoordenadasXY* coordenadas = malloc(sizeof(CoordenadasXY));
-			memcpy(&(coordenadas->posicionX),inicioDelLP+offset,sizeof(uint32_t));
-			offset+=sizeof(uint32_t);
-			memcpy(&(coordenadas->posicionY),inicioDelLP+offset,sizeof(uint32_t));
-			offset+=sizeof(uint32_t);
-			list_add(unasCoordenadas,coordenadas);
-		}
-		unLocalizedPokemon->paresOrdenados = unasCoordenadas;
-		return unLocalizedPokemon;
-}
-
-
 void enviarColaLocalizedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Suscriptor* unSuscriptor){
 
 	puts("Ahora tengo que ver si te puedo mandar los mensajes o no..");
-		//MensajeLocalizedPokemon2* mensaje;
+		MensajeLocalizedPokemon2* mensaje;
 		LocalizedPokemon* unLocalizedPokemon;
 		int tamanioListaSuscriptoresACK;
 		int ack = 0;
 		int loQueDevuelveElRecv = 0;
 		int cantidadDeLocalizedPokemon = list_size(Localized_Pokemon);
-		int cantidadMensajes = list_size(listaPosicionesOcupadas);
 		char* loQueVoyALoguear;
 		char* loQueVoyALoguear2;
-		PosicionOcupada* pos;
-
 
 		if(idGeneradoEnElMomento == 1){ //caso feliz
 		send(socket_suscriptor,&cantidadDeLocalizedPokemon,sizeof(int),0);
-		for(int i=0;i<cantidadMensajes;i++){
-			pos = list_get(listaPosicionesOcupadas);
-			if(pos->colaALaQuePertenece== LOCALIZED_POKEMON){
-				unLocalizedPokemon = sacarDeMemoriaElLocalizedPokemon2(pos->posicion);
-				int tamanioCola = list_size(Localized_Pokemon);
-				MensajeLocalizedPokemon2* mensajeLoca;
-				for(int i=0;i<tamanioCola;i++){
-					mensajeLoca = list_get(Localized_Pokemon,i);
-					if(mensajeLoca->ID == pos->ID){
-						//mensaje = list_get(Localized_Pokemon,i);
-									pthread_mutex_lock(&mutexMemoriaInterna);
-									//actualizarTimestamp(mensaje->ID);
-									//unLocalizedPokemon = sacarDeMemoriaElLocalizedPokemon(mensaje);
-									pthread_mutex_unlock(&mutexMemoriaInterna);
+		for(int i=0;i<cantidadDeLocalizedPokemon;i++){
+			mensaje = list_get(Localized_Pokemon,i);
+			pthread_mutex_lock(&mutexMemoriaInterna);
+			actualizarTimestamp(mensaje->ID);
+			unLocalizedPokemon = sacarDeMemoriaElLocalizedPokemon(mensaje);
+			pthread_mutex_unlock(&mutexMemoriaInterna);
 
-									loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
-									log_info(logger, loQueVoyALoguear,pos->ID,unSuscriptor->IDsuscriptor);
+			loQueVoyALoguear = "Voy a enviar el mensaje: %d al suscriptor con ID=%d.";
+			log_info(logger, loQueVoyALoguear,mensaje->ID,unSuscriptor->IDsuscriptor);
 
-									printf("\n\nNombre: %s",unLocalizedPokemon->nombre);
-									pthread_mutex_lock(&mutexColaLocalizedPokemon);
-									enviarLocalizedPokemon(unLocalizedPokemon,socket_suscriptor,pos->ID,mensajeLoca->IDCorrelativo);
-									printf("\nMensaje enviado: %s",unLocalizedPokemon->nombre);
-									list_add(mensajeLoca->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
-												printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensajeLoca->suscriptoresAtendidos));
-
-												loQueDevuelveElRecv = recv(socket_suscriptor,&ack,sizeof(int),0);
-												printf("\nACK recibido: %d",ack);
-
-												if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
-													puts("\nSe cayó la conexion...");
-													pthread_exit(NULL); //Si no le pongo esto sigue ejecutando y no deberia
-												}
-												list_add(mensajeLoca->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
-												loQueVoyALoguear2 = "ACK recibido,el suscriptor con ID=%d fue agregado a la lista de SuscriptoresACK";
-												log_info(logger, loQueVoyALoguear2,unSuscriptor->IDsuscriptor);
-												pthread_mutex_unlock(&mutexColaLocalizedPokemon);
-
-					}
-				}			}
-
-		/*	//borrado
+			printf("\n\nNombre: %s",unLocalizedPokemon->nombre);
+			pthread_mutex_lock(&mutexColaLocalizedPokemon);
+			enviarLocalizedPokemon(unLocalizedPokemon,socket_suscriptor,mensaje->ID,mensaje->IDCorrelativo);
+			printf("\nMensaje enviado: %s",unLocalizedPokemon->nombre);
+			//borrado
 			CoordenadasXY* unaCoordenada;
 			for (int i =0;i<unLocalizedPokemon->cantidadParesOrdenados;i++){
 				unaCoordenada = list_get(unLocalizedPokemon->paresOrdenados,i);
@@ -2431,10 +2371,24 @@ void enviarColaLocalizedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,
 			list_destroy(unLocalizedPokemon->paresOrdenados);
 			free(unLocalizedPokemon->nombre);
 			free(unLocalizedPokemon);
-			//borrado*/
+			//borrado
+			list_add(mensaje->suscriptoresAtendidos,&(unSuscriptor->IDsuscriptor));
+			printf("\nAhora el tamaño de la lista de suscriptores atendidos es de: %d",list_size(mensaje->suscriptoresAtendidos));
+
+			loQueDevuelveElRecv = recv(socket_suscriptor,&ack,sizeof(int),0);
+			printf("\nACK recibido: %d",ack);
+
+			if(loQueDevuelveElRecv == -1 || loQueDevuelveElRecv == 0){
+				puts("\nSe cayó la conexion...");
+				pthread_exit(NULL); //Si no le pongo esto sigue ejecutando y no deberia
+			}
+			list_add(mensaje->suscriptoresACK,&(unSuscriptor->IDsuscriptor));
+			loQueVoyALoguear2 = "ACK recibido,el suscriptor con ID=%d fue agregado a la lista de SuscriptoresACK";
+			log_info(logger, loQueVoyALoguear2,unSuscriptor->IDsuscriptor);
+			pthread_mutex_unlock(&mutexColaLocalizedPokemon);
 
 			}
-		}/* else{ //caso triste
+		} else{ //caso triste
 			Suscriptor* suscriptorQueItera;
 			for(int i=0;i<cantidadDeLocalizedPokemon;i++){
 				mensaje = list_get(Localized_Pokemon,i);
@@ -2498,7 +2452,7 @@ void enviarColaLocalizedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,
 				}
 				mensajeYaEnviado = 0;
 			}
-		} //fin del caso triste*/
+		} //fin del caso triste
 		puts("\nSuscriptor ok");
 }
 

@@ -23,7 +23,7 @@ sem_t **confirmacion_caught;
 
 //estos deberian declararse en main porque su tamaño depende de la cantidad de entrenadores
 
-
+char* config;
 sem_t mensajesCaught;
 sem_t nuevosPokemons;
 sem_t suscripciones;

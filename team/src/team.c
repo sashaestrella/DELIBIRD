@@ -4,7 +4,7 @@ int main(int argc,char* argv[])
 {
 
 
-
+	strcpy(config , argv[1]);
 
 	ciclos_totales=0;
 

@@ -4,7 +4,7 @@
 
 void leer_config()
 {
-	archivo_config =  config_create("team.config"); //lee archivo de configuracion
+	archivo_config =  config_create(config); //lee archivo de configuracion
 
 	char** posiciones_entrenadores =  config_get_array_value(archivo_config, "POSICIONES_ENTRENADORES");
 
