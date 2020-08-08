@@ -131,10 +131,6 @@ void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
 
 		liberarListas(posiciones_separadas);
 
-
-
-
-
 		entrenador->tieneAsignadoUnPokemon = false;
 
 		entrenador->cantidad = list_size(entrenador->objetivos);
@@ -507,12 +503,25 @@ void esperarApariciones(){
 	if(pokemon->IdEntrenadorQueLoVaAatrapar !=0)
 	log_info(logger, "Etrenador %d entro a cola ready (aparicion de nuevo pokemon)", pokemon->IdEntrenadorQueLoVaAatrapar);
 
-	if(agrego==1 && list_size(ready)==1 && list_size(ejecutando)==0){
+	/*if(agrego==1 && list_size(ready)==1 && list_size(ejecutando)==0){
 		int valor;
 		sem_post(&agregar_ready);
 		sem_getvalue(&agregar_ready,&valor);
 		printf("\nValor de SEMAFORO %d", valor);
+	}*/
+
+//	if(agrego==1 && list_size(ready)==1 && list_size(ejecutando)==0){
+	int valor;
+	sem_getvalue(&agregar_ready,&valor);
+	if(valor==0 && agrego==1 && list_size(ready)==1 && list_size(ejecutando)==0){
+		sem_post(&agregar_ready);
+		sem_getvalue(&agregar_ready,&valor);
+		printf("\nValor de SEMAFORO %d", valor);
 	}
+	//}
+
+
+
 	if(list_size(ejecutando)==1 ){
 		int valor;
 		sem_getvalue(&nuevoReadySJF, &valor);

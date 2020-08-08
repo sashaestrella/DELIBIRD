@@ -101,7 +101,7 @@ void flujoEntrenador(Entrenador* entrenador){
 
 	sem_wait(confirmacion_caught[entrenador->ID-1]);
 
-
+	puts("\Me llego confirmacion");
 
 	bool miRespuesta(CaughtPokemonConIDs* recibido){
 
@@ -133,7 +133,14 @@ void flujoEntrenador(Entrenador* entrenador){
 
 	log_info(logger, "Entrenador %d entro a cola ready (llego confirmacion CATCH)", entrenador->ID);
 
-	sem_post(&agregar_ready);
+	int valor;
+	sem_getvalue(&agregar_ready,&valor);
+	if(valor==0 && list_size(ready)==1){
+		sem_post(&agregar_ready);
+		sem_getvalue(&agregar_ready,&valor);
+		printf("\nValor de SEMAFORO %d", valor);
+	}
+
 	if(list_size(ejecutando)==1 ){
 		int valor;
 		sem_getvalue(&nuevoReadySJF, &valor);

@@ -275,9 +275,10 @@ void planificadorFIFO_RR(){
 					puts("\nEntre a ready vacio");
 					int valor;
 
-					sem_wait(&agregar_ready);
 					sem_getvalue(&agregar_ready, &valor);
 					printf("\nValor %d", valor);
+					sem_wait(&agregar_ready);
+
 
 				}
 
@@ -291,6 +292,8 @@ void planificadorFIFO_RR(){
 				puts("\n_____________________________");
 
 				entrenador = list_remove(ready, 0);
+
+				puts("\nEmpieza a ejecutar");
 
 				if(list_size(ejecutando) == 0){
 					list_add(ejecutando, entrenador);
