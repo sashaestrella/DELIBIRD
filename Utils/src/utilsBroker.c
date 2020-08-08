@@ -547,6 +547,7 @@ void recibirSuscripcionCaughtPokemon(int socket_suscriptor){
 				otroSuscriptor = list_get(suscriptores_caught_pokemon,i);
 				if(otroSuscriptor->IDsuscriptor == idSuscriptor){
 					otroSuscriptor->socketSuscriptor = socket_suscriptor;
+					send(socket_suscriptor,&(idSuscriptor),sizeof(int),0);
 
 					idGeneradoEnElMomento = 0;
 					enviarColaCaughtPokemon(idGeneradoEnElMomento,socket_suscriptor,otroSuscriptor);
@@ -602,6 +603,7 @@ void recibirSuscripcionCatchPokemon(int socket_suscriptor){
 				otroSuscriptor = list_get(suscriptores_catch_pokemon,i);
 				if(otroSuscriptor->IDsuscriptor == idSuscriptor){
 					otroSuscriptor->socketSuscriptor = socket_suscriptor;
+					send(socket_suscriptor,&(idSuscriptor),sizeof(int),0);
 
 					idGeneradoEnElMomento = 0;
 					enviarColaCatchPokemon(idGeneradoEnElMomento,socket_suscriptor,otroSuscriptor);
@@ -657,6 +659,7 @@ void recibirSuscripcionAppearedPokemon(int socket_suscriptor){
 				otroSuscriptor = list_get(suscriptores_appeared_pokemon,i);
 				if(otroSuscriptor->IDsuscriptor == idSuscriptor){
 					otroSuscriptor->socketSuscriptor = socket_suscriptor;
+					send(socket_suscriptor,&(idSuscriptor),sizeof(int),0);
 
 					idGeneradoEnElMomento = 0;
 					enviarColaAppearedPokemon(idGeneradoEnElMomento,socket_suscriptor,otroSuscriptor);
@@ -712,6 +715,7 @@ void recibirSuscripcionGetPokemon(int socket_suscriptor){
 				otroSuscriptor = list_get(suscriptores_get_pokemon,i);
 				if(otroSuscriptor->IDsuscriptor == idSuscriptor){
 					otroSuscriptor->socketSuscriptor = socket_suscriptor;
+					send(socket_suscriptor,&(idSuscriptor),sizeof(int),0);
 
 					idGeneradoEnElMomento = 0;
 					enviarColaGetPokemon(idGeneradoEnElMomento,socket_suscriptor,otroSuscriptor);
@@ -769,6 +773,7 @@ void recibirSuscripcionLocalizedPokemon(int socket_suscriptor){
 					otroSuscriptor = list_get(suscriptores_localized_pokemon,i);
 						if(otroSuscriptor->IDsuscriptor == idSuscriptor){
 							otroSuscriptor->socketSuscriptor = socket_suscriptor;
+							send(socket_suscriptor,&(idSuscriptor),sizeof(int),0);
 
 							idGeneradoEnElMomento = 0;
 							enviarColaLocalizedPokemon(idGeneradoEnElMomento,socket_suscriptor,otroSuscriptor);
@@ -825,6 +830,7 @@ void recibirSuscripcionNewPokemon(int socket_suscriptor){
 						otroSuscriptor->socketSuscriptor = socket_suscriptor;
 
 						idGeneradoEnElMomento = 0;
+						send(socket_suscriptor,&(idSuscriptor),sizeof(int),0);
 						enviarColaNewPokemon(idGeneradoEnElMomento,socket_suscriptor,otroSuscriptor);
 						otroSuscriptor = unSuscriptor;
 					}
