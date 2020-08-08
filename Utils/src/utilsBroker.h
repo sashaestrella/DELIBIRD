@@ -25,19 +25,19 @@ int contadorTimestamp = 0;
 
 pthread_mutex_t mutexMensajes;
 sem_t semMensajes;
-pthread_mutex_t suscriptoresNew = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t suscriptoresCatch = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t suscriptoresCaught = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t suscriptoresLocalized = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t suscriptoresGet = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t suscriptoresAppeared = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t suscriptoresNew;
+pthread_mutex_t suscriptoresCatch;
+pthread_mutex_t suscriptoresCaught;
+pthread_mutex_t suscriptoresLocalized;
+pthread_mutex_t suscriptoresGet;
+pthread_mutex_t suscriptoresAppeared;
 
-pthread_mutex_t mutexEscuchaPrincipal = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutexContadorTimestamp = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutexBusquedasFallidas = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutexMemoriaInterna = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutexGeneradorIDMensaje,mutexGeneradorIDSuscriptor, mutexListaSuscriptores = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutexColaNewPokemon, mutexColaLocalizedPokemon, mutexColaGetPokemon,mutexColaAppearedPokemon, mutexColaCatchPokemon, mutexColaCaughtPokemon = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexEscuchaPrincipal;
+pthread_mutex_t mutexContadorTimestamp;
+pthread_mutex_t mutexBusquedasFallidas;
+pthread_mutex_t mutexMemoriaInterna;
+pthread_mutex_t mutexGeneradorIDMensaje,mutexGeneradorIDSuscriptor, mutexListaSuscriptores;
+pthread_mutex_t mutexColaNewPokemon, mutexColaLocalizedPokemon, mutexColaGetPokemon,mutexColaAppearedPokemon, mutexColaCatchPokemon, mutexColaCaughtPokemon;
 
 t_list* New_Pokemon;
 t_list* Localized_Pokemon;

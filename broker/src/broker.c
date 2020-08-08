@@ -75,6 +75,28 @@ int main(void){
 
 	pthread_t hiloConexion;
 	pthread_mutex_init(&mutexMensajes,NULL);
+	pthread_mutex_init(&suscriptoresNew,NULL);
+	pthread_mutex_init(&suscriptoresAppeared,NULL);
+	pthread_mutex_init(&suscriptoresLocalized,NULL);
+	pthread_mutex_init(&suscriptoresGet,NULL);
+	pthread_mutex_init(&suscriptoresCatch,NULL);
+	pthread_mutex_init(&suscriptoresCaught,NULL);
+	pthread_mutex_init(&mutexEscuchaPrincipal,NULL);
+	pthread_mutex_init(&mutexContadorTimestamp,NULL);
+	pthread_mutex_init(&mutexBusquedasFallidas,NULL);
+	pthread_mutex_init(&mutexMemoriaInterna,NULL);
+	pthread_mutex_init(&mutexGeneradorIDMensaje,NULL);
+	pthread_mutex_init(&mutexGeneradorIDSuscriptor,NULL);
+	pthread_mutex_init(&mutexListaSuscriptores,NULL);
+	pthread_mutex_init(&mutexColaNewPokemon,NULL);
+	pthread_mutex_init(&mutexColaCatchPokemon,NULL);
+	pthread_mutex_init(&mutexColaCaughtPokemon,NULL);
+	pthread_mutex_init(&mutexColaGetPokemon,NULL);
+	pthread_mutex_init(&mutexColaLocalizedPokemon,NULL);
+	pthread_mutex_init(&mutexColaAppearedPokemon,NULL);
+
+
+
 	sem_init(&semMensajes,0,1);
 
 	New_Pokemon = list_create();
