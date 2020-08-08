@@ -73,7 +73,7 @@ void suscribirseAColaCaught(){
 	char id[2];
 	sprintf(id, "%d", IDsuscripcion);
 	config_set_value(archivo_config, "ID_CAUGHT", id );
-	config_save(archivo_config);
+	//config_save(archivo_config);
 	administradorMensajesColas(SUSCRIPTOR_CAUGHTPOKEMON, conexion, IDsuscripcion);
 	}else{
 		sem_post(&reintento_caught);
@@ -97,7 +97,7 @@ void suscribirseAColaLocalized(){
 	char id[2];
 	sprintf(id, "%d", IDsuscripcion);
 	config_set_value(archivo_config, "ID_LOCALIZED", id );
-	config_save(archivo_config);
+	//config_save(archivo_config);
 	administradorMensajesColas(SUSCRIPTOR_LOCALIZEDPOKEMON, conexion, IDsuscripcion);
 	}else{
 		sem_post(&reintento_localized);
@@ -121,7 +121,7 @@ void suscribirseAColaAppeared(){
 	char id[2];
 	sprintf(id, "%d", IDsuscripcion);
 	config_set_value(archivo_config, "ID_APPEARED", id );
-	config_save(archivo_config);
+	//config_save(archivo_config);
 	administradorMensajesColas(SUSCRIPTOR_APPEAREDPOKEMON, conexion, IDsuscripcion);
 	}else{
 	sem_post(&reintento_appeared);
@@ -392,7 +392,7 @@ void enviar_getPokemon(GetPokemon* get_pokemon){
 	if(conexion != -1){
 
 	GetPokemonConIDs* getPokemonConId = malloc(sizeof(GetPokemonConIDs));
-	printf("\nConexionnn %d", conexion);
+	//printf("\nConexionnn %d", conexion);
 	enviarGetPokemon(get_pokemon, conexion ,0);
 
 	recv(conexion, &id_mensaje, sizeof(int), MSG_WAITALL);

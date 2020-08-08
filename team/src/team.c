@@ -98,7 +98,7 @@ int main(int argc,char* argv[])
 
 	//probar con listas
 
-	//puts("\nInicio Servidor para Gameboy");
+	puts("\nInicio Servidor para Gameboy");
 	pthread_t hiloConexionGameboy;
 	pthread_create(&hiloConexionGameboy, NULL, (void*)noHayBroker, NULL);
 
