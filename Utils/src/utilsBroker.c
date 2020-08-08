@@ -1433,13 +1433,18 @@ int tamanioOcupadas(){
 void actualizarPosicion(int id, int cola, void* posicion){
 	int tamanioCola;
 	MensajeAppearedPokemon2* mensajeAppe;
+	MensajeLocalizedPokemon2* mensajeLoca;
+	MensajeNewPokemon2* new;
+	MensajeGetPokemon2* get;
+	MensajeCatchPokemon2* catch;
+	MensajeCaughtPokemon2* caught;
 	switch(cola){
 		case NEW_POKEMON:
 			tamanioCola = list_size(New_Pokemon);
 			for(int i=0;i<tamanioCola;i++){
-				mensajeAppe = list_get(New_Pokemon,i);
-				if(mensajeAppe->ID == id){
-					mensajeAppe->contenidoDelMensaje = posicion;
+				new = list_get(New_Pokemon,i);
+				if(new->ID == id){
+					new->contenidoDelMensaje = posicion;
 				}
 			}
 			break;
@@ -1455,36 +1460,36 @@ void actualizarPosicion(int id, int cola, void* posicion){
 		case LOCALIZED_POKEMON:
 			tamanioCola = list_size(Localized_Pokemon);
 			for(int i=0;i<tamanioCola;i++){
-				mensajeAppe = list_get(Localized_Pokemon,i);
-				if(mensajeAppe->ID == id){
-					mensajeAppe->contenidoDelMensaje = posicion;
+				mensajeLoca = list_get(Localized_Pokemon,i);
+				if(mensajeLoca->ID == id){
+					mensajeLoca->contenidoDelMensaje = posicion;
 				}
 			}
 			break;
 		case GET_POKEMON:
 			tamanioCola = list_size(Get_Pokemon);
 			for(int i=0;i<tamanioCola;i++){
-				mensajeAppe = list_get(Get_Pokemon,i);
-				if(mensajeAppe->ID == id){
-					mensajeAppe->contenidoDelMensaje = posicion;
+				get = list_get(Get_Pokemon,i);
+				if(get->ID == id){
+					get->contenidoDelMensaje = posicion;
 				}
 			}
 			break;
 		case CATCH_POKEMON:
 			tamanioCola = list_size(Catch_Pokemon);
 			for(int i=0;i<tamanioCola;i++){
-				mensajeAppe = list_get(Catch_Pokemon,i);
-				if(mensajeAppe->ID == id){
-					mensajeAppe->contenidoDelMensaje = posicion;
+				catch = list_get(Catch_Pokemon,i);
+				if(catch->ID == id){
+					catch->contenidoDelMensaje = posicion;
 				}
 			}
 			break;
 		case CAUGHT_POKEMON:
 			tamanioCola = list_size(Caught_Pokemon);
 			for(int i=0;i<tamanioCola;i++){
-				mensajeAppe = list_get(Caught_Pokemon,i);
-				if(mensajeAppe->ID == id){
-					mensajeAppe->contenidoDelMensaje = posicion;
+				caught = list_get(Caught_Pokemon,i);
+				if(caught->ID == id){
+					caught->contenidoDelMensaje = posicion;
 				}
 			}
 			break;
