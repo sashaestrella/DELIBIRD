@@ -1,0 +1,57 @@
+[INFO] 15:20:27:639 Broker-Log/(3650:3675): Se creó una conexión. El código de operación recibido es: 10.
+[INFO] 15:20:27:641 Broker-Log/(3650:3675): Recibi suscripción para la cola de mensajes GetPokemon de socket: 5.
+[INFO] 15:20:27:754 Broker-Log/(3650:3676): Se creó una conexión. El código de operación recibido es: 12.
+[INFO] 15:20:27:755 Broker-Log/(3650:3676): Recibi suscripción para la cola de mensajes CatchPokemon de socket: 6.
+[INFO] 15:20:27:777 Broker-Log/(3650:3677): Se creó una conexión. El código de operación recibido es: 8.
+[INFO] 15:20:27:777 Broker-Log/(3650:3677): Recibí suscripción para la cola de mensajes NewPokemon de socket: 7.
+[INFO] 15:20:41:340 Broker-Log/(3650:3681): Se creó una conexión. El código de operación recibido es: 2.
+[INFO] 15:20:41:343 Broker-Log/(3650:3681): Recibí un mensaje NewPokemon.Nombre: Pikachu,Posición x: 9,Posición y: 9,Cantidad: 1.
+[INFO] 15:20:41:374 Broker-Log/(3650:3681): Almacené en memoria el mensaje con ID=1,donde comienza en: 0.
+[INFO] 15:20:41:375 Broker-Log/(3650:3681): Voy a enviar el mensaje: 1 al suscriptor con ID=3.
+[INFO] 15:20:41:383 Broker-Log/(3650:3681): El suscriptor con ID=3 fue agregado a la lista de SuscriptoresACK.
+[INFO] 15:20:41:542 Broker-Log/(3650:3685): Se creó una conexión. El código de operación recibido es: 2.
+[INFO] 15:20:41:544 Broker-Log/(3650:3685): Recibí un mensaje NewPokemon.Nombre: Squirtle,Posición x: 5,Posición y: 2,Cantidad: 1.
+[INFO] 15:20:41:558 Broker-Log/(3650:3685): Almacené en memoria el mensaje con ID=2,donde comienza en: 23.
+[INFO] 15:20:41:559 Broker-Log/(3650:3685): Voy a enviar el mensaje: 2 al suscriptor con ID=3.
+[INFO] 15:20:41:568 Broker-Log/(3650:3685): El suscriptor con ID=3 fue agregado a la lista de SuscriptoresACK.
+[INFO] 15:20:41:627 Broker-Log/(3650:3688): Se creó una conexión. El código de operación recibido es: 2.
+[INFO] 15:20:41:631 Broker-Log/(3650:3688): Recibí un mensaje NewPokemon.Nombre: Jolteon,Posición x: 2,Posición y: 2,Cantidad: 1.
+[INFO] 15:20:41:660 Broker-Log/(3650:3688): Se acaba de compactar
+[INFO] 15:20:41:665 Broker-Log/(3650:3688): Eliminé por FIFO la posicion ocupada que comienza en: 0
+[INFO] 15:20:41:674 Broker-Log/(3650:3688): Se acaba de compactar
+[INFO] 15:20:41:685 Broker-Log/(3650:3688): Almacené en memoria el mensaje con ID=3,donde comienza en: 24.
+[INFO] 15:20:41:686 Broker-Log/(3650:3688): Voy a enviar el mensaje: 3 al suscriptor con ID=3.
+[INFO] 15:20:41:687 Broker-Log/(3650:3688): El suscriptor con ID=3 fue agregado a la lista de SuscriptoresACK.
+[INFO] 15:20:41:801 Broker-Log/(3650:3691): Se creó una conexión. El código de operación recibido es: 2.
+[INFO] 15:20:41:801 Broker-Log/(3650:3691): Recibí un mensaje NewPokemon.Nombre: Flareon,Posición x: 4,Posición y: 6,Cantidad: 1.
+[INFO] 15:20:41:801 Broker-Log/(3650:3691): Se acaba de compactar
+[INFO] 15:20:41:802 Broker-Log/(3650:3691): Eliminé por FIFO la posicion ocupada que comienza en: 0
+[INFO] 15:20:41:802 Broker-Log/(3650:3691): Se acaba de compactar
+[INFO] 15:20:41:802 Broker-Log/(3650:3691): Almacené en memoria el mensaje con ID=4,donde comienza en: 23.
+[INFO] 15:20:41:803 Broker-Log/(3650:3691): Voy a enviar el mensaje: 4 al suscriptor con ID=3.
+[INFO] 15:20:41:803 Broker-Log/(3650:3691): El suscriptor con ID=3 fue agregado a la lista de SuscriptoresACK.
+[INFO] 15:20:43:529 Broker-Log/(3650:3693): Se creó una conexión. El código de operación recibido es: 5.
+[INFO] 15:20:43:531 Broker-Log/(3650:3693): Recibí un mensaje AppearedPokemon.Nombre: Pikachu,Posición x: 9,Posición y: 9.
+[INFO] 15:20:43:532 Broker-Log/(3650:3693): Se acaba de compactar
+[INFO] 15:20:43:535 Broker-Log/(3650:3693): Eliminé por FIFO la posicion ocupada que comienza en: 0
+[INFO] 15:20:43:541 Broker-Log/(3650:3693): Se acaba de compactar
+[INFO] 15:20:43:541 Broker-Log/(3650:3693): Almacené en memoria el mensaje con ID=5,donde comienza en: 23.
+[INFO] 15:22:58:511 Broker-Log/(3650:3740): Se creó una conexión. El código de operación recibido es: 5.
+[INFO] 15:22:58:518 Broker-Log/(3650:3740): Recibí un mensaje AppearedPokemon.Nombre: Squirtle,Posición x: 5,Posición y: 2.
+[INFO] 15:22:58:522 Broker-Log/(3650:3740): Almacené en memoria el mensaje con ID=6,donde comienza en: 42.
+[INFO] 15:23:06:498 Broker-Log/(3650:3746): Se creó una conexión. El código de operación recibido es: 5.
+[INFO] 15:23:06:499 Broker-Log/(3650:3746): Recibí un mensaje AppearedPokemon.Nombre: Jolteon,Posición x: 2,Posición y: 2.
+[INFO] 15:23:06:520 Broker-Log/(3650:3746): Se acaba de compactar
+[INFO] 15:23:06:521 Broker-Log/(3650:3746): Eliminé por FIFO la posicion ocupada que comienza en: 0
+[INFO] 15:23:06:522 Broker-Log/(3650:3746): Se acaba de compactar
+[INFO] 15:23:06:607 Broker-Log/(3650:3746): Almacené en memoria el mensaje con ID=7,donde comienza en: 39.
+[INFO] 15:23:16:65 Broker-Log/(3650:3751): Se creó una conexión. El código de operación recibido es: 5.
+[INFO] 15:23:16:65 Broker-Log/(3650:3751): Recibí un mensaje AppearedPokemon.Nombre: Flareon,Posición x: 4,Posición y: 6.
+[INFO] 15:23:16:66 Broker-Log/(3650:3751): Se acaba de compactar
+[INFO] 15:23:16:66 Broker-Log/(3650:3751): Eliminé por FIFO la posicion ocupada que comienza en: 0
+[INFO] 15:23:16:66 Broker-Log/(3650:3751): Se acaba de compactar
+[INFO] 15:23:16:67 Broker-Log/(3650:3751): Almacené en memoria el mensaje con ID=8,donde comienza en: 39.
+[INFO] 15:23:23:315 Broker-Log/(3650:3754): Se creó una conexión. El código de operación recibido es: 9.
+[INFO] 15:23:23:317 Broker-Log/(3650:3754): Recibi suscripción para la cola de mensajes LocalizedPokemon de socket: 16.
+[INFO] 15:23:23:328 Broker-Log/(3650:3756): Se creó una conexión. El código de operación recibido es: 11.
+[INFO] 15:23:23:329 Broker-Log/(3650:3756): Recibi suscripción para la cola de mensajes AppearedPokemon de socket: 17.
