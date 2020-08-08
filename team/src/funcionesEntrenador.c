@@ -68,7 +68,8 @@ void flujoEntrenador(Entrenador* entrenador){
 	CatchPokemonConIDs* catchPokemonConId;
 
 	catchPokemonConId=enviar_catchPokemon(catchUnPokemon);
-
+    if(catchPokemonConId != NULL)
+	entrenador->idMensaje = catchPokemonConId->IDmensaje;
 
 
 	ciclos_totales++;
@@ -85,7 +86,7 @@ void flujoEntrenador(Entrenador* entrenador){
 	log_info(logger, "Error de conexion con broker. Inicia comportamiento Default");
 
     if(catchPokemonConId != NULL){
-	entrenador->idMensaje = catchPokemonConId->IDmensaje;
+	//entrenador->idMensaje = catchPokemonConId->IDmensaje;
 	//printf("\nSoy %d y mande %d", entrenador->ID,entrenador->idMensaje);
 
 	list_remove(ejecutando, 0);
@@ -347,7 +348,7 @@ void verificarCiclos(int* cicloEntrenador, Entrenador* entrenador, int enDeadloc
 			list_add(ready,list_remove(ejecutando,0));
 			cambios_contexto++;
 			}
-			//puts("\nCorte por quantum");
+			puts("\nCorte por quantum");
 			sem_post(finEjecucion[entrenador->ID -1]);
 			sem_wait(ejecutate[entrenador->ID -1]);
 		}

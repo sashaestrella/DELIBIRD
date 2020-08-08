@@ -2070,6 +2070,7 @@ AppearedPokemon* sacarDeMemoriaElAppearedPokemon(MensajeAppearedPokemon2* mensaj
 LocalizedPokemon* sacarDeMemoriaElLocalizedPokemon(MensajeLocalizedPokemon2* mensajeLocalized2){
 		LocalizedPokemon* unLocalizedPokemon = malloc (sizeof(LocalizedPokemon));
 		void* inicioDelLP = mensajeLocalized2->contenidoDelMensaje;
+		printf("\n inicicioLP %d",mensajeLocalized2->contenidoDelMensaje );
 		int offset = 0;
 
 		memcpy(&(unLocalizedPokemon->tamanioNombrePokemon),inicioDelLP+offset,sizeof(uint32_t));
@@ -2088,8 +2089,10 @@ LocalizedPokemon* sacarDeMemoriaElLocalizedPokemon(MensajeLocalizedPokemon2* men
 		for(int i=0;i<cantidadDePares;i++){
 			CoordenadasXY* coordenadas = malloc(sizeof(CoordenadasXY));
 			memcpy(&(coordenadas->posicionX),inicioDelLP+offset,sizeof(uint32_t));
+			printf("\n COOR X SACAR %d", coordenadas->posicionX);
 			offset+=sizeof(uint32_t);
 			memcpy(&(coordenadas->posicionY),inicioDelLP+offset,sizeof(uint32_t));
+			printf("\n COOR Y SACAR %d", coordenadas->posicionY);
 			offset+=sizeof(uint32_t);
 			list_add(unasCoordenadas,coordenadas);
 		}
@@ -2278,7 +2281,7 @@ void enviarColaLocalizedPokemon(int idGeneradoEnElMomento,int socket_suscriptor,
 
 			printf("\n\nNombre: %s",unLocalizedPokemon->nombre);
 			pthread_mutex_lock(&mutexColaLocalizedPokemon);
-			enviarLocalizedPokemon(unLocalizedPokemon,socket_suscriptor,mensaje->ID,0);
+			enviarLocalizedPokemon(unLocalizedPokemon,socket_suscriptor,mensaje->ID,mensaje->IDCorrelativo);
 			printf("\nMensaje enviado: %s",unLocalizedPokemon->nombre);
 			//borrado
 			CoordenadasXY* unaCoordenada;
@@ -2726,7 +2729,7 @@ void enviarColaCaughtPokemon(int idGeneradoEnElMomento,int socket_suscriptor,Sus
 
 			printf("\n\nAtrapado?: %d",unCaughtPokemon->atrapar);
 			pthread_mutex_lock(&mutexColaCaughtPokemon);
-			enviarCaughtPokemon(unCaughtPokemon,socket_suscriptor,mensaje->ID,0);
+			enviarCaughtPokemon(unCaughtPokemon,socket_suscriptor,mensaje->ID,mensaje->IDCorrelativo);
 			printf("\nMensaje enviado: %d",unCaughtPokemon->atrapar);
 
 			free(unCaughtPokemon);

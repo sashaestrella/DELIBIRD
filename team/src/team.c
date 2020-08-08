@@ -272,11 +272,11 @@ void planificadorFIFO_RR(){
 
 				if(list_size(ready)==0){
 
-					puts("\nEntre a ready vacio");
-					int valor;
+					//puts("\nEntre a ready vacio");
+					//int valor;
 
-					sem_getvalue(&agregar_ready, &valor);
-					printf("\nValor %d", valor);
+					//sem_getvalue(&agregar_ready, &valor);
+					//printf("\nValor %d", valor);
 					sem_wait(&agregar_ready);
 
 
@@ -293,7 +293,7 @@ void planificadorFIFO_RR(){
 
 				entrenador = list_remove(ready, 0);
 
-				puts("\nEmpieza a ejecutar");
+			//	puts("\nEmpieza a ejecutar");
 
 				if(list_size(ejecutando) == 0){
 					list_add(ejecutando, entrenador);
@@ -301,11 +301,11 @@ void planificadorFIFO_RR(){
 					cambios_contexto++;
 
 					sem_post(ejecutate[entrenador->ID - 1]);
-					printf("\n\nDesperte a %d", entrenador->ID);
+					//printf("\n\nDesperte a %d", entrenador->ID);
 
-					printf("\nEspero a %d,", entrenador->ID);
+					//printf("\nEspero a %d,", entrenador->ID);
 					sem_wait(finEjecucion[entrenador->ID - 1]);
-					printf("\nMe llego %d,", entrenador->ID);
+					//printf("\nMe llego %d,", entrenador->ID);
 				}
 
 
@@ -354,9 +354,9 @@ void planificadorFIFO_RR(){
 				cambios_contexto++;
 
 				sem_post(ejecutate[entrenador->ID - 1]);
-				printf("\nDesperte a %d", entrenador->ID);
+				//printf("\nDesperte a %d", entrenador->ID);
 
-				puts("\nEspero");
+				//puts("\nEspero");
 				sem_wait(finEjecucion[entrenador->ID -1]);
 
 				}
@@ -382,7 +382,7 @@ void planificadorSJF_SD(){
 			if(list_size(terminados)+list_size(deadlock) + list_size(readyDeadlock) != list_size(entrenadores)){
 
 				if(list_size(ready)==0){
-					puts("\nEntre vacio");
+					//puts("\nEntre vacio");
 					sem_wait(&agregar_ready);
 
 
@@ -390,11 +390,13 @@ void planificadorSJF_SD(){
 
 				reordenarSJF_SD(1);
 
+				puts("\n_____________________________");
+
 				for(int i=0; i<list_size(ready);i++){
 					entrenador = list_get(ready,i);
-					printf("\n%d) raf %f", entrenador->ID, entrenador->rafaga);
+					//printf("\n%d) raf %f", entrenador->ID, entrenador->rafaga);
 				}
-
+				puts("\n_____________________________");
 
 				//pthread_mutex_lock(&colaReady);
 				entrenador = list_remove(ready, 0);
@@ -406,11 +408,11 @@ void planificadorSJF_SD(){
 					cambios_contexto++;
 
 					sem_post(ejecutate[entrenador->ID - 1]);
-					printf("\n\nDesperte a %d", entrenador->ID);
+					//printf("\n\nDesperte a %d", entrenador->ID);
 
-					printf("\nEspero a %d,", entrenador->ID);
+					//printf("\nEspero a %d,", entrenador->ID);
 					sem_wait(finEjecucion[entrenador->ID - 1]);
-					printf("\nMe llego %d,", entrenador->ID);
+					//printf("\nMe llego %d,", entrenador->ID);
 				}
 
 

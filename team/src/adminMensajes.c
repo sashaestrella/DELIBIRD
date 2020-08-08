@@ -373,13 +373,13 @@ void adminMensajeCaught(CaughtPokemonConIDs* nuevoCaught){
 		bool esperaRespuesta(Entrenador* entrenador){
 			return entrenador->idMensaje == nuevoCaught->IDCorrelativo;
 		}
-
+		puts("\n1");
 		entrenadorParaAvisar = list_find(entrenadores, (void*)esperaRespuesta);
 
 		printf("\nLe avise a %d que llego su mensaje", entrenadorParaAvisar->ID);
 
 		sem_post(confirmacion_caught[entrenadorParaAvisar->ID-1]);
-
+		puts("\n2");
 
 	} else {
 		printf("Mensaje Caught que no es para nosotros\n");

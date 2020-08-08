@@ -303,6 +303,7 @@ void* serializarLocalizedPokemon(LocalizedPokemon* localizedPokemon,int bytes, i
 
 	void* buffer = malloc(bytes);
 	uint32_t tamanioNombre = strlen(localizedPokemon->nombre) + 1;
+
 	int desplazamiento = 0;
 
 	if(id > 0){
@@ -311,18 +312,23 @@ void* serializarLocalizedPokemon(LocalizedPokemon* localizedPokemon,int bytes, i
 	}
 	memcpy(buffer + desplazamiento,&idCorrelativo,sizeof(int));
 	desplazamiento += sizeof(int);
-
+	printf("\n id %d", id);
 	memcpy(buffer + desplazamiento,&tamanioNombre,sizeof(uint32_t));
+	printf("\n TAmaño %d", tamanioNombre);
 	desplazamiento+= sizeof(uint32_t);
 	memcpy(buffer + desplazamiento,localizedPokemon->nombre,tamanioNombre);
+	printf("\n nombre %s", localizedPokemon->nombre);
 	desplazamiento+= tamanioNombre;
 	memcpy(buffer + desplazamiento,&(localizedPokemon->cantidadParesOrdenados),sizeof(uint32_t));
+	printf("\n cant	PARES %d", localizedPokemon->cantidadParesOrdenados);
 	desplazamiento+= sizeof(uint32_t);
 	for(int i=0;i<localizedPokemon->cantidadParesOrdenados;i++){
 		CoordenadasXY* coordenadas = list_get(localizedPokemon->paresOrdenados,i);
 		memcpy(buffer + desplazamiento,&(coordenadas->posicionX),sizeof(uint32_t));
+		printf("\n COOR X %d", coordenadas->posicionX);
 		desplazamiento+= sizeof(uint32_t);
 		memcpy(buffer + desplazamiento,&(coordenadas->posicionY),sizeof(uint32_t));
+		printf("\n COOR Y %d", coordenadas->posicionY);
 		desplazamiento+= sizeof(uint32_t);
 	}
 
