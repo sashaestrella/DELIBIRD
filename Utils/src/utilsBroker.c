@@ -1433,6 +1433,7 @@ int tamanioOcupadas(){
 void actualizarPosicion(int id, int cola, void* posicion){
 	int tamanioCola;
 	MensajeAppearedPokemon2* mensajeAppe;
+	MensajeLocalizedPokemon2* mensajeLoca;
 	switch(cola){
 		case NEW_POKEMON:
 			tamanioCola = list_size(New_Pokemon);
@@ -1455,9 +1456,9 @@ void actualizarPosicion(int id, int cola, void* posicion){
 		case LOCALIZED_POKEMON:
 			tamanioCola = list_size(Localized_Pokemon);
 			for(int i=0;i<tamanioCola;i++){
-				mensajeAppe = list_get(Localized_Pokemon,i);
-				if(mensajeAppe->ID == id){
-					mensajeAppe->contenidoDelMensaje = posicion;
+				mensajeLoca = list_get(Localized_Pokemon,i);
+				if(mensajeLoca->ID == id){
+					mensajeLoca->contenidoDelMensaje = posicion;
 				}
 			}
 			break;
