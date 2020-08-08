@@ -21,12 +21,13 @@ void generarConexiones(){
 	pthread_create(&hiloLocalized, NULL,(void*) suscribirseAColaLocalized, NULL);
 
 
-	pthread_detach(hiloAppeared);
-	pthread_detach(hiloCaught);
-	pthread_detach(hiloLocalized);
-	//pthread_join(hiloAppeared,NULL);
-	//pthread_join(hiloCaught,NULL);
-	//pthread_join(hiloLocalized,NULL);
+	//pthread_detach(hiloAppeared);
+	//pthread_detach(hiloCaught);
+	//pthread_detach(hiloLocalized);
+	pthread_join(hiloCaught,NULL);
+	pthread_join(hiloAppeared,NULL);
+
+	pthread_join(hiloLocalized,NULL);
 
 }
 
@@ -91,7 +92,7 @@ void suscribirseAColaLocalized(){
 
 	enviarSuscripcion(IDsuscripcionLocalized, conexion, SUSCRIPTOR_LOCALIZEDPOKEMON);
 	recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
-	sem_post(&suscripciones);
+
 	printf("Suscriptor numero: %d\n", IDsuscripcion);
 
 	char id[2];
@@ -99,6 +100,7 @@ void suscribirseAColaLocalized(){
 	config_set_value(archivo_config, "ID_LOCALIZED", id );
 	//config_save(archivo_config);
 	administradorMensajesColas(SUSCRIPTOR_LOCALIZEDPOKEMON, conexion, IDsuscripcion);
+	sem_post(&suscripciones);
 	}else{
 		sem_post(&reintento_localized);
 		sem_post(&suscripciones);
@@ -115,7 +117,7 @@ void suscribirseAColaAppeared(){
 
 	enviarSuscripcion(IDsuscripcionAppeared, conexion, SUSCRIPTOR_APPEAREDPOKEMON);
 	recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
-	sem_post(&suscripciones);
+
 	printf("Suscriptor numero: %d\n", IDsuscripcion);
 
 	char id[2];
@@ -123,6 +125,7 @@ void suscribirseAColaAppeared(){
 	config_set_value(archivo_config, "ID_APPEARED", id );
 	//config_save(archivo_config);
 	administradorMensajesColas(SUSCRIPTOR_APPEAREDPOKEMON, conexion, IDsuscripcion);
+	sem_post(&suscripciones);
 	}else{
 	sem_post(&reintento_appeared);
 	sem_post(&suscripciones);
@@ -287,7 +290,7 @@ void adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
 	//printf("\nLLego localized con ID %d", nuevoLocalized->IDcorrelativo);
 
 	if(descartar_localized_no_deseados(nuevoLocalized)){
-		log_info(logger, "Llego un mensaje LOCALIZED con el ID de mensaje %d e ID correlativo. \n",nuevoLocalized->IDmensaje, nuevoLocalized->IDcorrelativo);
+		log_info(logger, "Llego un mensaje LOCALIZED %s con el ID de mensaje %d e ID correlativo %d. \n",nuevoLocalized->localizedPokemon->nombre,nuevoLocalized->IDmensaje, nuevoLocalized->IDcorrelativo);
 
 		for(int i=0; i<cantidadObjetivos && j < cantidadPokemonLocalizados; i++){
 		nuevo = elegirMejorUbicacion(nuevoLocalized);
@@ -325,7 +328,7 @@ void adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
 		}
 
 	} else {
-		printf("Mensaje Localized que no es para nosotros\n");
+		printf("Mensaje Localized ID correlativo %d, descartado: %s \n",nuevoLocalized->IDcorrelativo, nuevoLocalized->localizedPokemon->nombre);
 	}
 	list_add(mensajesRecibidos, (void*)nuevoLocalized->IDmensaje); //por si se cae conexion
 	//free(nuevo);
@@ -396,7 +399,7 @@ void enviar_getPokemon(GetPokemon* get_pokemon){
 	enviarGetPokemon(get_pokemon, conexion ,0);
 
 	recv(conexion, &id_mensaje, sizeof(int), MSG_WAITALL);
-	printf("El id del mi mensaje es %d", id_mensaje);
+	printf("\nEl id del mi mensaje es %d", id_mensaje);
 	getPokemonConId->IDmensaje = id_mensaje;
 
 	list_add(mensajesGetEnviados, getPokemonConId);
@@ -445,13 +448,16 @@ bool mePasoDeLosQueNecesito(char* nombre){
 
 	if(list_count_satisfying(especies_localizadas, (void*)contar) > cantidadDeUnaEspecieQueNecesito){
 		list_add(especies_localizadas, nombre);
+		for(int i=0; i<list_size(especies_localizadas);i++){
+			printf("\nESpecies que llegaron de APPEARED  %s", list_get(especies_localizadas,i));
+		}
 		return true;
 	}else{
 		return false;
 
 	}
 
-	return list_count_satisfying(especies_localizadas, (void*)contar) > cantidadDeUnaEspecieQueNecesito;
+	//return list_count_satisfying(especies_localizadas, (void*)contar) > cantidadDeUnaEspecieQueNecesito;
 }
 
 bool descartar_appeared_no_deseados(AppearedPokemonConIDs* appearedPokemonRecibido){
@@ -470,8 +476,9 @@ bool descartar_appeared_no_deseados(AppearedPokemonConIDs* appearedPokemonRecibi
 			list_add(mapa_auxiliar, pokemon);
 		}
 
-			return !mePasoDeLosQueNecesito( appearedPokemonRecibido -> appearedPokemon -> nombre);
-
+		list_add(especies_localizadas, appearedPokemonRecibido -> appearedPokemon -> nombre);
+			//return !mePasoDeLosQueNecesito( appearedPokemonRecibido -> appearedPokemon -> nombre);
+		return true;
 	}else{
 		return false;
 	}
@@ -485,7 +492,7 @@ bool yaRecibiEsaEspecie(char* especie){
 		}
 
 
-		return !list_any_satisfy(especies_localizadas, (void*)compararNombre) && list_any_satisfy(objetivoGlobal, (void*)compararNombre) ;
+		return !list_any_satisfy(especies_localizadas, (void*)compararNombre);// && list_any_satisfy(objetivoGlobal, (void*)compararNombre) ;
 
 }
 
@@ -502,11 +509,11 @@ bool descartar_localized_no_deseados(LocalizedPokemonConIDs* localizedPokemonRec
 	}
 
 	if( list_any_satisfy(mensajesGetEnviados, (void*)compararIDcorrelativo)){
-		//puts("\nDescarte por repeticion");
+		puts("\nDescarte por repeticion");
 		return yaRecibiEsaEspecie(localizedPokemonRecibido->localizedPokemon->nombre);
 
 	}else{
-		//puts("\nDescarte por id");
+		puts("\nDescarte por id");
 		return false;
 	}
 }

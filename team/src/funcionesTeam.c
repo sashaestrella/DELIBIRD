@@ -99,7 +99,7 @@ void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
 		int cant = cantidad(pokemones);
 
 
-		//if(i<= cant){
+		if(i<= cant){
 
 		if(pokemones[i] != NULL){
 		pokemones_separados = string_split(pokemones[i], "|");
@@ -109,7 +109,7 @@ void armar_entrenadores(char** posiciones, char** pokemones, char** objetivos){
 			pokemones_separados = NULL;
 		}
 
-
+		}
 		/*if(pokemones[0] == NULL){
 			pokemones_separados = NULL;
 		}*/
@@ -272,9 +272,9 @@ void enviar_gets(){
 
 void conexionConBroker(){
 
-	enviar_gets();
-
 	generarConexiones();
+
+	enviar_gets();
 
 
 	while(1){
@@ -511,7 +511,7 @@ void esperarApariciones(){
 		int valor;
 		sem_post(&agregar_ready);
 		sem_getvalue(&agregar_ready,&valor);
-
+		printf("\nValor de SEMAFORO %d", valor);
 	}
 	if(list_size(ejecutando)==1 ){
 		int valor;
