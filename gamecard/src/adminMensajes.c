@@ -1129,6 +1129,7 @@ t_list* obtenerPosiciones(char* bloque){
 // --------------------- ENVIAR MENSAJES --------------------- //
 
 void enviarMensajeAppeared(int IDmensaje, char* pokemon, CoordenadasXY coordenadas){
+	sem_wait(&mensajeABroker);
 	int socket_suscriptor = crear_conexion(ip, puerto);
 	if(socket_suscriptor!=-1){
 		AppearedPokemon* nuevo = malloc(sizeof(AppearedPokemon));
@@ -1139,10 +1140,11 @@ void enviarMensajeAppeared(int IDmensaje, char* pokemon, CoordenadasXY coordenad
 		liberar_conexion(socket_suscriptor);
 		free(nuevo);
 	}
-
+	sem_post(&mensajeABroker);
 }
 
 void enviarMensajeCaught(int IDmensaje, int resultado){
+	sem_wait(&mensajeABroker);
 	int socket_suscriptor = crear_conexion(ip, puerto);
 	if(socket_suscriptor!=-1){
 		CaughtPokemon* nuevo = malloc(sizeof(CaughtPokemon));
@@ -1151,9 +1153,11 @@ void enviarMensajeCaught(int IDmensaje, int resultado){
 		liberar_conexion(socket_suscriptor);
 		free(nuevo);
 	}
+	sem_post(&mensajeABroker);
 }
 
 void enviarMensajeLocalized(int IDmensaje, char* pokemon, t_list* coordenadas){
+	sem_wait(&mensajeABroker);
 	int socket_suscriptor = crear_conexion(ip, puerto);
 	if(socket_suscriptor!=-1){
 		LocalizedPokemon* nuevo = malloc(sizeof(LocalizedPokemon));
@@ -1165,6 +1169,7 @@ void enviarMensajeLocalized(int IDmensaje, char* pokemon, t_list* coordenadas){
 		liberar_conexion(socket_suscriptor);
 		free(nuevo);
 	}
+	sem_post(&mensajeABroker);
 }
 
 // --------------------- BITMAP --------------------- //

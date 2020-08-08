@@ -4,6 +4,7 @@
 
 int main(void){
 
+	sem_init(&mensajeABroker, 0, 1);
 	sem_init(&suscripciones, 0, 1);
 	sem_init(&reintentoNew, 0, 0);
 	sem_init(&reintentoGet, 0, 0);

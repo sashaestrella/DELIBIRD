@@ -34,6 +34,7 @@ int tiempoReintento;
 int tiempoReconexion;
 int tiempoRetardo;
 sem_t suscripciones;
+sem_t mensajeABroker;
 t_log* logger;
 t_config* config;
 
