@@ -313,6 +313,7 @@ void detectarDeadlocks(){
 	log_info(logger, "Inicia algotirmo de deteccion de deadlock");
 
 	for(int i=0; i<list_size(deadlock); i++){
+
 		EntrenadorDeadlock* entrenadorAux = malloc(sizeof(EntrenadorDeadlock));
 		Entrenador* entrenador ;
 		entrenadorAux->objetivos = list_create();

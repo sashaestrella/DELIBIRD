@@ -229,6 +229,7 @@ void flujoEntrenador(Entrenador* entrenador){
 							while(noLlegoADestino(entrenador, posicion) == true){
 
 								moverseUnaPosicion(entrenador, posicion);
+								log_info(logger, "Soy el entrenador %d y me movi hasta la posicion (%d, %d) de un entrenador." , entrenador->ID, posicion.posicionX, posicion.posicionY);
 								//puts("\nMe movi");
 								//pthread_mutex_lock(&ciclosTotales);
 								sleep(retardoCicloCPU);

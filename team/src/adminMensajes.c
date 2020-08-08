@@ -74,7 +74,7 @@ void suscribirseAColaCaught(){
 	char id[2];
 	sprintf(id, "%d", IDsuscripcion);
 	config_set_value(archivo_config, "ID_CAUGHT", id );
-	//config_save(archivo_config);
+	config_save(archivo_config);
 	administradorMensajesColas(SUSCRIPTOR_CAUGHTPOKEMON, conexion, IDsuscripcion);
 	}else{
 		sem_post(&reintento_caught);
@@ -98,7 +98,7 @@ void suscribirseAColaLocalized(){
 	char id[2];
 	sprintf(id, "%d", IDsuscripcion);
 	config_set_value(archivo_config, "ID_LOCALIZED", id );
-	//config_save(archivo_config);
+	config_save(archivo_config);
 	administradorMensajesColas(SUSCRIPTOR_LOCALIZEDPOKEMON, conexion, IDsuscripcion);
 	sem_post(&suscripciones);
 	}else{
@@ -123,7 +123,7 @@ void suscribirseAColaAppeared(){
 	char id[2];
 	sprintf(id, "%d", IDsuscripcion);
 	config_set_value(archivo_config, "ID_APPEARED", id );
-	//config_save(archivo_config);
+	config_save(archivo_config);
 	administradorMensajesColas(SUSCRIPTOR_APPEAREDPOKEMON, conexion, IDsuscripcion);
 	sem_post(&suscripciones);
 	}else{
@@ -250,6 +250,7 @@ void adminMensajeAppeared(AppearedPokemonConIDs* nuevoAppeared){
 
 	} else {
 		printf("Mensaje Appeared que no es para nosotros\n");
+		log_info(logger, "Llego un mensaje APPEARED con el ID de mensaje: %d. Y se descarta\n",nuevoAppeared->IDmensaje);
 	}
 	list_add(mensajesRecibidos, (void*)nuevoAppeared->IDmensaje);
 
@@ -328,7 +329,7 @@ void adminMensajeLocalized(LocalizedPokemonConIDs* nuevoLocalized){
 		}
 
 	} else {
-		printf("Mensaje Localized ID correlativo %d, descartado: %s \n",nuevoLocalized->IDcorrelativo, nuevoLocalized->localizedPokemon->nombre);
+		log_info(logger, "Llego un mensaje LOCALIZED con ID de mensaje %d. Y se descarto. \n",nuevoLocalized->IDmensaje);
 	}
 	list_add(mensajesRecibidos, (void*)nuevoLocalized->IDmensaje); //por si se cae conexion
 	//free(nuevo);
@@ -382,7 +383,7 @@ void adminMensajeCaught(CaughtPokemonConIDs* nuevoCaught){
 		//puts("\n2");
 
 	} else {
-		printf("Mensaje Caught que no es para nosotros\n");
+		log_info(logger, "Llego un mensaje CAUGHT con el ID de mensaje %d, Y se descarto. \n",nuevoCaught->IDmensaje);
 	}
 	list_add(mensajesRecibidos, (void*)nuevoCaught->IDmensaje);
 }
