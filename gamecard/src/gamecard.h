@@ -35,6 +35,7 @@ int tiempoReconexion;
 int tiempoRetardo;
 sem_t suscripciones;
 sem_t mensajeABroker;
+sem_t bitmapSem;
 t_log* logger;
 t_config* config;
 

@@ -5,6 +5,7 @@
 int main(void){
 
 	sem_init(&mensajeABroker, 0, 1);
+	sem_init(&bitmapSem, 0, 1);
 	sem_init(&suscripciones, 0, 1);
 	sem_init(&reintentoNew, 0, 0);
 	sem_init(&reintentoGet, 0, 0);
@@ -16,7 +17,6 @@ int main(void){
 	if(!strcmp(magicNumber, "TALL_GRASS")){
 		crearDirectorioTG();
 	}
-
 
 	pthread_t hiloConexionGameboy;
 	pthread_create(&hiloConexionGameboy, NULL, (void*)noHayBroker, NULL);
