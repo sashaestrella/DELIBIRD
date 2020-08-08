@@ -551,7 +551,6 @@ void agregarPokemon(NewPokemonConIDs* newPokemon){
 	string_append(&path, "/TALL_GRASS/Files/");
 	string_append(&path, newPokemon->newPokemon->nombre);
 	string_append(&path, "/Metadata.bin");
-
 	if(!existePokemon(newPokemon->newPokemon->nombre)){
 		char* escritura = string_new();
 		char* coorX = string_itoa(newPokemon->newPokemon->coordenadas.posicionX);
@@ -1142,6 +1141,11 @@ void enviarMensajeAppeared(int IDmensaje, char* pokemon, CoordenadasXY coordenad
 		nuevo->coordenadas = coordenadas;
 		nuevo->nombre = pokemon;
 		nuevo->tamanioNombrePokemon = strlen(pokemon) + 1;
+		printf("Nombre: %s\n", nuevo->nombre);
+		printf("Tamanio Nombre: %d\n", nuevo->tamanioNombrePokemon);
+		printf("Coordenada X: %d\n", nuevo->coordenadas.posicionX);
+		printf("Coordenada Y: %d\n", nuevo->coordenadas.posicionY);
+		printf("ID Mensaje: %d\n", IDmensaje);
 		enviarAppearedPokemon(nuevo, socket_suscriptor, 0, IDmensaje);
 		liberar_conexion(socket_suscriptor);
 		free(nuevo);
