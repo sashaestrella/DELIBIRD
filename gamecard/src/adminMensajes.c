@@ -140,7 +140,7 @@ void* suscribirseAColaNew(){
 	sem_wait(&suscripciones);
 	int conexion = crear_conexion(ip, puerto);
 	if(conexion!=-1){
-
+		puts("me conecte bien, creo");
 		enviarSuscripcion(IDsuscripcionNew, conexion, SUSCRIPTOR_NEWPOKEMON);
 		recv(conexion, &IDsuscripcion, sizeof(int), MSG_WAITALL);
 		char* id = string_itoa(IDsuscripcion);

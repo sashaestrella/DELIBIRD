@@ -41,7 +41,7 @@ void esperar_cliente(int socket_servidor)
 	int tam_direccion = sizeof(struct sockaddr_in);
 	//sem_wait(&semMensajes);
 	pthread_mutex_lock(&mutexMensajes);
-	pthread_mutex_lock(&mutexEscuchaPrincipal);
+	//pthread_mutex_lock(&mutexEscuchaPrincipal);
 	int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
 
 	pthread_create(&thread,NULL,(void*)serve_client,&socket_cliente);
@@ -919,6 +919,7 @@ void consolidarParticiones(int posicion){
 			PosicionLibre* posicionAIzquierda = list_get(listaPosicionesLibres,posicion-1);
 			printf("\nLa posición de la izquierda arranca en %i y termina en %i. la posición base empieza en %i",posicionAIzquierda->posicion,posicionAIzquierda->posicion + posicionAIzquierda->tamanio,posicionBase->posicion);
 			if((posicionAIzquierda->posicion + posicionAIzquierda->tamanio) == ((posicionBase->posicion))){
+				puts("ESTOY ACA");
 				posicionAIzquierda->tamanio+= posicionBase->tamanio;
 				free(posicionBase);
 				list_remove(listaPosicionesLibres,posicion);
@@ -1428,6 +1429,73 @@ int tamanioOcupadas(){
 	return suma;
 }
 
+
+void actualizarPosicion(int id, int cola, void* posicion){
+	int tamanioCola;
+	MensajeAppearedPokemon2* mensajeAppe;
+	switch(cola){
+		case NEW_POKEMON:
+			tamanioCola = list_size(New_Pokemon);
+			for(int i=0;i<tamanioCola;i++){
+				mensajeAppe = list_get(New_Pokemon,i);
+				if(mensajeAppe->ID == id){
+					mensajeAppe->contenidoDelMensaje = posicion;
+				}
+			}
+			break;
+		case APPEARED_POKEMON:
+			tamanioCola = list_size(Appeared_Pokemon);
+			for(int i=0;i<tamanioCola;i++){
+				mensajeAppe = list_get(Appeared_Pokemon,i);
+				if(mensajeAppe->ID == id){
+					mensajeAppe->contenidoDelMensaje = posicion;
+				}
+			}
+			break;
+		case LOCALIZED_POKEMON:
+			tamanioCola = list_size(Localized_Pokemon);
+			for(int i=0;i<tamanioCola;i++){
+				mensajeAppe = list_get(Localized_Pokemon,i);
+				if(mensajeAppe->ID == id){
+					mensajeAppe->contenidoDelMensaje = posicion;
+				}
+			}
+			break;
+		case GET_POKEMON:
+			tamanioCola = list_size(Get_Pokemon);
+			for(int i=0;i<tamanioCola;i++){
+				mensajeAppe = list_get(Get_Pokemon,i);
+				if(mensajeAppe->ID == id){
+					mensajeAppe->contenidoDelMensaje = posicion;
+				}
+			}
+			break;
+		case CATCH_POKEMON:
+			tamanioCola = list_size(Catch_Pokemon);
+			for(int i=0;i<tamanioCola;i++){
+				mensajeAppe = list_get(Catch_Pokemon,i);
+				if(mensajeAppe->ID == id){
+					mensajeAppe->contenidoDelMensaje = posicion;
+				}
+			}
+			break;
+		case CAUGHT_POKEMON:
+			tamanioCola = list_size(Caught_Pokemon);
+			for(int i=0;i<tamanioCola;i++){
+				mensajeAppe = list_get(Caught_Pokemon,i);
+				if(mensajeAppe->ID == id){
+					mensajeAppe->contenidoDelMensaje = posicion;
+				}
+			}
+			break;
+
+
+	}
+
+
+}
+
+
 void compacta(){
 	int tamanioOcupados = list_size(listaPosicionesOcupadas);
 	int tamanioLibres = list_size(listaPosicionesLibres);
@@ -1440,9 +1508,11 @@ void compacta(){
 		posicionQueItera = list_get(listaPosicionesOcupadas,i);
 		if(i==0){
 			posicionQueItera->posicion = memoriaInterna;
+			actualizarPosicion(posicionQueItera->ID,posicionQueItera->colaALaQuePertenece,posicionQueItera->posicion);
 		}else {
 			posicionAnterior = list_get(listaPosicionesOcupadas,i-1);
 			posicionQueItera->posicion = posicionAnterior->posicion + posicionAnterior->tamanio;
+			actualizarPosicion(posicionQueItera->ID,posicionQueItera->colaALaQuePertenece,posicionQueItera->posicion);
 		}
 	}
 	if(tamanioLibres!=0){
