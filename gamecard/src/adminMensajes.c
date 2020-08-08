@@ -1048,8 +1048,9 @@ void eliminarSiEsCarpetaVacia(char* path, char* pathCarpeta){
 		log_info(logger, "Elimine el archivo %s", path);
 		remove(pathCarpeta);
 		log_info(logger, "Elimine la carpeta %s", pathCarpeta);
+	} else {
+		config_destroy(md);
 	}
-	config_destroy(md);
 }
 
 
