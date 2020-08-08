@@ -26,8 +26,9 @@ void iniciar_servidor(void){
     }
 
 	listen(socket_servidor, SOMAXCONN);
-
+	puts("rompe aca eh");
     freeaddrinfo(servinfo);
+    puts("uh no rompio");
 
     while(1)
     	esperar_cliente(socket_servidor);
