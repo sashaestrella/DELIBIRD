@@ -305,8 +305,7 @@ void detectarDeadlocks(){
 	EntrenadorDeadlock* entrenador = malloc(sizeof(EntrenadorDeadlock));
 	EntrenadorDeadlock* entrenadorEncontrado = malloc(sizeof(EntrenadorDeadlock));
 	EntrenadorDeadlock* entrenadorPrimero = malloc(sizeof(EntrenadorDeadlock));
-	char* pokemon;
-	int id;
+
 	t_list* deadlockTemporal = list_create();
 	t_list* deadlockCircular = list_create();
 	//list_add_all(deadlockTemporal, deadlock);
@@ -346,7 +345,7 @@ void detectarDeadlocks(){
 
 			if(list_any_satisfy(entrenador->objetivos, (void*)esta)){
 
-				char* p = list_remove_by_condition(entrenador->objetivos, (void*)esta);
+				list_remove_by_condition(entrenador->objetivos, (void*)esta);
 				/*printf("\nEntrenador %d)", entrenador->ID);
 				printf("\nSaque a %s", p);
 				printf("\nY a %s", pokemon->nombre);*/
@@ -363,7 +362,7 @@ void detectarDeadlocks(){
 
 
 		//printf("\nEntrenador %d)", entrenador->ID);
-		for(int i=0; i<list_size(entrenador->pokemonesQueTiene);i++){
+		/*for(int i=0; i<list_size(entrenador->pokemonesQueTiene);i++){
 			Pokemon* pokemon;
 
 			pokemon = list_get(entrenador->pokemonesQueTiene,i);
@@ -375,7 +374,7 @@ void detectarDeadlocks(){
 				char* poke;
 				poke = list_get(entrenador->objetivos, i);
 				//printf("\nY necesito %s", poke );
-			}
+			}*/
 
 	}
 
@@ -444,11 +443,11 @@ while(list_size(deadlockTemporal) !=0){
 
 			Entrenador* mostrar;// = malloc(sizeof(Entrenador));
 			//printf("\nTAmaño deadlock circular %d", list_size(deadlockCircular));
-			puts("\nSE DETECTO DEADLOCK ENTRE:");
+			//puts("\nSE DETECTO DEADLOCK ENTRE:");
 			log_info(logger, "SE DETECTO DEADLOCK ENTRE:");
 			for(int i=0; i<list_size(deadlockCircular); i++){
 				mostrar = list_get(deadlockCircular,i);
-				printf(" \n %d)", mostrar->ID);
+				//printf(" \n %d)", mostrar->ID);
 				log_info(logger, "%d)", mostrar->ID);
 			}
 			list_clean(deadlockCircular);
@@ -516,7 +515,7 @@ void esperarApariciones(){
 	if(valor==0 && agrego==1 && list_size(ready)==1 && list_size(ejecutando)==0){
 		sem_post(&agregar_ready);
 		sem_getvalue(&agregar_ready,&valor);
-		printf("\nValor de SEMAFORO %d", valor);
+		//printf("\nValor de SEMAFORO %d", valor);
 	}
 	//}
 

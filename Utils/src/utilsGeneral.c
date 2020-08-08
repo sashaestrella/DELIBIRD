@@ -56,7 +56,6 @@ NewPokemonConIDs* recibir_NEW_POKEMON(int cliente_fd,int* size,int reciboID){
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
 		int error = recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
-		printf("la var error dice: %i\n", error);
 		int id;
 		if(reciboID > 0){
 			memcpy(&id,stream,sizeof(int));
@@ -66,10 +65,10 @@ NewPokemonConIDs* recibir_NEW_POKEMON(int cliente_fd,int* size,int reciboID){
 		memcpy(&(unNewPokemon->tamanioNombrePokemon),stream,sizeof(uint32_t));
 		stream+=sizeof(uint32_t);
 		unNewPokemon->nombre = malloc(unNewPokemon->tamanioNombrePokemon);
-		printf("el tamanio nombre pokemon es: %i\n", unNewPokemon->tamanioNombrePokemon);
+		//printf("el tamanio nombre pokemon es: %i\n", unNewPokemon->tamanioNombrePokemon);
 		memcpy(unNewPokemon->nombre,stream,unNewPokemon->tamanioNombrePokemon);
 		stream+=unNewPokemon->tamanioNombrePokemon;
-		printf("el nombre del new es: %s",unNewPokemon->nombre);
+		//printf("el nombre del new es: %s",unNewPokemon->nombre);
 		memcpy(&(unNewPokemon->coordenadas.posicionX),stream,sizeof(uint32_t));
 		stream+=sizeof(uint32_t);
 		memcpy(&(unNewPokemon->coordenadas.posicionY),stream,sizeof(uint32_t));
@@ -91,11 +90,10 @@ LocalizedPokemonConIDs* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size,int r
 		localizedConIdCorrelativo->localizedPokemon = unLocalizedPokemon;
 
 		recv(cliente_fd,&(buffer->size),sizeof(int),MSG_WAITALL);
-		printf("recibi un paquete de tamaño %i", buffer->size);
+		//printf("recibi un paquete de tamaño %i", buffer->size);
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
 		int error = recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
-		printf("la var error dice: %i\n", error);
 
 		int idCorrelativo,id;
 		if(reciboID > 0){
@@ -124,7 +122,7 @@ LocalizedPokemonConIDs* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size,int r
 			memcpy(&(coordenadas->posicionY),stream,sizeof(uint32_t));
 			stream+=sizeof(uint32_t);
 			list_add(unasCoordenadas,coordenadas);
-			printf("\nMe llegaron las coordenadas X: %d, Y: %d", coordenadas->posicionX, coordenadas->posicionY);
+			//printf("\nMe llegaron las coordenadas X: %d, Y: %d", coordenadas->posicionX, coordenadas->posicionY);
 		}
 
 
@@ -149,7 +147,6 @@ GetPokemonConIDs* recibir_GET_POKEMON(int cliente_fd, int* size,int reciboID){
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
 		int error = recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
-		printf("la var error dice: %i\n", error);
 
 		int id;
 		if(reciboID > 0){
@@ -182,7 +179,6 @@ AppearedPokemonConIDs* recibir_APPEARED_POKEMON(int cliente_fd,int* size,int rec
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
 		int error = recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
-		printf("la var error dice: %i\n", error);
 
 		int idCorrelativo,id;
 		if(reciboID > 0){
@@ -224,7 +220,6 @@ CatchPokemonConIDs* recibir_CATCH_POKEMON(int cliente_fd,int*size,int reciboID){
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
 		int error = recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
-		printf("la var error dice: %i\n", error);
 
 		int id;
 		if(reciboID){
@@ -261,7 +256,6 @@ CaughtPokemonConIDs* recibir_CAUGHT_POKEMON(int cliente_fd,int* size,int reciboI
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
 		int error = recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
-		printf("la var error dice: %i\n", error);
 
 		int idCorrelativo,id;
 		if(reciboID > 0){
@@ -303,7 +297,6 @@ void* serializarLocalizedPokemon(LocalizedPokemon* localizedPokemon,int bytes, i
 
 	void* buffer = malloc(bytes);
 	uint32_t tamanioNombre = strlen(localizedPokemon->nombre) + 1;
-
 	int desplazamiento = 0;
 
 	if(id > 0){
@@ -312,23 +305,18 @@ void* serializarLocalizedPokemon(LocalizedPokemon* localizedPokemon,int bytes, i
 	}
 	memcpy(buffer + desplazamiento,&idCorrelativo,sizeof(int));
 	desplazamiento += sizeof(int);
-	printf("\n id %d", id);
+
 	memcpy(buffer + desplazamiento,&tamanioNombre,sizeof(uint32_t));
-	printf("\n TAmaño %d", tamanioNombre);
 	desplazamiento+= sizeof(uint32_t);
 	memcpy(buffer + desplazamiento,localizedPokemon->nombre,tamanioNombre);
-	printf("\n nombre %s", localizedPokemon->nombre);
 	desplazamiento+= tamanioNombre;
 	memcpy(buffer + desplazamiento,&(localizedPokemon->cantidadParesOrdenados),sizeof(uint32_t));
-	printf("\n cant	PARES %d", localizedPokemon->cantidadParesOrdenados);
 	desplazamiento+= sizeof(uint32_t);
 	for(int i=0;i<localizedPokemon->cantidadParesOrdenados;i++){
 		CoordenadasXY* coordenadas = list_get(localizedPokemon->paresOrdenados,i);
 		memcpy(buffer + desplazamiento,&(coordenadas->posicionX),sizeof(uint32_t));
-		printf("\n COOR X %d", coordenadas->posicionX);
 		desplazamiento+= sizeof(uint32_t);
 		memcpy(buffer + desplazamiento,&(coordenadas->posicionY),sizeof(uint32_t));
-		printf("\n COOR Y %d", coordenadas->posicionY);
 		desplazamiento+= sizeof(uint32_t);
 	}
 

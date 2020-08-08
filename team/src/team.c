@@ -430,7 +430,7 @@ void planificadorSJF_SD(){
 
 			}else{
 
-				log_info(logger, "Empieza a solucionar deadlock.");
+				//log_info(logger, "Empieza a solucionar deadlock.");
 
 				int i;
 				if(i!=1){

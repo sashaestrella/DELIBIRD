@@ -170,7 +170,7 @@ void administradorMensajesColas(int op_code, int conexion, int IDsuscripcion){
 				LocalizedPokemonConIDs* nuevoLocalizedPokemonConId;
 				for(int i = 0; i<cantidadLocalizedPokemon; i++){
 					recv(conexion, &codigo1, sizeof(op_code), MSG_WAITALL);
-					printf("Codigo de cola: %d\n", codigo1);
+					//printf("Codigo de cola: %d\n", codigo1);
 					int size=0;
 					nuevoLocalizedPokemonConId = recibir_LOCALIZED_POKEMON(conexion, &size, 1);
 					int ack = 1;
@@ -364,22 +364,22 @@ void recibirMensajesCaught(){
 void adminMensajeCaught(CaughtPokemonConIDs* nuevoCaught){
 
 	if(descartar_caught_no_deseados(nuevoCaught)){
-		puts("\nVoy a guardar un mensaje caught");
+		//puts("\nVoy a guardar un mensaje caught");
 		list_add(nuevosCaught, nuevoCaught);
-		printf("Guarde un mensaje Caught");
+		//printf("Guarde un mensaje Caught");
 		log_info(logger, "Llego un mensaje CAUGHT con el ID de mensaje %d, ID correlativo %d y resultado: %d. \n",nuevoCaught->IDmensaje,nuevoCaught->IDCorrelativo,nuevoCaught->caughtPokemon->atrapar);
 		Entrenador* entrenadorParaAvisar = malloc(sizeof(Entrenador));
 
 		bool esperaRespuesta(Entrenador* entrenador){
 			return entrenador->idMensaje == nuevoCaught->IDCorrelativo;
 		}
-		puts("\n1");
+		//puts("\n1");
 		entrenadorParaAvisar = list_find(entrenadores, (void*)esperaRespuesta);
 
-		printf("\nLe avise a %d que llego su mensaje", entrenadorParaAvisar->ID);
+		//printf("\nLe avise a %d que llego su mensaje", entrenadorParaAvisar->ID);
 
 		sem_post(confirmacion_caught[entrenadorParaAvisar->ID-1]);
-		puts("\n2");
+		//puts("\n2");
 
 	} else {
 		printf("Mensaje Caught que no es para nosotros\n");
@@ -400,7 +400,7 @@ void enviar_getPokemon(GetPokemon* get_pokemon){
 	enviarGetPokemon(get_pokemon, conexion ,0);
 
 	recv(conexion, &id_mensaje, sizeof(int), MSG_WAITALL);
-	printf("\nEl id del mi mensaje es %d", id_mensaje);
+	//printf("\nEl id del mi mensaje es %d", id_mensaje);
 	getPokemonConId->IDmensaje = id_mensaje;
 
 	list_add(mensajesGetEnviados, getPokemonConId);
@@ -426,7 +426,7 @@ CatchPokemonConIDs* enviar_catchPokemon(CatchPokemon* catch_pokemon){
 	catchPokemonConId->IDmensaje = id_mensaje;
 	catchPokemonConId->catchPokemon = catch_pokemon;
 	list_add(mensajesCatchEnviados, catchPokemonConId);
-	puts("\nGuarde un enviado");
+	//puts("\nGuarde un enviado");
 
 	return catchPokemonConId;
 	//free(catchPokemonConId);
@@ -449,9 +449,7 @@ bool mePasoDeLosQueNecesito(char* nombre){
 
 	if(list_count_satisfying(especies_localizadas, (void*)contar) > cantidadDeUnaEspecieQueNecesito){
 		list_add(especies_localizadas, nombre);
-		for(int i=0; i<list_size(especies_localizadas);i++){
-			printf("\nESpecies que llegaron de APPEARED  %s", list_get(especies_localizadas,i));
-		}
+
 		return true;
 	}else{
 		return false;
@@ -510,11 +508,11 @@ bool descartar_localized_no_deseados(LocalizedPokemonConIDs* localizedPokemonRec
 	}
 
 	if( list_any_satisfy(mensajesGetEnviados, (void*)compararIDcorrelativo)){
-		puts("\nDescarte por repeticion");
+		//puts("\nDescarte por repeticion");
 		return yaRecibiEsaEspecie(localizedPokemonRecibido->localizedPokemon->nombre);
 
 	}else{
-		puts("\nDescarte por id");
+		//puts("\nDescarte por id");
 		return false;
 	}
 }

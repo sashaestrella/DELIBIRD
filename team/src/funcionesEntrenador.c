@@ -102,7 +102,7 @@ void flujoEntrenador(Entrenador* entrenador){
 
 	sem_wait(confirmacion_caught[entrenador->ID-1]);
 
-	puts("\Me llego confirmacion");
+	//puts("\Me llego confirmacion");
 
 	bool miRespuesta(CaughtPokemonConIDs* recibido){
 
@@ -139,7 +139,7 @@ void flujoEntrenador(Entrenador* entrenador){
 	if(valor==0 && list_size(ready)==1 && list_size(ejecutando)==0){
 		sem_post(&agregar_ready);
 		sem_getvalue(&agregar_ready,&valor);
-		printf("\nValor de SEMAFORO %d", valor);
+		//printf("\nValor de SEMAFORO %d", valor);
 	}
 
 	if(list_size(ejecutando)==1 ){
@@ -212,7 +212,7 @@ void flujoEntrenador(Entrenador* entrenador){
 							sem_wait(ejecutate[entrenador->ID - 1]);
 
 							if(cumplioSusObjetivos(entrenador)){
-								printf("\nEntrenador %d resolvio deadlock", entrenador->ID);
+								//printf("\nEntrenador %d resolvio deadlock", entrenador->ID);
 								log_info(logger, "Entrenador %d resolvio deadlock", entrenador->ID);
 								i++;
 								break;
@@ -260,7 +260,7 @@ void flujoEntrenador(Entrenador* entrenador){
 							i++;
 
 							if(!cumplioSusObjetivos(entrenador)){
-								printf("\nSOY %d",entrenador->ID);
+								//printf("\nSOY %d",entrenador->ID);
 								finDeRafaga(&ciclo->ciclo, entrenador);
 								list_add(deadlock,list_remove(ejecutando,0));
 								log_info(logger, "Entrenador %d entro a cola de bloqueados (espera resolucion de deadlock)", entrenador->ID);
@@ -282,7 +282,7 @@ void flujoEntrenador(Entrenador* entrenador){
 		}else{
 		list_add(terminados, list_remove(ejecutando,0));
 		cambios_contexto++;
-		printf("\nEntrenador %d resolvio deadlock", entrenador->ID);
+		//printf("\nEntrenador %d resolvio deadlock", entrenador->ID);
 		log_info(logger, "Entrenador %d resolvio deadlock", entrenador->ID);
 		finDeRafaga(&ciclo->ciclo, entrenador);
 		sem_post(finEjecucion[entrenador->ID -1]);
@@ -327,7 +327,7 @@ void finDeRafaga(int* cicloEntrenador, Entrenador* entrenador ){
 	if(algoritmoAUtilizar(algoritmoPlanificacion) == SJF_SD || algoritmoAUtilizar(algoritmoPlanificacion) == SJF_CD ){
 
 		entrenador->rafaga = estimarProximaRafaga(entrenador);
-		printf("\nrafaga ahora %f", entrenador->rafaga);
+		//printf("\nrafaga ahora %f", entrenador->rafaga);
 		*cicloEntrenador=0;
 
 	}
@@ -348,7 +348,7 @@ void verificarCiclos(int* cicloEntrenador, Entrenador* entrenador, int enDeadloc
 			list_add(ready,list_remove(ejecutando,0));
 			cambios_contexto++;
 			}
-			puts("\nCorte por quantum");
+			//puts("\nCorte por quantum");
 			sem_post(finEjecucion[entrenador->ID -1]);
 			sem_wait(ejecutate[entrenador->ID -1]);
 		}
@@ -369,7 +369,7 @@ void verificarCiclos(int* cicloEntrenador, Entrenador* entrenador, int enDeadloc
 						}else{
 						list_add(ready,list_remove(ejecutando,0));
 						}
-			puts("\nSali por sjfCD");
+			//puts("\nSali por sjfCD");
 			*cicloEntrenador=0;
 			sem_post(finEjecucion[entrenador->ID -1]);
 			sem_wait(ejecutate[entrenador->ID -1]);
@@ -668,7 +668,7 @@ Pokemon* elegirMejorUbicacion(LocalizedPokemonConIDs* localizedPokemon){
 	}
 
 	mejor -> posicion = mejoresCoordenadas;
-	printf("La mejor posicion es ( %d , %d  )\n", mejoresCoordenadas.posicionX, mejoresCoordenadas.posicionY);
+	//printf("La mejor posicion es ( %d , %d  )\n", mejoresCoordenadas.posicionX, mejoresCoordenadas.posicionY);
 	return mejor;
 }
 
