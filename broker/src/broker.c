@@ -92,8 +92,7 @@ int main(void){
 	pthread_mutex_init(&mutexColaCatchPokemon,NULL);
 	pthread_mutex_init(&mutexColaCaughtPokemon,NULL);
 	pthread_mutex_init(&mutexColaGetPokemon,NULL);
-	pthread_mutex_init(&mutexColaLocalizedPokemon,NULL);
-	pthread_mutex_init(&mutexColaAppearedPokemon,NULL);
+	pthread_mutex_init(&mutexColaNewPokemon,NULL);
 
 
 
