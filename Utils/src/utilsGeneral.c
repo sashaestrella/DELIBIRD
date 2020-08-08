@@ -55,8 +55,8 @@ NewPokemonConIDs* recibir_NEW_POKEMON(int cliente_fd,int* size,int reciboID){
 		recv(cliente_fd,&(buffer->size),sizeof(int),MSG_WAITALL);
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
-		recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
-
+		int error = recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
+		printf("la var error dice: %i\n", error);
 		int id;
 		if(reciboID > 0){
 			memcpy(&id,stream,sizeof(int));
@@ -66,8 +66,10 @@ NewPokemonConIDs* recibir_NEW_POKEMON(int cliente_fd,int* size,int reciboID){
 		memcpy(&(unNewPokemon->tamanioNombrePokemon),stream,sizeof(uint32_t));
 		stream+=sizeof(uint32_t);
 		unNewPokemon->nombre = malloc(unNewPokemon->tamanioNombrePokemon);
+		printf("el tamanio nombre pokemon es: %i\n", unNewPokemon->tamanioNombrePokemon);
 		memcpy(unNewPokemon->nombre,stream,unNewPokemon->tamanioNombrePokemon);
 		stream+=unNewPokemon->tamanioNombrePokemon;
+		printf("el nombre del new es: %s",unNewPokemon->nombre);
 		memcpy(&(unNewPokemon->coordenadas.posicionX),stream,sizeof(uint32_t));
 		stream+=sizeof(uint32_t);
 		memcpy(&(unNewPokemon->coordenadas.posicionY),stream,sizeof(uint32_t));
@@ -92,7 +94,8 @@ LocalizedPokemonConIDs* recibir_LOCALIZED_POKEMON(int cliente_fd,int* size,int r
 		printf("recibi un paquete de tamaño %i", buffer->size);
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
-		recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
+		int error = recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
+		printf("la var error dice: %i\n", error);
 
 		int idCorrelativo,id;
 		if(reciboID > 0){
@@ -145,7 +148,8 @@ GetPokemonConIDs* recibir_GET_POKEMON(int cliente_fd, int* size,int reciboID){
 		recv(cliente_fd,&(buffer->size),sizeof(int),MSG_WAITALL);
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
-		recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
+		int error = recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
+		printf("la var error dice: %i\n", error);
 
 		int id;
 		if(reciboID > 0){
@@ -177,7 +181,8 @@ AppearedPokemonConIDs* recibir_APPEARED_POKEMON(int cliente_fd,int* size,int rec
 		recv(cliente_fd,&(buffer->size),sizeof(int),MSG_WAITALL);
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
-		recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
+		int error = recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
+		printf("la var error dice: %i\n", error);
 
 		int idCorrelativo,id;
 		if(reciboID > 0){
@@ -218,7 +223,8 @@ CatchPokemonConIDs* recibir_CATCH_POKEMON(int cliente_fd,int*size,int reciboID){
 		recv(cliente_fd,&(buffer->size),sizeof(int),MSG_WAITALL);
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
-		recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
+		int error = recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
+		printf("la var error dice: %i\n", error);
 
 		int id;
 		if(reciboID){
@@ -254,7 +260,8 @@ CaughtPokemonConIDs* recibir_CAUGHT_POKEMON(int cliente_fd,int* size,int reciboI
 		recv(cliente_fd,&(buffer->size),sizeof(int),MSG_WAITALL);
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
-		recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
+		int error = recv(cliente_fd,buffer->stream,buffer->size,MSG_WAITALL);
+		printf("la var error dice: %i\n", error);
 
 		int idCorrelativo,id;
 		if(reciboID > 0){

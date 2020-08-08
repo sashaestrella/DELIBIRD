@@ -74,6 +74,8 @@ int main(void){
 	//iniciar_servidor();
 
 	pthread_t hiloConexion;
+	pthread_mutex_init(&mutexMensajes,NULL);
+	sem_init(&semMensajes,0,1);
 
 	New_Pokemon = list_create();
 	Localized_Pokemon = list_create();

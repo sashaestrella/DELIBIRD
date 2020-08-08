@@ -135,7 +135,7 @@ void flujoEntrenador(Entrenador* entrenador){
 
 	int valor;
 	sem_getvalue(&agregar_ready,&valor);
-	if(valor==0 && list_size(ready)==1){
+	if(valor==0 && list_size(ready)==1 && list_size(ejecutando)==0){
 		sem_post(&agregar_ready);
 		sem_getvalue(&agregar_ready,&valor);
 		printf("\nValor de SEMAFORO %d", valor);
