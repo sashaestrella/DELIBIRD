@@ -38,20 +38,25 @@ void esperar_cliente(int socket_servidor)
 	struct sockaddr_in dir_cliente;
 
 	int tam_direccion = sizeof(struct sockaddr_in);
-
+	sem_wait(&semMensajes);
 	int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
 
 	pthread_create(&thread,NULL,(void*)serve_client,&socket_cliente);
 	pthread_detach(thread);
+	//sleep(1);
 
 }
 
 void serve_client(int* socket)
 {
 	int cod_op;
-
-	if(recv(*socket, &cod_op, sizeof(int), MSG_WAITALL) == -1)
+	pthread_mutex_lock(&mutexEscuchaPrincipal);
+	pthread_mutex_lock(&mutexMensajes);
+	int resultado= recv(*socket, &cod_op, sizeof(int), MSG_WAITALL);
+	if(resultado == -1){
 		cod_op = -1;
+		pthread_mutex_unlock(&mutexEscuchaPrincipal);
+	}
 	char* loQueVoyALoguear = "Se creó una conexión. El código de operación recibido es: %d.";
 	log_info(logger, loQueVoyALoguear,cod_op);
 	process_request(cod_op, *socket);
@@ -116,97 +121,170 @@ void process_request(int cod_op, int cliente_fd) {
 					free(algoARecibir);
 					break;
 				case 0:
+					pthread_mutex_unlock(&mutexEscuchaPrincipal);
+				//	pthread_mutex_unlock(&mutexMensajes);
+					sem_post(&semMensajes);
+
 					pthread_exit(NULL);
 				case -1:
+				//	pthread_mutex_unlock(&mutexMensajes);
+					sem_post(&semMensajes);
+
 					pthread_exit(NULL);
 				case NEW_POKEMON:
 					newConIDs = recibir_NEW_POKEMON(cliente_fd, &size,0);
+					pthread_mutex_unlock(&mutexEscuchaPrincipal);
 					unNewPokemon = newConIDs->newPokemon;
 					loQueVoyALoguear = "Recibí un mensaje NewPokemon.Nombre: %s,Posición x: %d,Posición y: %d,Cantidad: %d.";
 					log_info(logger, loQueVoyALoguear,unNewPokemon->nombre,unNewPokemon->coordenadas.posicionX,unNewPokemon->coordenadas.posicionY,unNewPokemon->cantidad);
 					free(newConIDs);
 					mensajeNewPokemon2 = guardarMensajeNewPokemon(unNewPokemon);
+					pthread_mutex_lock(&suscriptoresNew);
 					enviarNewPokemonASuscriptores(mensajeNewPokemon2);
+					pthread_mutex_unlock(&suscriptoresNew);
+					pthread_mutex_unlock(&mutexMensajes);
+					sem_post(&semMensajes);
+
 					break;
 				case LOCALIZED_POKEMON:
 					unLocalizedPokemonConIDCorrelativo = recibir_LOCALIZED_POKEMON(cliente_fd,&size,0);
+					pthread_mutex_unlock(&mutexEscuchaPrincipal);
 					unLocalizedPokemon = unLocalizedPokemonConIDCorrelativo->localizedPokemon;
 					idCorrelativo = unLocalizedPokemonConIDCorrelativo->IDcorrelativo;
 					loQueVoyALoguear = "Recibí un mensaje LocalizedPokemon.Nombre: %s,Cantidad de pares ordenados: %d,IDCorrelativo: %d.";
 					log_info(logger, loQueVoyALoguear,unLocalizedPokemon->nombre,unLocalizedPokemon->cantidadParesOrdenados,idCorrelativo);
 					free(unLocalizedPokemonConIDCorrelativo);
 					mensajeLocalizedPokemon2 = guardarMensajeLocalizedPokemon(unLocalizedPokemon,idCorrelativo);
+					pthread_mutex_lock(&suscriptoresLocalized);
 					enviarLocalizedPokemonASuscriptores(mensajeLocalizedPokemon2);
+					pthread_mutex_unlock(&suscriptoresLocalized);
+					pthread_mutex_unlock(&mutexMensajes);
+					sem_post(&semMensajes);
+
 					break;
 				case GET_POKEMON:
 					getConIDs = recibir_GET_POKEMON(cliente_fd,&size,0);
+					pthread_mutex_unlock(&mutexEscuchaPrincipal);
 					unGetPokemon = getConIDs->getPokemon;
 					loQueVoyALoguear = "Recibí un mensaje GetPokemon.Nombre: %s.";
 					log_info(logger, loQueVoyALoguear,unGetPokemon->nombre);
 					free(getConIDs);
 					unMensajeGetPokemon2 = guardarMensajeGetPokemon(unGetPokemon);
+					pthread_mutex_lock(&suscriptoresGet);
 					devolverID(cliente_fd,unMensajeGetPokemon2->ID);
 					enviarGetPokemonASuscriptores(unMensajeGetPokemon2);
+					pthread_mutex_unlock(&suscriptoresGet);
+					pthread_mutex_unlock(&mutexMensajes);
+					sem_post(&semMensajes);
+
 					break;
 				case APPEARED_POKEMON:
 					appearedConIDs = recibir_APPEARED_POKEMON(cliente_fd,&size,0,1);
+					pthread_mutex_unlock(&mutexEscuchaPrincipal);
 					unAppearedPokemon = appearedConIDs->appearedPokemon;
 					loQueVoyALoguear = "Recibí un mensaje AppearedPokemon.Nombre: %s,Posición x: %d,Posición y: %d.";
 					log_info(logger, loQueVoyALoguear,unAppearedPokemon->nombre,unAppearedPokemon->coordenadas.posicionX,unAppearedPokemon->coordenadas.posicionY);
 					free(appearedConIDs);
 					mensajeAppearedPokemon2 = guardarMensajeAppearedPokemon(unAppearedPokemon);
+					pthread_mutex_lock(&suscriptoresAppeared);
 					enviarAppearedPokemonASuscriptores(mensajeAppearedPokemon2);
+					pthread_mutex_unlock(&suscriptoresAppeared);
+					pthread_mutex_unlock(&mutexMensajes);
+					sem_post(&semMensajes);
+
 					break;
 				case CATCH_POKEMON:
 					catchConIDs = recibir_CATCH_POKEMON(cliente_fd,&size,0);
+					pthread_mutex_unlock(&mutexEscuchaPrincipal);
 					unCatchPokemon = catchConIDs->catchPokemon;
 					loQueVoyALoguear = "Recibi un mensaje CatchPokemon.Nombre: %s,Posición x: %d,Posición y: %d.";
 					log_info(logger, loQueVoyALoguear,unCatchPokemon->nombre,unCatchPokemon->coordenadas.posicionX,unCatchPokemon->coordenadas.posicionY);
 					free(catchConIDs);
 					mensajeCatchPokemon2 = guardarMensajeCatchPokemon(unCatchPokemon);
+					pthread_mutex_lock(&suscriptoresCatch);
 					devolverID(cliente_fd,mensajeCatchPokemon2->ID);
 					enviarCatchPokemonASuscriptores(mensajeCatchPokemon2);
+					pthread_mutex_unlock(&suscriptoresCatch);
+					pthread_mutex_unlock(&mutexMensajes);
+					sem_post(&semMensajes);
+
 					break;
 				case CAUGHT_POKEMON:
 					unCaughtPokemonConIDCorrelativo = recibir_CAUGHT_POKEMON(cliente_fd,&size,0);
+					pthread_mutex_unlock(&mutexEscuchaPrincipal);
 					unCaughtPokemon = unCaughtPokemonConIDCorrelativo->caughtPokemon;
 					idCorrelativo = unCaughtPokemonConIDCorrelativo->IDCorrelativo;
 					loQueVoyALoguear = "Recibí un mensaje CaughtPokemon.Atrapado(1/0): %d,IDCorrelativo: %d.";
 					log_info(logger, loQueVoyALoguear,unCaughtPokemon->atrapar,idCorrelativo);
 					free(unCaughtPokemonConIDCorrelativo);
 					mensajeCaughtPokemon2 = guardarMensajeCaughtPokemon(unCaughtPokemon,idCorrelativo);
+					pthread_mutex_lock(&suscriptoresCaught);
 					enviarCaughtPokemonASuscriptores(mensajeCaughtPokemon2);
+					pthread_mutex_unlock(&suscriptoresCaught);
+					pthread_mutex_unlock(&mutexMensajes);
+					sem_post(&semMensajes);
+
 					break;
 				case SUSCRIPTOR_NEWPOKEMON:
 					loQueVoyALoguear = "Recibí suscripción para la cola de mensajes NewPokemon de socket: %d.";
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionNewPokemon(cliente_fd);
+					pthread_mutex_unlock(&suscriptoresNew);
+					pthread_mutex_unlock(&mutexMensajes);
+					sem_post(&semMensajes);
+
 					break;
 				case SUSCRIPTOR_LOCALIZEDPOKEMON:
 					loQueVoyALoguear = "Recibi suscripción para la cola de mensajes LocalizedPokemon de socket: %d.";
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionLocalizedPokemon(cliente_fd);
+					pthread_mutex_unlock(&suscriptoresLocalized);
+					pthread_mutex_unlock(&mutexMensajes);
+					sem_post(&semMensajes);
+
 					break;
 				case SUSCRIPTOR_GETPOKEMON:
 					loQueVoyALoguear = "Recibi suscripción para la cola de mensajes GetPokemon de socket: %d.";
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionGetPokemon(cliente_fd);
+					pthread_mutex_unlock(&suscriptoresGet);
+					pthread_mutex_unlock(&mutexMensajes);
+					sem_post(&semMensajes);
+
 					break;
 				case SUSCRIPTOR_APPEAREDPOKEMON:
 					loQueVoyALoguear = "Recibi suscripción para la cola de mensajes AppearedPokemon de socket: %d.";
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionAppearedPokemon(cliente_fd);
+					pthread_mutex_unlock(&suscriptoresAppeared);
+					pthread_mutex_unlock(&mutexMensajes);
+					sem_post(&semMensajes);
+
+
 					break;
 				case SUSCRIPTOR_CATCHPOKEMON:
 					loQueVoyALoguear = "Recibi suscripción para la cola de mensajes CatchPokemon de socket: %d.";
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionCatchPokemon(cliente_fd);
+					pthread_mutex_unlock(&suscriptoresCatch);
+					pthread_mutex_unlock(&mutexMensajes);
+					sem_post(&semMensajes);
+
 					break;
 				case SUSCRIPTOR_CAUGHTPOKEMON:
 					loQueVoyALoguear = "Recibi suscripción para la cola de mensajes CaughtPokemon.";
 					log_info(logger, loQueVoyALoguear,cliente_fd);
 					recibirSuscripcionCaughtPokemon(cliente_fd);
+					pthread_mutex_unlock(&suscriptoresCaught);
+					pthread_mutex_unlock(&mutexMensajes);
+					sem_post(&semMensajes);
+
 					break;
+				default:
+					pthread_mutex_unlock(&mutexEscuchaPrincipal);
+					pthread_mutex_unlock(&mutexMensajes);
+					sem_post(&semMensajes);
+
 	}
 }
 
@@ -439,7 +517,8 @@ void recibirSuscripcionCaughtPokemon(int socket_suscriptor){
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
 		recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
-
+		pthread_mutex_unlock(&mutexEscuchaPrincipal);
+		pthread_mutex_lock(&suscriptoresCaught);
 		memcpy(&idSuscriptor,stream,sizeof(int));
 		printf("Su ID es: %d\n",idSuscriptor);
 
@@ -492,6 +571,8 @@ void recibirSuscripcionCatchPokemon(int socket_suscriptor){
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
 		recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
+		pthread_mutex_unlock(&mutexEscuchaPrincipal);
+		pthread_mutex_lock(&suscriptoresCatch);
 
 		memcpy(&idSuscriptor,stream,sizeof(int));
 		printf("Su ID es: %d\n",idSuscriptor);
@@ -545,6 +626,8 @@ void recibirSuscripcionAppearedPokemon(int socket_suscriptor){
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
 		recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
+		pthread_mutex_unlock(&mutexEscuchaPrincipal);
+		pthread_mutex_lock(&suscriptoresAppeared);
 
 		memcpy(&idSuscriptor,stream,sizeof(int));
 		printf("Su ID es: %d\n",idSuscriptor);
@@ -598,6 +681,8 @@ void recibirSuscripcionGetPokemon(int socket_suscriptor){
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
 		recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
+		pthread_mutex_unlock(&mutexEscuchaPrincipal);
+		pthread_mutex_lock(&suscriptoresGet);
 
 		memcpy(&idSuscriptor,stream,sizeof(int));
 		printf("Su ID es: %d\n",idSuscriptor);
@@ -652,6 +737,9 @@ void recibirSuscripcionLocalizedPokemon(int socket_suscriptor){
 			void* stream = malloc(buffer->size);
 			buffer->stream = stream;
 			recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
+			pthread_mutex_unlock(&mutexEscuchaPrincipal);
+			pthread_mutex_lock(&suscriptoresLocalized);
+
 
 			memcpy(&idSuscriptor,stream,sizeof(int));
 			printf("Su ID es: %d\n",idSuscriptor);
@@ -705,7 +793,8 @@ void recibirSuscripcionNewPokemon(int socket_suscriptor){
 		void* stream = malloc(buffer->size);
 		buffer->stream = stream;
 		recv(socket_suscriptor,buffer->stream,buffer->size,MSG_WAITALL);
-
+		pthread_mutex_unlock(&mutexEscuchaPrincipal);
+		pthread_mutex_lock(&suscriptoresNew);
 		memcpy(&idSuscriptor,stream,sizeof(int));
 		printf("Su ID es: %d\n",idSuscriptor);
 

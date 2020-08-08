@@ -23,6 +23,16 @@ int generadorDeIDsMensaje = 0;
 int generadorDeIDsSuscriptor = 0;
 int contadorTimestamp = 0;
 
+pthread_mutex_t mutexMensajes;
+sem_t semMensajes;
+pthread_mutex_t suscriptoresNew = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t suscriptoresCatch = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t suscriptoresCaught = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t suscriptoresLocalized = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t suscriptoresGet = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t suscriptoresAppeared = PTHREAD_MUTEX_INITIALIZER;
+
+pthread_mutex_t mutexEscuchaPrincipal = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexContadorTimestamp = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexBusquedasFallidas = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexMemoriaInterna = PTHREAD_MUTEX_INITIALIZER;

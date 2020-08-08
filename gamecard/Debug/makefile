@@ -26,7 +26,7 @@ endif
 all: gamecard
 
 dependents:
-	-cd /home/utnso/tp-2020-1c-BOMP/Utils/Debug && $(MAKE) clean all
+	-cd /home/utnso/tp-2020-1c-BOMP/Utils/Debug && $(MAKE) all
 
 # Tool invocations
 gamecard: $(OBJS) $(USER_OBJS) /home/utnso/tp-2020-1c-BOMP/Utils/Debug/libUtils.so
