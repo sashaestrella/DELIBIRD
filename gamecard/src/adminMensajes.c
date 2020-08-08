@@ -824,26 +824,32 @@ void escribirBloques(char** bloques,char** leido,int tamanioMax, char* nombre){
 	char* escritura;
 	while(bloques[i]!=NULL && tamanioEscritura < tamanioMax){
 		escritura = string_new();
-		if(!strcmp(leido[j],"") && leido[j+1] == NULL){
-			string_append(&escritura, "\0");
-			j++;
+		if(leido[j]!=NULL && leido[j+1] == NULL){
+			if(!strcmp(leido[j],"")){
+				string_append(&escritura, "");
+				j++;
+			} else {
+				string_append(&escritura, leido[j]);
+				string_append(&escritura, "\n");
+				j++;
+			}
 		} else {
 			if(leido[j]!= NULL){
 				if(!strcmp(leido[j],"")){ j++;}
 				tamanioEscritura += strlen(leido[j])+1;
 				tamanioTotal += strlen(leido[j])+1;
 			}
-			while(leido[j] != NULL && tamanioEscritura < tamanioBloque && tamanioTotal < tamanioMax){
-				string_append(&escritura, leido[j]);
-				string_append(&escritura, "\n");
-				j++;
-				if(leido[j]!= NULL){
-					if(!strcmp(leido[j],"")){ j++;}
-					tamanioEscritura += strlen(leido[j])+1;
-					tamanioTotal += strlen(leido[j])+1;
-				}
+		while(leido[j] != NULL && tamanioEscritura < tamanioBloque && tamanioTotal < tamanioMax){
+			string_append(&escritura, leido[j]);
+			string_append(&escritura, "\n");
+			j++;
+			if(leido[j]!= NULL){
+				if(!strcmp(leido[j],"")){ j++;}
+				tamanioEscritura += strlen(leido[j])+1;
+				tamanioTotal += strlen(leido[j])+1;
 			}
 		}
+	}
 		pisarBloque(escritura, bloques[i]);
 		tamanioEscritura = 0;
 		i++;
