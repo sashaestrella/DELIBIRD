@@ -551,7 +551,6 @@ void agregarPokemon(NewPokemonConIDs* newPokemon){
 	string_append(&path, "/TALL_GRASS/Files/");
 	string_append(&path, newPokemon->newPokemon->nombre);
 	string_append(&path, "/Metadata.bin");
-
 	if(!existePokemon(newPokemon->newPokemon->nombre)){
 		char* escritura = string_new();
 		char* coorX = string_itoa(newPokemon->newPokemon->coordenadas.posicionX);
@@ -824,26 +823,32 @@ void escribirBloques(char** bloques,char** leido,int tamanioMax, char* nombre){
 	char* escritura;
 	while(bloques[i]!=NULL && tamanioEscritura < tamanioMax){
 		escritura = string_new();
-		if(!strcmp(leido[j],"") && leido[j+1] == NULL){
-			string_append(&escritura, "\0");
-			j++;
+		if(leido[j]!=NULL && leido[j+1] == NULL){
+			if(!strcmp(leido[j],"")){
+				string_append(&escritura, "");
+				j++;
+			} else {
+				string_append(&escritura, leido[j]);
+				string_append(&escritura, "\n");
+				j++;
+			}
 		} else {
 			if(leido[j]!= NULL){
 				if(!strcmp(leido[j],"")){ j++;}
 				tamanioEscritura += strlen(leido[j])+1;
 				tamanioTotal += strlen(leido[j])+1;
 			}
-			while(leido[j] != NULL && tamanioEscritura < tamanioBloque && tamanioTotal < tamanioMax){
-				string_append(&escritura, leido[j]);
-				string_append(&escritura, "\n");
-				j++;
-				if(leido[j]!= NULL){
-					if(!strcmp(leido[j],"")){ j++;}
-					tamanioEscritura += strlen(leido[j])+1;
-					tamanioTotal += strlen(leido[j])+1;
-				}
+		while(leido[j] != NULL && tamanioEscritura < tamanioBloque && tamanioTotal < tamanioMax){
+			string_append(&escritura, leido[j]);
+			string_append(&escritura, "\n");
+			j++;
+			if(leido[j]!= NULL){
+				if(!strcmp(leido[j],"")){ j++;}
+				tamanioEscritura += strlen(leido[j])+1;
+				tamanioTotal += strlen(leido[j])+1;
 			}
 		}
+	}
 		pisarBloque(escritura, bloques[i]);
 		tamanioEscritura = 0;
 		i++;
@@ -1136,6 +1141,11 @@ void enviarMensajeAppeared(int IDmensaje, char* pokemon, CoordenadasXY coordenad
 		nuevo->coordenadas = coordenadas;
 		nuevo->nombre = pokemon;
 		nuevo->tamanioNombrePokemon = strlen(pokemon) + 1;
+		printf("Nombre: %s\n", nuevo->nombre);
+		printf("Tamanio Nombre: %d\n", nuevo->tamanioNombrePokemon);
+		printf("Coordenada X: %d\n", nuevo->coordenadas.posicionX);
+		printf("Coordenada Y: %d\n", nuevo->coordenadas.posicionY);
+		printf("ID Mensaje: %d\n", IDmensaje);
 		enviarAppearedPokemon(nuevo, socket_suscriptor, 0, IDmensaje);
 		liberar_conexion(socket_suscriptor);
 		free(nuevo);
