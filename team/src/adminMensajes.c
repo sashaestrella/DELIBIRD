@@ -445,7 +445,7 @@ bool mePasoDeLosQueNecesito(char* nombre){
 
 	int cantidadDeUnaEspecieQueNecesito = list_count_satisfying(objetivoGlobal, (void*)contar);
 
-	printf("\nTamaño %d", list_count_satisfying(especies_localizadas, (void*)contar));
+	//printf("\nTamaño %d", list_count_satisfying(especies_localizadas, (void*)contar));
 
 	if(list_count_satisfying(especies_localizadas, (void*)contar) > cantidadDeUnaEspecieQueNecesito){
 		list_add(especies_localizadas, nombre);
