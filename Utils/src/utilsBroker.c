@@ -43,7 +43,6 @@ void esperar_cliente(int socket_servidor)
 
 	pthread_create(&thread,NULL,(void*)serve_client,&socket_cliente);
 	pthread_detach(thread);
-
 }
 
 void serve_client(int* socket)
