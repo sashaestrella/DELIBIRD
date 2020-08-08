@@ -362,8 +362,9 @@ void recibirMensajesCaught(){
 }
 
 void adminMensajeCaught(CaughtPokemonConIDs* nuevoCaught){
-	if(descartar_caught_no_deseados(nuevoCaught)){
 
+	if(descartar_caught_no_deseados(nuevoCaught)){
+		puts("\nVoy a guardar un mensaje caught");
 		list_add(nuevosCaught, nuevoCaught);
 		printf("Guarde un mensaje Caught");
 		log_info(logger, "Llego un mensaje CAUGHT con el ID de mensaje %d, ID correlativo %d y resultado: %d. \n",nuevoCaught->IDmensaje,nuevoCaught->IDCorrelativo,nuevoCaught->caughtPokemon->atrapar);
